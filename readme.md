@@ -4,9 +4,9 @@
 <details align ='center'>
     <summary align ='center'>Index</summary>
       <ul>
-        <a href="#about-the-project">About The Project</a> 
+            <a href="#about-the-project">About The Project</a> 
         
-        <a href="#built-with">Built With</a>
+            <a href="#built-with">Built With</a>
         </ul>
   
   </details>
