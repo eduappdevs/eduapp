@@ -18,8 +18,8 @@
     </ol>
   </details>
 
-<h1>Prototype</h1>
-#prototype
+### Prototype
+
 <div align ='center'><img src="./prototipo/eduapp-1.png" alt="prototipo">
 </div>
 <div align ='center'><img src="./prototipo/Eduapp-2.png" alt="prototipo">
@@ -27,6 +27,4 @@
 <div align ='center'><img src="./prototipo/Eduapp-3.png" alt="prototipo">
 </div>
 
-#built-with
-
-<h1>Built with</h1>
+### Built with
