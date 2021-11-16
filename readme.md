@@ -6,9 +6,6 @@
       <ul>
         <a href="#about-the-project">About The Project</a>
         <ul>
-            <li><a href="#prototype">Prototype</a></li>
-          </ul>
-        <ul>
           <li><a href="#built-with">Built With</a></li>
         </ul>
     </ul>
