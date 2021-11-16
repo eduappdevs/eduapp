@@ -4,10 +4,10 @@
 <details align ='center'>
     <summary align ='center'>Index</summary>
       <ul>
-        <a href="#about-the-project">About The Project</a>
-        <ul>
+        <li><a href="#about-the-project">About The Project</a> </li>
+        
           <li><a href="#built-with">Built With</a></li>
-        </ul>
+        
     </ul>
   
   </details>
