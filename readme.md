@@ -15,10 +15,8 @@
   
   </details>
 
-### Prototype
-
 <details>
-<summary>See it</summary>
+    ### Prototype
 <div align ='center'><img src="./prototipo/eduapp-1.png" alt="prototipo">
 </div>
 <div align ='center'><img src="./prototipo/Eduapp-2.png" alt="prototipo">
