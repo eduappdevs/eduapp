@@ -16,7 +16,7 @@
   </details>
 
 <details>
-   <summary> ### Prototype</summary>
+   <summary>Prototype</summary>
 <div align ='center'><img src="./prototipo/eduapp-1.png" alt="prototipo">
 </div>
 <div align ='center'><img src="./prototipo/Eduapp-2.png" alt="prototipo">
@@ -25,4 +25,5 @@
 </div>
 
 </details>
+
 ### Built with
