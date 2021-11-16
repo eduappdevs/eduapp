@@ -23,7 +23,7 @@
 
 </details>
 
-###  Built with
+<h1 align='center'>Built with</h1>
 
 <div align ='center'>
     <a href="https://rubyonrails.org">
