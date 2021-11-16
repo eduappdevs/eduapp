@@ -1,0 +1,35 @@
+img{
+    width: 130px;
+    height: 130px;
+    z-index: 1000;
+}
+.logo{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.welcomeSection{
+    background-color: var(--orange);
+    height: 100vh;
+    width: 100vw;
+    
+
+}
+.welcomeSvg{
+    position: absolute;
+    bottom: 50%;
+    left: 0;
+    width: 100vw;
+    
+    
+}
+.blue{
+    background-color: var(--blue);
+    height: 50%;
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+    z-index: 200;
+}
