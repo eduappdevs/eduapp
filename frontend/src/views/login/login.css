@@ -79,3 +79,41 @@
 .loginForm > form> button:hover{
     transform: translateY(-2px);
 }
+
+.footer {
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    align-items: center;
+    justify-content: center;  
+    width: 100vw;
+    z-index: 1000;
+}
+.getHelp{
+    display: flex;
+    flex: 1;
+    justify-content:flex-end;
+    height: 100%;
+    width: 100%;
+    color: rgba(255, 255, 255, 0.678);
+    margin-right: 20px;
+    cursor: pointer;
+    transition: all .3s; 
+}
+
+.getHelp:hover{
+    color: rgb(255, 255, 255);
+}
+.logo{
+    display: flex;
+    flex: 1;
+    justify-content:flex-start ;
+    height: 100%;
+    width: 100%;
+    margin-left: 20px;
+}
+.logo > img{
+    height:40px;
+    width:40px;
+}

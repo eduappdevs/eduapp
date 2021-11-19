@@ -10,9 +10,6 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    margin-block-start: 0em;
-    margin-block-end: 0em;
-    padding-inline-start: 0;
     list-style: none;
 }
 .bottom-buttons > ul > a{

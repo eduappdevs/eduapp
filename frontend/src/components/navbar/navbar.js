@@ -13,6 +13,13 @@ export default function Navbar() {
           alt=""
         />
       </div>
+      <div className="profile-menu">
+        <ul>
+          <li><a href="/">Settings</a></li>
+          <li><a href="/">Tutorial</a></li>
+          <li><a href="/">Log out</a></li>
+        </ul>
+      </div>
     </header>
   );
 }
