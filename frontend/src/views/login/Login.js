@@ -33,8 +33,12 @@ export default function Login() {
                     <img src="" alt="" />
                 </div>
             </div>
-            
+            <div className="bottomInformation">
+                
             </div>
+            
+        </div>
+
     )
 }
 
