@@ -3,7 +3,7 @@ header {
   justify-content: space-between;
   flex-direction: row;
   width: 100vw;
-  box-shadow: 0 3px 6px rgba(187, 187, 187, 0.377);
+  box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
 }
 header > .header-logo {
   margin: 15px;
