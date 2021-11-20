@@ -5,16 +5,68 @@ import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import "./resources.css";
 export default function Resources() {
   const [resources, setResources] = useState([]);
+  const [resourceOpened, setResourceOpened] = useState(false);
+  const [currentResource, setCurrentResource] = useState("");
   const getResources = async () => {
     const response = await fetch("http://localhost:3000/resources");
     const data = await response.json();
-    console.log(data);
     setResources(data);
   };
-
   useEffect(() => {
     getResources();
   }, []);
+  const openResource = (e) => {
+    e.preventDefault();
+    setResourceOpened(true);
+    try {
+      const id = e.target.id;
+      setCurrentResource(id);
+      const resource = document.getElementById(id);
+      const resource_close = document.getElementById("close-resource_" + id);
+      const name = document.getElementById("resource-name_" + id);
+      const description = document.getElementById("resource-description_" + id);
+      resource.classList.remove("resources-closed");
+      resource.classList.add("resources-opened");
+      resource_close.classList.remove("hidden");
+      description.classList.remove("hidden");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const closeResource = (e) => {
+    e.preventDefault();
+    setResourceOpened(false);
+    try {
+      const resource = document.getElementById(currentResource);
+      const resource_close = document.getElementById(
+        "close-resource_" + currentResource
+      );
+      const name = document.getElementById(
+        "resource-name_" + setCurrentResource
+      );
+      const description = document.getElementById(
+        "resource-description_" + currentResource
+      );
+      resource.style.opacity = "0";
+      setTimeout(() => {
+        setTimeout(() => {
+          resource.style.transform = "scale(0)";
+        });
+        resource.classList.add("resources-closed");
+        resource.classList.remove("resources-opened");
+        resource_close.classList.add("hidden");
+        description.classList.add("hidden");
+        setTimeout(() => {
+          resource.style.opacity = "1";
+          setTimeout(() => {
+            resource.style.transform = "scale(1)";
+          }, 50);
+        }, 200);
+      }, 400);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <Navbar />
@@ -39,16 +91,40 @@ export default function Resources() {
         <ul>
           {resources.map((data) => {
             return (
-              <li>
-                <div className="resources-information">
-                  <span id="resource-name">{data.name}</span>
-                </div>
-              </li>
+              <>
+                <li
+                  id={"res" + data.id}
+                  className="resources-closed resourceitem"
+                  onClick={
+                    resourceOpened
+                      ? console.log("resourceAlreadyOpened")
+                      : openResource
+                  }
+                >
+                  <div
+                    id={"close-resource_res" + data.id}
+                    className="close-resource hidden"
+                    onClick={closeResource}
+                  ></div>
+                  <span
+                    id={"resource-name_res" + data.id}
+                    className="resource-name"
+                  >
+                    {data.name}
+                  </span>
+                  <span
+                    id={"resource-description_res" + data.id}
+                    className="hidden resource-description"
+                  >
+                    {data.name}
+                  </span>
+                </li>
+              </>
             );
           })}
         </ul>
       </div>
-      <BottomButtons/>
+      <BottomButtons />
     </>
   );
 }

@@ -5,12 +5,12 @@ header {
   width: 100vw;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
 }
-header > .header-logo {
+header > a > .header-logo {
   margin: 15px;
   height: 60px;
   width: 60px;
 }
-header > .header-logo > img {
+header > a > .header-logo > img {
   height: 100%;
   width: 100%;
 }
