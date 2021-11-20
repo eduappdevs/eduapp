@@ -42,10 +42,14 @@ export default function Resources() {
         const description = document.getElementById(
           "resource-description_" + e.target.id
         );
-        resource.classList.remove("resources-closed");
-        resource.classList.add("resources-opened");
-        resource_close.classList.remove("hidden");
-        description.classList.remove("hidden");
+
+        resource.style.height = "50vh";
+        setTimeout(() => {
+          resource.classList.add("resource-opened");
+          description.classList.remove("hidden");
+          resource_close.classList.remove("hidden");
+        }, 200);
+        resource.style.cursor = "default";
       } catch (error) {
         console.log(error);
       }
@@ -59,22 +63,11 @@ export default function Resources() {
       const resource = document.getElementById(id);
       const resource_close = document.getElementById("c" + id);
       const description = document.getElementById("resource-description_" + id);
-      resource.style.opacity = "0";
-      setTimeout(() => {
-        setTimeout(() => {
-          resource.style.transform = "scale(0)";
-        });
-        resource.classList.add("resources-closed");
-        resource.classList.remove("resources-opened");
-        resource_close.classList.add("hidden");
-        description.classList.add("hidden");
-        setTimeout(() => {
-          resource.style.opacity = "1";
-          setTimeout(() => {
-            resource.style.transform = "scale(1)";
-          }, 50);
-        }, 200);
-      }, 400);
+      resource.style.height = "";
+      resource.style.cursor = "pointer";
+      resource_close.classList.add("hidden");
+      description.classList.add("hidden");
+      resource.classList.remove("resource-opened");
     } catch (error) {
       console.log(error);
     }
@@ -107,7 +100,7 @@ export default function Resources() {
               <>
                 <li
                   id={"res" + data.id}
-                  className="resources-closed resourceitem"
+                  className="resources resourceitem"
                   onClick={
                     resourceOpened
                       ? console.log("resourceAlreadyOpened")
@@ -116,18 +109,25 @@ export default function Resources() {
                 >
                   <div
                     id={"cres" + data.id}
-                    className="close-resource hidden"
                     onClick={closeResource}
-                  ></div>
-                  <span id={"res" + data.id} className="resource-name">
-                    {data.name}
-                  </span>
-                  <span
-                    id={"resource-description_res" + data.id}
-                    className="hidden resource-description"
+                    className="close-resource-container hidden"
                   >
-                    {data.name}
-                  </span>
+                    <div
+                      id={"cres" + data.id}
+                      className="close-resource "
+                    ></div>
+                  </div>
+                  <div id={"res" + data.id} className="resource-name-container">
+                    <span className="resource-name">{data.name}</span>
+                  </div>
+                  <div
+                    id={"resource-description_res" + data.id}
+                    className="resource-description-container hidden"
+                  >
+                    <span className=" resource-description">
+                      {data.description}
+                    </span>
+                  </div>
                 </li>
               </>
             );

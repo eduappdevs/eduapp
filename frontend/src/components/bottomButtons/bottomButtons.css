@@ -1,10 +1,10 @@
 .bottom-buttons-mobile {
   width: 100vw;
   background-color: var(--blue);
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.377);
-  z-index: 1000;
+  box-shadow: 0 -3px 6px rgba(104, 104, 104, 0.207);
+  z-index: 9999999;
 }
 .bottom-buttons-mobile > ul {
   display: flex;

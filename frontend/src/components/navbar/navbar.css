@@ -10,8 +10,8 @@ header > nav {
   justify-content: space-between;
   z-index: 10001;
   background-color: white;
-  box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
   height: 10%;
+  box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
 }
 header > nav > a > .header-logo {
   margin: 15px;
@@ -30,21 +30,24 @@ header > nav > .profile-button {
 header > nav > .profile-button > .profile-button-box {
   height: 70%;
   width: 80%;
-  background-color: rgba(240, 240, 240, 0.459);
-  box-shadow: 0 2px 4px rgba(192, 192, 192, 0.231);
   border-radius: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 5px 10px;
   cursor: pointer;
+  transition: all 0.3s;
+}
+header > nav > .profile-button > .profile-button-box:hover {
+  background-color: rgba(224, 221, 221, 0.596);
+  box-shadow: 0 0 4px rgba(192, 192, 192, 0.231);
 }
 header > nav > .profile-button > .profile-button-box > .profile-name {
   font-size: 1em;
 }
 header > nav > .profile-button > .profile-button-box > .profile-pic {
   flex: 1;
-  width: 70px;
+  width: 85px;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -52,10 +55,9 @@ header > nav > .profile-button > .profile-button-box > .profile-pic {
   margin-left: 15px;
 }
 header > nav > .profile-button > .profile-button-box > .profile-pic > img {
-  width: 90%;
+  width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 2px solid var(--orange);
 }
 
 header > .profile-menu {
@@ -68,7 +70,7 @@ header > .profile-menu {
   transform: translateY(-1000px);
   transition: 0.3s all;
   z-index: 10000;
-  box-shadow: 0 5px 6px rgba(110, 110, 110, 0.171);
+  box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
 }
 
 header > .profile-menu > ul {
