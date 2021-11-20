@@ -26,3 +26,54 @@ header > .profile-pic-button > img {
   border-radius: 50%;
   border: 3px solid var(--orange);
 }
+
+header > .profile-menu {
+  display: flex;
+  position: absolute;
+  top: 95px;
+  width: 100vw;
+  height: 40vh;
+}
+
+header > .profile-menu > ul{
+  display: grid;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  list-style: none;
+  box-shadow: 0 5px 6px rgba(110, 110, 110, 0.171);
+  background-color: #ffff;
+  z-index: 1000;
+}
+.profile-menu > ul::before{
+  content: "";
+  display: block;
+  width: 50px;
+  height: 3px;
+  background-color: rgba(75, 75, 75, 0.527);
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -97%);
+  top: 97%;
+  border-radius: 30px;
+
+
+}
+header > .profile-menu > ul >li {
+  font-size: 140%;
+  text-transform: uppercase;
+  font-family: 'Consolas';
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  border-radius: 30px;
+  text-indent: 10px;
+  background-color: var(--orange) ;
+  padding: 20px 40px;
+}
+header > .profile-menu > ul > li > a{
+  text-decoration: none;
+  color: #ffff;
+  font-weight: bold;
+}

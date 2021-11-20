@@ -40,14 +40,13 @@ export default function Login() {
         ></path>
       </svg>
       <div className="footer">
+        <div className="logo">
+          <img src="./assets/logo.png" alt="" />
+        </div>
         <div className="getHelp">
           <p>Need help?</p>
         </div>
-        <div className="logo">
-          <img src="" alt="" />
-        </div>
       </div>
-      <div className="bottomInformation"></div>
     </div>
   );
 }

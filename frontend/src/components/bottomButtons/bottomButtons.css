@@ -32,3 +32,7 @@
 #clip {
   transform: rotate(-130deg);
 }
+
+.activeButton > svg {
+  fill: var(--orange) !important;
+}

@@ -20,18 +20,20 @@
   flex-direction: row;
   padding: 15px;
   box-shadow: 0 3px 12px rgba(105, 105, 105, 0.651);
-  border-radius: 30px;
+  border-radius: 12px;
   background-color: var(--blue);
   justify-content: center;
   margin-top: 20px;
   cursor: pointer;
   z-index: 9999;
+  text-transform: uppercase;
 }
+
 .resources-closed:hover {
   transform: scale(0.98);
 }
 .resourceitem {
-  width: 90%;
+  width: 85%;
   height: auto;
   transition: all 0.4s;
 }
@@ -127,27 +129,39 @@
   width: 90%;
   z-index: 2;
   height: 100%;
-  border-radius: 40px 0 0 40px;
-  border: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.226);
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 3px solid var(--orange);
   text-indent: 15px;
+  font-size: 25px;
+  transition: 0.3s all;
+  color: var(--blue);
+  text-indent: 15%;
+}
+
+.resourcesSearchBar > form > input:hover {
+  border-bottom: 3px solid var(--blue);
 }
 .resourcesSearchBar > form > input:focus {
   outline: none;
+  border-bottom: 3px solid var(--blue);
 }
-.resourcesSearchBar > form > button {
-  z-index: 3;
-  width: 10%;
-  height: 100%;
-  background-color: var(--orange);
-  border: none;
-  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.349);
-  border-radius: 0 40px 40px 0;
-  cursor: pointer;
+.searchInputIcon > svg {
+  fill: var(--orange);
+  z-index: 500;
+  transform: scale(0.8);
+  left: 16%;
+  position: absolute;
+  transform: translateY(-4px);
+}
+.searchInputIcon {
   display: flex;
+  width: 100%;
+  position: absolute;
   justify-content: center;
   align-items: center;
 }
-.resourcesSearchBar > form > button > svg {
-  fill: white;
+.resourcesSearchBar > form > input:focus ~ .searchInputIcon {
+  display: none;
 }
