@@ -6,26 +6,41 @@ import "./resources.css";
 export default function Resources() {
   const [resources, setResources] = useState([]);
   const [resourceOpened, setResourceOpened] = useState(false);
-  const [currentResource, setCurrentResource] = useState("");
+  const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const getResources = async () => {
     const response = await fetch("http://localhost:3000/resources");
     const data = await response.json();
     setResources(data);
   };
+  const checkMediaQueries = () => {
+    setInterval(() => {
+      if (window.matchMedia("(max-width: 1000px)").matches) {
+        setItsMobileDevice(true);
+      } else {
+        setItsMobileDevice(false);
+      }
+    }, 4000);
+  };
+  console.log(ItsMobileDevice);
   useEffect(() => {
     getResources();
+    checkMediaQueries();
+    //First check
+    if (window.matchMedia("(max-width: 1000px)").matches) {
+      setItsMobileDevice(true);
+    } else {
+      setItsMobileDevice(false);
+    }
   }, []);
   const openResource = (e) => {
     e.preventDefault();
     setResourceOpened(true);
     setTimeout(() => {
       try {
-        const id = e.target.id;
-        setCurrentResource(id);
-        const resource = document.getElementById(id);
-        const resource_close = document.getElementById("close-resource_" + id);
+        const resource = document.getElementById(e.target.id);
+        const resource_close = document.getElementById("c" + e.target.id);
         const description = document.getElementById(
-          "resource-description_" + id
+          "resource-description_" + e.target.id
         );
         resource.classList.remove("resources-closed");
         resource.classList.add("resources-opened");
@@ -39,17 +54,11 @@ export default function Resources() {
   const closeResource = (e) => {
     e.preventDefault();
     setResourceOpened(false);
+    const id = e.target.id.substring(1);
     try {
-      const resource = document.getElementById(currentResource);
-      const resource_close = document.getElementById(
-        "close-resource_" + currentResource
-      );
-      const name = document.getElementById(
-        "resource-name_" + setCurrentResource
-      );
-      const description = document.getElementById(
-        "resource-description_" + currentResource
-      );
+      const resource = document.getElementById(id);
+      const resource_close = document.getElementById("c" + id);
+      const description = document.getElementById("resource-description_" + id);
       resource.style.opacity = "0";
       setTimeout(() => {
         setTimeout(() => {
@@ -70,6 +79,7 @@ export default function Resources() {
       console.log(error);
     }
   };
+
   return (
     <>
       <Navbar />
@@ -105,14 +115,11 @@ export default function Resources() {
                   }
                 >
                   <div
-                    id={"close-resource_res" + data.id}
+                    id={"cres" + data.id}
                     className="close-resource hidden"
                     onClick={closeResource}
                   ></div>
-                  <span
-                    id={"resource-name_res" + data.id}
-                    className="resource-name"
-                  >
+                  <span id={"res" + data.id} className="resource-name">
                     {data.name}
                   </span>
                   <span
@@ -127,7 +134,7 @@ export default function Resources() {
           })}
         </ul>
       </div>
-      <BottomButtons location={"resources"} />
+      <BottomButtons mobile={ItsMobileDevice} location={"resources"} />
     </>
   );
 }
