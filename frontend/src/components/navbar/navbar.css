@@ -1,26 +1,33 @@
 header {
   display: flex;
-  justify-content: space-between;
-  flex-direction: row;
+  flex-direction: column;
   width: 100vw;
+  z-index: 10000;
+}
+header > nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  z-index: 10001;
+  background-color: white;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
 }
-header > a > .header-logo {
+header > nav > a > .header-logo {
   margin: 15px;
   height: 60px;
   width: 60px;
 }
-header > a > .header-logo > img {
+header > nav > a > .header-logo > img {
   height: 100%;
   width: 100%;
 }
-header > .profile-pic-button {
+header > nav > .profile-pic-button {
   height: 45px;
   margin: 20px;
   width: 45px;
   cursor: pointer;
 }
-header > .profile-pic-button > img {
+header > nav > .profile-pic-button > img {
   height: 100%;
   width: 100%;
   border-radius: 50%;
@@ -29,24 +36,31 @@ header > .profile-pic-button > img {
 
 header > .profile-menu {
   display: flex;
-  position: absolute;
-  top: 95px;
   width: 100vw;
-  height: 40vh;
+  height: 10vh;
+  position: absolute;
+  top: 10%;
+  background-color: white;
+  transform: translateY(-300px);
+  transition: 0.3s all;
+  z-index: 10000;
 }
-
-header > .profile-menu > ul{
-  display: grid;
+* {
+  transition: 0.3s all;
+}
+header > .profile-menu > ul {
+  display: flex;
   position: absolute;
   align-items: center;
+  flex-direction: column;
   justify-content: center;
   width: 100%;
+  padding: 22px 0px;
   list-style: none;
   box-shadow: 0 5px 6px rgba(110, 110, 110, 0.171);
   background-color: #ffff;
-  z-index: 1000;
 }
-.profile-menu > ul::before{
+.profile-menu > ul::before {
   content: "";
   display: block;
   width: 50px;
@@ -57,23 +71,25 @@ header > .profile-menu > ul{
   transform: translate(-50%, -97%);
   top: 97%;
   border-radius: 30px;
-
-
 }
-header > .profile-menu > ul >li {
-  font-size: 140%;
+header > .profile-menu > ul > li {
+  font-size: 120%;
   text-transform: uppercase;
-  font-family: 'Consolas';
+  font-family: "Consolas";
   font-weight: bold;
-  margin-bottom: 20px;
-  margin-top: 20px;
   border-radius: 30px;
-  text-indent: 10px;
-  background-color: var(--orange) ;
-  padding: 20px 40px;
+  background-color: var(--orange);
+  width: 30%;
+  height: 11%;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(114, 114, 114, 0.493);
+  border: 2px solid rgba(255, 255, 255, 0.473);
+  text-align: center;
+  margin-top: 8px;
 }
-header > .profile-menu > ul > li > a{
+header > .profile-menu > ul > li > a {
   text-decoration: none;
   color: #ffff;
   font-weight: bold;
+  text-indent: 0;
 }
