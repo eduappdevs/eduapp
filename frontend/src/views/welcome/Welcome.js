@@ -6,7 +6,7 @@ export default function Welcome() {
   return (
     <Link to="/resources">
       <div className="welcomeSection">
-        <div className="logo">
+        <div className="welcome-logo">
           <img src="\assets\logo.png" alt="" />
         </div>
 

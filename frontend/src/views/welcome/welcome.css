@@ -1,9 +1,10 @@
-img {
+.welcome-logo > img {
   width: 130px;
   height: 130px;
   z-index: 1000;
+  animation: 3s zoomInOut infinite alternate ease;
 }
-.logo {
+.welcome-logo {
   height: 100%;
   width: 100%;
   display: flex;
@@ -28,4 +29,12 @@ img {
   bottom: 0;
   width: 100vw;
   z-index: 200;
+}
+@keyframes zoomInOut {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.3);
+  }
 }

@@ -24,7 +24,6 @@ export default function Resources() {
         setCurrentResource(id);
         const resource = document.getElementById(id);
         const resource_close = document.getElementById("close-resource_" + id);
-        const name = document.getElementById("resource-name_" + id);
         const description = document.getElementById(
           "resource-description_" + id
         );
