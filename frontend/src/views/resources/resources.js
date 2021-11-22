@@ -6,31 +6,50 @@ import "./resources.css";
 export default function Resources() {
   const [resources, setResources] = useState([]);
   const [resourceOpened, setResourceOpened] = useState(false);
-  const [currentResource, setCurrentResource] = useState("");
+  const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const getResources = async () => {
     const response = await fetch("http://localhost:3000/resources");
     const data = await response.json();
     setResources(data);
   };
+  const checkMediaQueries = () => {
+    setInterval(() => {
+      if (window.matchMedia("(max-width: 1000px)").matches) {
+        setItsMobileDevice(true);
+      } else {
+        setItsMobileDevice(false);
+      }
+    }, 4000);
+  };
+  console.log(ItsMobileDevice);
   useEffect(() => {
     getResources();
+    checkMediaQueries();
+    //First check
+    if (window.matchMedia("(max-width: 1000px)").matches) {
+      setItsMobileDevice(true);
+    } else {
+      setItsMobileDevice(false);
+    }
   }, []);
   const openResource = (e) => {
     e.preventDefault();
     setResourceOpened(true);
     setTimeout(() => {
       try {
-        const id = e.target.id;
-        setCurrentResource(id);
-        const resource = document.getElementById(id);
-        const resource_close = document.getElementById("close-resource_" + id);
+        const resource = document.getElementById(e.target.id);
+        const resource_close = document.getElementById("c" + e.target.id);
         const description = document.getElementById(
-          "resource-description_" + id
+          "resource-description_" + e.target.id
         );
-        resource.classList.remove("resources-closed");
-        resource.classList.add("resources-opened");
-        resource_close.classList.remove("hidden");
-        description.classList.remove("hidden");
+
+        resource.style.height = "50vh";
+        setTimeout(() => {
+          resource.classList.add("resource-opened");
+          description.classList.remove("hidden");
+          resource_close.classList.remove("hidden");
+        }, 200);
+        resource.style.cursor = "default";
       } catch (error) {
         console.log(error);
       }
@@ -39,37 +58,21 @@ export default function Resources() {
   const closeResource = (e) => {
     e.preventDefault();
     setResourceOpened(false);
+    const id = e.target.id.substring(1);
     try {
-      const resource = document.getElementById(currentResource);
-      const resource_close = document.getElementById(
-        "close-resource_" + currentResource
-      );
-      const name = document.getElementById(
-        "resource-name_" + setCurrentResource
-      );
-      const description = document.getElementById(
-        "resource-description_" + currentResource
-      );
-      resource.style.opacity = "0";
-      setTimeout(() => {
-        setTimeout(() => {
-          resource.style.transform = "scale(0)";
-        });
-        resource.classList.add("resources-closed");
-        resource.classList.remove("resources-opened");
-        resource_close.classList.add("hidden");
-        description.classList.add("hidden");
-        setTimeout(() => {
-          resource.style.opacity = "1";
-          setTimeout(() => {
-            resource.style.transform = "scale(1)";
-          }, 50);
-        }, 200);
-      }, 400);
+      const resource = document.getElementById(id);
+      const resource_close = document.getElementById("c" + id);
+      const description = document.getElementById("resource-description_" + id);
+      resource.style.height = "";
+      resource.style.cursor = "pointer";
+      resource_close.classList.add("hidden");
+      description.classList.add("hidden");
+      resource.classList.remove("resource-opened");
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <>
       <Navbar />
@@ -97,37 +100,44 @@ export default function Resources() {
               <>
                 <li
                   id={"res" + data.id}
-                  className="resources-closed resourceitem"
+                  className="resources resourceitem"
                   onClick={
                     resourceOpened
                       ? console.log("resourceAlreadyOpened")
                       : openResource
                   }
                 >
+                  <div id={"res" + data.id} className="resource-name-container">
+                    <span id={"res" + data.id} className="resource-name">
+                      {data.name}
+                    </span>
+                  </div>
+
                   <div
-                    id={"close-resource_res" + data.id}
-                    className="close-resource hidden"
-                    onClick={closeResource}
-                  ></div>
-                  <span
-                    id={"resource-name_res" + data.id}
-                    className="resource-name"
-                  >
-                    {data.name}
-                  </span>
-                  <span
                     id={"resource-description_res" + data.id}
-                    className="hidden resource-description"
+                    className="resource-description-container hidden"
                   >
-                    {data.name}
-                  </span>
+                    <span className=" resource-description">
+                      {data.description}
+                    </span>
+                  </div>
+                  <div
+                    id={"cres" + data.id}
+                    onClick={closeResource}
+                    className="close-resource-container hidden"
+                  >
+                    <div
+                      id={"cres" + data.id}
+                      className="close-resource "
+                    ></div>
+                  </div>
                 </li>
               </>
             );
           })}
         </ul>
       </div>
-      <BottomButtons location={"resources"} />
+      <BottomButtons mobile={ItsMobileDevice} location={"resources"} />
     </>
   );
 }

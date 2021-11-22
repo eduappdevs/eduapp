@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./bottomButtons.css";
 import { Link } from "react-router-dom";
 
-export default function BottomButtons({ location }) {
+export default function BottomButtons({ mobile, location }) {
   console.log(location);
   const [inHome, setInHome] = useState(false);
   const [inResources, setInResources] = useState(false);
@@ -37,7 +37,9 @@ export default function BottomButtons({ location }) {
     }
   }, [location]);
   return (
-    <div className="bottom-buttons">
+    <div
+      className={mobile ? "bottom-buttons-mobile" : "bottom-buttons-desktop"}
+    >
       <ul>
         <Link to="/home">
           <li className={inHome ? "activeButton" : console.log()}>

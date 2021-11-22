@@ -1,12 +1,13 @@
-.bottom-buttons {
+.bottom-buttons-mobile {
   width: 100vw;
-  background-color: var(--blue);
-  position: absolute;
+  /* background-color: var(--blue); */
+  position: fixed;
   bottom: 0;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.377);
-  z-index: 1000;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -3px 6px rgba(104, 104, 104, 0.207);
+  z-index: 9999999;
 }
-.bottom-buttons > ul {
+.bottom-buttons-mobile > ul {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -15,7 +16,7 @@
   padding-inline-start: 0;
   list-style: none;
 }
-.bottom-buttons > ul > a {
+.bottom-buttons-mobile > ul > a {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -23,10 +24,25 @@
   padding: 8px;
   cursor: pointer;
 }
-.bottom-buttons > ul > a > li > svg:hover {
+.bottom-buttons-mobile > ul > a > li {
+  background-color: var(--blue);
+  width: 70%;
+  height: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 7px 1px;
+  border-radius: 15px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 1px rgb(69, 118, 255);
+}
+.bottom-buttons-mobile > ul > a > li:active {
+  box-shadow: 0 1px 1px rgb(69, 118, 255);
+}
+.bottom-buttons-mobile > ul > a > li > svg:hover {
   fill: rgb(204, 204, 204);
 }
-.bottom-buttons > ul > a > li > svg {
+.bottom-buttons-mobile > ul > a > li > svg {
   fill: #ffff;
 }
 #clip {
@@ -35,4 +51,38 @@
 
 .activeButton > svg {
   fill: var(--orange) !important;
+}
+.bottom-buttons-desktop {
+  width: 5vw;
+  height: 100%;
+  background-color: var(--blue);
+  position: absolute;
+  bottom: 0;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.377);
+  z-index: 1000;
+}
+.bottom-buttons-desktop > ul {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  padding-inline-start: 0;
+  list-style: none;
+}
+.bottom-buttons-desktop > ul > a {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+  margin-top: 100%;
+}
+.bottom-buttons-desktop > ul > a > li > svg:hover {
+  fill: rgb(204, 204, 204);
+}
+.bottom-buttons-desktop > ul > a > li > svg {
+  fill: #ffff;
 }

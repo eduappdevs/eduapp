@@ -8,7 +8,7 @@ export default function Navbar() {
     setProfileMenuOpened(true);
     const menu = document.querySelector(".profile-menu");
     menu.style.display = "flex";
-    menu.style.transform = "translateY(-300px)";
+    menu.style.transform = "translateY(-110vh)";
     setTimeout(() => {
       menu.style.transform = "translateY(0)";
     }, 300);
@@ -17,7 +17,7 @@ export default function Navbar() {
     setProfileMenuOpened(false);
     const menu = document.querySelector(".profile-menu");
 
-    menu.style.transform = "translateY(-300px)";
+    menu.style.transform = "translateY(-110vh)";
     setTimeout(() => {
       menu.style.display = "none";
     }, 300);
@@ -31,13 +31,18 @@ export default function Navbar() {
           </div>
         </Link>
         <div
-          className="profile-pic-button"
+          className="profile-button"
           onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}
         >
-          <img
-            src="https://img-aws.ehowcdn.com/600x400/photos.demandstudios.com/getty/article/34/162/91911271.jpg?type=webp"
-            alt=""
-          />
+          <div className="profile-button-box">
+            <span className="profile-name">Richard clarke</span>
+            <div className="profile-pic">
+              <img
+                src="https://img-aws.ehowcdn.com/600x400/photos.demandstudios.com/getty/article/34/162/91911271.jpg?type=webp"
+                alt=""
+              />
+            </div>
+          </div>
         </div>
       </nav>
       <div className="profile-menu">

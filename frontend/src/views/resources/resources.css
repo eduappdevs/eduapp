@@ -1,9 +1,10 @@
 .resources-container {
   width: 100vw;
   height: 85%;
-  box-shadow: 0 -2px 5px rgba(187, 187, 187, 0.219);
+  box-shadow: 0 -2px 5px rgba(187, 187, 187, 0.116);
   bottom: 0;
   position: relative;
+  font-family: "Consolas";
 }
 .resources-container > ul {
   display: flex;
@@ -14,58 +15,78 @@
   margin-block-end: 0;
   padding-inline-start: 0;
 }
-.resources-closed {
+.resources {
   transition: all 0.3s;
   display: flex;
   flex-direction: row;
   padding: 15px;
-  box-shadow: 0 3px 12px rgba(105, 105, 105, 0.651);
+  box-shadow: 0 5px 1px rgb(69, 119, 255);
   border-radius: 12px;
   background-color: var(--blue);
   justify-content: center;
   margin-top: 20px;
   cursor: pointer;
   z-index: 9999;
+  transition: 0.3s all ease;
   text-transform: uppercase;
 }
+.resource-opened {
+  display: flex;
+  flex-direction: column;
+}
 
-.resources-closed:hover {
+.resource-opened > .resource-name-container > .resource-name {
+  font-size: "Consolas";
+}
+.resource-opened > .resource-description-container > .resource-description {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.resource-opened > .close-resource-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.resource-opened > .resource-name-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  transition: all 0.3s;
+}
+.resource-opened > .resource-description-container {
+  flex: 4;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: white;
+  border-radius: 20px;
+  color: rgb(32, 32, 32);
+  opacity: 1;
+  transition: all 0.3s;
+}
+
+.resources:hover {
   transform: scale(0.98);
 }
 .resourceitem {
   width: 85%;
-  height: auto;
+  height: 2.5vh;
   transition: all 0.4s;
 }
-.resources-opened {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
+.resource-name {
+  font-size: 1.5em;
   transition: all 0.3s;
-  z-index: 998788700;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  background-color: var(--blue);
-  justify-content: center;
-  z-index: 11111;
-  align-items: center;
-}
-.resources-opened > .resource-name {
-  flex: 0.2;
-  font-size: 200%;
-}
-.resource-description::before {
-  content: "";
-  width: 80%;
-  left: 50%;
-  bottom: 75%;
-  transform: translate(-50%, -50%);
-  position: absolute;
-  height: 2px;
-  background-color: rgba(209, 209, 209, 0.185);
-  display: block;
+  font-weight: bold;
+  letter-spacing: 0.5px;
 }
 .resource-description {
   margin: 20px;
@@ -74,13 +95,11 @@
 }
 .hidden {
   display: none !important;
+  opacity: 0;
 }
 .close-resource {
   width: 50px;
   height: 50px;
-  position: absolute;
-  top: 25px;
-  left: 15px;
   cursor: pointer;
 }
 .close-resource::after {
@@ -101,12 +120,12 @@
   transform: rotate(-45deg);
   transition: all 0.3s;
 }
-/* .close-resource:hover:before {
+.close-resource:hover:before {
   transform: translate(0.6px, 4px) rotate(-135deg);
 }
 .close-resource:hover:after {
   transform: rotate(135deg);
-} */
+}
 
 .resources-container > ul > li > * {
   color: white;
