@@ -1,0 +1,164 @@
+
+div > .user{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
+div > .user>.information-user{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+div > .user>.information-user > .profile-picture{
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    margin-top: 50px;
+    width: 100%;
+}
+
+div > .user > .information-user > .profile-picture> img{
+    height: 135px;
+    width: 135px;
+    border-radius: 50%;
+    border: 2px solid var(--orange);
+
+}
+
+div > .user >.information-user> .user-name {
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    text-indent: 0;
+    font-family: 'Consolas';
+    justify-content: center;
+    display: flex;
+}
+div > .user >.information-user>.user-name>.edit{
+    padding: 30px !important;   
+    position: absolute;
+    left: 75%;
+    transform: translateX(-75%);
+}
+div > .user >.information-user>.user-name>div::before {
+    content: "";
+    display: block;
+    width: 250px;
+    height: 1px;
+    background-color: rgb(0, 0, 0);
+    position: absolute;
+    transform: translate(-75%, -97%);
+    top: 97%;
+    border-radius: 30px;
+}
+div > .user> .information-user >.sessions{
+    margin-top: 20px;
+}
+div > .user> .information-user >.sessions> .title-first-session {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: #383838;
+    font-weight: bold;
+    text-indent: 0;
+    font-family: 'Consolas';
+    font-size: 18px;
+
+}
+/* div >.user>.information-user>.sessions>.sessions-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    height: 40px;
+    width: 60vw;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.472);
+    font-weight: bold;
+    text-indent: 0;
+    font-family: 'Consolas';
+    font-size: 18px;
+    margin-bottom: 20px;
+    
+    
+} */
+div >.user>.information-user>.sessions>.sessions-container >.sessions-closed{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10%;
+    margin-right: 10%;
+
+}
+div >.user>.information-user>.sessions>.sessions-container>.sessions-closed> svg{
+    fill: var(--orange);
+    width: 50%;
+    height: 40%;
+}
+div >.user>.information-user>.sessions>.sessions-container>.sessions-closed>span{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+div >.user>.information-user>.sessions>.sessions-container >.sessions-closed>.session-date{
+    font-size: 15px;
+}
+div >.user>.information-user>.sessions>.sessions-container >.sessions-openned{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 10%;
+}
+div >.user>.information-user>.sessions>.sessions-container>.sessions-openned> svg{
+    fill: var(--orange);
+    width: 50%;
+    height: 40%;
+    
+}
+div >.user>.information-user>.sessions>.sessions-container>.sessions-openned>span{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: left;
+}
+div >.user>.information-user>.sessions>.sessions-container>.sessions-openned>.sessions-name{
+    display: flex;
+    justify-content: center;
+}
+div >.user>.information-user>.sessions>.sessions-container >.sessions-openned>.session-date{
+    font-size: 15px;
+}
+div >.user>.information-user>.sessions>.sessions-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    height: 200px;
+    width: 60vw;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.472);
+    font-weight: bold;
+    text-indent: 0;
+    font-family: 'Consolas';
+    font-size: 18px;
+    margin-bottom: 20px;  
+}
+div >.user>.information-user>.sessions>.sessions-container >.sessions-openned>.session-description{
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    flex-direction: row;
+    height: 100px;
+
+}

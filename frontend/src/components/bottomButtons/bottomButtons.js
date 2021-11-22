@@ -39,7 +39,7 @@ export default function BottomButtons({ location }) {
   return (
     <div className="bottom-buttons">
       <ul>
-        <Link to="/">
+        <Link to="/home">
           <li className={inHome ? "activeButton" : console.log()}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
