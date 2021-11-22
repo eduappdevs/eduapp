@@ -1,7 +1,7 @@
 .resources-container {
   width: 100vw;
   height: 85%;
-  box-shadow: 0 -2px 5px rgba(187, 187, 187, 0.219);
+  box-shadow: 0 -2px 5px rgba(187, 187, 187, 0.116);
   bottom: 0;
   position: relative;
   font-family: "Consolas";
@@ -20,7 +20,7 @@
   display: flex;
   flex-direction: row;
   padding: 15px;
-  box-shadow: 0 3px 12px rgba(105, 105, 105, 0.651);
+  box-shadow: 0 5px 1px rgb(69, 119, 255);
   border-radius: 12px;
   background-color: var(--blue);
   justify-content: center;
@@ -36,7 +36,6 @@
 }
 
 .resource-opened > .resource-name-container > .resource-name {
-  font-size: 2em;
   font-size: "Consolas";
 }
 .resource-opened > .resource-description-container > .resource-description {
@@ -49,8 +48,8 @@
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  justify-content: center;
+  align-items: flex-end;
 }
 .resource-opened > .resource-name-container {
   flex: 1;
@@ -71,6 +70,8 @@
   background-color: white;
   border-radius: 20px;
   color: rgb(32, 32, 32);
+  opacity: 1;
+  transition: all 0.3s;
 }
 
 .resources:hover {
@@ -82,7 +83,7 @@
   transition: all 0.4s;
 }
 .resource-name {
-  font-size: 1em;
+  font-size: 1.5em;
   transition: all 0.3s;
   font-weight: bold;
   letter-spacing: 0.5px;
@@ -94,6 +95,7 @@
 }
 .hidden {
   display: none !important;
+  opacity: 0;
 }
 .close-resource {
   width: 50px;

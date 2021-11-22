@@ -107,6 +107,20 @@ export default function Resources() {
                       : openResource
                   }
                 >
+                  <div id={"res" + data.id} className="resource-name-container">
+                    <span id={"res" + data.id} className="resource-name">
+                      {data.name}
+                    </span>
+                  </div>
+
+                  <div
+                    id={"resource-description_res" + data.id}
+                    className="resource-description-container hidden"
+                  >
+                    <span className=" resource-description">
+                      {data.description}
+                    </span>
+                  </div>
                   <div
                     id={"cres" + data.id}
                     onClick={closeResource}
@@ -116,17 +130,6 @@ export default function Resources() {
                       id={"cres" + data.id}
                       className="close-resource "
                     ></div>
-                  </div>
-                  <div id={"res" + data.id} className="resource-name-container">
-                    <span className="resource-name">{data.name}</span>
-                  </div>
-                  <div
-                    id={"resource-description_res" + data.id}
-                    className="resource-description-container hidden"
-                  >
-                    <span className=" resource-description">
-                      {data.description}
-                    </span>
                   </div>
                 </li>
               </>
