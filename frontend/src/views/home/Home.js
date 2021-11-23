@@ -7,10 +7,9 @@ import "./home.css";
 export default function Home() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
-  const [sessionOpened, setSessionOpened] = useState(false);
   const checkMediaQueries = () => {
     setInterval(() => {
-      if (window.matchMedia("(max-width: 1000px)").matches) {
+      if (window.matchMedia("(max-width: 1100px)").matches) {
         setItsMobileDevice(true);
       } else {
         setItsMobileDevice(false);
@@ -40,16 +39,43 @@ export default function Home() {
         streamingPlatform: "Teams",
         resourcesPlatform: "Moddle",
       },
+      {
+        id: "3",
+        name: "DAM",
+        date: "8:00-9:00",
+        streamingPlatform: "Teams",
+        resourcesPlatform: "Moddle",
+      },
+      {
+        id: "4",
+        name: "DAM",
+        date: "8:00-9:00",
+        streamingPlatform: "Teams",
+        resourcesPlatform: "Moddle",
+      },
+      {
+        id: "5",
+        name: "DAM",
+        date: "8:00-9:00",
+        streamingPlatform: "Meet",
+        resourcesPlatform: "Eduapp",
+      },
     ];
     const data = await session;
     setSessions(data);
   };
   const openSession = (e) =>{
     e.preventDefault();
-    setSessionOpened(true);
+    const after = document.getElementById('session-after'+e.target.id.substring(3));
+
     setTimeout(() => {
       try {
-        
+        // const session = document.querySelector(e.target.id);
+        if(after.classList.contains('hidden')){
+        after.classList.remove('hidden')
+        }else{
+        after.classList.add('hidden')
+        }
       } catch (error) {
         console.log(error);
       }
@@ -58,7 +84,7 @@ export default function Home() {
   useEffect(() => {
     getSessions();
     checkMediaQueries();
-    if (window.matchMedia("(max-width: 1000px)").matches) {
+    if (window.matchMedia("(max-width: 1100px)").matches) {
       setItsMobileDevice(true);
     } else {
       setItsMobileDevice(false);
@@ -66,7 +92,9 @@ export default function Home() {
   }, []);
   return (
     <>
-      <Navbar />
+      <Navbar mobile={ItsMobileDevice} location={"home"} />
+      <BottomButtons mobile={ItsMobileDevice} location={"home"} />
+      <section className={ItsMobileDevice ? "mobileSection" : "desktopSection"}>
       <div className="user">
         <div className="user-container">
           <div className="information-user">
@@ -94,11 +122,11 @@ export default function Home() {
             {sessions.map((data) => {
               return (
                 <>
-                  <div className="sessions-container" id={"ses"+data.id}>
-                    <div className="sessions-closed ">
+                  <div className="sessions-container" onClick={openSession} id={"ses"+data.id}>
+                    <div className="sessions-closed"  id={"ses"+data.id}>
                       <div className="session-before">
           
-                      <div id={"ses"+data.id} className="arrow" onClick={openSession}>
+                      <div id={"ses"+data.id} className="arrow">
                       <svg xmlns="http://www.w3.org/2000/svg">
                         <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                       </svg>
@@ -106,8 +134,8 @@ export default function Home() {
                         <span className="session-name">{data.name}</span>
                         <span className="session-date">{data.date}</span>
                       </div>
-                      <div  className="sessions-after hidden">
-                        <div className="session-description">
+                      <div id={"session-after"+data.id} className="sessions-after hidden">
+                        <div className="session-platforms">
                           <p className="session-streamingPlatform">
                             {data.streamingPlatform}
                           </p>
@@ -126,7 +154,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <BottomButtons mobile={ItsMobileDevice} location={"home"} />
+      </section>
     </>
   );
 }

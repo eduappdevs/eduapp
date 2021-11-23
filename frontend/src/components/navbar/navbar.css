@@ -99,7 +99,7 @@ header > .profile-menu-mobile {
   position: absolute;
   top: 0%;
   background-color: white;
-  transform: translateY(-1000px);
+  transform: translateY(-105vh);
   transition: 0.3s all;
   z-index: 999999999999999;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
@@ -148,7 +148,7 @@ header > .profile-menu-desktop {
   top: 10%;
   right: 0;
   background-color: white;
-  transform: translateY(-1000px);
+  transform: translateY(-100vh);
   transition: 0.3s all;
   z-index: 1000;
   border-radius: 0 0 0 20px;

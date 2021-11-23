@@ -14,7 +14,7 @@ export default function Resources() {
   };
   const checkMediaQueries = () => {
     setInterval(() => {
-      if (window.matchMedia("(max-width: 1000px)").matches) {
+      if (window.matchMedia("(max-width: 1100px)").matches) {
         setItsMobileDevice(true);
       } else {
         setItsMobileDevice(false);
@@ -26,7 +26,7 @@ export default function Resources() {
     getResources();
     checkMediaQueries();
     //First check
-    if (window.matchMedia("(max-width: 1000px)").matches) {
+    if (window.matchMedia("(max-width: 1100px)").matches) {
       setItsMobileDevice(true);
     } else {
       setItsMobileDevice(false);
