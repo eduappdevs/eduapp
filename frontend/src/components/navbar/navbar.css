@@ -1,7 +1,7 @@
 header {
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: 100%;
   z-index: 10000;
 }
 header > nav {
@@ -22,6 +22,38 @@ header > nav > a > .header-logo > img {
   height: 100%;
   width: 100%;
 }
+nav > .nav-locations {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+nav > .nav-locations > ul {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+}
+nav > .nav-locations > ul > li {
+  margin-left: 20px;
+  padding: 15px 20px;
+  background-color: var(--blue);
+  border-radius: 20px;
+  box-shadow: 0 3px 1px rgb(69, 119, 255);
+  height: 90%;
+  color: white;
+  width: 90%;
+}
+nav > .nav-locations > ul > li > a {
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  cursor: pointer;
+  font-family: "Consolas";
+  font-weight: bold;
+  height: 100%;
+}
+
 header > nav > .profile-button {
   display: flex;
   justify-content: center;
@@ -59,21 +91,21 @@ header > nav > .profile-button > .profile-button-box > .profile-pic > img {
   height: 100%;
   border-radius: 50%;
 }
-
-header > .profile-menu {
+/* Mobile menu */
+header > .profile-menu-mobile {
   display: flex;
   width: 100vw;
-  height: 50vh;
+  height: 100vh;
   position: absolute;
   top: 0%;
   background-color: white;
   transform: translateY(-1000px);
   transition: 0.3s all;
-  z-index: 10000;
+  z-index: 999999999999999;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
 }
 
-header > .profile-menu > ul {
+header > .profile-menu-mobile > ul {
   display: flex;
   position: absolute;
   align-items: center;
@@ -81,38 +113,106 @@ header > .profile-menu > ul {
   justify-content: center;
   width: 100%;
   height: 100%;
-  padding: 22px 0px;
   list-style: none;
 }
-.profile-menu::before {
-  content: "";
-  display: block;
-  width: 50px;
-  height: 3px;
-  background-color: rgba(75, 75, 75, 0.527);
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -97%);
-  top: 97%;
-  border-radius: 30px;
-}
-header > .profile-menu > ul > li {
+
+header > .profile-menu-mobile > ul > li {
   font-size: 120%;
   text-transform: uppercase;
   font-family: "Consolas";
   font-weight: bold;
   border-radius: 30px;
   background-color: var(--orange);
-  width: 30%;
+  width: 50%;
+  margin-bottom: 20%;
   padding: 10px;
   box-shadow: 0 2px 5px rgba(114, 114, 114, 0.493);
   border: 2px solid rgba(255, 255, 255, 0.473);
   text-align: center;
   margin-top: 8px;
 }
-header > .profile-menu > ul > li > a {
+header > .profile-menu-mobile > ul > li > a {
   text-decoration: none;
   color: #ffff;
   font-weight: bold;
   text-indent: 0;
+}
+
+/* Desktop menu */
+
+header > .profile-menu-desktop {
+  display: flex;
+  width: 20%;
+  height: 30%;
+  position: absolute;
+  top: 10%;
+  right: 0;
+  background-color: white;
+  transform: translateY(-1000px);
+  transition: 0.3s all;
+  z-index: 1000;
+  border-radius: 0 0 0 20px;
+  box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
+  overflow: hidden;
+}
+
+header > .profile-menu-desktop > ul {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  list-style: none;
+}
+
+header > .profile-menu-desktop > ul > li {
+  font-size: 120%;
+  text-transform: uppercase;
+  font-family: "Consolas";
+  font-weight: bold;
+  border-radius: 30px;
+  background-color: var(--orange);
+  width: 50%;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(114, 114, 114, 0.493);
+  border: 2px solid rgba(255, 255, 255, 0.473);
+  text-align: center;
+  margin-top: 8px;
+}
+header > .profile-menu-desktop > ul > li > a {
+  text-decoration: none;
+  color: #ffff;
+  font-weight: bold;
+  text-indent: 0;
+}
+.closeProfileMenu {
+  display: block;
+  position: absolute;
+  top: 15px;
+  left: 10px;
+  padding: 4px;
+  cursor: pointer;
+  z-index: 999999999999999;
+}
+.closeProfileMenu::before {
+  content: "";
+  display: block;
+  width: 15px;
+  height: 2px;
+  background-color: var(--orange);
+  transform: translate(0px, 2px) rotate(-45deg);
+}
+.closeProfileMenu::after {
+  content: "";
+  display: block;
+  width: 15px;
+  height: 2px;
+  background-color: var(--orange);
+  transform: rotate(45deg);
+}
+.activeLocation {
+  background-color: var(--orange) !important;
+  box-shadow: 0 3px 1px rgb(233, 130, 62) !important;
 }

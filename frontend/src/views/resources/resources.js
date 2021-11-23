@@ -75,69 +75,75 @@ export default function Resources() {
 
   return (
     <>
-      <Navbar />
-      <div className="resourcesSearchBar">
-        <form action="#">
-          <input type="text" />
-          <div className="searchInputIcon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              x="0px"
-              y="0px"
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
-            >
-              <path d="M 19 3 C 13.488281 3 9 7.488281 9 13 C 9 15.394531 9.839844 17.589844 11.25 19.3125 L 3.28125 27.28125 L 4.71875 28.71875 L 12.6875 20.75 C 14.410156 22.160156 16.605469 23 19 23 C 24.511719 23 29 18.511719 29 13 C 29 7.488281 24.511719 3 19 3 Z M 19 5 C 23.429688 5 27 8.570313 27 13 C 27 17.429688 23.429688 21 19 21 C 14.570313 21 11 17.429688 11 13 C 11 8.570313 14.570313 5 19 5 Z"></path>
-            </svg>
-          </div>
-        </form>
-      </div>
-      <div className="resources-container">
-        <ul>
-          {resources.map((data) => {
-            return (
-              <>
-                <li
-                  id={"res" + data.id}
-                  className="resources resourceitem"
-                  onClick={
-                    resourceOpened
-                      ? console.log("resourceAlreadyOpened")
-                      : openResource
-                  }
-                >
-                  <div id={"res" + data.id} className="resource-name-container">
-                    <span id={"res" + data.id} className="resource-name">
-                      {data.name}
-                    </span>
-                  </div>
+      <Navbar mobile={ItsMobileDevice} location={"resources"} />
+      <BottomButtons mobile={ItsMobileDevice} location={"resources"} />
 
-                  <div
-                    id={"resource-description_res" + data.id}
-                    className="resource-description-container hidden"
-                  >
-                    <span className=" resource-description">
-                      {data.description}
-                    </span>
-                  </div>
-                  <div
-                    id={"cres" + data.id}
-                    onClick={closeResource}
-                    className="close-resource-container hidden"
+      <section className={ItsMobileDevice ? "mobileSection" : "desktopSection"}>
+        <div className="resourcesSearchBar">
+          <form action="#">
+            <input type="text" />
+            <div className="searchInputIcon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="32"
+                height="32"
+                viewBox="0 0 32 32"
+              >
+                <path d="M 19 3 C 13.488281 3 9 7.488281 9 13 C 9 15.394531 9.839844 17.589844 11.25 19.3125 L 3.28125 27.28125 L 4.71875 28.71875 L 12.6875 20.75 C 14.410156 22.160156 16.605469 23 19 23 C 24.511719 23 29 18.511719 29 13 C 29 7.488281 24.511719 3 19 3 Z M 19 5 C 23.429688 5 27 8.570313 27 13 C 27 17.429688 23.429688 21 19 21 C 14.570313 21 11 17.429688 11 13 C 11 8.570313 14.570313 5 19 5 Z"></path>
+              </svg>
+            </div>
+          </form>
+        </div>
+        <div className="resources-container">
+          <ul>
+            {resources.map((data) => {
+              return (
+                <>
+                  <li
+                    id={"res" + data.id}
+                    className="resources resourceitem"
+                    onClick={
+                      resourceOpened
+                        ? console.log("resourceAlreadyOpened")
+                        : openResource
+                    }
                   >
                     <div
+                      id={"res" + data.id}
+                      className="resource-name-container"
+                    >
+                      <span id={"res" + data.id} className="resource-name">
+                        {data.name}
+                      </span>
+                    </div>
+
+                    <div
+                      id={"resource-description_res" + data.id}
+                      className="resource-description-container hidden"
+                    >
+                      <span className=" resource-description">
+                        {data.description}
+                      </span>
+                    </div>
+                    <div
                       id={"cres" + data.id}
-                      className="close-resource "
-                    ></div>
-                  </div>
-                </li>
-              </>
-            );
-          })}
-        </ul>
-      </div>
-      <BottomButtons mobile={ItsMobileDevice} location={"resources"} />
+                      onClick={closeResource}
+                      className="close-resource-container hidden"
+                    >
+                      <div
+                        id={"cres" + data.id}
+                        className="close-resource "
+                      ></div>
+                    </div>
+                  </li>
+                </>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
     </>
   );
 }

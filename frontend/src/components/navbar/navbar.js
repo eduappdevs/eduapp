@@ -1,26 +1,76 @@
 import "./navbar.css";
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function Navbar() {
+export default function Navbar({ mobile, location }) {
   const [ProfileMenuOpened, setProfileMenuOpened] = useState(false);
+  const [inHome, setInHome] = useState(false);
+  const [inResources, setInResources] = useState(false);
+  const [inCalendar, setInCalendar] = useState(false);
+  const [inChat, setInChat] = useState(false);
+  useEffect(() => {
+    switch (location) {
+      case "resources":
+        setInResources(true);
+        setInCalendar(false);
+        setInChat(false);
+        setInHome(false);
+        break;
+      case "home":
+        setInResources(false);
+        setInCalendar(false);
+        setInChat(false);
+        setInHome(true);
+        break;
+      case "calendar":
+        setInResources(false);
+        setInCalendar(true);
+        setInChat(false);
+        setInHome(false);
+        break;
+      case "chat":
+        setInResources(false);
+        setInCalendar(false);
+        setInChat(true);
+        setInHome(false);
+        break;
+    }
+  }, [location]);
   const openProfileMenu = () => {
     setProfileMenuOpened(true);
-    const menu = document.querySelector(".profile-menu");
-    menu.style.display = "flex";
-    menu.style.transform = "translateY(-110vh)";
-    setTimeout(() => {
-      menu.style.transform = "translateY(0)";
-    }, 300);
+    if (mobile) {
+      const menu = document.querySelector(".profile-menu-mobile");
+      menu.style.display = "flex";
+      menu.style.transform = "translateX(110vh)";
+      setTimeout(() => {
+        menu.style.transform = "translateX(0)";
+      }, 300);
+    } else {
+      const menu = document.querySelector(".profile-menu-desktop");
+      menu.style.display = "flex";
+      menu.style.transform = "translateX(110vh)";
+      setTimeout(() => {
+        menu.style.transform = "translateX(0)";
+      }, 300);
+    }
   };
   const closeProfileMenu = () => {
     setProfileMenuOpened(false);
-    const menu = document.querySelector(".profile-menu");
+    if (mobile) {
+      const menu = document.querySelector(".profile-menu-mobile");
 
-    menu.style.transform = "translateY(-110vh)";
-    setTimeout(() => {
-      menu.style.display = "none";
-    }, 300);
+      menu.style.transform = "translateY(-110vh)";
+      setTimeout(() => {
+        menu.style.display = "none";
+      }, 300);
+    } else {
+      const menu = document.querySelector(".profile-menu-desktop");
+
+      menu.style.transform = "translateY(-110vh)";
+      setTimeout(() => {
+        menu.style.display = "none";
+      }, 300);
+    }
   };
   return (
     <header>
@@ -30,6 +80,22 @@ export default function Navbar() {
             <img src="\assets\logo.png" alt="logo" />
           </div>
         </Link>
+        <div className={mobile ? "hidden" : "nav-locations"}>
+          <ul>
+            <li className={inHome ? "activeLocation" : console.log()}>
+              <Link to="/home"> Home</Link>
+            </li>
+            <li className={inCalendar ? "activeLocation" : console.log()}>
+              <Link to="/Calendar"> Calendar</Link>
+            </li>
+            <li className={inResources ? "activeLocation" : console.log()}>
+              <Link to="/Resources"> Resources</Link>
+            </li>
+            <li className={inChat ? "activeLocation" : console.log()}>
+              <Link to="/Chat"> Chat</Link>
+            </li>
+          </ul>
+        </div>
         <div
           className="profile-button"
           onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}
@@ -45,7 +111,8 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-      <div className="profile-menu">
+      <div className={mobile ? "profile-menu-mobile" : "profile-menu-desktop"}>
+        <div onClick={closeProfileMenu} className="closeProfileMenu"></div>
         <ul>
           <li>
             <a href="/">Settings</a>
