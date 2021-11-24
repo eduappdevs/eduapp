@@ -59,14 +59,14 @@ export default function Navbar({ mobile, location }) {
     if (mobile) {
       const menu = document.querySelector(".profile-menu-mobile");
 
-      menu.style.transform = "translateY(-110vh)";
+      menu.style.transform = "translateX(110vh)";
       setTimeout(() => {
         menu.style.display = "none";
       }, 300);
     } else {
       const menu = document.querySelector(".profile-menu-desktop");
 
-      menu.style.transform = "translateY(-110vh)";
+      menu.style.transform = "translateX(110vh)";
       setTimeout(() => {
         menu.style.display = "none";
       }, 300);

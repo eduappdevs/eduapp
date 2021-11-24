@@ -5,6 +5,7 @@ function login(e) {
   e.preventDefault();
   let username = e.target[0].value;
   let password = e.target[1].value;
+
   console.log(username, password);
   axios
     .post("http://localhost:3000/users/sign_in", {
@@ -12,6 +13,9 @@ function login(e) {
     })
     .then(console.log)
     .catch(console.warn);
+
+  e.target[0].value = "";
+  e.target[1].value = "";
 }
 export default function Login() {
   return (

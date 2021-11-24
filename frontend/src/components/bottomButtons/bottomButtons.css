@@ -1,12 +1,12 @@
 .bottom-buttons-mobile {
   width: 100vw;
   /* background-color: var(--blue); */
-  position: fixed;
   bottom: 0;
   border-radius: 20px 20px 0 0;
   background-color: white;
   box-shadow: 0 -3px 6px rgba(104, 104, 104, 0.207);
   z-index: 9999999;
+  position: fixed;
 }
 .bottom-buttons-mobile > ul {
   display: flex;

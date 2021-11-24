@@ -3,6 +3,8 @@ header {
   flex-direction: column;
   width: 100%;
   z-index: 10000;
+  flex-grow: 1;
+  height: 90px;
 }
 header > nav {
   display: flex;
@@ -10,8 +12,9 @@ header > nav {
   justify-content: space-between;
   z-index: 10001;
   background-color: white;
-  height: 10%;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
+  position: fixed;
+  width: 100%;
 }
 header > nav > a > .header-logo {
   margin: 15px;
@@ -96,8 +99,9 @@ header > .profile-menu-mobile {
   display: flex;
   width: 100vw;
   height: 100vh;
-  position: absolute;
+  position: fixed;
   top: 0%;
+  left: 0;
   background-color: white;
   transform: translateY(-105vh);
   transition: 0.3s all;
@@ -143,14 +147,13 @@ header > .profile-menu-mobile > ul > li > a {
 header > .profile-menu-desktop {
   display: flex;
   width: 20%;
-  height: 30%;
+  height: 100%;
   position: absolute;
-  top: 10%;
   right: 0;
   background-color: white;
   transform: translateY(-100vh);
   transition: 0.3s all;
-  z-index: 1000;
+  z-index: 1000000000;
   border-radius: 0 0 0 20px;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
   overflow: hidden;
@@ -186,6 +189,9 @@ header > .profile-menu-desktop > ul > li > a {
   color: #ffff;
   font-weight: bold;
   text-indent: 0;
+}
+.profile-menu-desktop > .closeProfileMenu {
+  top: 50% !important;
 }
 .closeProfileMenu {
   display: block;
