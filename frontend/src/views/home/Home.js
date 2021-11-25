@@ -89,7 +89,7 @@ export default function Home() {
     while (data.length > 0) {
       console.log(data)
       let lower = [];
-      let lowerObj;
+      let lowerObj = [];
       data.map((e) =>{
         let currentDate = e.date.split(":")
         let currentHour = parseInt(currentDate[0]);
@@ -101,10 +101,11 @@ export default function Home() {
           console.log("PRIMERO",lower);
           lowerObj = e;
         } else {
-          
-          if (currentHour <= lowerHour) {
-            console.log("eee",lowerHour,currentHour);
+
+          if (currentHour < lowerHour) {
+            console.log(e);
             if(currentMin<=lowerMin){
+              console.log("rrrr", e);
               lower = currentDate;
               lowerObj = e;
               console.log('ee',e)
@@ -112,8 +113,10 @@ export default function Home() {
 
           }
         }
+        
 
       })   
+    ;
       sessionSorted.push(lowerObj)   
       data.splice(lowerObj)
       lower = [];
