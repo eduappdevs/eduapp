@@ -3,7 +3,6 @@ import "./bottomButtons.css";
 import { Link } from "react-router-dom";
 
 export default function BottomButtons({ mobile, location }) {
-  console.log(location);
   const [inHome, setInHome] = useState(false);
   const [inResources, setInResources] = useState(false);
   const [inCalendar, setInCalendar] = useState(false);

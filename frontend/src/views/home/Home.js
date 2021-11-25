@@ -8,7 +8,6 @@ export default function Home() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
-  let firstSession = [];
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -21,23 +20,9 @@ export default function Home() {
   const getSessions = async () => {
     const session = [
       {
-        id: "0",
-        name: "SSG",
-        date: "8:00",
-        streamingPlatform: "Teams",
-        resourcesPlatform: "Moddle",
-      },
-      {
         id: "1",
         name: "DAD",
         date: "17:00",
-        streamingPlatform: "Teams",
-        resourcesPlatform: "Moddle",
-      },
-      {
-        id: "2",
-        name: "DAM",
-        date: "8:10",
         streamingPlatform: "Teams",
         resourcesPlatform: "Moddle",
       },
@@ -62,73 +47,56 @@ export default function Home() {
         streamingPlatform: "Meet",
         resourcesPlatform: "Eduapp",
       },
+      {
+        id: "0",
+        name: "SSG",
+        date: "8:00",
+        streamingPlatform: "Teams",
+        resourcesPlatform: "Moddle",
+      },
+      {
+        id: "2",
+        name: "DAM",
+        date: "8:10",
+        streamingPlatform: "Teams",
+        resourcesPlatform: "Moddle",
+      },
     ];
-    const sessionSorted = [];
-    const data =Array.from(await session);
+
+    const data = await session;
+    const sessionsPreSorted = [];
     data.map((e) => {
-      let currentDate = e.date.split(":")
-      let currentHour = parseInt(currentDate[0]);
-      let currentMin = parseInt(currentDate[1]);
-      let firstSessionHour = parseInt(firstSession[0]);
-      let firstSessionMin = parseInt(firstSession[1]);
-      if (firstSession.length == 0) {
-        firstSession = currentDate;
-        setFirstSessionId(e.id);
-      } else {
-        if (currentHour < firstSessionHour) {
-          firstSession = currentDate;
+      let id = e.id;
+      let name = e.name;
+      let date = e.date;
+      let streamingPlatform = e.streamingPlatform;
+      let resourcesPlatform = e.resourcesPlatform;
+      let sorter = e.date.split(":")[0] + e.date.split(":")[1];
+      sessionsPreSorted.push({
+        id,
+        name,
+        date,
+        streamingPlatform,
+        resourcesPlatform,
+        sorter,
+      });
+    });
 
+    console.log(sessionsPreSorted);
 
-        } else if (firstSessionHour == currentHour) {
-          if (firstSessionMin < currentMin) {
-            firstSession = currentDate;
-          }
-        }
+    const sessionSorted = sessionsPreSorted.sort(function (a, b) {
+      var a = parseInt(a.sorter);
+      var b = parseInt(b.sorter);
+      if (a < b) {
+        return -1;
       }
-    })
-    while (data.length > 0) {
-      console.log(data)
-      let lower = [];
-      let lowerObj = [];
-      data.map((e) =>{
-        let currentDate = e.date.split(":")
-        let currentHour = parseInt(currentDate[0]);
-        let currentMin = parseInt(currentDate[1]);
-        let lowerHour = parseInt(lower[0]);
-        let lowerMin = parseInt(lower[1]);
-        if (lower.length == 0) {
-          lower = currentDate;
-          console.log("PRIMERO",lower);
-          lowerObj = e;
-        } else {
-
-          if (currentHour < lowerHour) {
-            console.log(e);
-            if(currentMin<=lowerMin){
-              console.log("rrrr", e);
-              lower = currentDate;
-              lowerObj = e;
-              console.log('ee',e)
-            }
-
-          }
-        }
-        
-
-      })   
-    ;
-      sessionSorted.push(lowerObj)   
-      data.splice(lowerObj)
-      lower = [];
-      lowerObj = {};
-      console.log("eeeeeeeeeeee",...data)
-
-
-    }
+      if (a > b) {
+        return 1;
+      }
+      return 0;
+    });
     setSessions(sessionSorted);
-    console.log(sessionSorted)
-
-
+    setFirstSessionId(sessionSorted[0].id);
   };
   const openSession = (e) => {
     e.preventDefault();
@@ -191,13 +159,16 @@ export default function Home() {
                 </div>
               </div>
               <div className="sessions">
+                <p id="home__nextSession">Next session</p>
                 {sessions.map((data) => {
-
-
                   return (
                     <>
                       <div
-                        className={firstSessionId === data.id ? "home__firstSession sessions-container" : "sessions-container"}
+                        className={
+                          firstSessionId === data.id
+                            ? "home__firstSession sessions-container"
+                            : "sessions-container"
+                        }
                         onClick={openSession}
                         id={"ses" + data.id}
                       >
@@ -226,6 +197,13 @@ export default function Home() {
                           </div>
                         </div>
                       </div>
+                      <p
+                        className={
+                          firstSessionId === data.id ? console.log : "hidden"
+                        }
+                      >
+                        Sessions
+                      </p>
                     </>
                   );
                 })}
