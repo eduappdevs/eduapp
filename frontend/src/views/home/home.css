@@ -133,11 +133,11 @@
   flex: 1;
   overflow: hidden;
 }
-.arrow > svg{
+.arrow > svg {
   height: 100%;
   width: 15px;
 }
-.rotate> svg{
+.rotate > svg {
   transform: rotate(180deg);
 }
 .user
@@ -226,13 +226,4 @@
 .desktopSection > .user > .user-container > .sessions > .sessions-container {
   padding: 20px;
   width: 40vw;
-}
-
-.home__firstSession::before {
-  content: "Next Session";
-  display: block;
-  top: 20%;
-  color: black;
-
-
 }
