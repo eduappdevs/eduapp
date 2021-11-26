@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import "./home.css";
+import axios from "axios";
 
 export default function Home() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -18,71 +19,28 @@ export default function Home() {
     }, 4000);
   };
   const getSessions = async () => {
-    const session = [
-      {
-        id: "1",
-        name: "DAD",
-        date: "17:00",
-        streamingPlatform: "Teams",
-        resourcesPlatform: "Moddle",
-      },
-      {
-        id: "3",
-        name: "DAM",
-        date: "10:00",
-        streamingPlatform: "Teams",
-        resourcesPlatform: "Moddle",
-      },
-      {
-        id: "4",
-        name: "DAM",
-        date: "11:00",
-        streamingPlatform: "Teams",
-        resourcesPlatform: "Moddle",
-      },
-      {
-        id: "5",
-        name: "DAM",
-        date: "12:00",
-        streamingPlatform: "Meet",
-        resourcesPlatform: "Eduapp",
-      },
-      {
-        id: "0",
-        name: "SSG",
-        date: "8:00",
-        streamingPlatform: "Teams",
-        resourcesPlatform: "Moddle",
-      },
-      {
-        id: "2",
-        name: "DAM",
-        date: "8:10",
-        streamingPlatform: "Teams",
-        resourcesPlatform: "Moddle",
-      },
-    ];
 
-    const data = await session;
+    let request =  await axios.get("http://localhost:3000/eduapp_user_sessions");
     const sessionsPreSorted = [];
-    data.map((e) => {
+    request.data.map((e) => {
       let id = e.id;
-      let name = e.name;
-      let date = e.date;
-      let streamingPlatform = e.streamingPlatform;
-      let resourcesPlatform = e.resourcesPlatform;
-      let sorter = e.date.split(":")[0] + e.date.split(":")[1];
+      let name = e.session_name;
+      let date = e.session_date;
+      let streamingPlatform = e.streaming_platform;
+      let resourcesPlatform = e.resources_platform;
+      let chat = e.session_chat_id;
+      let sorter = date.split("-")[0].split(':')[0] + date.split("-")[0].split(':')[1];
       sessionsPreSorted.push({
         id,
-        name,
+        name, 
         date,
         streamingPlatform,
         resourcesPlatform,
+        chat,
         sorter,
       });
     });
 
-    console.log(sessionsPreSorted);
 
     const sessionSorted = sessionsPreSorted.sort(function (a, b) {
       var a = parseInt(a.sorter);
@@ -97,6 +55,8 @@ export default function Home() {
     });
     setSessions(sessionSorted);
     setFirstSessionId(sessionSorted[0].id);
+    
+
   };
   const openSession = (e) => {
     e.preventDefault();

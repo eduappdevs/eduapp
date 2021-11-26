@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  session_name: MyString
+  session_date: MyString
+  streaming_platform: MyString
+  resources_platform: MyString
+  session_chat_id: MyString
+
+two:
+  session_name: MyString
+  session_date: MyString
+  streaming_platform: MyString
+  resources_platform: MyString
+  session_chat_id: MyString
