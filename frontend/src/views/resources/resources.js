@@ -13,6 +13,7 @@ export default function Resources() {
     description:'ygy'
   }]
   const getResources = async () => {
+    
     const response = await fetch("http://localhost:3000/resources");
     const data = await response.json();
     setResources(data);
@@ -29,9 +30,9 @@ export default function Resources() {
   useEffect(() => {
     try {
       getResources();
-      
+      console.log('Getting resources')
     } catch (error) {
-      console.log('An error has ocurred', error)
+      console.log('An error has ocurred')
     }
     checkMediaQueries();
     //First check
@@ -152,7 +153,7 @@ export default function Resources() {
                   </>
                 );
               })}
-            </ul> : <div id='RESOURCES_ERROR'><h1>AN ERROR OCURRED</h1><p>Refresh the page</p></div>}
+            </ul> : <div id='RESOURCES_ERROR'><h1>AN ERROR OCURRED</h1><p onClick={getResources}>Refresh the page</p></div>}
             
           </div>
         </section>

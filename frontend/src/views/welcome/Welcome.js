@@ -4,12 +4,23 @@ import "./welcome.css";
 
 export default function Welcome() {
   return (
-    <Link to="/resources">
+    
       <div className="welcomeSection">
         <div className="welcome-logo">
           <img src="\assets\logo.png" alt="" />
         </div>
-
+        <div className="welcome_loginOrSignup">
+          <Link className='welcome-a' to="/login">
+            <div className="welcome_loginButton">
+              <p>LOG IN</p>
+            </div>
+            </Link>
+          <Link className='welcome-a' to="/signup">
+            <div className="welcome_signupButton">
+              <p>SIGN UP</p>
+            </div>
+            </Link>
+        </div>
         <svg
           className="welcomeSvg"
           xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +33,9 @@ export default function Welcome() {
           ></path>
         </svg>
         <div className="blue"></div>
+        <div className="welcome_background">
+        </div>
       </div>
-    </Link>
+
   );
 }

@@ -1,15 +1,17 @@
 .welcome-logo > img {
-  width: 130px;
-  height: 130px;
+  width: 60px;
+  height: 60px;
+  margin-top: 10px;
+  margin-left: 10px;
   z-index: 1000;
-  animation: 3s zoomInOut infinite alternate ease;
+  /* animation: 3s zoomInOut infinite alternate ease; */
 }
 .welcome-logo {
-  height: 100%;
+  height: 10%;
   width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 .welcomeSection {
   background-color: var(--orange);
@@ -18,13 +20,72 @@
 }
 .welcomeSvg {
   position: absolute;
-  bottom: 39vh;
+  bottom: 43vh;
   left: 0;
   width: 100vw;
+
+}
+.welcome_loginOrSignup {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999999999;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.welcome_loginOrSignup > a > .welcome_loginButton{
+  background-color: white;
+  padding: 0px 20px;
+  border-radius: 30px;
+  background-color: var(--blue);
+  color: white;
+  box-shadow: 0 3px 1px rgb(70, 113, 255);
+  margin-bottom: 10vh;
+  text-align: center;
+  cursor: pointer;
+  height: 35%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+}
+.welcome-a{
+  text-decoration: none;
+  width: 50%;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+.welcome_loginOrSignup > a > .welcome_signupButton{
+  margin-top: 10vh;
+  background-color: white;
+  padding: 0px 20px;
+  border-radius: 30px;
+  background-color: var(--orange);
+  color: white;
+  box-shadow: 0 3px 1px rgb(255, 175, 46);
+  height: 35%;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+}
+.welcome_loginButton > p , .welcome_signupButton > p{
+  font-size: 150%;
+  font-weight: bolder;
+
 }
 .blue {
   background-color: var(--blue);
-  height: 40vh;
+  height: 43vh;
   position: absolute;
   bottom: 0;
   width: 100vw;
@@ -35,6 +96,32 @@
     transform: scale(1);
   }
   100% {
-    transform: scale(1.3);
+    transform: scale(1.1);
   }
+}
+
+
+@media (min-width: 900px) {
+  .welcome_background{
+    width: 50%;
+    height: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50% , -50%);
+    border-radius: 20px;
+    background-color: rgba(238, 238, 238, 0.061);
+    z-index: 222;
+    box-shadow: 0 2px 2px rgba(65, 65, 65, 0.424);
+
+  }
+
+  .welcome-a{
+    text-decoration: none;
+    width: 25%;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+  }
+
 }

@@ -175,4 +175,14 @@
       transform: translateY(-2px);
     }
   }
-  
+  #loginRedirectButton{
+      color: rgba(255, 255, 255, 0.671);
+  }
+  #loginRedirectButton > a{
+
+    color: var(--orange);
+    opacity: 0.9;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all .2s ease-in-out;
+  }

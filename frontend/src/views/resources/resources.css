@@ -213,3 +213,6 @@
   color: gray;
   flex-direction: column;
 }
+#RESOURCES_ERROR > p{
+  cursor: pointer;
+}

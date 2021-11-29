@@ -71,7 +71,10 @@ export default class Registration extends Component {
             required
           />
           <button type="submit">Register</button>
+
+          <p id='loginRedirectButton'>Already have an account? <a href="/login">Log in</a></p>
         </form>
+
         </div>
     );
   }
