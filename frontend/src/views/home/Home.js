@@ -82,8 +82,6 @@ export default function Home() {
       });
     });
 
-    console.log(sessionsPreSorted);
-
     const sessionSorted = sessionsPreSorted.sort(function (a, b) {
       var a = parseInt(a.sorter);
       var b = parseInt(b.sorter);

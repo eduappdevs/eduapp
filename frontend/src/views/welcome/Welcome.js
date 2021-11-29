@@ -4,7 +4,7 @@ import "./welcome.css";
 
 export default function Welcome() {
   return (
-    <Link to="/resources">
+    <Link to="/home">
       <div className="welcomeSection">
         <div className="welcome-logo">
           <img src="\assets\logo.png" alt="" />

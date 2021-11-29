@@ -83,7 +83,7 @@ export default function Navbar({ mobile, location }) {
         <div className={mobile ? "hidden" : "nav-locations"}>
           <ul>
             <li className={inHome ? "activeLocation" : console.log()}>
-              <Link to="/home"> Home</Link>
+              <Link to="/"> Home</Link>
             </li>
             <li className={inCalendar ? "activeLocation" : console.log()}>
               <Link to="/Calendar"> Calendar</Link>

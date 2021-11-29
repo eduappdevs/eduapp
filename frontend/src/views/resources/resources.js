@@ -21,7 +21,6 @@ export default function Resources() {
       }
     }, 4000);
   };
-  console.log(ItsMobileDevice);
   useEffect(() => {
     getResources();
     checkMediaQueries();
