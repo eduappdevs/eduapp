@@ -44,35 +44,35 @@ export default class Registration extends Component {
   };
   render() {
     return (
-      <div>
+      <div className="signupForm">
         <form onSubmit={this.handleSubmit}>
+          <label htmlFor="email">E-mail</label>
           <input
             type="email"
             name="email"
-            placeholder="email"
             value={this.state.email}
             onChange={this.handleChange}
             required
           />
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             name="password"
-            placeholder="password"
             value={this.state.password}
             onChange={this.handleChange}
             required
           />
+          <label htmlFor="password_confirmation">Repeat password</label>
           <input
-            type="password_confirmation"
+            type="password"
             name="password_confirmation"
-            placeholder="password_confirmation"
             value={this.state.password_confirmation}
             onChange={this.handleChange}
             required
           />
           <button type="submit">Register</button>
         </form>
-      </div>
+        </div>
     );
   }
 }

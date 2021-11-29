@@ -7,6 +7,11 @@ export default function Resources() {
   const [resources, setResources] = useState([]);
   const [resourceOpened, setResourceOpened] = useState(false);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
+  const saa =[ {
+    id:1,
+    name:'hahahaha',
+    description:'ygy'
+  }]
   const getResources = async () => {
     const response = await fetch("http://localhost:3000/resources");
     const data = await response.json();
@@ -21,9 +26,13 @@ export default function Resources() {
       }
     }, 4000);
   };
-  console.log(ItsMobileDevice);
   useEffect(() => {
-    getResources();
+    try {
+      getResources();
+      
+    } catch (error) {
+      console.log('An error has ocurred', error)
+    }
     checkMediaQueries();
     //First check
     if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -99,7 +108,7 @@ export default function Resources() {
             </form>
           </div>
           <div className="resources-container">
-            <ul>
+            {resources.length > 0 ? <ul>
               {resources.map((data) => {
                 return (
                   <>
@@ -143,7 +152,8 @@ export default function Resources() {
                   </>
                 );
               })}
-            </ul>
+            </ul> : <div id='RESOURCES_ERROR'><h1>AN ERROR OCURRED</h1><p>Refresh the page</p></div>}
+            
           </div>
         </section>
         <BottomButtons mobile={ItsMobileDevice} location={"resources"} />

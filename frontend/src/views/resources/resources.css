@@ -206,3 +206,10 @@
   width: 60% !important;
   position: relative;
 }
+#RESOURCES_ERROR{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: gray;
+  flex-direction: column;
+}

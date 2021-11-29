@@ -3,10 +3,9 @@ import React from "react";
 import "./login.css";
 function login(e) {
   e.preventDefault();
-  let username = e.target[0].value;
+  let email = e.target[0].value;
   let password = e.target[1].value;
 
-  console.log(username, password);
   axios
     .post("http://localhost:3000/users/sign_in", {
       origin: "http://localhost:3000",
@@ -22,8 +21,8 @@ export default function Login() {
     <div className="loginSection">
       <div className="loginForm">
         <form action="submit" onSubmit={login}>
-          <label htmlFor="username">username</label>
-          <input type="text" name="username" />
+          <label htmlFor="email">E-MAIL</label>
+          <input type="text" name="email" />
           <label htmlFor="password">password</label>
           <input type="password" name="password" />
           <button type="submit" id="login_button">
