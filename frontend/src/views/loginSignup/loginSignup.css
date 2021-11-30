@@ -1,0 +1,292 @@
+.accessPage-logo > img {
+  width: 60px;
+  height: 60px;
+  margin-top: 10px;
+  margin-left: 10px;
+  z-index: 1000;
+  /* animation: 3s zoomInOut infinite alternate ease; */
+}
+.accessPage-logo {
+  height: 10%;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.accessPageSection {
+  background-color: var(--orange);
+  height: 100vh;
+  width: 100vw;
+}
+.accessPageSvg {
+  position: absolute;
+  bottom: 43vh;
+  left: 0;
+  width: 100vw;
+}
+.accessPage_loginOrSignup {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+  z-index: 333;
+  overflow: hidden;
+}
+.accessPage_loginOrSignup > a > .accessPage_loginButton {
+  background-color: white;
+  padding: 0px 20px;
+  border-radius: 30px;
+  background-color: var(--blue);
+  color: white;
+  box-shadow: 0 3px 1px rgb(70, 113, 255);
+  margin-bottom: 10vh;
+  text-align: center;
+  cursor: pointer;
+  height: 35%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.accessPage-a {
+  text-decoration: none;
+  width: 50%;
+  height: 20%;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+.accessPage_loginOrSignup > a > .accessPage_signupButton {
+  margin-top: 10vh;
+  background-color: white;
+  padding: 0px 20px;
+  border-radius: 30px;
+  background-color: var(--orange);
+  color: white;
+  box-shadow: 0 3px 1px rgb(255, 175, 46);
+  height: 35%;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.accessPage_loginButton > p,
+.accessPage_signupButton > p {
+  font-size: 150%;
+  font-weight: bolder;
+}
+.blue {
+  background-color: var(--blue);
+  height: 43vh;
+  position: absolute;
+  bottom: 0;
+  width: 100vw;
+  z-index: 200;
+}
+
+.accessPage_login {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+.orange_halfDiv {
+  background-color: var(--orange);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50%;
+  flex: 1;
+}
+.blue_halfDiv {
+  background-color: var(--blue);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50%;
+  flex: 1;
+}
+.orange_halfDiv > form,
+.blue_halfDiv > form {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.orange_halfDiv > form {
+  display: flex;
+}
+.orange_halfDiv > p,
+.blue_halfDiv > p {
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+.orange_halfDiv > p > a,
+.blue_halfDiv > p > a {
+  margin-top: 20px;
+}
+.registration_form {
+  display: none;
+}
+.registration_auth_RedirectButton {
+  display: none;
+}
+.login_auth_RedirectButton {
+  display: flex;
+}
+
+.orange_halfDiv > form > input,
+.blue_halfDiv > form > input {
+  border: none;
+  padding: 3% 12%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  -moz-box-shadow: inset 0 0 4px #74747456;
+  -webkit-box-shadow: inset 0 0 4px #74747456;
+  box-shadow: inset 0 2px 4px #74747456;
+}
+.orange_halfDiv > form > input:focus,
+.blue_halfDiv > form > input:focus {
+  outline: none;
+}
+.orange_halfDiv > form > label,
+.blue_halfDiv > form > label {
+  color: white;
+}
+.orange_halfDiv > form > button,
+.blue_halfDiv > form > button {
+  border: none;
+  border-radius: 20px;
+  background-color: white;
+  padding: 10px 20px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+.orange_halfDiv > form > button {
+  color: var(--blue);
+  font-weight: 900;
+}
+.blue_halfDiv > form > button {
+  color: var(--orange);
+  font-weight: 900;
+}
+
+.accessPage_login > form {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 0 20px 20px 0;
+}
+.accessPage_signup {
+  display: none;
+}
+.login_auth_RedirectButton > a {
+  color: var(--orange);
+}
+.registration_auth_RedirectButton,
+.login_auth_RedirectButton {
+  color: white;
+}
+.registration_auth_RedirectButton > a {
+  color: var(--blue);
+}
+
+.login_auth_RedirectButton > a,
+.registration_auth_RedirectButton > a {
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 900;
+  text-align: center;
+}
+@keyframes zoomInOut {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+@media (min-width: 900px) {
+  .accessPage_background {
+    width: 50%;
+    height: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    background-color: rgba(238, 238, 238, 0.061);
+    z-index: 222;
+    box-shadow: 0 0px 20px rgba(19, 19, 19, 0.247);
+  }
+  .accessPage_loginOrSignup {
+    width: 50%;
+    height: 50%;
+  }
+  .orange_halfDiv {
+    height: 100%;
+  }
+  .blue_halfDiv {
+    height: 100%;
+  }
+  .accessPage-a {
+    text-decoration: none;
+    width: 25%;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+  }
+  .accessPage_loginOrSignup {
+    display: flex;
+    flex-direction: row;
+  }
+  .accessPage_loginOrSignup > a > .accessPage_loginButton {
+    background-color: white;
+    padding: 0px 20px;
+    border-radius: 30px;
+    background-color: var(--orange);
+    color: white;
+    box-shadow: 0 3px 1px rgb(255, 175, 46);
+    text-align: center;
+    cursor: pointer;
+    height: 35%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0;
+    margin-top: 25%;
+    align-items: center;
+    width: 40%;
+  }
+  .accessPage_loginOrSignup > a > .accessPage_signupButton {
+    background-color: white;
+    padding: 0px 20px;
+    border-radius: 30px;
+    background-color: var(--orange);
+    color: white;
+    box-shadow: 0 3px 1px rgb(255, 175, 46);
+    height: 35%;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    margin-top: 25%;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+  }
+}

@@ -41,12 +41,11 @@ export default class LoginAuth extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form className="login_form" onSubmit={this.handleSubmit}>
         <label htmlFor="email">Email</label>
         <input
           type="email"
           name="email"
-          placeholder="Email"
           onChange={this.handleChange}
           required
         />
@@ -54,7 +53,6 @@ export default class LoginAuth extends Component {
         <input
           type="password"
           name="password"
-          placeholder="Password"
           onChange={this.handleChange}
           required
         />

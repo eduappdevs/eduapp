@@ -7,10 +7,21 @@ export default function Resources() {
   const [resources, setResources] = useState([]);
   const [resourceOpened, setResourceOpened] = useState(false);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
+  const saa = [
+    {
+      id: 1,
+      name: "hahahaha",
+      description: "ygy",
+    },
+  ];
   const getResources = async () => {
-    const response = await fetch("http://localhost:3000/resources");
-    const data = await response.json();
-    setResources(data);
+    try {
+      const response = await fetch("http://localhost:3000/resources");
+      const data = await response.json();
+      setResources(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -22,7 +33,12 @@ export default function Resources() {
     }, 4000);
   };
   useEffect(() => {
-    getResources();
+    try {
+      getResources();
+      console.log("Getting resources");
+    } catch (error) {
+      console.log("An error has ocurred");
+    }
     checkMediaQueries();
     //First check
     if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -98,51 +114,58 @@ export default function Resources() {
             </form>
           </div>
           <div className="resources-container">
-            <ul>
-              {resources.map((data) => {
-                return (
-                  <>
-                    <li
-                      id={"res" + data.id}
-                      className="resources resourceitem"
-                      onClick={
-                        resourceOpened
-                          ? console.log("resourceAlreadyOpened")
-                          : openResource
-                      }
-                    >
-                      <div
+            {resources.length > 0 ? (
+              <ul>
+                {resources.map((data) => {
+                  return (
+                    <>
+                      <li
                         id={"res" + data.id}
-                        className="resource-name-container"
-                      >
-                        <span id={"res" + data.id} className="resource-name">
-                          {data.name}
-                        </span>
-                      </div>
-
-                      <div
-                        id={"resource-description_res" + data.id}
-                        className="resource-description-container hidden"
-                      >
-                        <span className=" resource-description">
-                          {data.description}
-                        </span>
-                      </div>
-                      <div
-                        id={"cres" + data.id}
-                        onClick={closeResource}
-                        className="close-resource-container hidden"
+                        className="resources resourceitem"
+                        onClick={
+                          resourceOpened
+                            ? console.log("resourceAlreadyOpened")
+                            : openResource
+                        }
                       >
                         <div
+                          id={"res" + data.id}
+                          className="resource-name-container"
+                        >
+                          <span id={"res" + data.id} className="resource-name">
+                            {data.name}
+                          </span>
+                        </div>
+
+                        <div
+                          id={"resource-description_res" + data.id}
+                          className="resource-description-container hidden"
+                        >
+                          <span className=" resource-description">
+                            {data.description}
+                          </span>
+                        </div>
+                        <div
                           id={"cres" + data.id}
-                          className="close-resource "
-                        ></div>
-                      </div>
-                    </li>
-                  </>
-                );
-              })}
-            </ul>
+                          onClick={closeResource}
+                          className="close-resource-container hidden"
+                        >
+                          <div
+                            id={"cres" + data.id}
+                            className="close-resource "
+                          ></div>
+                        </div>
+                      </li>
+                    </>
+                  );
+                })}
+              </ul>
+            ) : (
+              <div id="RESOURCES_ERROR">
+                <h1>AN ERROR OCURRED</h1>
+                <p onClick={getResources}>Refresh the page</p>
+              </div>
+            )}
           </div>
         </section>
         <BottomButtons mobile={ItsMobileDevice} location={"resources"} />

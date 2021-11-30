@@ -1,9 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Resources from "./views/resources/resources";
-import Login from "./views/login/Login";
-import Welcome from "./views/welcome/Welcome";
+import LoginSignup from "./views/loginSignup/loginSignup";
 import Home from "./views/home/Home";
-import Signup from "./views/signUp/Signup";
 import React, { Component } from "react";
 export default class App extends Component {
   constructor() {
@@ -26,24 +24,20 @@ export default class App extends Component {
                 this.state.loggedInStatus === "LOGGED_IN" ? (
                   <Home loggedInStatus={this.state.loggedInStatus} />
                 ) : (
-                  <Welcome loggedInStatus={this.state.loggedInStatus} />
+                  <LoginSignup loggedInStatus={this.state.loggedInStatus} />
                 )
               }
             />
             <Route
               exact
               path="/resources"
-              element={<Resources loggedInStatus={this.state.loggedInStatus} />}
-            ></Route>
-            <Route
-              exact
-              path="/login"
-              element={<Login loggedInStatus={this.state.loggedInStatus} />}
-            ></Route>
-            <Route
-              exact
-              path="/signup"
-              element={<Signup loggedInStatus={this.state.loggedInStatus} />}
+              element={
+                this.state.loggedInStatus === "LOGGED_IN" ? (
+                  <Resources loggedInStatus={this.state.loggedInStatus} />
+                ) : (
+                  <LoginSignup loggedInStatus={this.state.loggedInStatus} />
+                )
+              }
             ></Route>
           </Routes>
         </BrowserRouter>

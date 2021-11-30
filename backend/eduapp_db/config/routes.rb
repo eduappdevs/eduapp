@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   
+  resources :eduapp_user_sessions
   root to: 'static#home'
   resources :resources 
   resources :sessions, only: [:create]
