@@ -14,16 +14,36 @@ export default function LoginSignup() {
     const signupButton = document.getElementsByClassName(
       "registration_auth_RedirectButton"
     )[0];
+    const blue_halfDiv = document.getElementsByClassName("blue_halfDiv")[0];
+    const orange_halfDiv = document.getElementsByClassName("orange_halfDiv")[0];
+    const access_logo = document.getElementsByClassName("accessPage-logo")[0];
+
     if (x === "signup") {
       loginButton.style.display = "flex";
       loginForm.style.display = "flex";
       signupButton.style.display = "none";
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        orange_halfDiv.style.height = "80%";
+        blue_halfDiv.style.height = "20%";
+        access_logo.style.height = "84.3%";
+      } else {
+        orange_halfDiv.style.height = "100%";
+        blue_halfDiv.style.height = "100%";
+      }
       registrationForm.style.display = "none";
     } else if (x === "login") {
       loginButton.style.display = "none";
       loginForm.style.display = "none";
       signupButton.style.display = "flex";
       registrationForm.style.display = "flex";
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        orange_halfDiv.style.height = "13.7%";
+        blue_halfDiv.style.height = "80%";
+        access_logo.style.height = "20%";
+      } else {
+        orange_halfDiv.style.height = "100%";
+        blue_halfDiv.style.height = "100%";
+      }
     }
   };
   return (

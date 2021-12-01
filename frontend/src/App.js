@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Resources from "./views/resources/resources";
 import LoginSignup from "./views/loginSignup/loginSignup";
 import Home from "./views/home/Home";
@@ -17,14 +17,15 @@ export default class App extends Component {
       <>
         <BrowserRouter>
           <Routes>
+            <Route exact path="/access" element={<LoginSignup />} />
             <Route
               exact
               path="/"
               element={
                 this.state.loggedInStatus === "LOGGED_IN" ? (
-                  <Home loggedInStatus={this.state.loggedInStatus} />
+                  <Home />
                 ) : (
-                  <LoginSignup loggedInStatus={this.state.loggedInStatus} />
+                  <Navigate to="/access" />
                 )
               }
             />
@@ -33,12 +34,14 @@ export default class App extends Component {
               path="/resources"
               element={
                 this.state.loggedInStatus === "LOGGED_IN" ? (
-                  <Resources loggedInStatus={this.state.loggedInStatus} />
+                  <Resources />
                 ) : (
-                  <LoginSignup loggedInStatus={this.state.loggedInStatus} />
+                  <Navigate to="/access" />
                 )
               }
-            ></Route>
+            />
+            <Route path="/restest" element={<Resources />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </BrowserRouter>
       </>

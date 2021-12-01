@@ -42,6 +42,7 @@ export default class LoginAuth extends Component {
   render() {
     return (
       <form className="login_form" onSubmit={this.handleSubmit}>
+        <h1>LOG IN</h1>
         <label htmlFor="email">Email</label>
         <input
           type="email"

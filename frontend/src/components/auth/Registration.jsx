@@ -47,6 +47,7 @@ export default class Registration extends Component {
   render() {
     return (
       <form className="registration_form" onSubmit={this.handleSubmit}>
+        <h1>SIGN UP</h1>
         <label htmlFor="email">E-mail</label>
         <input
           type="email"
