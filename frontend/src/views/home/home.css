@@ -220,29 +220,32 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
   flex-direction: column;
   background-color: rgba(0, 0, 0, 0.36);
-  border: 1px solid rgba(66, 66, 66, 0.075);
-  border-radius: 25px;
-  box-shadow: 0px 1.7px 3.1px rgba(0, 0, 0, 0.041),
-    0px 5.6px 10.5px rgba(0, 0, 0, 0.034), 0px 25px 47px rgba(0, 0, 0, 0.02);
+  border-radius: 0px;
   font-weight: bold;
   text-indent: 0;
   font-family: "Consolas";
   font-size: 18px;
-  margin-top: 3vh;
-  margin-bottom: 3vh;
-  transition: all 0.3s;
-  z-index: 900;
+  z-index: 9999999999;
   cursor: pointer;
   pointer-events: visibleFill;
-  position: absolute;
   width: 100%;
   height: 100%;
   list-style: none;
   transform: none;
 }
-
+.mobileForm{
+  position: fixed;
+  z-index: 9999999999;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+}
 .home__addForm
 >.informationForm
 >.addFormContent 
@@ -274,13 +277,42 @@
 .addFormContent >div>input {
   margin-top: 10%;
   border: none;
-  height: 2em;
+  height: 2.5em;
   width: 100%;
-  border-radius: 20px;
-  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.418);
+  
+  border-radius: 10px;
+  box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
   text-indent: 10px;
 }
+.addFormContent >div>input:focus {
+  outline: none;
+  
+}
+.timeInputs{
+  margin-top: 8px;
+  border: none;
+  height: 2.5em;
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+  flex-direction: row;
+  border-radius: 10px;
+  box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
+  text-indent: 10px;
+}
+.timeInputs>input{
+  flex: 1;
+  width: 50%;
+  border: none;
+  padding: 3px;
 
+}
+.timeInputs>input:first-child{
+  border-right: 1px solid var(--blue);
+}
+.timeInputs>input:focus{
+  outline: none;
+}
 
 .home__buttonSubmit{
   z-index: 1000;
@@ -298,4 +330,18 @@
   transition: all 0.2s;
   cursor: pointer;
 }
-
+.schedule{
+  display: flex;
+  flex-direction: column;
+}
+.timeLabels{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+.timeLabels>label{
+  flex:1;
+  width: 50%;
+  text-align: center;
+}

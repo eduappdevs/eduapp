@@ -1,28 +1,24 @@
 import React, { Component } from "react";
 import axios from "axios";
-export default class Registration extends Component {
+export default class LoginAuth extends Component {
   constructor(props) {
     super(props);
     this.state = {
       email: "",
       password: "",
-      password_confirmation: "",
-      registrationErrors: "",
     };
-    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
-
   handleSubmit = (event) => {
-    const { email, password, password_confirmation } = this.state;
+    const { email, password } = this.state;
     axios
       .post(
-        "http://localhost:3000/registrations",
+        "http://localhost:3000/users/signin",
         {
           user: {
             email: email,
             password: password,
-            password_confirmation: password_confirmation,
           },
         },
         {
@@ -30,12 +26,10 @@ export default class Registration extends Component {
         }
       )
       .then((res) => {
-        if (res.data.status === "created") {
-          this.props.handleSuccessfulAuth(res.data);
-        }
+        console.log("login res", res);
       })
       .catch((err) => {
-        console.log("registration err", err);
+        console.log("login err", err);
       });
     event.preventDefault();
   };
@@ -44,15 +38,15 @@ export default class Registration extends Component {
       [event.target.name]: event.target.value,
     });
   };
+
   render() {
     return (
-      <form className="registration_form" onSubmit={this.handleSubmit}>
-        <h1>SIGN UP</h1>
-        <label htmlFor="email">E-mail</label>
+      <form className="login_form" onSubmit={this.handleSubmit}>
+        <h1>LOG IN</h1>
+        <label htmlFor="email">Email</label>
         <input
           type="email"
           name="email"
-          value={this.state.email}
           onChange={this.handleChange}
           required
         />
@@ -60,19 +54,10 @@ export default class Registration extends Component {
         <input
           type="password"
           name="password"
-          value={this.state.password}
           onChange={this.handleChange}
           required
         />
-        <label htmlFor="password_confirmation">Repeat password</label>
-        <input
-          type="password"
-          name="password_confirmation"
-          value={this.state.password_confirmation}
-          onChange={this.handleChange}
-          required
-        />
-        <button type="submit">Register</button>
+        <button type="submit">Login</button>
       </form>
     );
   }

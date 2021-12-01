@@ -40,7 +40,7 @@ export default function BottomButtons({ mobile, location }) {
       className={mobile ? "bottom-buttons-mobile" : "bottom-buttons-desktop"}
     >
       <ul>
-        <Link to="/home">
+        <Link to="/">
           <li className={inHome ? "activeButton" : console.log()}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

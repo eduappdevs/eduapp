@@ -3,19 +3,28 @@ import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import "./resources.css";
-export default function Resources() {
+import ResourcesModal from "../../components/modals/resourcesModal";
+import axios from "axios";
+export default function Resources(props) {
   const [resources, setResources] = useState([]);
   const [resourceOpened, setResourceOpened] = useState(false);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
-  const saa =[ {
-    id:1,
-    name:'hahahaha',
-    description:'ygy'
-  }]
+  const [resourcesFilter, setResourcesFilter] = useState("");
+  const saa = [
+    {
+      id: 1,
+      name: "test offline",
+      description: "this is a test",
+    },
+  ];
   const getResources = async () => {
-    const response = await fetch("http://localhost:3000/resources");
-    const data = await response.json();
-    setResources(data);
+    try {
+      const response = await fetch("http://localhost:3000/resources");
+      const data = await response.json();
+      setResources(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -29,9 +38,9 @@ export default function Resources() {
   useEffect(() => {
     try {
       getResources();
-      
+      console.log("Getting resources");
     } catch (error) {
-      console.log('An error has ocurred', error)
+      console.log("An error has ocurred");
     }
     checkMediaQueries();
     //First check
@@ -51,18 +60,16 @@ export default function Resources() {
         const description = document.getElementById(
           "resource-description_" + e.target.id
         );
-
         resource.style.height = "50vh";
-        setTimeout(() => {
-          resource.classList.add("resource-opened");
-          description.classList.remove("hidden");
-          resource_close.classList.remove("hidden");
-        }, 200);
+        resource.classList.add("resource-opened");
+        description.classList.remove("hidden");
+        resource_close.classList.remove("hidden");
+        setTimeout(() => {}, 100);
         resource.style.cursor = "default";
       } catch (error) {
         console.log(error);
       }
-    }, 100);
+    }, 150);
   };
   const closeResource = (e) => {
     e.preventDefault();
@@ -74,25 +81,42 @@ export default function Resources() {
       const description = document.getElementById("resource-description_" + id);
       resource.style.height = "";
       resource.style.cursor = "pointer";
-      resource_close.classList.add("hidden");
       description.classList.add("hidden");
+      resource_close.classList.add("hidden");
       resource.classList.remove("resource-opened");
     } catch (error) {
       console.log(error);
     }
   };
+  const createResource = () => {
+    document.getElementsByClassName(
+      "resources__createResourceModal"
+    )[0].style.display = "flex";
+  };
 
+  const handleSearchResources = (e) => {
+    setResourcesFilter(e.target.value);
+  };
+
+  const deleteResource = (id) => {
+    axios
+      .delete(`http://localhost:3000/resources/${id}`)
+      .then((res) => console.log, window.location.reload())
+      .catch((err) => console.log);
+  };
+  const editResource = (id) => {
+    console.log(id);
+  };
   return (
     <>
       <div className="resources-main-container">
         <Navbar mobile={ItsMobileDevice} location={"resources"} />
-
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
           <div className="resourcesSearchBar">
-            <form action="#">
-              <input type="text" />
+            <form action="">
+              <input type="text" onChange={handleSearchResources} />
               <div className="searchInputIcon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -107,55 +131,92 @@ export default function Resources() {
               </div>
             </form>
           </div>
-          <div className="resources-container">
-            {resources.length > 0 ? <ul>
-              {resources.map((data) => {
-                return (
-                  <>
-                    <li
-                      id={"res" + data.id}
-                      className="resources resourceitem"
-                      onClick={
-                        resourceOpened
-                          ? console.log("resourceAlreadyOpened")
-                          : openResource
-                      }
-                    >
-                      <div
-                        id={"res" + data.id}
-                        className="resource-name-container"
-                      >
-                        <span id={"res" + data.id} className="resource-name">
-                          {data.name}
-                        </span>
-                      </div>
 
-                      <div
-                        id={"resource-description_res" + data.id}
-                        className="resource-description-container hidden"
-                      >
-                        <span className=" resource-description">
-                          {data.description}
-                        </span>
-                      </div>
-                      <div
-                        id={"cres" + data.id}
-                        onClick={closeResource}
-                        className="close-resource-container hidden"
-                      >
-                        <div
-                          id={"cres" + data.id}
-                          className="close-resource "
-                        ></div>
-                      </div>
-                    </li>
-                  </>
-                );
-              })}
-            </ul> : <div id='RESOURCES_ERROR'><h1>AN ERROR OCURRED</h1><p>Refresh the page</p></div>}
-            
+          <div className="resources-container">
+            <div className="resources__addNewResource" onClick={createResource}>
+              Add something
+            </div>
+            {resources.length > 0 ? (
+              <ul>
+                {resources.map((data) => {
+                  if (
+                    data.name
+                      .toLowerCase()
+                      .includes(resourcesFilter.toLowerCase()) ||
+                    resourcesFilter === ""
+                  ) {
+                    return (
+                      <>
+                        <li
+                          id={"res" + data.id}
+                          className="resources resourceitem"
+                          onClick={
+                            resourceOpened
+                              ? console.log("resourceAlreadyOpened")
+                              : openResource
+                          }
+                        >
+                          <div
+                            id={"res" + data.id}
+                            className="resource-name-container"
+                          >
+                            <span
+                              id={"res" + data.id}
+                              className="resource-name"
+                            >
+                              {data.name}
+                            </span>
+                          </div>
+
+                          <div
+                            id={"resource-description_res" + data.id}
+                            className="resource-content-container hidden"
+                          >
+                            <span className=" resource-description">
+                              {data.description}
+                            </span>
+                            <div className="resource-files"></div>
+                          </div>
+                          <div
+                            id={"cres" + data.id}
+                            onClick={closeResource}
+                            className="close-resource-container hidden"
+                          >
+                            <button
+                              className="resources__editButton"
+                              onClick={() => {
+                                editResource(data.id);
+                              }}
+                            ></button>
+                            <div
+                              id={"cres" + data.id}
+                              className="close-resource "
+                            ></div>
+
+                            <button
+                              className="resources__deleteButton"
+                              onClick={() => {
+                                deleteResource(data.id);
+                              }}
+                            ></button>
+                          </div>
+                        </li>
+                      </>
+                    );
+                  }
+                })}
+              </ul>
+            ) : (
+              <div id="RESOURCES_ERROR">
+                <br />
+                <p>or</p>
+                <h3 onClick={getResources}>Refresh the page</h3>
+              </div>
+            )}
           </div>
         </section>
+        <ResourcesModal />
+
         <BottomButtons mobile={ItsMobileDevice} location={"resources"} />
       </div>
     </>

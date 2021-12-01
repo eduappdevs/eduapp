@@ -3,7 +3,7 @@
   flex-basis: auto;
   flex-shrink: 0;
   flex-wrap: wrap;
-  height: 100vh;
+  height: 100%;
 }
 .resources-main-container > section {
   flex-grow: 10;
@@ -17,6 +17,10 @@
   bottom: 0;
   position: relative;
   font-family: "Consolas";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 .resources-container > ul {
   display: flex;
@@ -26,21 +30,24 @@
   margin-block-start: 0;
   margin-block-end: 0;
   padding-inline-start: 0;
+  width: 70%;
 }
 .resources {
   transition: all 0.3s;
   display: flex;
   flex-direction: row;
-  padding: 15px;
-  box-shadow: 0 5px 1px rgb(69, 119, 255);
+  /* padding: 15px; */
+  box-shadow: 0 4px 8px rgb(185, 185, 185);
   border-radius: 12px;
-  background-color: var(--blue);
+  /* background-color: var(--blue); */
+
   justify-content: center;
   margin-top: 20px;
   cursor: pointer;
   z-index: 9999;
   transition: 0.3s all ease;
   text-transform: uppercase;
+  overflow: hidden;
   margin-bottom: 20px;
 }
 .resource-opened {
@@ -61,8 +68,9 @@
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: flex-end;
+  pointer-events: none;
 }
 .resource-opened > .resource-name-container {
   flex: 1;
@@ -70,10 +78,11 @@
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  transition: all 0.3s;
+  align-items: center;
+  padding: 0px;
+  background-color: var(--blue);
 }
-.resource-opened > .resource-description-container {
+.resource-opened > .resource-content-container {
   flex: 4;
   width: 100%;
   height: 100%;
@@ -81,18 +90,16 @@
   justify-content: center;
   align-items: flex-start;
   background-color: white;
-  border-radius: 20px;
   color: rgb(32, 32, 32);
   opacity: 1;
   transition: all 0.3s;
+  overflow-x: hidden;
+  flex-direction: column;
 }
 
-.resources:hover {
-  transform: scale(0.98);
-}
 .resourceitem {
   width: 85%;
-  height: 2.5vh;
+  min-height: 2em;
   transition: all 0.4s;
 }
 .resource-name {
@@ -102,32 +109,78 @@
   letter-spacing: 0.5px;
 }
 .resource-description {
-  margin: 20px;
-  flex: 0.6;
-  width: 95%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex: 0.5;
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 80%;
+  color: rgb(26, 26, 26);
+  background-color: rgba(255, 255, 255, 0.185);
+}
+
+.resource-files {
+  flex: 1.5;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(158, 158, 158, 0.233);
+  border-top: 1px solid rgb(146, 165, 182);
+  overflow-y: scroll;
 }
 .hidden {
   display: none !important;
   opacity: 0;
 }
+.resources__deleteButton {
+  cursor: pointer;
+  position: relative;
+  bottom: 3px;
+  padding: 5px;
+  border: none;
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Igp3aWR0aD0iMzIiIGhlaWdodD0iMzIiCnZpZXdCb3g9IjAgMCAzMiAzMiIKc3R5bGU9IiBmaWxsOiMwMDAwMDA7Ij48cGF0aCBkPSJNIDE1IDQgQyAxNC40NzY1NjMgNCAxMy45NDE0MDYgNC4xODM1OTQgMTMuNTYyNSA0LjU2MjUgQyAxMy4xODM1OTQgNC45NDE0MDYgMTMgNS40NzY1NjMgMTMgNiBMIDEzIDcgTCA3IDcgTCA3IDkgTCA4IDkgTCA4IDI1IEMgOCAyNi42NDQ1MzEgOS4zNTU0NjkgMjggMTEgMjggTCAyMyAyOCBDIDI0LjY0NDUzMSAyOCAyNiAyNi42NDQ1MzEgMjYgMjUgTCAyNiA5IEwgMjcgOSBMIDI3IDcgTCAyMSA3IEwgMjEgNiBDIDIxIDUuNDc2NTYzIDIwLjgxNjQwNiA0Ljk0MTQwNiAyMC40Mzc1IDQuNTYyNSBDIDIwLjA1ODU5NCA0LjE4MzU5NCAxOS41MjM0MzggNCAxOSA0IFogTSAxNSA2IEwgMTkgNiBMIDE5IDcgTCAxNSA3IFogTSAxMCA5IEwgMjQgOSBMIDI0IDI1IEMgMjQgMjUuNTU0Njg4IDIzLjU1NDY4OCAyNiAyMyAyNiBMIDExIDI2IEMgMTAuNDQ1MzEzIDI2IDEwIDI1LjU1NDY4OCAxMCAyNSBaIE0gMTIgMTIgTCAxMiAyMyBMIDE0IDIzIEwgMTQgMTIgWiBNIDE2IDEyIEwgMTYgMjMgTCAxOCAyMyBMIDE4IDEyIFogTSAyMCAxMiBMIDIwIDIzIEwgMjIgMjMgTCAyMiAxMiBaIj48L3BhdGg+PC9zdmc+")
+    50% 50% no-repeat;
+  pointer-events: all;
+  opacity: 0.7;
+}
+.resources__editButton {
+  cursor: pointer;
+  position: relative;
+  bottom: 3px;
+  padding: 5px;
+  border: none;
+  width: 35px;
+  height: 35px;
+  background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHg9IjBweCIgeT0iMHB4Igp3aWR0aD0iMjQiIGhlaWdodD0iMjQiCnZpZXdCb3g9IjAgMCAyNCAyNCIKc3R5bGU9IiBmaWxsOiMwMDAwMDA7Ij4gICAgPHBhdGggZD0iTSAxOC40MTQwNjIgMiBDIDE4LjE1ODA2MiAyIDE3LjkwMjAzMSAyLjA5Nzk2ODcgMTcuNzA3MDMxIDIuMjkyOTY4OCBMIDE1LjcwNzAzMSA0LjI5Mjk2ODggTCAxNC4yOTI5NjkgNS43MDcwMzEyIEwgMyAxNyBMIDMgMjEgTCA3IDIxIEwgMjEuNzA3MDMxIDYuMjkyOTY4OCBDIDIyLjA5ODAzMSA1LjkwMTk2ODcgMjIuMDk4MDMxIDUuMjY4OTA2MyAyMS43MDcwMzEgNC44Nzg5MDYyIEwgMTkuMTIxMDk0IDIuMjkyOTY4OCBDIDE4LjkyNjA5NCAyLjA5Nzk2ODcgMTguNjcwMDYzIDIgMTguNDE0MDYyIDIgeiBNIDE4LjQxNDA2MiA0LjQxNDA2MjUgTCAxOS41ODU5MzggNS41ODU5Mzc1IEwgMTguMjkyOTY5IDYuODc4OTA2MiBMIDE3LjEyMTA5NCA1LjcwNzAzMTIgTCAxOC40MTQwNjIgNC40MTQwNjI1IHogTSAxNS43MDcwMzEgNy4xMjEwOTM4IEwgMTYuODc4OTA2IDguMjkyOTY4OCBMIDYuMTcxODc1IDE5IEwgNSAxOSBMIDUgMTcuODI4MTI1IEwgMTUuNzA3MDMxIDcuMTIxMDkzOCB6Ij48L3BhdGg+PC9zdmc+")
+    50% 50% no-repeat;
+  opacity: 0.7;
+  pointer-events: all;
+}
 .close-resource {
   cursor: pointer;
+  padding: 15px 10px;
+  pointer-events: all;
 }
 .close-resource::after {
   display: block;
   height: 4px;
-  width: 30px;
+  width: 22px;
   content: "";
-  background-color: white;
+  background-color: rgb(105, 105, 105);
   transform: translateY(-3.6px) rotate(45deg);
   transition: all 0.3s;
 }
 .close-resource::before {
   display: block;
   height: 4px;
-  width: 30px;
+  width: 22px;
   content: "";
-  background-color: white;
+  background-color: rgb(105, 105, 105);
   transform: rotate(-45deg);
   transition: all 0.3s;
 }
@@ -140,6 +193,13 @@
 
 .resources-container > ul > li > * {
   color: white;
+}
+.resource-name-container {
+  background-color: var(--blue);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px 20px;
 }
 .resourcesSearchBar {
   height: 6vh;
@@ -206,10 +266,34 @@
   width: 60% !important;
   position: relative;
 }
-#RESOURCES_ERROR{
+#RESOURCES_ERROR {
   display: flex;
   justify-content: center;
   align-items: center;
   color: gray;
   flex-direction: column;
+}
+#RESOURCES_ERROR > p {
+  cursor: pointer;
+}
+.resources__addNewResource {
+  background-color: var(--orange);
+  padding: 20px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 1px rgb(233 130 62);
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .resources-container {
+    margin-bottom: 20%;
+  }
 }
