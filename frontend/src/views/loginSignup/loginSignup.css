@@ -7,11 +7,12 @@
   /* animation: 3s zoomInOut infinite alternate ease; */
 }
 .accessPage-logo {
-  height: 10%;
+  height: 84.3%;
   width: 100%;
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: none;
 }
 .accessPageSection {
   background-color: var(--orange);
@@ -88,7 +89,10 @@
   width: 100vw;
   z-index: 200;
 }
-
+.registration_form > h1,
+.login_form > h1 {
+  color: white;
+}
 .accessPage_login {
   width: 100%;
   height: 100%;
@@ -101,7 +105,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 50%;
+  height: 80%;
   flex: 1;
 }
 .blue_halfDiv {
@@ -110,7 +114,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 50%;
+  height: 20%;
   flex: 1;
 }
 .orange_halfDiv > form,
@@ -170,7 +174,7 @@
   border-radius: 20px;
   background-color: white;
   padding: 10px 20px;
-  margin-top: 20px;
+  margin-top: 10px;
   cursor: pointer;
 }
 .orange_halfDiv > form > button {
@@ -223,6 +227,21 @@
 }
 
 @media (min-width: 900px) {
+  .accessPage-logo {
+    height: 31.5%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .accessPage-logo > img {
+    width: 90px;
+    height: 90px;
+    margin-top: 10px;
+    margin-left: 10px;
+    z-index: 1000;
+    /* animation: 3s zoomInOut infinite alternate ease; */
+  }
   .accessPage_background {
     width: 50%;
     height: 50%;

@@ -3,7 +3,7 @@
   flex-basis: auto;
   flex-shrink: 0;
   flex-wrap: wrap;
-  height: 100vh;
+  height: 100%;
 }
 .resources-main-container > section {
   flex-grow: 10;
@@ -17,6 +17,10 @@
   bottom: 0;
   position: relative;
   font-family: "Consolas";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 .resources-container > ul {
   display: flex;
@@ -26,6 +30,7 @@
   margin-block-start: 0;
   margin-block-end: 0;
   padding-inline-start: 0;
+  width: 70%;
 }
 .resources {
   transition: all 0.3s;
@@ -112,6 +117,7 @@
 }
 .close-resource {
   cursor: pointer;
+  padding: 15px 10px;
 }
 .close-resource::after {
   display: block;
@@ -206,13 +212,28 @@
   width: 60% !important;
   position: relative;
 }
-#RESOURCES_ERROR{
+#RESOURCES_ERROR {
   display: flex;
   justify-content: center;
   align-items: center;
   color: gray;
   flex-direction: column;
 }
-#RESOURCES_ERROR > p{
+#RESOURCES_ERROR > p {
   cursor: pointer;
+}
+.resources__addNewResource {
+  background-color: var(--orange);
+  padding: 20px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 1px rgb(233 130 62);
+  text-align: center;
 }
