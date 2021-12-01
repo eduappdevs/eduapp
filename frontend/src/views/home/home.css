@@ -3,12 +3,12 @@
   flex-direction: column;
   flex-wrap: wrap;
 }
-
 .user {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
+  margin-bottom: 30%;
 }
 .user > .user-container > .information-user {
   display: flex;
@@ -77,17 +77,6 @@
   align-items: center;
   flex-direction: column;
 }
-.user > .user-container > .sessions > .title-first-session {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-decoration: none;
-  color: #383838;
-  font-weight: bold;
-  text-indent: 0;
-  font-family: "Consolas";
-  font-size: 18px;
-}
 .user > .user-container > .sessions > .sessions-container {
   display: flex;
   justify-content: center;
@@ -124,7 +113,7 @@
 .user
   > .user-container
   > .sessions
-  > .sessions-container
+  >.sessions-container
   > .sessions-closed
   > .session-before
   > .arrow {
@@ -190,7 +179,7 @@
 
 .user
   > .user-container
-  > .sessions
+  > .sessions 
   > .sessions-container
   > .sessions-closed
   > .session-description {
@@ -227,3 +216,86 @@
   padding: 20px;
   width: 40vw;
 }
+.home__addForm{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.36);
+  border: 1px solid rgba(66, 66, 66, 0.075);
+  border-radius: 25px;
+  box-shadow: 0px 1.7px 3.1px rgba(0, 0, 0, 0.041),
+    0px 5.6px 10.5px rgba(0, 0, 0, 0.034), 0px 25px 47px rgba(0, 0, 0, 0.02);
+  font-weight: bold;
+  text-indent: 0;
+  font-family: "Consolas";
+  font-size: 18px;
+  margin-top: 3vh;
+  margin-bottom: 3vh;
+  transition: all 0.3s;
+  z-index: 900;
+  cursor: pointer;
+  pointer-events: visibleFill;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  list-style: none;
+  transform: none;
+}
+
+.home__addForm
+>.informationForm
+>.addFormContent 
+>div{
+  margin-bottom: 10%;
+  margin-top: 5%;
+  
+}
+.home__addForm
+>.informationForm{
+  background-color: white;
+  padding: 15px;
+  border-radius: 20px;
+  padding: 5%;
+}
+.home__Add
+>.home__buttonadd{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5%;
+}
+.home__addForm
+>.informationForm
+>.buttonClose{
+  margin-left: 90%;
+  z-index: 1000;
+}
+.addFormContent >div>input {
+  margin-top: 10%;
+  border: none;
+  height: 2em;
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.418);
+  text-indent: 10px;
+}
+
+
+.home__buttonSubmit{
+  z-index: 1000;
+  padding: 10px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 25px;
+  background-color: var(--orange);
+  color: #ffff;
+  width: 20vw;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.472);
+  font-family: "Consolas";
+  font-weight: 900;
+  font-size: 100%;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+

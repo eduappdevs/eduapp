@@ -15,8 +15,8 @@ class EduappUserSessionsController < ApplicationController
 
   # POST /eduapp_user_sessions
   def create
+   
     @eduapp_user_session = EduappUserSession.new(eduapp_user_session_params)
-
     if @eduapp_user_session.save
       render json: @eduapp_user_session, status: :created, location: @eduapp_user_session
     else
