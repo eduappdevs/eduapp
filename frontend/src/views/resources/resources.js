@@ -83,10 +83,7 @@ export default function Resources(props) {
       resource.style.cursor = "pointer";
       description.classList.add("hidden");
       resource_close.classList.add("hidden");
-
-      setTimeout(() => {
-        resource.classList.remove("resource-opened");
-      }, 200);
+      resource.classList.remove("resource-opened");
     } catch (error) {
       console.log(error);
     }
