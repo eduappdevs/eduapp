@@ -19,8 +19,7 @@ export default function Home() {
     }, 4000);
   };
   const getSessions = async () => {
-
-    let request =  await axios.get("http://localhost:3000/eduapp_user_sessions");
+    let request = await axios.get("http://localhost:3000/eduapp_user_sessions");
     const sessionsPreSorted = [];
     request.data.map((e) => {
       let id = e.id;
@@ -29,10 +28,11 @@ export default function Home() {
       let streamingPlatform = e.streaming_platform;
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
-      let sorter = date.split("-")[0].split(':')[0] + date.split("-")[0].split(':')[1];
+      let sorter =
+        date.split("-")[0].split(":")[0] + date.split("-")[0].split(":")[1];
       sessionsPreSorted.push({
         id,
-        name, 
+        name,
         date,
         streamingPlatform,
         resourcesPlatform,
@@ -54,8 +54,6 @@ export default function Home() {
     });
     setSessions(sessionSorted);
     setFirstSessionId(sessionSorted[0].id);
-    
-
   };
   const openSession = (e) => {
     e.preventDefault();
@@ -99,7 +97,7 @@ export default function Home() {
               <div className="information-user">
                 <div className="profile-picture">
                   <img
-                    src="https://img-aws.ehowcdn.com/600x400/photos.demandstudios.com/getty/article/34/162/91911271.jpg?type=webp"
+                    src="https://media-exp1.licdn.com/dms/image/C4D35AQEKTcP6XIR5cg/profile-framedphoto-shrink_200_200/0/1619629145557?e=1638417600&v=beta&t=NZ2vQCV1ePHoVdHbzwwej__qaNH2_UQ1wVP7rmevsnk"
                     alt=""
                   />
                 </div>

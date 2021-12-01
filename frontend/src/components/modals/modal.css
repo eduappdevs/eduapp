@@ -116,6 +116,8 @@
     border-radius: 8px;
     width: 70%;
     height: 6vh;
+    font-size: 140%;
+    font-weight: 600;
     margin-bottom: 20px;
     text-indent: 5px;
     transition: all 0.1s;

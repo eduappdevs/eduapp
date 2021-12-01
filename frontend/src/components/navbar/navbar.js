@@ -104,7 +104,7 @@ export default function Navbar({ mobile, location }) {
             <span className="profile-name">Richard clarke</span>
             <div className="profile-pic">
               <img
-                src="https://img-aws.ehowcdn.com/600x400/photos.demandstudios.com/getty/article/34/162/91911271.jpg?type=webp"
+                src="https://media-exp1.licdn.com/dms/image/C4D35AQEKTcP6XIR5cg/profile-framedphoto-shrink_200_200/0/1619629145557?e=1638417600&v=beta&t=NZ2vQCV1ePHoVdHbzwwej__qaNH2_UQ1wVP7rmevsnk"
                 alt=""
               />
             </div>

@@ -40,7 +40,7 @@ export default class App extends Component {
                 )
               }
             />
-            <Route path="/restest" element={<Resources />} />
+            <Route path="/test" element={<Resources />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </BrowserRouter>

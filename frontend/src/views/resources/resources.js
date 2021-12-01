@@ -4,6 +4,7 @@ import Navbar from "../../components/navbar/navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import "./resources.css";
 import ResourcesModal from "../../components/modals/resourcesModal";
+import axios from "axios";
 export default function Resources(props) {
   const [resources, setResources] = useState([]);
   const [resourceOpened, setResourceOpened] = useState(false);
@@ -59,13 +60,11 @@ export default function Resources(props) {
         const description = document.getElementById(
           "resource-description_" + e.target.id
         );
-
         resource.style.height = "50vh";
-        setTimeout(() => {
-          resource.classList.add("resource-opened");
-          description.classList.remove("hidden");
-          resource_close.classList.remove("hidden");
-        }, 100);
+        resource.classList.add("resource-opened");
+        description.classList.remove("hidden");
+        resource_close.classList.remove("hidden");
+        setTimeout(() => {}, 100);
         resource.style.cursor = "default";
       } catch (error) {
         console.log(error);
@@ -82,9 +81,10 @@ export default function Resources(props) {
       const description = document.getElementById("resource-description_" + id);
       resource.style.height = "";
       resource.style.cursor = "pointer";
+      description.classList.add("hidden");
+      resource_close.classList.add("hidden");
+
       setTimeout(() => {
-        resource_close.classList.add("hidden");
-        description.classList.add("hidden");
         resource.classList.remove("resource-opened");
       }, 200);
     } catch (error) {
@@ -99,6 +99,16 @@ export default function Resources(props) {
 
   const handleSearchResources = (e) => {
     setResourcesFilter(e.target.value);
+  };
+
+  const deleteResource = (id) => {
+    axios
+      .delete(`http://localhost:3000/resources/${id}`)
+      .then((res) => console.log, window.location.reload())
+      .catch((err) => console.log);
+  };
+  const editResource = (id) => {
+    console.log(id);
   };
   return (
     <>
@@ -163,21 +173,35 @@ export default function Resources(props) {
 
                           <div
                             id={"resource-description_res" + data.id}
-                            className="resource-description-container hidden"
+                            className="resource-content-container hidden"
                           >
                             <span className=" resource-description">
                               {data.description}
                             </span>
+                            <div className="resource-files"></div>
                           </div>
                           <div
                             id={"cres" + data.id}
                             onClick={closeResource}
                             className="close-resource-container hidden"
                           >
+                            <button
+                              className="resources__editButton"
+                              onClick={() => {
+                                editResource(data.id);
+                              }}
+                            ></button>
                             <div
                               id={"cres" + data.id}
                               className="close-resource "
                             ></div>
+
+                            <button
+                              className="resources__deleteButton"
+                              onClick={() => {
+                                deleteResource(data.id);
+                              }}
+                            ></button>
                           </div>
                         </li>
                       </>
@@ -187,8 +211,9 @@ export default function Resources(props) {
               </ul>
             ) : (
               <div id="RESOURCES_ERROR">
-                <h1>AN ERROR OCURRED</h1>
-                <p onClick={getResources}>Refresh the page</p>
+                <br />
+                <p>or</p>
+                <h3 onClick={getResources}>Refresh the page</h3>
               </div>
             )}
           </div>
