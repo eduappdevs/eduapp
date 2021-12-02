@@ -11,6 +11,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  color: rgb(36, 36, 36);
 
 }
 .resources-container {
@@ -198,7 +199,6 @@
   width: 90%;
   z-index: 2;
   height: 100%;
-  border-radius: 15px;
   border-top: none;
   border-left: none;
   border-right: none;
@@ -208,7 +208,7 @@
   transition: 0.3s all;
   color: var(--blue);
   text-indent: 15%;
-  background-color: var(--secondaryColor);
+  background: none !important;
 }
 
 .resourcesSearchBar > form > input:hover {

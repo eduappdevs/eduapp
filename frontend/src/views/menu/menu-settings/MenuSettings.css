@@ -23,13 +23,42 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
+  height: 50%;
   transform: scale(0.8);
-  background-color: var(--orange);
-  color: white;
+  color: var(--textColor);
   font-size: 200%;
 }
 
 .MenuSettings__hidden {
   transform: translateX(2000px);
+}
+#darkModes{
+  height: 20%;
+  border: 0px solid var(--blue);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  overflow: hidden;
+}
+#darkModes > li{
+  flex: 1;
+  list-style: none;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(41, 99, 133);
+}
+#darkModes > li > svg{
+  height: 30px;
+  width: 30px;
+  fill: white;
+}
+
+.activeMode{
+  background-color: var(--blue) !important;
+ 
 }

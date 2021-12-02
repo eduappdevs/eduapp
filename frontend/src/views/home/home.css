@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  color: var(--textColor);
 }
 .user {
   display: flex;
@@ -41,7 +42,7 @@
 
 .user > .user-container > .information-user > .user-name {
   text-decoration: none;
-  color: rgb(0, 0, 0);
+  color: var(--textColor);
   font-weight: bold;
   text-indent: 0;
   font-family: "Consolas";
@@ -64,7 +65,7 @@
   display: block;
   width: 50%;
   height: 1px;
-  background-color: rgba(46, 46, 46, 0.096);
+  background-color: var(--backgroundColor);
   position: absolute;
   margin-top: 10%;
   border-radius: 30px;
@@ -84,7 +85,7 @@
   flex-direction: row;
   height: auto;
   width: 70vw;
-  border: 1px solid rgba(66, 66, 66, 0.075);
+  border: 1px solid  var(--textColor);
   border-radius: 25px;
   box-shadow: 0px 1.7px 3.1px rgba(0, 0, 0, 0.041),
     0px 5.6px 10.5px rgba(0, 0, 0, 0.034), 0px 25px 47px rgba(0, 0, 0, 0.02);

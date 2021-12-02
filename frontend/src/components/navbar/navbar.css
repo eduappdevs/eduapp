@@ -13,7 +13,7 @@ header > nav {
   z-index: 10001;
   background-color: var(--backgroundColor);
   /* box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219); */
-  border-bottom: 3px solid var(--secondaryColor);
+  border-bottom: 3px solid rgba(189, 189, 189, 0.671);
   position: fixed;
   width: 100%;
 }
