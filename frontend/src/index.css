@@ -14,4 +14,11 @@ code {
 :root{
   --orange:#FF8139;
   --blue:#4B91FF;
+  --backgroundColor:#202124;
+  --shadowColor:#3a3a3a;
+  --textColor:#ffff;
+  --secondaryColor:#404146;
+  --headerBackground:var(--backgroundColor);
+  --headerButtonBG:var(--blue);
+  --headerButtonFill:white;
 }

@@ -4,7 +4,7 @@
   top: 0;
   left: 0;
   position: absolute;
-  background-color: white;
+  background-color: var(--backgroundColor);
   transform: translateX(0px);
   transition: all 0.3s;
   z-index: 99999999999999;

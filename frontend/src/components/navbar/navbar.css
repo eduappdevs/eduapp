@@ -11,8 +11,9 @@ header > nav {
   flex-direction: row;
   justify-content: space-between;
   z-index: 10001;
-  background-color: white;
-  box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
+  background-color: var(--backgroundColor);
+  /* box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219); */
+  box-shadow: 0 3px 6px var(--shadowColor);
   position: fixed;
   width: 100%;
 }
@@ -79,6 +80,7 @@ header > nav > .profile-button > .profile-button-box:hover {
 }
 header > nav > .profile-button > .profile-button-box > .profile-name {
   font-size: 1em;
+  color: var(--textColor);
 }
 header > nav > .profile-button > .profile-button-box > .profile-pic {
   flex: 1;
@@ -102,7 +104,7 @@ header > .profile-menu-mobile {
   position: fixed;
   top: 0%;
   left: 0;
-  background-color: white;
+  background-color: var(--backgroundColor);
   transform: translateX(105vh);
   transition: 0.3s all;
   z-index: 9999999999999;
@@ -132,8 +134,11 @@ header > .profile-menu-mobile > ul > li {
   width: 50%;
   margin-bottom: 20%;
   padding: 10px;
-  box-shadow: 0 2px 5px rgba(114, 114, 114, 0.493);
-  border: 2px solid rgba(255, 255, 255, 0.473);
+  /* box-shadow: 0 2px 5px rgba(114, 114, 114, 0.493); */
+  box-shadow: 0 2px 5px var(--shadowColor);
+  border: 2px solid var(--secondaryColor);
+
+  /* border: 2px solid rgba(255, 255, 255, 0.473); */
   text-align: center;
   margin-top: 8px;
   pointer-events: all;

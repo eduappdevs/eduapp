@@ -4,7 +4,8 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgb(255, 255, 255);
+  /* background-color: rgb(255, 255, 255); */
+  background-color: var(--backgroundColor);
   z-index: 9999999999999999999999;
   display: flex;
   flex-direction: column;
@@ -94,23 +95,27 @@
 }
 .resourceOpened__description > h1 {
   text-align: center;
-  color: rgb(36, 36, 36);
+  /* color: rgb(36, 36, 36); */
+  color: var(--textColor);
   flex: 0.3;
   height: 30%;
 }
 .resourceOpened__description > p {
   text-align: center;
-  color: rgb(36, 36, 36);
+  /* color: rgb(36, 36, 36); */
+  color: var(--textColor);
 }
 .resourceOpened__files {
   flex: 0.6;
   height: 100%;
   width: 100%;
+  color: var(--textColor);
 }
 .resourceOpened__files::before {
   content: "";
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.199);
+  /* background-color: rgba(0, 0, 0, 0.199); */
+  background-color: var(--secondaryColor);
   height: 1px;
   display: block;
 }
@@ -118,7 +123,9 @@
   text-align: center;
 }
 .resourceOpened__files > ul {
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
+  border: 1px solid var(--secondaryColor);
+
   width: 100vw;
   position: absolute;
   overflow-y: scroll;
@@ -130,7 +137,9 @@
   flex-direction: column;
 }
 .resourceOpened__files > ul > li {
-  border-bottom: 1px solid #ccc;
+  /* border-bottom: 1px solid #ccc; */
+  border-bottom: 1px solid var(--secondaryColor);
+
   padding: 10px 0;
   height: auto;
   text-align: center;

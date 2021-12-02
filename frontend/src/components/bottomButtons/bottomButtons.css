@@ -3,8 +3,9 @@
   /* background-color: var(--blue); */
   bottom: 0;
   border-radius: 20px 20px 0 0;
-  background-color: white;
-  box-shadow: 0 -3px 6px rgba(104, 104, 104, 0.207);
+  background-color: var(--backgroundColor);
+  /* box-shadow: 0 -3px 6px rgba(104, 104, 104, 0.207); */
+  box-shadow: 0 3px 6px var(--shadowColor);
   z-index: 9999999;
   position: fixed;
 }
