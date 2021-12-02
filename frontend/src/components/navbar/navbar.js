@@ -1,6 +1,7 @@
 import "./navbar.css";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import Menu from "../../views/menu/menu";
 
 export default function Navbar({ mobile, location }) {
   const [ProfileMenuOpened, setProfileMenuOpened] = useState(false);
@@ -72,6 +73,7 @@ export default function Navbar({ mobile, location }) {
       }, 300);
     }
   };
+
   return (
     <header>
       <nav>
@@ -111,20 +113,11 @@ export default function Navbar({ mobile, location }) {
           </div>
         </div>
       </nav>
-      <div className={mobile ? "profile-menu-mobile" : "profile-menu-desktop"}>
-        <div onClick={closeProfileMenu} className="closeProfileMenu"></div>
-        <ul>
-          <li>
-            <a href="/">Settings</a>
-          </li>
-          <li>
-            <a href="/">Tutorial</a>
-          </li>
-          <li>
-            <a href="/">Log out</a>
-          </li>
-        </ul>
-      </div>
+      <Menu
+        handleCloseMenu={() => {
+          closeProfileMenu();
+        }}
+      />
     </header>
   );
 }

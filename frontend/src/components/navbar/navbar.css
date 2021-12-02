@@ -2,7 +2,7 @@ header {
   display: flex;
   flex-direction: column;
   width: 100%;
-  z-index: 10000;
+  z-index: 9999999999;
   flex-grow: 1;
   height: 90px;
 }
@@ -103,9 +103,9 @@ header > .profile-menu-mobile {
   top: 0%;
   left: 0;
   background-color: white;
-  transform: translateY(-105vh);
+  transform: translateX(105vh);
   transition: 0.3s all;
-  z-index: 999999999999999;
+  z-index: 9999999999999;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
 }
 
@@ -118,6 +118,8 @@ header > .profile-menu-mobile > ul {
   width: 100%;
   height: 100%;
   list-style: none;
+  z-index: 9999999999;
+  pointer-events: none;
 }
 
 header > .profile-menu-mobile > ul > li {
@@ -134,12 +136,16 @@ header > .profile-menu-mobile > ul > li {
   border: 2px solid rgba(255, 255, 255, 0.473);
   text-align: center;
   margin-top: 8px;
+  pointer-events: all;
 }
+
 header > .profile-menu-mobile > ul > li > a {
   text-decoration: none;
   color: #ffff;
   font-weight: bold;
   text-indent: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* Desktop menu */
@@ -153,7 +159,7 @@ header > .profile-menu-desktop {
   background-color: white;
   transform: translateY(-100vh);
   transition: 0.3s all;
-  z-index: 1000000000;
+  z-index: 99999999999999999999999999;
   border-radius: 0 0 0 20px;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
   overflow: hidden;
