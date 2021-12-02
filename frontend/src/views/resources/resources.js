@@ -4,19 +4,12 @@ import Navbar from "../../components/navbar/navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import "./resources.css";
 import ResourcesModal from "../../components/modals/resourcesModal";
-import axios from "axios";
+import OpenedResource from "./openedResource/openedResource";
 export default function Resources(props) {
   const [resources, setResources] = useState([]);
-  const [resourceOpened, setResourceOpened] = useState(false);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [resourcesFilter, setResourcesFilter] = useState("");
-  const saa = [
-    {
-      id: 1,
-      name: "test offline",
-      description: "this is a test",
-    },
-  ];
+
   const getResources = async () => {
     try {
       const response = await fetch("http://localhost:3000/resources");
@@ -52,41 +45,9 @@ export default function Resources(props) {
   }, []);
   const openResource = (e) => {
     e.preventDefault();
-    setResourceOpened(true);
-    setTimeout(() => {
-      try {
-        const resource = document.getElementById(e.target.id);
-        const resource_close = document.getElementById("c" + e.target.id);
-        const description = document.getElementById(
-          "resource-description_" + e.target.id
-        );
-        resource.style.height = "50vh";
-        resource.classList.add("resource-opened");
-        description.classList.remove("hidden");
-        resource_close.classList.remove("hidden");
-        setTimeout(() => {}, 100);
-        resource.style.cursor = "default";
-      } catch (error) {
-        console.log(error);
-      }
-    }, 150);
-  };
-  const closeResource = (e) => {
-    e.preventDefault();
-    setResourceOpened(false);
-    const id = e.target.id.substring(1);
-    try {
-      const resource = document.getElementById(id);
-      const resource_close = document.getElementById("c" + id);
-      const description = document.getElementById("resource-description_" + id);
-      resource.style.height = "";
-      resource.style.cursor = "pointer";
-      description.classList.add("hidden");
-      resource_close.classList.add("hidden");
-      resource.classList.remove("resource-opened");
-    } catch (error) {
-      console.log(error);
-    }
+    document
+      .getElementById(`resource__${e.target.id}__opened`)
+      .classList.remove("openedResource__hidden");
   };
   const createResource = () => {
     document.getElementsByClassName(
@@ -98,15 +59,6 @@ export default function Resources(props) {
     setResourcesFilter(e.target.value);
   };
 
-  const deleteResource = (id) => {
-    axios
-      .delete(`http://localhost:3000/resources/${id}`)
-      .then((res) => console.log, window.location.reload())
-      .catch((err) => console.log);
-  };
-  const editResource = (id) => {
-    console.log(id);
-  };
   return (
     <>
       <div className="resources-main-container">
@@ -147,14 +99,12 @@ export default function Resources(props) {
                   ) {
                     return (
                       <>
+                        <OpenedResource data={data} />
+
                         <li
                           id={"res" + data.id}
                           className="resources resourceitem"
-                          onClick={
-                            resourceOpened
-                              ? console.log("resourceAlreadyOpened")
-                              : openResource
-                          }
+                          onClick={openResource}
                         >
                           <div
                             id={"res" + data.id}
@@ -166,39 +116,6 @@ export default function Resources(props) {
                             >
                               {data.name}
                             </span>
-                          </div>
-
-                          <div
-                            id={"resource-description_res" + data.id}
-                            className="resource-content-container hidden"
-                          >
-                            <span className=" resource-description">
-                              {data.description}
-                            </span>
-                            <div className="resource-files"></div>
-                          </div>
-                          <div
-                            id={"cres" + data.id}
-                            onClick={closeResource}
-                            className="close-resource-container hidden"
-                          >
-                            <button
-                              className="resources__editButton"
-                              onClick={() => {
-                                editResource(data.id);
-                              }}
-                            ></button>
-                            <div
-                              id={"cres" + data.id}
-                              className="close-resource "
-                            ></div>
-
-                            <button
-                              className="resources__deleteButton"
-                              onClick={() => {
-                                deleteResource(data.id);
-                              }}
-                            ></button>
                           </div>
                         </li>
                       </>

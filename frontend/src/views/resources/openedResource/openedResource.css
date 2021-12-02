@@ -1,0 +1,141 @@
+.openedResource__main-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgb(255, 255, 255);
+  z-index: 9999999999999999999999;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(0);
+  transition: 0.3s all;
+}
+
+.resourceOpened__header {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 2px solid rgba(202, 202, 202, 0.616);
+  background-color: var(--blue);
+  flex: 0.1;
+  height: 10%;
+}
+.resourceOpened__backToResources {
+  flex: 0.5;
+  width: 25%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.resourceOpened__backToResources > .resourceOpened__backToResources__container {
+  transform: scale(1.2);
+  transform: rotate(180deg);
+  border-radius: 5px;
+  background-color: white;
+  width: 70px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  fill: var(--blue);
+  cursor: pointer;
+}
+.resourceOpened__name {
+  display: flex;
+  flex: 1.5;
+  width: 75%;
+  color: rgb(255, 255, 255);
+}
+.resourceOpened__buttons {
+  float: right;
+  height: 100%;
+  display: flex;
+  margin-right: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
+}
+
+.resources__deleteButton {
+  cursor: pointer;
+  position: relative;
+  bottom: 3px;
+  padding: 5px;
+  border: none;
+  width: 35px;
+  height: 35px;
+  pointer-events: all;
+  opacity: 0.7;
+  fill: white;
+  display: flex;
+  justify-content: center;
+  color: white;
+  text-decoration: underline white;
+  align-items: center;
+  flex: 1;
+}
+.resources__editButton {
+  cursor: pointer;
+  position: relative;
+  bottom: 3px;
+  padding: 5px;
+  border: none;
+  width: 35px;
+  height: 35px;
+  opacity: 0.7;
+  pointer-events: all;
+  fill: white;
+  display: flex;
+  justify-content: center;
+  text-decoration: underline white;
+  align-items: center;
+  color: white;
+  flex: 1;
+}
+.resourceOpened__description > h1 {
+  text-align: center;
+  color: rgb(36, 36, 36);
+  flex: 0.3;
+  height: 30%;
+}
+.resourceOpened__description > p {
+  text-align: center;
+  color: rgb(36, 36, 36);
+}
+.resourceOpened__files {
+  flex: 0.6;
+  height: 100%;
+  width: 100%;
+}
+.resourceOpened__files::before {
+  content: "";
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.199);
+  height: 1px;
+  display: block;
+}
+.resourceOpened__files > h1 {
+  text-align: center;
+}
+.resourceOpened__files > ul {
+  border: 1px solid #ccc;
+  width: 100vw;
+  position: absolute;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 64%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.resourceOpened__files > ul > li {
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  height: auto;
+  text-align: center;
+  width: 100%;
+}
+.openedResource__hidden {
+  transform: translateX(-5000px);
+}
