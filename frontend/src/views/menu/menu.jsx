@@ -19,7 +19,7 @@ export default function Menu(props) {
         backTo={() => {
           props.handleCloseMenu();
         }}
-        backToName={"Close"}
+        backToName={props.location}
       />
 
       <ul>

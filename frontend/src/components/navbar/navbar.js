@@ -114,6 +114,7 @@ export default function Navbar({ mobile, location }) {
         </div>
       </nav>
       <Menu
+        location={location}
         handleCloseMenu={() => {
           closeProfileMenu();
         }}

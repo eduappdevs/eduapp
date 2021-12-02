@@ -13,7 +13,7 @@ header > nav {
   z-index: 10001;
   background-color: var(--backgroundColor);
   /* box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219); */
-  box-shadow: 0 3px 6px var(--shadowColor);
+  border-bottom: 3px solid var(--secondaryColor);
   position: fixed;
   width: 100%;
 }
@@ -125,20 +125,15 @@ header > .profile-menu-mobile > ul {
 }
 
 header > .profile-menu-mobile > ul > li {
-  font-size: 120%;
   text-transform: uppercase;
   font-family: "Consolas";
   font-weight: bold;
   border-radius: 30px;
   background-color: var(--orange);
-  width: 50%;
   margin-bottom: 20%;
   padding: 10px;
-  /* box-shadow: 0 2px 5px rgba(114, 114, 114, 0.493); */
   box-shadow: 0 2px 5px var(--shadowColor);
-  border: 2px solid var(--secondaryColor);
-
-  /* border: 2px solid rgba(255, 255, 255, 0.473); */
+  border: 2px solid var(--shadowColor);
   text-align: center;
   margin-top: 8px;
   pointer-events: all;
@@ -151,6 +146,10 @@ header > .profile-menu-mobile > ul > li > a {
   text-indent: 0;
   width: 100%;
   height: 100%;
+  padding: 20px 20px;
+  font-size: 200%;
+  cursor: pointer;
+  margin: 20px;
 }
 
 /* Desktop menu */
@@ -161,12 +160,12 @@ header > .profile-menu-desktop {
   height: 100%;
   position: absolute;
   right: 0;
-  background-color: white;
-  transform: translateY(-100vh);
+  background-color: var(--backgroundColor);
+  transform: translateY(-1000vh);
   transition: 0.3s all;
   z-index: 99999999999999999999999999;
   border-radius: 0 0 0 20px;
-  box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
+  box-shadow: 0 3px 6px var(--secondaryColor);
   overflow: hidden;
 }
 
@@ -190,8 +189,8 @@ header > .profile-menu-desktop > ul > li {
   background-color: var(--orange);
   width: 50%;
   padding: 10px;
-  box-shadow: 0 2px 5px rgba(114, 114, 114, 0.493);
-  border: 2px solid rgba(255, 255, 255, 0.473);
+  box-shadow: 0 2px 5px var(--shadowColor);
+  border: 2px solid var(--shadowColor);
   text-align: center;
   margin-top: 8px;
 }
