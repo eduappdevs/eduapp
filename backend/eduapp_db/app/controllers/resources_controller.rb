@@ -3,13 +3,14 @@ class ResourcesController < ApplicationController
 
   # GET /resources
   def index
-    @resources = Resource.all
+    @resources = Resource.all.with_attached_files
 
     render json: @resources
   end
 
   # GET /resources/1
   def show
+    @resource = Resource.with_attached_files.find(params[:id])
     render json: @resource
   end
 
@@ -46,6 +47,6 @@ class ResourcesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def resource_params
-      params.require(:resource).permit(:name, :description)
+      params.permit(:name, :description, :files)
     end
 end
