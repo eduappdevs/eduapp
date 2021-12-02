@@ -113,7 +113,7 @@
 .user
   > .user-container
   > .sessions
-  >.sessions-container
+  > .sessions-container
   > .sessions-closed
   > .session-before
   > .arrow {
@@ -179,7 +179,7 @@
 
 .user
   > .user-container
-  > .sessions 
+  > .sessions
   > .sessions-container
   > .sessions-closed
   > .session-description {
@@ -216,7 +216,7 @@
   padding: 20px;
   width: 40vw;
 }
-.home__addForm{
+.home__addForm {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -238,7 +238,7 @@
   list-style: none;
   transform: none;
 }
-.mobileForm{
+.mobileForm {
   position: fixed;
   z-index: 9999999999;
   top: 0;
@@ -246,49 +246,40 @@
   height: 100vh;
   width: 100vw;
 }
-.home__addForm
->.informationForm
->.addFormContent 
->div{
+.home__addForm > .informationForm > .addFormContent > div {
   margin-bottom: 10%;
   margin-top: 5%;
-  
 }
-.home__addForm
->.informationForm{
+.home__addForm > .informationForm {
   background-color: white;
   padding: 15px;
   border-radius: 20px;
   padding: 5%;
 }
-.home__Add
->.home__buttonadd{
+.home__Add > .home__buttonadd {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 5%;
 }
-.home__addForm
->.informationForm
->.buttonClose{
+.home__addForm > .informationForm > .buttonClose {
   margin-left: 90%;
   z-index: 1000;
 }
-.addFormContent >div>input {
+.addFormContent > div > input {
   margin-top: 10%;
   border: none;
   height: 2.5em;
   width: 100%;
-  
+
   border-radius: 10px;
   box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
   text-indent: 10px;
 }
-.addFormContent >div>input:focus {
+.addFormContent > div > input:focus {
   outline: none;
-  
 }
-.timeInputs{
+.timeInputs {
   margin-top: 8px;
   border: none;
   height: 2.5em;
@@ -300,21 +291,20 @@
   box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
   text-indent: 10px;
 }
-.timeInputs>input{
+.timeInputs > input {
   flex: 1;
   width: 50%;
   border: none;
   padding: 3px;
-
 }
-.timeInputs>input:first-child{
+.timeInputs > input:first-child {
   border-right: 1px solid var(--blue);
 }
-.timeInputs>input:focus{
+.timeInputs > input:focus {
   outline: none;
 }
 
-.home__buttonSubmit{
+.home__buttonSubmit {
   z-index: 1000;
   padding: 10px;
   margin-top: 20px;
@@ -330,18 +320,18 @@
   transition: all 0.2s;
   cursor: pointer;
 }
-.schedule{
+.schedule {
   display: flex;
   flex-direction: column;
 }
-.timeLabels{
+.timeLabels {
   width: 100%;
   display: flex;
   flex-direction: row;
   margin-top: 10px;
 }
-.timeLabels>label{
-  flex:1;
+.timeLabels > label {
+  flex: 1;
   width: 50%;
   text-align: center;
 }

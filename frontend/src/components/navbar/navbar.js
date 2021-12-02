@@ -106,7 +106,7 @@ export default function Navbar({ mobile, location }) {
             <span className="profile-name">Richard clarke</span>
             <div className="profile-pic">
               <img
-                src="https://media-exp1.licdn.com/dms/image/C4D35AQEKTcP6XIR5cg/profile-framedphoto-shrink_200_200/0/1619629145557?e=1638417600&v=beta&t=NZ2vQCV1ePHoVdHbzwwej__qaNH2_UQ1wVP7rmevsnk"
+                src="https://media-exp1.licdn.com/dms/image/C5603AQH1DePwZKdqAQ/profile-displayphoto-shrink_200_200/0/1516938150762?e=1643846400&v=beta&t=4sUjvaLKjc1cu_YtKgqxwsos3TogDh2Sd6kpq8sPmAE"
                 alt=""
               />
             </div>
@@ -114,6 +114,7 @@ export default function Navbar({ mobile, location }) {
         </div>
       </nav>
       <Menu
+        location={location}
         handleCloseMenu={() => {
           closeProfileMenu();
         }}

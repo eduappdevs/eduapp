@@ -22,23 +22,25 @@
 }
 .resourceOpened__backToResources {
   flex: 0.5;
-  width: 25%;
+  width: 20%;
   justify-content: center;
   align-items: center;
   display: flex;
 }
 .resourceOpened__backToResources > .resourceOpened__backToResources__container {
   transform: scale(1.2);
-  transform: rotate(180deg);
   border-radius: 5px;
   background-color: white;
-  width: 70px;
-  height: 40px;
+  padding: 8px 12px;
   display: flex;
   justify-content: center;
   align-items: center;
-  fill: var(--blue);
   cursor: pointer;
+}
+.resourceOpened__backToResources
+  > .resourceOpened__backToResources__container
+  > svg {
+  fill: var(--blue);
 }
 .resourceOpened__name {
   display: flex;
@@ -94,7 +96,7 @@
 }
 .resourceOpened__description > h1 {
   text-align: center;
-  color: rgb(36, 36, 36);
+  color: rgba(36, 36, 36, 0.842);
   flex: 0.3;
   height: 30%;
 }
@@ -116,6 +118,7 @@
 }
 .resourceOpened__files > h1 {
   text-align: center;
+  color: rgba(36, 36, 36, 0.842);
 }
 .resourceOpened__files > ul {
   border: 1px solid #ccc;
