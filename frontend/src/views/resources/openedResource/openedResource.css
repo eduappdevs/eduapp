@@ -103,6 +103,7 @@
 }
 .resourceOpened__description > p {
   text-align: center;
+  font-size: 120%   ;
   color: var(--textColor);
 }
 .resourceOpened__files {
@@ -120,7 +121,7 @@
 }
 .resourceOpened__files > h1 {
   text-align: center;
-  color: rgba(36, 36, 36, 0.842);
+  color: var(--textColor);
 }
 .resourceOpened__files > ul {
   border: 1px solid var(--secondaryColor);

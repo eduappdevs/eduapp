@@ -5,20 +5,13 @@ import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import "./resources.css";
 import ResourcesModal from "../../components/modals/resourcesModal";
 import OpenedResource from "./openedResource/openedResource";
+import axios from "axios";
+let resources = [];
 export default function Resources(props) {
-  const [resources, setResources] = useState([]);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [resourcesFilter, setResourcesFilter] = useState("");
+  const [resourcesLoaded, setResourcesLoaded] = useState(false);
 
-  const getResources = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/resources");
-      const data = await response.json();
-      setResources(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -28,13 +21,18 @@ export default function Resources(props) {
       }
     }, 4000);
   };
-  useEffect(() => {
-    try {
-      getResources();
-      console.log("Getting resources");
-    } catch (error) {
-      console.log("An error has ocurred");
-    }
+  useEffect(async () => {
+    const resources__url = "http://localhost:3000/resources";
+    await axios.get(resources__url).then((res) => {
+      res.data.map((x) => {
+        if (x.files != null) {
+          x.files = x.files.url;
+        }
+      });
+
+      resources = res.data;
+      setResourcesLoaded(true);
+    });
     checkMediaQueries();
     //First check
     if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -59,7 +57,7 @@ export default function Resources(props) {
     setResourcesFilter(e.target.value);
   };
 
-  return (
+  return resourcesLoaded ? (
     <>
       <div className="resources-main-container">
         <Navbar mobile={ItsMobileDevice} location={"resources"} />
@@ -88,7 +86,7 @@ export default function Resources(props) {
             <div className="resources__addNewResource" onClick={createResource}>
               Add something
             </div>
-            {resources.length > 0 ? (
+            {resourcesLoaded ? (
               <ul>
                 {resources.map((data) => {
                   if (
@@ -127,7 +125,7 @@ export default function Resources(props) {
               <div id="RESOURCES_ERROR">
                 <br />
                 <p>or</p>
-                <h3 onClick={getResources}>Refresh the page</h3>
+                <h3>Refresh the page</h3>
               </div>
             )}
           </div>
@@ -137,5 +135,7 @@ export default function Resources(props) {
         <BottomButtons mobile={ItsMobileDevice} location={"resources"} />
       </div>
     </>
+  ) : (
+    <h1>Loading</h1>
   );
 }

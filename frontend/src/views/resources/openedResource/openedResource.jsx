@@ -5,6 +5,7 @@ export default function OpenedResource(props) {
   const [id, setId] = useState(props.data.id);
   const [name, setName] = useState(props.data.name);
   const [description, setDescription] = useState(props.data.description);
+  const [files, setFiles] = useState(props.data.files);
   const deleteResource = (id) => {
     axios
       .delete(`http://localhost:3000/resources/${id}`)
@@ -19,7 +20,11 @@ export default function OpenedResource(props) {
       .getElementById("resource__res" + id + "__opened")
       .classList.add("openedResource__hidden");
   };
-
+  const isImage = (image) => {
+    const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|jpeg)$");
+    console.log("isimageclg", image, imageRegex.test(image));
+    return imageRegex.test(image);
+  };
   return (
     <div
       id={"resource__res" + id + "__opened"}
@@ -100,150 +105,23 @@ export default function OpenedResource(props) {
       <div className="resourceOpened__files">
         <h1>Files</h1>
         <ul>
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui,
-            accusamus ullam voluptates vel libero, explicabo earum quos modi
-            nulla debitis rem porro eos fugiat asperiores tempore temporibus cum
-            dolorum optio.
-          </li>
-          <li>
-            Unde qui necessitatibus, rem atque pariatur magnam officia similique
-            aliquam nihil cupiditate dolorum nesciunt facilis voluptas eligendi
-            omnis possimus ratione placeat ex iusto illum. Sint mollitia alias
-            molestias distinctio cum!
-          </li>
-          <li>
-            Odio iure laudantium eius illum fugit optio? Hic iste quod modi
-            facere rem culpa exercitationem voluptas maiores iusto voluptates,
-            dolorem perferendis illo quos dolore animi explicabo, laborum
-            excepturi aspernatur perspiciatis.
-          </li>
-          <li>
-            Odio earum id vel voluptatum ad quasi dolores numquam! Neque
-            asperiores, iusto nam enim libero ad provident suscipit ex excepturi
-            sunt aut eos. Et incidunt, non at repudiandae temporibus voluptatum.
-          </li>
-          <li>
-            Facilis laudantium error cumque minima temporibus obcaecati officia
-            quam dignissimos, aliquid, nemo rerum ducimus dolor accusantium quo
-            exercitationem quasi, nam velit magnam magni eligendi assumenda
-            facere sit reiciendis! Quibusdam, illo.
-          </li>
-          <li>
-            Beatae vitae eius modi optio facilis libero, atque similique eveniet
-            tempore numquam, quaerat deleniti soluta obcaecati fugiat iste
-            doloremque dolore, odio perspiciatis. Saepe excepturi laboriosam
-            cupiditate dolore, eveniet natus tempore.
-          </li>
-          <li>
-            Pariatur doloribus dicta expedita provident autem mollitia, aliquam
-            quibusdam placeat tenetur quod? Quaerat iusto ullam itaque autem
-            eius atque ipsum perferendis placeat quo vel. Est eius
-            necessitatibus beatae eveniet ratione.
-          </li>
-          <li>
-            Nostrum, recusandae nam praesentium voluptates aut quidem reiciendis
-            dolor sit, consectetur maxime expedita veritatis iste magni vel
-            maiores, alias culpa ex dolores sed. Eaque repellat obcaecati nobis
-            voluptate cum. Quas.
-          </li>
-          <li>
-            Iure saepe officiis nesciunt magni. Commodi, eveniet. Autem quo sunt
-            dolores. Delectus, autem repellendus asperiores vel explicabo eius
-            laborum esse aliquid exercitationem vitae eligendi repellat itaque,
-            nemo ipsa necessitatibus corrupti.
-          </li>
-          <li>
-            Laudantium labore repellendus voluptas, culpa quos unde? Nemo
-            perferendis cumque aspernatur nesciunt odio incidunt fuga mollitia,
-            sequi temporibus? Consequuntur totam aliquam numquam ex dignissimos
-            illo saepe nemo itaque incidunt. Suscipit!
-          </li>
-          <li>
-            Enim quaerat quis ea eius corrupti unde excepturi quibusdam, quasi
-            ullam repudiandae dolor quo ad, soluta beatae possimus? Nesciunt
-            optio omnis asperiores, eaque sequi excepturi consequuntur neque
-            animi explicabo laudantium!
-          </li>
-          <li>
-            Fugiat nihil nulla deleniti temporibus iusto eos, at obcaecati
-            animi, doloribus facilis cumque hic beatae nostrum doloremque earum
-            reprehenderit nemo facere sapiente voluptatum, eius id nisi. Ab
-            tenetur assumenda fuga.
-          </li>
-          <li>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia iste
-            velit provident explicabo vitae odit dolor, sapiente iusto eum nihil
-            repudiandae esse accusamus voluptates incidunt minus molestias at
-            distinctio ipsa.
-          </li>
-          <li>
-            Aliquam, impedit dolorum quibusdam aut eum consectetur illum sunt
-            totam quod iusto culpa veniam, voluptates quisquam id voluptatum
-            aliquid pariatur architecto at? Sint et atque autem dicta accusamus,
-            repellendus maxime.
-          </li>
-          <li>
-            Quam ipsam asperiores repellat harum unde corrupti doloremque
-            tempore, delectus, deleniti dolores rerum quaerat dicta sit! Quos
-            maiores atque recusandae optio cum delectus nulla, quam assumenda
-            excepturi molestias temporibus eius.
-          </li>
-          <li>
-            Eaque sunt unde possimus minima dicta, commodi cumque error
-            voluptatum veritatis vitae cupiditate nesciunt dolores similique,
-            quae voluptatem iste libero? Inventore eum quis eius tempora
-            excepturi ducimus voluptate quos ea!
-          </li>
-          <li>
-            Soluta eius cupiditate totam, praesentium amet reiciendis atque illo
-            doloribus. Quas nulla, doloribus, expedita impedit animi, officiis
-            cupiditate atque porro eaque error aut at quidem ea. Qui omnis
-            exercitationem iusto?
-          </li>
-          <li>
-            Ducimus tempore veritatis minus vel aspernatur, odit sed!
-            Voluptates, laborum possimus voluptatum, sequi corrupti cumque, ab
-            mollitia libero enim debitis eaque asperiores sed ducimus excepturi
-            culpa expedita magnam facilis est?
-          </li>
-          <li>
-            Eligendi pariatur voluptate voluptatum quidem quia. Commodi ipsum
-            officiis soluta fugiat architecto doloremque corporis
-            necessitatibus, assumenda sunt! Accusamus necessitatibus veniam
-            sequi aliquam alias maxime laborum. Laborum quaerat consequuntur
-            quia harum!
-          </li>
-          <li>
-            In qui error exercitationem perspiciatis natus et, distinctio optio,
-            vero animi autem dignissimos ipsam labore illum, ex voluptatem
-            necessitatibus veritatis soluta voluptate quibusdam veniam debitis
-            odio tenetur officiis rerum. Eveniet?
-          </li>
-          <li>
-            Fuga porro enim nisi commodi eveniet dolorum totam placeat officiis
-            vitae. Accusamus voluptates eum, quasi asperiores ipsa tempore
-            quibusdam similique error animi quidem nulla, dolorum in non sit,
-            consequuntur tenetur.
-          </li>
-          <li>
-            Voluptas iusto delectus quasi a perspiciatis rem illum facilis porro
-            maxime amet sunt repellendus omnis, doloribus aspernatur corporis
-            eveniet, quaerat vel totam dolore, earum quam libero tempore autem
-            et. Accusantium.
-          </li>
-          <li>
-            Adipisci placeat itaque officiis exercitationem laudantium
-            reprehenderit qui rem eos. Laudantium nihil velit voluptate ullam
-            quisquam nulla, pariatur sunt minus, vel exercitationem maiores
-            fugit quam! Deleniti iure fugit ad eaque.
-          </li>
-          <li>
-            Officia harum consectetur obcaecati quod laudantium fugit modi a
-            pariatur soluta quam eligendi delectus quo amet minima incidunt,
-            reiciendis magni nihil cum aliquam? Commodi iure dicta adipisci
-            omnis deleniti explicabo!
-          </li>
+          {files != null &&
+          isImage(
+            files.split("/")[files.split("/").length - 1].split(".")[1]
+          ) ? (
+            <img src={files} />
+          ) : (
+            <>
+              <h1 htmlFor="file">
+                {files != null
+                  ? files.split("/")[files.split("/").length - 1]
+                  : "NO NAME"}
+              </h1>
+              <a name="file" href={files}>
+                DOWNLOAD
+              </a>
+            </>
+          )}
         </ul>
       </div>
     </div>

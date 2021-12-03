@@ -2,48 +2,56 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./modal.css";
 let payload = [];
+let finalData = new FormData();
 let modalIterator = 0;
 export default function ResourcesModal() {
-  const [inputValue, setInputValue] = useState("");
-  const fields = ["name", "description"];
+  const [inputValue, setInputValue] = useState();
+  const fields = [
+    ["name", "text"],
+    ["description", "text"],
+    ["files", "file"],
+  ];
   const modalLength = fields.length - 1;
-  const updateValuesFunction = () => {
-    payload.push(inputValue);
-    modalIterator++;
-    setInputValue("");
+  const updateValuesFunction = (itsFile, fileValue) => {
+    if (itsFile) {
+      payload.push(fileValue);
+      modalIterator++;
+    } else {
+      payload.push(inputValue);
+      modalIterator++;
+      setInputValue("");
+    }
   };
   const handleNext = () => {
     updateValuesFunction();
-    console.log(payload);
   };
   const handleBack = () => {
     setInputValue(payload[modalIterator - 1]);
     modalIterator--;
   };
   const handleChange = (e) => {
-    setInputValue(e.target.value);
+    if (fields[modalIterator][1] === "file") {
+      updateValuesFunction(true, e.currentTarget.files[0]);
+    } else {
+      setInputValue(e.target.value);
+    }
   };
   const handleSubmit = () => {
-    updateValuesFunction();
-    let finalJson = {};
-    for (let i = 0; i <= modalLength; i++) {
-      console.log("in for current index: " + i);
-      finalJson[fields[i]] = payload[i];
-    }
+    modalIterator = 0;
     document.getElementsByClassName(
       "resources__createResourceModal"
     )[0].style.display = "none";
+    for (let i = 0; i <= modalLength; i++) {
+      finalData.append(fields[i][0], payload[i]);
+    }
     axios
-      .post("http://localhost:3000/resources", finalJson)
+      .post("http://localhost:3000/resources", finalData)
       .then((res) => {
         console.log(res);
         window.location.reload();
       })
       .catch((err) => {
         console.log(err);
-        document.getElementsByClassName(
-          "resources__createResourceModal"
-        )[0].style.display = "none";
       });
   };
   const closeModal = () => {
@@ -62,10 +70,13 @@ export default function ResourcesModal() {
       ) : (
         ""
       )}
-      <label htmlFor={fields[modalIterator]}>{fields[modalIterator]}</label>
+      <label htmlFor={fields[modalIterator][0]}>
+        {fields[modalIterator][0]}
+      </label>
       <input
-        name={fields[modalIterator]}
-        type={"text"}
+        id={"resource_input"}
+        name={fields[modalIterator][0]}
+        type={fields[modalIterator][1]}
         onChange={handleChange}
         value={inputValue}
         autoComplete="off"
