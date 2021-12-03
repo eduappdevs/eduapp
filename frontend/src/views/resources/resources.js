@@ -24,6 +24,7 @@ export default function Resources(props) {
   useEffect(async () => {
     const resources__url = "http://localhost:3000/resources";
     await axios.get(resources__url).then((res) => {
+      console.log(res);
       res.data.map((x) => {
         if (x.files != null) {
           x.files = x.files.url;
@@ -97,6 +98,7 @@ export default function Resources(props) {
                   ) {
                     return (
                       <>
+                        {console.log("data", data)}
                         <OpenedResource data={data} />
 
                         <li

@@ -1,11 +1,16 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./openedResource.css";
 import axios from "axios";
 export default function OpenedResource(props) {
   const [id, setId] = useState(props.data.id);
   const [name, setName] = useState(props.data.name);
   const [description, setDescription] = useState(props.data.description);
-  const [files, setFiles] = useState(props.data.files);
+  const files = [
+    props.data.firstfile,
+    props.data.secondfile,
+    props.data.thirdfile,
+  ];
+  console.log(...files);
   const deleteResource = (id) => {
     axios
       .delete(`http://localhost:3000/resources/${id}`)
@@ -21,7 +26,7 @@ export default function OpenedResource(props) {
       .classList.add("openedResource__hidden");
   };
   const isImage = (image) => {
-    const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|jpeg)$");
+    const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg)$");
     console.log("isimageclg", image, imageRegex.test(image));
     return imageRegex.test(image);
   };
@@ -105,23 +110,36 @@ export default function OpenedResource(props) {
       <div className="resourceOpened__files">
         <h1>Files</h1>
         <ul>
-          {files != null &&
-          isImage(
-            files.split("/")[files.split("/").length - 1].split(".")[1]
-          ) ? (
-            <img src={files} />
-          ) : (
-            <>
-              <h1 htmlFor="file">
-                {files != null
-                  ? files.split("/")[files.split("/").length - 1]
-                  : "NO NAME"}
-              </h1>
-              <a name="file" href={files}>
-                DOWNLOAD
-              </a>
-            </>
-          )}
+          {files.map((file) => {
+            <h1>{file}</h1>;
+            // {
+            //   file != null &&
+            //   isImage(
+            //     file.split("/")[file.split("/").length - 1].split(".")[1]
+            //   ) ? (
+            //     <img
+            //       height="100px"
+            //       width="200px"
+            //       src={file}
+            //       alt={file.split("/")[file.split("/").length - 1]}
+            //     />
+            //   ) : (
+            //     <>
+            //       <>
+            //         <h1 htmlFor="file">
+            //           {file != null
+            //             ? file.split("/")[file.split("/").length - 1]
+            //             : "file"}
+            //         </h1>
+            //         <a name="file" href={file}>
+            //           DOWNLOAD
+            //         </a>
+            //       </>
+            //       ;
+            //     </>
+            //   );
+            // }
+          })}
         </ul>
       </div>
     </div>
