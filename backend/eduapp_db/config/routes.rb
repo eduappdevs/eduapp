@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
-  resources :resources
-  devise_for :users
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  default_url_options :host => "localhost:3000"
+  resources :eduapp_user_sessions
+  root to: 'static#home'
+  resources :resources 
+  resources :sessions, only: [:create]
+  resources :registrations, only: [:create]
+  delete :logout, to: 'sessions#logout'
+  get :logged_in , to: 'sessions#logged_in'
+
 end
