@@ -4,15 +4,25 @@ import Navbar from "../../components/navbar/navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import "./home.css";
 import SessionAdd from "../../components/modals/modals-home/sessionAdd";
+import SessionEdit from "../../components/modals/modals-home/sessionEdit";
 import axios from "axios";
-
 export default function Home() {
+  const idEdit = [];  
+
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
-
   const openSessionAdd = () => {
     document.getElementsByClassName("ModalSessionAdd__main")[0].classList.remove("ModalSession__hidden");
+  }
+  const openEditSession = (e) => {
+    let idTarget = e.target.id;
+    let id = idTarget.replace("edit", "");
+    console.log(id)
+    idEdit.pop();
+    idEdit.push(id);
+    console.log(idEdit)
+    document.getElementsByClassName("ModalSessionEdit__main")[0].classList.remove("ModalSession__hidden");
   }
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -67,6 +77,7 @@ export default function Home() {
   };
   const deleteSession = (e) => {
     let idDelete = e.target.id;
+    console.log(idDelete)
     axios
       .delete("http://localhost:3000/eduapp_user_sessions/" + idDelete)
       .then((res) => {
@@ -133,13 +144,11 @@ export default function Home() {
   }, []);
   return (
     <>
-    <div className="home-main-container">
+      <div className="home-main-container">
         <Navbar mobile={ItsMobileDevice} location={"home"} />
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
-                    <SessionAdd />
-
           <div className="user">
             <div className="user-container">
               <div className="information-user">
@@ -214,6 +223,9 @@ export default function Home() {
                                 <p className="session-resourcesPlatform">
                                   {data.resourcesPlatform}
                                 </p>
+                                <p className="session_chat_id">
+                                  {data.chat}
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -240,6 +252,8 @@ export default function Home() {
                           </div>
                           <div className="buttonsessionedit" id="buttonEdit">
                             <svg
+                              onClick={openEditSession}
+                              id = {"edit" + data.id}
                               xmlns="http://www.w3.org/2000/svg"
                               width="15"
                               height="15"
@@ -266,7 +280,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <SessionEdit idEdit = {idEdit} />
 
+        <SessionAdd />
         <BottomButtons mobile={ItsMobileDevice} location={"home"} />
       </div>
     </>

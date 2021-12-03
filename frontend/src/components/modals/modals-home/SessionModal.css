@@ -1,12 +1,20 @@
  .ModalSessionAdd__main {
     position: fixed;
-    z-index: 9999999999;
+    z-index: 99999999999;
     top: 0;
     left: 0;
     height: 100vh;
     width: 100vw;
 }
 
+.ModalSessionEdit__main {
+    position: fixed;
+    z-index: 99999999999;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+}
 .ModalSession__hidden {
     display: none !important;
     opacity: 0;
@@ -41,7 +49,6 @@
     border: none;
     height: 2.5em;
     width: 100%;
-
     border-radius: 10px;
     box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
     text-indent: 10px;
