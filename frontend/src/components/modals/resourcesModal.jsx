@@ -1,159 +1,122 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./modal.css";
-let payload = [];
 let finalData = new FormData();
-let modalIterator = 0;
 
 export default function ResourcesModal() {
-  const [inputValue, setInputValue] = useState();
-  let fileUploadLimiter = 3;
-  const fields = [
-    ["name", "text"],
-    ["description", "text"],
-    [
-      "files",
-      [
-        ["firstfile", "file"],
-        ["secondfile", "file"],
-        ["thirdfile", "file"],
-      ],
-    ],
-  ];
-  const fieldsLength = fields.length - 1;
-  const updateValuesFunction = (itsFile, fileValue) => {
-    if (itsFile) {
-      payload.push(fileValue);
+  const [filesToUpload, setFilesToUpload] = useState([]);
+  const FILE_LIMIT = 3;
+  const handleFileSelect = (e) => {
+    e.preventDefault();
+    if (e.target.files.length > FILE_LIMIT) {
+      alert(`Only ${FILE_LIMIT}  files accepted.`);
+      return;
     } else {
-      payload.push(inputValue);
-      modalIterator++;
-      setInputValue("");
+      setFilesToUpload(Array.from(e.target.files));
     }
   };
-  const handleNext = () => {
-    updateValuesFunction();
-  };
-  const handleBack = () => {
-    setInputValue(payload[modalIterator - 1]);
-    modalIterator--;
-  };
-  const handleChange = (e) => {
-    
-    if (fields[modalIterator][0] === "files") {
-      console.log(e.currentTarget.files[0]);
-      updateValuesFunction(true, e.currentTarget.files[0]);
-      fileUploadLimiter--
-      console.log(fileUploadLimiter)
-    } else {
-      setInputValue(e.target.value);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(e);
+    let name = null;
+    let description = null;
+    let firstfile = null;
+    let secondfile = null;
+    let thirdfile = null;
+    if (e.target[0].value != null) {
+      name = e.target[0].value;
     }
-  };
-  const handleSubmit = () => {
-    modalIterator = 0;
+    if (e.target[1].value != null) {
+      description = e.target[1].value;
+    }
+    if (filesToUpload != null) {
+      firstfile = filesToUpload[0];
+    } else {
+      console.log("null");
+    }
+    if (filesToUpload != null) {
+      secondfile = filesToUpload[1];
+    } else {
+      console.log("null");
+    }
+    if (filesToUpload != null) {
+      thirdfile = filesToUpload[2];
+    } else {
+      console.log("null");
+    }
+    finalData.append("name", name);
+    finalData.append("description", description);
+    if (firstfile !== null && firstfile !== undefined) {
+      finalData.append("firstfile", firstfile);
+    }
+    if (secondfile !== null && secondfile !== undefined) {
+      finalData.append("secondfile", secondfile);
+    }
+    if (thirdfile !== null && thirdfile !== undefined) {
+      finalData.append("thirdfile", thirdfile);
+    }
     document.getElementsByClassName(
       "resources__createResourceModal"
     )[0].style.display = "none";
-    for (let i = 0; i <= fieldsLength; i++) {
-      if (fields[i][0] != "files") {
-        finalData.append(fields[i][0], payload[i]);
-      } else {
-        let filesIterator = i;
-        for (let j = 0; j < fields[i][1].length; j++) {
-          finalData.append(fields[i][1][j][0], payload[filesIterator]);
-          console.log(fields[i][1][j][0], payload[filesIterator])
-          filesIterator++
-         
-        }
-      }
-    }
+
     axios
       .post("http://localhost:3000/resources", finalData)
       .then((res) => {
         console.log(res);
-        // window.location.reload();
+        window.location.reload();
       })
       .catch((err) => {
         console.log(err);
       });
   };
   const closeModal = () => {
-    setInputValue("");
-    modalIterator = 0;
     document.getElementsByClassName(
       "resources__createResourceModal"
     )[0].style.display = "none";
   };
   return (
     <div className="resources__createResourceModal">
-      {window.matchMedia("(max-width : 1100px").matches ? (
-        <div className="resources__logoModal">
-          <img src="\assets\logo.png" />
-        </div>
-      ) : (
-        ""
-      )}
-      {fields[modalIterator][1] === "file" ? (
-        <label>ADD A FILE {fields[modalIterator][0]}</label>
-      ) : (
-        <label htmlFor={fields[modalIterator][0]}>
-          {fields[modalIterator][0]}
-        </label>
-      )}
-      {fields[modalIterator][0] === "files" ? (
-        <>
-          <div className="fileInput">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              class="bi bi-cloud-upload-fill"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M8 0a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 4.095 0 5.555 0 7.318 0 9.366 1.708 11 3.781 11H7.5V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11h4.188C14.502 11 16 9.57 16 7.773c0-1.636-1.242-2.969-2.834-3.194C12.923 1.999 10.69 0 8 0zm-.5 14.5V11h1v3.5a.5.5 0 0 1-1 0z"
-              />
-            </svg>
-
-            {fileUploadLimiter <= 3 && fileUploadLimiter > 1 ? <input
-              id={"resource_input"}
-              name={fields[modalIterator][1][0][0]}
-              type={fields[modalIterator][1][0][1]}
-              onChange={handleChange}
-              value={inputValue}
-              autoComplete="off"
-              
-            />
-            : ''}
-            
-            {/* <h1>{`You can upload until ${fileUploadLimiter} files`}</h1> */}
-          
-          </div>
-        </>
-      ) : (
-        <input
-          id={"resource_input"}
-          name={fields[modalIterator][0]}
-          type={fields[modalIterator][1]}
-          onChange={handleChange}
-          value={inputValue}
-          autoComplete="off"
-        />
-      )}
-
-      <div className="buttons">
-        {modalIterator <= fieldsLength && modalIterator > 0 ? (
-          <button onClick={handleBack}>Back</button>
-        ) : (
-          ""
-        )}
-        {modalIterator < fieldsLength ? (
-          <button onClick={handleNext}>Next</button>
-        ) : (
-          <button onClick={handleSubmit}>Finish</button>
-        )}
+      <div className="resources__logoModal">
+        <img src="\assets\logo.png" alt="logo" />
       </div>
+      <h1>NEW RESOURCE</h1>
+      <form action="submit" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="name"
+          placeholder={"Name"}
+          autoComplete="off"
+          required
+        />
+        <input
+          type="text"
+          name="description"
+          placeholder="Description"
+          autoComplete="off"
+          required
+        />
+        <div className="fileInputs">
+          <div className="firstfile">
+            <input
+              type="file"
+              id="firstfile"
+              multiple
+              onChange={handleFileSelect}
+            />
+            <label htmlFor="firstfile">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="17"
+                viewBox="0 0 20 17"
+              >
+                <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path>
+              </svg>
+            </label>
+          </div>
+        </div>
+        <button type="submit">SUBMIT</button>
+      </form>
 
       <button id="resources__closeResourceModal" onClick={closeModal}>
         CANCEL

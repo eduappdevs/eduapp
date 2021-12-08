@@ -5,11 +5,16 @@ export default function OpenedResource(props) {
   const [id, setId] = useState(props.data.id);
   const [name, setName] = useState(props.data.name);
   const [description, setDescription] = useState(props.data.description);
-  const files = [
-    props.data.firstfile.url,
-    props.data.secondfile.url,
-    props.data.thirdfile.url,
-  ];
+  const files = [];
+  if (props.data.firstfile !== null) {
+    files.push(props.data.firstfile.url);
+  }
+  if (props.data.secondfile !== null) {
+    files.push(props.data.secondfile.url);
+  }
+  if (props.data.thirdfile !== null) {
+    files.push(props.data.thirdfile.url);
+  }
   const deleteResource = (id) => {
     axios
       .delete(`http://localhost:3000/resources/${id}`)
@@ -109,38 +114,50 @@ export default function OpenedResource(props) {
       <div className="resourceOpened__files">
         <h1>Files</h1>
         <ul>
-          {files.map((file) => {
-            return <>
-            
-            {
-              file != null &&
-              isImage(
-                file.split("/")[file.split("/").length - 1].split(".")[1]
-              ) ? (
-                <img
-                  height="100px"
-                  width="200px"
-                  src={file}
-                  alt={file.split("/")[file.split("/").length - 1]}
-                />
-              ) : (
+          {files.length > 0 ? (
+            files.map((file) => {
+              return (
                 <>
-                  <>
-                    <h1 htmlFor="file">
-                      {file != null
-                        ? file.split("/")[file.split("/").length - 1]
-                        : "file"}
-                    </h1>
-                    <a name="file" href={file}>
-                      DOWNLOAD
-                    </a>
-                  </>
-                  ;
+                  <li>
+                    {file != null &&
+                    isImage(
+                      file.split("/")[file.split("/").length - 1].split(".")[
+                        file.split("/")[file.split("/").length - 1].split(".")
+                          .length - 1
+                      ]
+                    ) ? (
+                      <img
+                        className={"resource__image"}
+                        src={file}
+                        alt={file.split("/")[file.split("/").length - 1]}
+                      />
+                    ) : (
+                      <>
+                        <>
+                          <h1 htmlFor="file">
+                            {file != null
+                              ? file.split("/")[file.split("/").length - 1]
+                              : "file"}
+                          </h1>
+                          <a
+                            className="fileDownload-button"
+                            name="file"
+                            href={file}
+                          >
+                            DOWNLOAD
+                          </a>
+                        </>
+                      </>
+                    )}
+                  </li>
                 </>
-              )
-            }
-            </>
-          })}
+              );
+            })
+          ) : (
+            <div className="resources__NO_FILES">
+              <h1>No files attached.</h1>
+            </div>
+          )}
         </ul>
       </div>
     </div>
