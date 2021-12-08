@@ -7,21 +7,32 @@ import SessionAdd from "../../components/modals/modals-home/sessionAdd";
 import SessionEdit from "../../components/modals/modals-home/sessionEdit";
 import axios from "axios";
 export default function Home() {
-  const idEdit = [];  
-
+  const [editFields, setFields] = useState([]);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
   const openSessionAdd = () => {
     document.getElementsByClassName("ModalSessionAdd__main")[0].classList.remove("ModalSession__hidden");
   }
-  const openEditSession = (e) => {
-    let idTarget = e.target.id;
-    let id = idTarget.replace("edit", "");
-    console.log(id)
-    idEdit.pop();
-    idEdit.push(id);
-    console.log(idEdit)
+  const openEditSession = async(id) => {
+    let e =  await axios.get("http://localhost:3000/eduapp_user_sessions/" + id);
+    let name = e.data.session_name;
+    let date = e.data.session_date;
+    let date1 = date.split("-")[0]
+    let date2 = date.split("-")[1];
+    console.log(date1,date2)
+    let streamingPlatform = e.data.streaming_platform;
+    let resourcesPlatform = e.data.resources_platform;
+    let chat = e.data.session_chat_id;
+    setFields({
+      id:id,
+      session_name: name,
+      session_date1: date1,
+      session_date2: date2,
+      streaming_platform: streamingPlatform,
+      resources_platform: resourcesPlatform,
+      session_chat_id: chat
+    })
     document.getElementsByClassName("ModalSessionEdit__main")[0].classList.remove("ModalSession__hidden");
   }
   const checkMediaQueries = () => {
@@ -68,19 +79,29 @@ export default function Home() {
       return 0;
     });
     setSessions(sessionSorted);
-
     try {
       setFirstSessionId(sessionSorted[0].id);
     } catch (error) {
       console.log(error);
     }
   };
-  const deleteSession = (e) => {
+  const deleteSess = [];
+  const deleteModal = (e) => {
+    let modal = document.getElementById("modal_question_delete");
+    if(modal.classList.contains("hidden")){
+      modal.classList.remove("hidden");
+    }
     let idDelete = e.target.id;
-    console.log(idDelete)
+    deleteSess.pop();
+    deleteSess.push(idDelete);
+  }
+  const closeDelete=()=>{
+    document.getElementById("modal_question_delete").classList.add("hidden");
+  }
+  const deleteSession = () => {
     axios
-      .delete("http://localhost:3000/eduapp_user_sessions/" + idDelete)
-      .then((res) => {
+      .delete("http://localhost:3000/eduapp_user_sessions/" + deleteSess)
+      .then(() => {
         window.location.reload();
       });
   };
@@ -114,7 +135,6 @@ export default function Home() {
       buttonadd.classList.remove("hidden");
     }
     buttonSession.map((x) => {
-      console.log(x);
       try {
         if (x.classList.contains("hidden")) {
           x.classList.remove("hidden");
@@ -230,11 +250,11 @@ export default function Home() {
                             </div>
                           </div>
                         </div>
-                        <div id="editSessionButton" className="hidden">
+                        <div id="editSessionButton" className="editSessionButton hidden">
                           <div id="buttonDelete">
                             <svg
                               className="badge badge-danger mr-2"
-                              onClick={deleteSession}
+                              onClick={deleteModal}
                               id={data.id}
                               xmlns="http://www.w3.org/2000/svg"
                               width="16"
@@ -252,8 +272,8 @@ export default function Home() {
                           </div>
                           <div className="buttonsessionedit" id="buttonEdit">
                             <svg
-                              onClick={openEditSession}
-                              id = {"edit" + data.id}
+                              onClick={()=>{openEditSession(data.id)}}
+                              id={"edit" + data.id}
                               xmlns="http://www.w3.org/2000/svg"
                               width="15"
                               height="15"
@@ -261,6 +281,15 @@ export default function Home() {
                             >
                               <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z" />
                             </svg>
+                          </div>
+                          <div id="modal_question_delete" className="modal_question_delete hidden">
+                            <div className="question_delete">
+                            <p>¿Seguro que quieres eliminarlo?</p>
+                            <div className="button">
+                            <button className="buttonYes" onClick={deleteSession}>Si</button>
+                            <button className="buttonYes" onClick={closeDelete}>No</button>
+                            </div>
+                            </div>
                           </div>
                         </div>
                         <p
@@ -279,9 +308,8 @@ export default function Home() {
               )}
             </div>
           </div>
+        <SessionEdit fields= {editFields} />
         </section>
-        <SessionEdit idEdit = {idEdit} />
-
         <SessionAdd />
         <BottomButtons mobile={ItsMobileDevice} location={"home"} />
       </div>
