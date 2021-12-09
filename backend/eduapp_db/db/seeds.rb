@@ -1,5 +1,1 @@
-Resource.create(name: 'Bienvenido', description: 'hola')
-Resource.create(name: 'Welcome', description: 'a')
-Resource.create(name: 'holaaa', description: 'adios :)')
-EduappUserSession.create(session_name: "DAD", session_date: "8:00-9:00", streaming_platform: "Teams",resources_platform: "Moddle", session_chat_id: "1")
-EduappUserSession.create(session_name: "SSG", session_date: "9:10-10:00", streaming_platform: "Google",resources_platform:"Moddle", session_chat_id: "2")
+Resoruce.create()

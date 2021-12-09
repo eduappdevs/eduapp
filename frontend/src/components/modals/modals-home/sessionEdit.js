@@ -1,5 +1,6 @@
 import axios from 'axios';
 import "./SessionModal.css";
+import React from 'react';
 
 export default function SessionEdit({ fields }) {
   const close = () => {

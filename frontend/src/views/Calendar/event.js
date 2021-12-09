@@ -1,10 +1,7 @@
 import React from 'react'
 
-export default function Calendar() {
-    var gapi = window.gapi
-    /* 
-      Update with your own Client Id and Api key 
-    */
+export default function Event() {
+    const gapi = window.gapi
     var CLIENT_ID = ""
     var API_KEY = ""
     var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
@@ -63,27 +60,6 @@ export default function Calendar() {
             console.log(event)
             window.open(event.htmlLink)
           })
-          
-  
-          /*
-              Uncomment the following block to get events
-          */
-          /*
-          // get events
-          gapi.client.calendar.events.list({
-            'calendarId': 'primary',
-            'timeMin': (new Date()).toISOString(),
-            'showDeleted': false,
-            'singleEvents': true,
-            'maxResults': 10,
-            'orderBy': 'startTime'
-          }).then(response => {
-            const events = response.result.items
-            console.log('EVENTS: ', events)
-          })
-          */
-      
-  
         })
       })
     }
@@ -92,7 +68,6 @@ export default function Calendar() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <p>Click to add event to Google Calendar</p>
           <p style={{fontSize: 18}}>Uncomment the get events code to get events</p>
           <p style={{fontSize: 18}}>Don't forget to add your Client Id and Api key</p>
@@ -100,4 +75,4 @@ export default function Calendar() {
         </header>
       </div>
     );
-}
+  }

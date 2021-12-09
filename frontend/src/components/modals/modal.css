@@ -1,189 +1,147 @@
 .resources__createResourceModal {
-  width: 50%;
-  height: 50%;
+  width: 40%;
+  height: 60%;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: var(--blue);
-  border-radius: 20px;
-  border: 5px solid rgba(255, 255, 255, 0.171);
-  box-shadow: 0 0 20px rgba(37, 37, 37, 0.726);
+  background-color: var(--orange);
+  border-radius: 10px;
+  box-shadow: 0 0 4px rgb(41, 41, 41);
+  border: 2px solid rgba(36, 36, 36, 0.034);
   display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 99999999999;
 }
-.resources__createResourceModal > input {
-  border: none;
-  border-radius: 8px;
-  width: 50%;
-  height: 4vh;
-  margin-bottom: 20px;
-  text-indent: 5px;
-  transition: all 0.1s;
-}
-.resources__createResourceModal > label {
-  color: white;
-  font-weight: bold;
+.resources__logoModal {
   position: absolute;
-  top: 25%;
-  font-size: 150%;
-  text-transform: uppercase;
+  top: -9%;
 }
-.resources__createResourceModal > input:focus {
-  outline: none;
-  text-indent: 15px;
+.resources__logoModal > img {
+  width: 80px;
+  height: 80px;
 }
-.buttons > button {
+.resources__createResourceModal > h1 {
+  position: absolute;
+  top: 5%;
+  color: white;
+}
+
+.resources__createResourceModal > form {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin-top: 15%;
+  transform: scale(1.1);
+}
+.resources__createResourceModal > form > input {
+  height: 30px;
   border: none;
-  background-color: white;
-  border-radius: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-indent: 10px;
   color: var(--blue);
-  font-weight: bold;
-  padding: 10px 20px;
-  box-shadow: 0 3px 1px rgba(226, 226, 226, 0.712);
-  cursor: pointer;
-  margin-left: 5px;
-  margin-right: 5px;
-}
-.buttons {
+  font-weight: 900;
   width: 100%;
+}
+.resources__createResourceModal > form > input::placeholder {
+  text-indent: 10px;
+  color: var(--blue);
+  font-weight: 900;
+}
+.resources__createResourceModal > form > input:focus {
+  outline: none;
+}
+.fileInputs {
+  display: flex;
+  flex-direction: row;
+  height: 80px;
+  width: 100%;
+}
+.fileInputs > div {
+  flex: 1;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: row;
+}
+.fileInputs > div > input {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  position: absolute;
+}
+.fileInputs > div > label {
+  flex: 1;
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  fill: white;
+}
+.resources__createResourceModal > form > button {
+  background-color: white;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+  width: 50%;
+  transform: translateX(50%);
+  font-weight: 900;
+  color: var(--blue);
+  cursor: pointer;
 }
 #resources__closeResourceModal {
   position: absolute;
-  right: 10px;
-  bottom: 10px;
-  color: white;
-  background-color: rgb(241, 42, 42);
-  box-shadow: 0px 0px 0 rgba(148, 26, 26, 0);
-
+  bottom: 6px;
+  right: 6px;
   border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: rgb(255, 64, 64);
+  color: white;
+  padding: 8px;
   cursor: pointer;
 }
-
-@media (max-width: 1100px) {
-  .resources__logoModal {
-    position: absolute;
-    top: 5%;
-  }
-  .resources__logoModal > img {
-    height: 80px;
-    width: 80px;
-  }
+@media (max-width: 750px) {
   .resources__createResourceModal {
     width: 100%;
     height: 100%;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background-color: var(--blue);
     border-radius: 0px;
-    border: none;
-    box-shadow: 0 0 20px rgba(37, 37, 37, 0.726);
+  }
+  .resources__logoModal {
+    position: absolute;
+    top: 3%;
+  }
+  .resources__createResourceModal > h1 {
+    position: absolute;
+    top: 12%;
+    color: white;
+  }
+  .resources__createResourceModal > form > input {
+    width: 100%;
+  }
+  .resources__createResourceModal > form {
+    display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  #resources__closeResourceModal {
-    position: absolute;
-    bottom: 15vh;
-    right: 50%;
-    transform: translateX(50%);
-    color: white;
-    background-color: rgb(241, 42, 42);
-    box-shadow: 0px 0px 0 rgba(148, 26, 26, 0);
-    width: 30vw;
-    text-align: center;
-    border: none;
-    border-radius: 20px;
-    height: 15vw;
-    font-weight: bold;
-    padding: 20px;
-    cursor: pointer;
-  }
-  .resources__createResourceModal > input {
-    border: none;
-    border-radius: 8px;
     width: 70%;
-    height: 6vh;
-    font-size: 140%;
-    font-weight: 600;
-    margin-bottom: 20px;
-    text-indent: 5px;
-    transition: all 0.1s;
-  }
-  .resources__createResourceModal > label {
-    color: white;
-    font-weight: bold;
-    position: absolute;
-    top: 35%;
-    font-size: 170%;
-    text-transform: uppercase;
+    margin-top: 15%;
+    transform: scale(1.1);
   }
 }
-@media (max-width: 600px) {
-  #resources__closeResourceModal {
-    position: absolute;
-    bottom: 0vh;
-    right: 50%;
-    transform: translateX(50%);
-    color: white;
-    background-color: rgb(241, 42, 42);
-    box-shadow: 0px 0px 0 rgba(148, 26, 26, 0);
-    width: 100vw;
-    text-align: center;
-    border: none;
-    border-radius: 0px;
-    height: 20vw;
-    font-weight: bold;
-    padding: 10px;
-    cursor: pointer;
+@media (min-width: 750px) and (max-width: 1200px) {
+  .resources__createResourceModal {
+    width: 70%;
+    height: 60%;
   }
-}
-.fileInput > input[type="file"] {
-  appearance: none;
-  background-color: initial;
-  cursor: default;
-  align-items: baseline;
-  color: inherit;
-  text-overflow: ellipsis;
-  white-space: pre;
-  text-align: start !important;
-  padding: none;
-  border: none;
-  overflow: hidden !important;
-}
-
-.fileInput > input[type="file"] {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  pointer-events: all;
-}
-.fileInput {
-  width: 100px;
-  height: 100px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.fileInput > svg {
-  fill: white;
-  width: 100%;
-  height: 100%;
-  margin-top: 40px;
-  margin-bottom: 40px;
-  margin-right: 8px ;
-
 }

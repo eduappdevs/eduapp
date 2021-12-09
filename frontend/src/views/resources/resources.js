@@ -6,6 +6,7 @@ import "./resources.css";
 import ResourcesModal from "../../components/modals/resourcesModal";
 import OpenedResource from "./openedResource/openedResource";
 import axios from "axios";
+import Loader from "../../components/loader/Loader";
 let resources = [];
 export default function Resources(props) {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -21,19 +22,23 @@ export default function Resources(props) {
       }
     }, 4000);
   };
-  useEffect(async () => {
-    const resources__url = "http://localhost:3000/resources";
-    await axios.get(resources__url).then((res) => {
-      console.log(res);
-      res.data.map((x) => {
-        if (x.files != null) {
-          x.files = x.files.url;
-        }
+  useEffect(() => {
+    async function fetchData() {
+      const resources__url = "http://localhost:3000/resources";
+      await axios.get(resources__url).then((res) => {
+        console.log(res);
+        res.data.map((x) => {
+          if (x.files != null) {
+            x.files = x.files.url;
+          }
+        });
+        resources = res.data;
+        setTimeout(() => {
+          setResourcesLoaded(true);
+        }, 1300);
       });
-
-      resources = res.data;
-      setResourcesLoaded(true);
-    });
+    }
+    fetchData();
     checkMediaQueries();
     //First check
     if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -137,6 +142,6 @@ export default function Resources(props) {
       </div>
     </>
   ) : (
-    <h1>Loading</h1>
+    <Loader />
   );
 }
