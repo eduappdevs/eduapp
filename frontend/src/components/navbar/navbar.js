@@ -2,6 +2,7 @@ import "./navbar.css";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Menu from "../../views/menu/menu";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 
 export default function Navbar({ mobile, location }) {
   const [ProfileMenuOpened, setProfileMenuOpened] = useState(false);
@@ -9,7 +10,10 @@ export default function Navbar({ mobile, location }) {
   const [inResources, setInResources] = useState(false);
   const [inCalendar, setInCalendar] = useState(false);
   const [inChat, setInChat] = useState(false);
+  let userInfo = FetchUserInfo(localStorage.userId);
+
   useEffect(() => {
+    // eslint-disable-next-line default-case
     switch (location) {
       case "resources":
         setInResources(true);
@@ -103,10 +107,16 @@ export default function Navbar({ mobile, location }) {
           onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}
         >
           <div className="profile-button-box">
-            <span className="profile-name">Richard clarke</span>
+            <span className="profile-name">
+              {userInfo.id !== null && userInfo !== "undefined"
+                ? userInfo.id
+                : "no name"}
+            </span>
             <div className="profile-pic">
               <img
-                src="https://media-exp1.licdn.com/dms/image/C5603AQH1DePwZKdqAQ/profile-displayphoto-shrink_200_200/0/1516938150762?e=1643846400&v=beta&t=4sUjvaLKjc1cu_YtKgqxwsos3TogDh2Sd6kpq8sPmAE"
+                src={
+                  "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                }
                 alt=""
               />
             </div>

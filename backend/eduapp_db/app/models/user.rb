@@ -1,7 +1,8 @@
 class User < ApplicationRecord
-    has_secure_password
 
-    validates_presence_of :email
-    validates_uniqueness_of :email
-    
+  devise :database_authenticatable,
+         :jwt_authenticatable,
+         :registerable,
+         jwt_revocation_strategy: JwtDenylist
+  has_one :user_info
 end

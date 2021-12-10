@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./modal.css";
+import API from "../../API";
 let finalData = new FormData();
 
 export default function ResourcesModal() {
@@ -15,7 +16,7 @@ export default function ResourcesModal() {
       setFilesToUpload(Array.from(e.target.files));
     }
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(e);
     let name = null;
@@ -59,15 +60,8 @@ export default function ResourcesModal() {
       "resources__createResourceModal"
     )[0].style.display = "none";
 
-    axios
-      .post("http://localhost:3000/resources", finalData)
-      .then((res) => {
-        console.log(res);
-        window.location.reload();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    await API.postResource(finalData);
+    window.location.reload();
   };
   const closeModal = () => {
     document.getElementsByClassName(

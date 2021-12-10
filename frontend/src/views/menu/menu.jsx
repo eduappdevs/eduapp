@@ -1,11 +1,18 @@
 import React from "react";
 import MenuSettings from "./menu-settings/MenuSettings";
 import MenuHeader from "./menuHeader/MenuHeader";
+import API from "../../API";
+import ProfileSettings from "./settingsProfileSettings/ProfileSettings";
 export default function Menu(props) {
   const openMenuSettings = () => {
     document
       .getElementsByClassName("MenuSettings__main-container")[0]
       .classList.remove("MenuSettings__hidden");
+  };
+  const openProfileSettings = () => {
+    document
+      .getElementsByClassName("profileSettings_container")[0]
+      .classList.remove("profileSettings__hidden");
   };
   return (
     <div
@@ -26,6 +33,16 @@ export default function Menu(props) {
         <li>
           <a
             onClick={() => {
+              openProfileSettings();
+            }}
+          >
+            PROFILE
+          </a>
+          <ProfileSettings />
+        </li>
+        <li>
+          <a
+            onClick={() => {
               openMenuSettings();
             }}
           >
@@ -37,7 +54,7 @@ export default function Menu(props) {
           <a>Tutorial</a>
         </li>
         <li>
-          <a>Log out</a>
+          <a onClick={API.logout}>Log out</a>
         </li>
       </ul>
     </div>

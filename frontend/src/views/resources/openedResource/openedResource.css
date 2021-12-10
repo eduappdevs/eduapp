@@ -47,11 +47,14 @@
   display: flex;
   flex: 1.5;
   width: 20vw;
+  text-overflow: ellipsis;
   color: rgb(255, 255, 255);
 }
 .resourceOpened__name > h1 {
-  overflow: hidden;
   text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 150px;
+  white-space: nowrap;
 }
 .resourceOpened__buttons {
   float: right;
@@ -99,14 +102,14 @@
   color: white;
   flex: 1;
 }
-.resourceOpened__description > h1 {
+.resourceOpened__info > h1 {
   text-align: center;
   color: var(--textColor);
   flex: 0.3;
   height: 30%;
-  opacity: 0.5;
+  opacity: 0.7;
 }
-.resourceOpened__description > p {
+.resourceOpened__info > p {
   text-align: center;
   font-size: 120%;
   color: var(--textColor);
@@ -173,6 +176,15 @@
   text-decoration: none;
 }
 .resource__image {
-  width: 100%;
-  max-height: 30vh;
+  width: 300px;
+  height: 300px;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.resourceOpened__date {
+  position: absolute;
+  left: 15px;
+  bottom: 0;
 }

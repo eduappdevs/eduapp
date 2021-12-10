@@ -7,6 +7,7 @@ import ResourcesModal from "../../components/modals/resourcesModal";
 import OpenedResource from "./openedResource/openedResource";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
+import API from "../../API";
 let resources = [];
 export default function Resources(props) {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -35,8 +36,9 @@ export default function Resources(props) {
         resources = res.data;
         setTimeout(() => {
           setResourcesLoaded(true);
-        }, 1300);
+        }, 500);
       });
+      console.log("prueba", API.fetchResources());
     }
     fetchData();
     checkMediaQueries();

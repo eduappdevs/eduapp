@@ -30,7 +30,7 @@ export default function OpenedResource(props) {
       .classList.add("openedResource__hidden");
   };
   const isImage = (image) => {
-    const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg)$");
+    const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
     console.log("isimageclg", image, imageRegex.test(image));
     return imageRegex.test(image);
   };
@@ -107,8 +107,8 @@ export default function OpenedResource(props) {
           </div>
         </div>
       </div>
-      <div className="resourceOpened__description">
-        <h1>Description</h1>
+      <div className="resourceOpened__info">
+        <h1>{name}</h1>
         <p>{description}</p>
       </div>
       <div className="resourceOpened__files">
@@ -126,10 +126,14 @@ export default function OpenedResource(props) {
                           .length - 1
                       ]
                     ) ? (
-                      <img
+                      <div
                         className={"resource__image"}
-                        src={file}
-                        alt={file.split("/")[file.split("/").length - 1]}
+                        style={{
+                          backgroundImage: `url(${file.replace(
+                            "localhost:3001",
+                            "localhost:3000"
+                          )}) `,
+                        }}
                       />
                     ) : (
                       <>
@@ -159,6 +163,9 @@ export default function OpenedResource(props) {
             </div>
           )}
         </ul>
+      </div>
+      <div className="resourceOpened__date">
+        <p>7-12-2021</p>
       </div>
     </div>
   );

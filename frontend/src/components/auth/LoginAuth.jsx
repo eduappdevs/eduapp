@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
+import API from "../../API";
 export default class LoginAuth extends Component {
   constructor(props) {
     super(props);
@@ -11,26 +12,15 @@ export default class LoginAuth extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
   handleSubmit = (event) => {
-    const { email, password } = this.state;
-    axios
-      .post(
-        "http://localhost:3000/users/signin",
-        {
-          user: {
-            email: email,
-            password: password,
-          },
-        },
-        {
-          withCredentials: true,
-        }
-      )
-      .then((res) => {
-        console.log("login res", res);
-      })
-      .catch((err) => {
-        console.log("login err", err);
-      });
+    try {
+      const { email, password } = this.state;
+      const userData = new FormData();
+      userData.append("user[email]", email);
+      userData.append("user[password]", password);
+      API.login(userData);
+    } catch (error) {
+      console.log("error");
+    }
     event.preventDefault();
   };
   handleChange = (event) => {

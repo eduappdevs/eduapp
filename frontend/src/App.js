@@ -2,50 +2,26 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Resources from "./views/resources/resources";
 import LoginSignup from "./views/loginSignup/loginSignup";
 import Home from "./views/home/Home";
-import React, { Component } from "react";
-export default class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      loggedInStatus: "NOT_LOGGED_IN",
-      user: {},
-    };
-  }
-
-  render() {
-    return (
-      <>
-        <BrowserRouter>
+import React from "react";
+import requireAuth from "./components/auth/RequireAuth";
+import { FetchUserInfo } from "./hooks/FetchUserInfo";
+export default function App() {
+  return (
+    <>
+      <BrowserRouter>
+        {requireAuth() ? (
           <Routes>
-            <Route exact path="/access" element={<LoginSignup />} />
-            <Route
-              exact
-              path="/"
-              element={
-                this.state.loggedInStatus === "LOGGED_IN" ? (
-                  <Home />
-                ) : (
-                  <Navigate to="/access" />
-                )
-              }
-            />
-            <Route
-              exact
-              path="/resources"
-              element={
-                this.state.loggedInStatus === "LOGGED_IN" ? (
-                  <Resources />
-                ) : (
-                  <Navigate to="/access" />
-                )
-              }
-            />
-            <Route path="/test" element={<Resources />} />
-            <Route path = "/testHome" element={<Home/>}/>
+            <Route exact path="/" element={<Home />} />
+            <Route exact path="/resources" element={<Resources />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
-        </BrowserRouter>
-      </>
-    );
-  }
+        ) : (
+          <Routes>
+            <Route exact path="/login" element={<LoginSignup />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </Routes>
+        )}
+      </BrowserRouter>
+    </>
+  );
 }

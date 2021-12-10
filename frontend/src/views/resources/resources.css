@@ -239,13 +239,13 @@
 .resourcesSearchBar > form > input:focus ~ .searchInputIcon {
   display: none;
 }
-
+.mobileSection > .resourcesSearchBar > form {
+  width: 85%;
+}
+.mobileSection > .resources-container > ul {
+  width: 95%;
+}
 .desktopSection {
-  /* width: 70%;
-  height: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  position: absolute; */
   width: 60% !important;
   position: relative;
 }

@@ -3,7 +3,7 @@
   height: 100vh;
   top: 0;
   left: 0;
-  position: absolute;
+  position: fixed;
   background-color: var(--backgroundColor);
   transform: translateX(0px);
   transition: all 0.3s;
@@ -30,9 +30,9 @@
 }
 
 .MenuSettings__hidden {
-  transform: translateX(2000px);
+  transform: translateX(200vw);
 }
-#darkModes{
+#darkModes {
   height: 20%;
   border: 0px solid var(--blue);
   border-radius: 20px;
@@ -43,7 +43,7 @@
   width: 80%;
   overflow: hidden;
 }
-#darkModes > li{
+#darkModes > li {
   flex: 1;
   list-style: none;
   height: 100%;
@@ -52,13 +52,12 @@
   align-items: center;
   background-color: rgb(41, 99, 133);
 }
-#darkModes > li > svg{
+#darkModes > li > svg {
   height: 30px;
   width: 30px;
   fill: white;
 }
 
-.activeMode{
+.activeMode {
   background-color: var(--blue) !important;
- 
 }

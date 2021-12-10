@@ -6,24 +6,30 @@ import "./home.css";
 import SessionAdd from "../../components/modals/modals-home/sessionAdd";
 import SessionEdit from "../../components/modals/modals-home/sessionEdit";
 import axios from "axios";
+import Loader from "../../components/loader/Loader";
 export default function Home() {
-  const idEdit = [];  
+  const idEdit = [];
 
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
+  const [pageLoading, setPageLoading] = useState(false);
   const openSessionAdd = () => {
-    document.getElementsByClassName("ModalSessionAdd__main")[0].classList.remove("ModalSession__hidden");
-  }
+    document
+      .getElementsByClassName("ModalSessionAdd__main")[0]
+      .classList.remove("ModalSession__hidden");
+  };
   const openEditSession = (e) => {
     let idTarget = e.target.id;
     let id = idTarget.replace("edit", "");
-    console.log(id)
+    console.log(id);
     idEdit.pop();
     idEdit.push(id);
-    console.log(idEdit)
-    document.getElementsByClassName("ModalSessionEdit__main")[0].classList.remove("ModalSession__hidden");
-  }
+    console.log(idEdit);
+    document
+      .getElementsByClassName("ModalSessionEdit__main")[0]
+      .classList.remove("ModalSession__hidden");
+  };
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -35,6 +41,9 @@ export default function Home() {
   };
   const getSessions = async () => {
     let request = await axios.get("http://localhost:3000/eduapp_user_sessions");
+    setTimeout(() => {
+      setPageLoading(true);
+    }, 500);
     const sessionsPreSorted = [];
     request.data.map((e) => {
       let id = e.id;
@@ -77,7 +86,7 @@ export default function Home() {
   };
   const deleteSession = (e) => {
     let idDelete = e.target.id;
-    console.log(idDelete)
+    console.log(idDelete);
     axios
       .delete("http://localhost:3000/eduapp_user_sessions/" + idDelete)
       .then((res) => {
@@ -142,7 +151,7 @@ export default function Home() {
       setItsMobileDevice(false);
     }
   }, []);
-  return (
+  return pageLoading ? (
     <>
       <div className="home-main-container">
         <Navbar mobile={ItsMobileDevice} location={"home"} />
@@ -181,7 +190,9 @@ export default function Home() {
                     fill="currentColor"
                     class="bi bi-plus-circle-fill"
                     viewBox="0 0 16 16"
-                    onClick={() => { openSessionAdd() }}
+                    onClick={() => {
+                      openSessionAdd();
+                    }}
                   >
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                   </svg>
@@ -223,9 +234,7 @@ export default function Home() {
                                 <p className="session-resourcesPlatform">
                                   {data.resourcesPlatform}
                                 </p>
-                                <p className="session_chat_id">
-                                  {data.chat}
-                                </p>
+                                <p className="session_chat_id">{data.chat}</p>
                               </div>
                             </div>
                           </div>
@@ -253,7 +262,7 @@ export default function Home() {
                           <div className="buttonsessionedit" id="buttonEdit">
                             <svg
                               onClick={openEditSession}
-                              id = {"edit" + data.id}
+                              id={"edit" + data.id}
                               xmlns="http://www.w3.org/2000/svg"
                               width="15"
                               height="15"
@@ -280,11 +289,13 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <SessionEdit idEdit = {idEdit} />
+        <SessionEdit idEdit={idEdit} />
 
         <SessionAdd />
         <BottomButtons mobile={ItsMobileDevice} location={"home"} />
       </div>
     </>
+  ) : (
+    <Loader />
   );
 }

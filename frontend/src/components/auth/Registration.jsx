@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
+import API from "../../API";
+
 export default class Registration extends Component {
   constructor(props) {
     super(props);
@@ -8,42 +10,36 @@ export default class Registration extends Component {
       password: "",
       password_confirmation: "",
       registrationErrors: "",
+      user_name: "",
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleSubmit = (event) => {
-    const { email, password, password_confirmation } = this.state;
-    axios
-      .post(
-        "http://localhost:3000/registrations",
-        {
-          user: {
-            email: email,
-            password: password,
-            password_confirmation: password_confirmation,
-          },
-        },
-        {
-          withCredentials: true,
-        }
-      )
-      .then((res) => {
-        if (res.data.status === "created") {
-          this.props.handleSuccessfulAuth(res.data);
-        }
-      })
-      .catch((err) => {
-        console.log("registration err", err);
-      });
+  handleSubmit = async (event) => {
     event.preventDefault();
+    const { email, password, password_confirmation, user_name } = this.state;
+    const userData = new FormData();
+    const defaultInfo = new FormData();
+    userData.append("user[email]", email);
+    userData.append("user[password]", password);
+
+    await API.createUser(userData);
+    userData.delete(password_confirmation);
+    await await API.login(userData);
+
+    defaultInfo.append("user_id", localStorage.userId);
+    defaultInfo.append("user_name", user_name);
+    defaultInfo.append("user_email", email);
+    await API.createInfo(defaultInfo);
+    window.location.href = "/";
   };
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
+
   render() {
     return (
       <form className="registration_form" onSubmit={this.handleSubmit}>

@@ -1,11 +1,13 @@
-Rails.application.routes.draw do
-  default_url_options :host => "localhost:3000"
+Rails.application.routes.draw do  
+  resources :resources
   resources :eduapp_user_sessions
-  root to: 'static#home'
-  resources :resources 
-  resources :sessions, only: [:create]
-  resources :registrations, only: [:create]
-  delete :logout, to: 'sessions#logout'
-  get :logged_in , to: 'sessions#logged_in'
+  resources :user_infos
+  default_url_options :host => "localhost:3000"
+  devise_for :users,
+             controllers: {
+               sessions: 'users/sessions',
+               registrations: 'users/registrations'
+             }
+  get '/member-data', to: 'members#show'
 
 end

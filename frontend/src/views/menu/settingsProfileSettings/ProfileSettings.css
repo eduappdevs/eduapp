@@ -1,0 +1,19 @@
+.profileSettings_container {
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  position: fixed;
+  background-color: var(--backgroundColor);
+  transform: translateX(0px);
+  transition: all 0.3s;
+  z-index: 99999999999999;
+}
+.profileSettings_wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+.profileSettings__hidden {
+  transform: translateX(150vw);
+}
