@@ -29,8 +29,7 @@ export default class Registration extends Component {
     await await API.login(userData);
 
     defaultInfo.append("user_id", localStorage.userId);
-    defaultInfo.append("user_name", user_name);
-    defaultInfo.append("user_email", email);
+    defaultInfo.append("user_name", email.split('@')[0]);
     await API.createInfo(defaultInfo);
     window.location.href = "/";
   };

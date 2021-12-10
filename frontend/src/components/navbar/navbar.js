@@ -108,14 +108,17 @@ export default function Navbar({ mobile, location }) {
         >
           <div className="profile-button-box">
             <span className="profile-name">
-              {userInfo.id !== null && userInfo !== "undefined"
-                ? userInfo.id
-                : "no name"}
+              {userInfo.user_name}
             </span>
             <div className="profile-pic">
+              
               <img
                 src={
-                  "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                  userInfo.profile_image != null
+                  ? 
+                  userInfo.profile_image.url
+                  :
+                   "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                 }
                 alt=""
               />

@@ -7,9 +7,10 @@ import SessionAdd from "../../components/modals/modals-home/sessionAdd";
 import SessionEdit from "../../components/modals/modals-home/sessionEdit";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 export default function Home() {
+  let userInfo = FetchUserInfo(localStorage.userId);
   const idEdit = [];
-
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
@@ -163,12 +164,18 @@ export default function Home() {
               <div className="information-user">
                 <div className="profile-picture">
                   <img
-                    src="https://media-exp1.licdn.com/dms/image/C5603AQH1DePwZKdqAQ/profile-displayphoto-shrink_200_200/0/1516938150762?e=1643846400&v=beta&t=4sUjvaLKjc1cu_YtKgqxwsos3TogDh2Sd6kpq8sPmAE"
-                    alt=""
+                    src={
+                      userInfo.profile_image != null
+                      ? 
+                      userInfo.profile_image.url
+                      :
+                       "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                    }
+                    alt={userInfo.user_name,'image'}
                   />
                 </div>
                 <div className="user-name">
-                  <h1>Richard Clarke</h1>
+                  <h1>{userInfo.user_name}</h1>
                   <div className="edit" onClick={activeEditMenu}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
