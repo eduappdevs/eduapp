@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import API from "../API";
 
 export const FetchUserInfo = (userId) => {
-  console.log(userId);
   const [userInfo, setUserInfo] = useState({});
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -20,6 +19,5 @@ export const FetchUserInfo = (userId) => {
     fetchUserInfo();
   }, [userId]);
 
-  console.log("fetch", userInfo);
   return userInfo;
 };

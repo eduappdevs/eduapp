@@ -21,52 +21,48 @@
 .profileSettings__hidden {
   transform: translateX(150vw);
 }
-.profileImage_preview{
+.profileImage_preview {
   width: 120px;
   height: 120px;
   border-radius: 50%;
   margin-top: 20px;
   cursor: pointer;
-
 }
-#profileImage_upload{
+#profileImage_upload {
   display: none;
 }
-.userProfileImg{
+.userProfileImg {
   display: flex;
   flex-direction: column;
 }
-.userProfileImg > .saveImage{
+.userProfileImg > .saveImage {
   margin-top: 20px;
 }
 
-.userName_input{
+.userName_input {
   margin: 50px;
 }
 
-.userName_input > input{
+.userName_input > input {
   border-left: none;
   border-right: none;
   border-top: none;
   border-bottom: 2px solid var(--textColor);
-  transition: all .2s;
+  transition: all 0.2s;
   transform: scale(1.3);
   text-align: center;
   font-weight: 700;
-
-
+  background: none;
+  color: var(--textColor);
 }
-.userName_input > input:focus{
+.userName_input > input:focus {
   outline: none;
   border-bottom: 2px solid var(--blue);
-
-
 }
 
-
-.commitChanges{
+.commitChanges {
   display: flex;
-  padding: 10px 20px ;
+  padding: 10px 20px;
   background-color: var(--blue);
   color: white;
   border-radius: 10px;

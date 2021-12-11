@@ -11,6 +11,11 @@
 Devise.setup do |config|
   config.jwt do |jwt|
     jwt.secret = ENV['RAILS-SECRET-KEY']
+    jwt.dispatch_requests = [
+      ['POST', %r{^/signin$}],
+    ]
+    jwt.expiration_time = 14.days.to_i
+    
   end
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing

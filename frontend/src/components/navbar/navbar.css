@@ -194,6 +194,7 @@ header > .profile-menu-desktop > ul > li {
   border: 2px solid var(--shadowColor);
   text-align: center;
   margin-top: 8px;
+  cursor: pointer;
 }
 header > .profile-menu-desktop > ul > li > a {
   text-decoration: none;
