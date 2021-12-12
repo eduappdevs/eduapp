@@ -87,30 +87,29 @@ rails db:seed
 rails s
 ```
 <p>To stop the server you have to use CTRL + C.</p>
-<div>
-    <h1 align='center'>Frontend information:</h1>
-    <p>This is how eduapp started but some visual changes were made.</p>
-    <details >
-    <summary>Prototype</summary>
-    <div ><img src="./prototipo/eduapp-1.png" alt="prototipo">
-    </div>
-    <div ><img src="./prototipo/Eduapp-2.png" alt="prototipo">
-    </div>
-    <div ><img src="./prototipo/Eduapp-3.png" alt="prototipo">
-    </div>
-    </details>
-    <h3>How to install and run</h3>
-    <p> First, you must install the programs. Now you have to clone the project and used this commands.</p>
-    <p>To clone, use:</p>
+<h1 align='center'>Frontend information:</h1>
+<p>This is how eduapp started but some visual changes were made.</p>
+<details >
+<summary>Prototype</summary>
+<div ><img src="./prototipo/eduapp-1.png" alt="prototipo">
+</div>
+<div ><img src="./prototipo/Eduapp-2.png" alt="prototipo">
+</div>
+<div ><img src="./prototipo/Eduapp-3.png" alt="prototipo">
+</div>
+</details>
+<h3>How to install and run</h3>
+<p> First, you must install the programs. Now you have to clone the project and used this commands.</p>
+<p>To clone, use:</p>
 
-    ```bash
-    git clone https://github.com/eduappdevs/eduapp
-    cd eduapp/frontend
-    npm start
-    ```
+```bash
+git clone https://github.com/eduappdevs/eduapp
+cd eduapp/frontend
+npm start
+```
 
 <p>To stop the server you have to use CTRL + C.</p>
-</div>
+
 <h1 >Tech stack</h1>
 
 <div>
