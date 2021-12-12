@@ -5,6 +5,7 @@ import Home from "./views/home/Home";
 import React from "react";
 import requireAuth from "./components/auth/RequireAuth";
 import { FetchUserInfo } from "./hooks/FetchUserInfo";
+import Calendar from "./views/Calendar/calendar";
 export default function App() {
   return (
     <>
@@ -13,6 +14,7 @@ export default function App() {
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/resources" element={<Resources />} />
+            <Route exact path="/calendar" element={<Calendar />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         ) : (
