@@ -34,12 +34,5 @@
     <a href="https://rubyonrails.org">
         <img src="https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white" alt="Rails"></a>
      
-     
-     
-        <a href="https://reactjs.org">
-            <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React"></a>
-
-     
-     
     </div>
 
