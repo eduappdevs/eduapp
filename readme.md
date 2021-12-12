@@ -3,7 +3,7 @@
 
 - [About the project](#about-the-project)
 - [Backend](#backend-information)
-- [Frontend] (#frontend-information)
+- [Frontend](#frontend-information)
 - [Built with](#built-with)
 
 </div>
@@ -19,15 +19,6 @@
           <p>Faciliate and increase the communication between school, students and teachers by developing an application , EduApp , free and open source , customised for each partner school.</p>
    </div>
   
-<details >
-<summary>Prototype</summary>
-<div ><img src="./prototipo/eduapp-1.png" alt="prototipo">
-</div>
-<div ><img src="./prototipo/Eduapp-2.png" alt="prototipo">
-</div>
-<div ><img src="./prototipo/Eduapp-3.png" alt="prototipo">
-</div>
-</details>
 <h1 align='center'>Backend information</h1>
 <p>Eduapp has used pgAdmin as a database with postgreSQL and ruby on rails was used from the software.</p>
 <h3>Diagram E/R</h3>
@@ -97,8 +88,28 @@ rails s
 ```
 <p>To stop the server you have to use CTRL + C.</p>
 <div>
-    <h1>Frontend information:</h1>
+    <h1 align='center'>Frontend information:</h1>
+    <p>This is how eduapp started but some visual changes were made.</p>
+    <details >
+    <summary>Prototype</summary>
+    <div ><img src="./prototipo/eduapp-1.png" alt="prototipo">
+    </div>
+    <div ><img src="./prototipo/Eduapp-2.png" alt="prototipo">
+    </div>
+    <div ><img src="./prototipo/Eduapp-3.png" alt="prototipo">
+    </div>
+    </details>
+    <h3>How to install and run</h3>
+    <p> First, you must install the programs. Now you have to clone the project and used this commands.</p>
+    <p>To clone, use:</p>
 
+    ```bash
+    git clone https://github.com/eduappdevs/eduapp
+    cd eduapp/frontend
+    npm start
+    ```
+
+<p>To stop the server you have to use CTRL + C.</p>
 </div>
 <h1 >Tech stack</h1>
 
@@ -142,33 +153,19 @@ rails s
             <img src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white" alt="CSS"/>
      </a>
    </div>
-     
-<h1 >User requirements</h1>
-     <p>Login/Signup view</p>
-     <h1>---Log in</h1>
-     <p>------Fields</p>
-     <p>---------Email</p>
-     <p>---------Password</p>
-     <p>---------Submit button</p>
-     <h1>---Sign up</h1>
-     <p>------Fields</p>
-     <p>---------Email</p>
-     <p>---------Password</p>
-     <p>---------Password confirmation</p>
-     <p>---------Submit button</p>
-     
-<div>
-     <h1>Session view: </h1>
-		<p>You can view your image and your name</p>
-		<p>If you press the pencil you can edit the sessions, delete them and create new ones. Administrators have this function</p>
-     <p>Next Session/Sessions:</p>
-     <p>You can view the following sessions and their information such as name, time, stream site, resource site and the chat link.</p>
-</div>
-<div>
-     <h1>Resources:</h1>
-		<p>You can view </p>
-		<p>If you press the pencil you can edit the sessions, delete them and create new ones. Administrators have this function</p>
-     <p>Next Session/Sessions:</p>
-     <p>You can view the following sessions and their information such as name, time, stream site, resource site and the chat link.</p>
-</div>
+
+
+<h1>User Requirements</h1>
+<p>Eduapp has three type of user, it depends on the type your user has more functions or not.</p>
+<h3>1.Students user are able to:</h3>
+<p>View your account's calendar, resources, upcoming sessions, and chats.</p>
+<h3>2.Teacher user are able to: </h3>
+<p>They have the same functionality as students, but they can edit, delete, and create events in calendars, resources, and remove students from their classes.</p>
+<h3>3.Secretariat user are able to: </h3>
+<p>They have control over the users of their school.</p>
+<h3>4.Administrator user are able to:</h3>
+<p>They have the same functionality as secretariat, but they has full control over the user of the secretariat of the educational center. </p>
+
+
+<h1>API Documention</h1>
   
