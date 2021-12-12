@@ -77,15 +77,15 @@
      <p>Login/Signup view</p>
      <h1>---Log in</h1>
      <p>------Fields</p>
-     <p>---------Email:email of your account</p>
+     <p>---------Email:email of your account.</p>
      <p>---------Password:password of your account</p>
-     <p>---------Submit button:if password matches with account password you will log in and will be redirect with home page</p>
+     <p>---------Submit button:if password matches with account password you will log in and will be redirect with home page.</p>
      <h1>---Sign up</h1>
      <p>------Fields</p>
-     <p>---------Email:email of your account</p>
-     <p>---------Password:password of your account , if its not empty , it will be green</p>
-     <p>---------Password confirmation:if password confirmation field matches with first password fields , then it will be green and the submit button will be enabled</p>
-     <p>---------Submit button:if password its not empty and password confirmation matches with it , then this will be enabled to click , this will sign up if email is not already signed up </p>
+     <p>---------Email:email of your account.</p>
+     <p>---------Password:password of your account , if its not empty , it will be green.</p>
+     <p>---------Password confirmation:if password confirmation field matches with first password fields , then it will be green and the submit button will be enabled.</p>
+     <p>---------Submit button:if password its not empty and password confirmation matches with it , then this will be enabled to click , this will sign up if email is not already signed up. </p>
      
      
      
