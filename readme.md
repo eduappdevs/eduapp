@@ -28,7 +28,7 @@
 </div>
 
 </details>
-<h1 align='center'>Built with</h1>
+<h1 align='center'>Tech stack</h1>
 
 <div align ='center'>
     <a href="https://rubyonrails.org">
