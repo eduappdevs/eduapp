@@ -27,38 +27,55 @@
 <div ><img src="./prototipo/Eduapp-3.png" alt="prototipo">
 </div>
 </details>
-<h1>Database information</h1>
-<h1>Diagram E/R</h1>
+<h1>Backend information</h1>
+<p>Eduapp has used pgAdmin as a database with postgreSQL and ruby ​​on rails was used from the software.</p>
+<h3>Diagram E/R</h3>
 <div ><img src="./Diagrama/DiagramaER.png" alt="diagramER">
 </div>
-<h1>Diagram UML</h1>
+<h3>Diagram UML</h3>
 <div ><img src="./Diagrama/DiagramaUML.png" alt="diagramUML">
 </div>
-<h1>Relational diagram</h1>
+<h3>Relational diagram</h3>
 <div>
-    <h3>User and Annotations</h3>
+    <h4>User and Annotations</h4>
     <p>Annotation(annotation_id, annotation_description, annotation_start, annotation_end )</p>
     <p>USER(user_id,name, image,rol,email,password)</p>
     <p>HAVE(user_id*, annotation_id*)</p>
-    <h3>User and session</h3>
+    <h4>User and session</h4>
     <p>USER(user_id,name, image,rol,email,password)</p>
     <p>SESSION(session_id, session_name, date, streaming_platform, resoruces_platform, session_chat_id)</p>
     <p>PARTICIPATES(user_id*, session_id*)</p>
-    <h3>User and Courser</h3>
+    <h4>User and Courser</h4>
     <p>COURSER(couser_id, courser_name, couser_participants)</p>
     <p>USER(user_id,name, image,rol,email,password)</p>
     <p>HAVE(couser_id*, user_id*)</p>
-     <h3>Courser and Resources</h3>
+     <h4>Courser and Resources</h4>
     <p>COURSER(couser_id, courser_name, couser_participants)</p>
      <p>RESORCES(resources_id, resources_name, resources_description, id_courser*)</p>
-     <h3>Resources and files</h3>
+     <h4>Resources and files</h4>
      <p>RESORCES(resources_id, resources_name, resources_description, id_courser*)</p>
      <p>FILES(files_id, files_content, id_resources*)</p>
-     <h3>Courser, messages and courser chat</h3>
+     <h4>Courser, messages and courser chat</h4>
      <p>COURSER(couser_id, courser_name, couser_participants)</p>
      <p>MESSAGES(messages_id, writer_at, message_text, user_id)</p>
      <p>COURSER_CHAT(courser_chat_id, message_id*,chat_image,courser_name,courder_id*)</p>    
 </div>
+
+<h3>Explanation of the diagrams contents:</h3>
+<p>-User table is used to register.</p>
+<p>-Annotations table is used as a calendar for events to be stored.</p>
+<p>-Session table is used to know when you have classes and thei information.</p>
+<p>-Courser table is used to know the students of a courser.</p>
+<p>-Courser chat table is used to create a chat for each courser or subject.</p>
+<p>-Messages table is used to save who send the messages and the contents.</p>
+<p>-Resources table are the documents or information about sessions.</p>
+<p>-Files table is used to save the documents.</p>
+<h3>ORM</h3>
+<p></p>
+<h3>How to install and run</h3>
+<p> First, you must install the programs. After you have to clone the project </p>
+<p>To clone, use:</p>
+
 <div>
     <p></p>
 </div>
