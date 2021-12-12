@@ -35,7 +35,7 @@
 <h3>Diagram UML</h3>
 <div ><img src="./Diagrama/DiagramaUML.png" alt="diagramUML">
 </div>
-<h3>Relational diagram</h3>
+<h3>Relational diagram:</h3>
 <div>
     <h4>User and Annotations</h4>
     <p>Annotation(annotation_id, annotation_description, annotation_start, annotation_end )</p>
@@ -73,9 +73,24 @@
 <h3>ORM</h3>
 <p></p>
 <h3>How to install and run</h3>
-<p> First, you must install the programs. After you have to clone the project </p>
+<p> First, you must install the programs. Now you have to clone the project and used this commands.</p>
 <p>To clone, use:</p>
+```bash
+git clone https://github.com/eduappdevs/eduapp
+cd eduapp/backend/eduapp_db/
+bundle install
+```
+<p>After using these commands, you need to look for the folder config and find database.yml, you need to change the password to the password of the pgAdmin</p>
 
+<p>To have values in the database enter the following command:</p>
+```bash
+rails db:migrate
+rails db:seed
+```
+<p>After you have followed these steps, you can start the server with:</p>
+```bash
+rails s
+```
 <div>
     <p></p>
 </div>
