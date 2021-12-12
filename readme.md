@@ -14,6 +14,8 @@
      <br/>
           <h1 align='center'>Partners</h1>
           <p>Fundatia Ecologica Green , Romania , Instituto Politécnico de Santarém , Portugal , Stichting Landstede , Netherlands , SOSU OSTJYLLAND , Denmark and IES El Rincón , Spain</p>
+     <h1 align='center'>Objectives</h1>
+          <p>Faciliate and increase the communication between school, students and teachers by developing an application , EduApp , free and open source , customised for each partner school.</p>
    </div>
   
 <details align ='center'>
