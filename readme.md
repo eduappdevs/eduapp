@@ -3,7 +3,7 @@
 
 - [About the project](#about-the-project)
 - [Backend](#backend-information)
-- [Frontend] (#frontend-information)
+- [Frontend](#frontend-information)
 - [Built with](#built-with)
 
 </div>
