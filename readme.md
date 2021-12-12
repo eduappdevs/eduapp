@@ -7,6 +7,9 @@
 
 </div>
 <h1 align='center'>About the project</h1>
+<div align='center'>
+     Eduapp emerges after the covid 19 pandemic ,as the answer to the challenges that this entails.
+   </div>
 <details align ='center'>
    <summary align ='center'>Prototype</summary>
 <div align ='center'><img src="./prototipo/eduapp-1.png" alt="prototipo">
