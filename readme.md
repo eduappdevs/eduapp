@@ -168,4 +168,4 @@ rails s
 
 
 <h1>API Documention</h1>
-  
+<br></br>
