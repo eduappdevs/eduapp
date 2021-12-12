@@ -19,15 +19,49 @@
    </div>
   
 <details >
-   <summary>Prototype</summary>
+<summary>Prototype</summary>
 <div ><img src="./prototipo/eduapp-1.png" alt="prototipo">
 </div>
 <div ><img src="./prototipo/Eduapp-2.png" alt="prototipo">
 </div>
 <div ><img src="./prototipo/Eduapp-3.png" alt="prototipo">
 </div>
-
 </details>
+<h1>Database information</h1>
+<h1>Diagram E/R</h1>
+<div ><img src="./Diagrama/DiagramaER.png" alt="diagramER">
+</div>
+<h1>Diagram UML</h1>
+<div ><img src="./Diagrama/DiagramaUML.png" alt="diagramUML">
+</div>
+<h1>Relational diagram</h1>
+<div>
+    <h3>User and Annotations</h3>
+    <p>Annotation(annotation_id, annotation_description, annotation_start, annotation_end )</p>
+    <p>USER(user_id,name, image,rol,email,password)</p>
+    <p>HAVE(user_id*, annotation_id*)</p>
+    <h3>User and session</h3>
+    <p>USER(user_id,name, image,rol,email,password)</p>
+    <p>SESSION(session_id, session_name, date, streaming_platform, resoruces_platform, session_chat_id)</p>
+    <p>PARTICIPATES(user_id*, session_id*)</p>
+    <h3>User and Courser</h3>
+    <p>COURSER(couser_id, courser_name, couser_participants)</p>
+    <p>USER(user_id,name, image,rol,email,password)</p>
+    <p>HAVE(couser_id*, user_id*)</p>
+     <h3>Courser and Resources</h3>
+    <p>COURSER(couser_id, courser_name, couser_participants)</p>
+     <p>RESORCES(resources_id, resources_name, resources_description, id_courser*)</p>
+     <h3>Resources and files</h3>
+     <p>RESORCES(resources_id, resources_name, resources_description, id_courser*)</p>
+     <p>FILES(files_id, files_content, id_resources*)</p>
+     <h3>Courser, messages and courser chat</h3>
+     <p>COURSER(couser_id, courser_name, couser_participants)</p>
+     <p>MESSAGES(messages_id, writer_at, message_text, user_id)</p>
+     <p>COURSER_CHAT(courser_chat_id, message_id*,chat_image,courser_name,courder_id*)</p>    
+</div>
+<div>
+    <p></p>
+</div>
 <h1 >Tech stack</h1>
 
 <div>
@@ -69,8 +103,6 @@
      <a href="#">
             <img src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white" alt="CSS"/>
      </a>
-     
-     
    </div>
      
 <h1 >User requirements</h1>
@@ -87,8 +119,18 @@
      <p>---------Password confirmation</p>
      <p>---------Submit button</p>
      
-     
-     
-          
-     
-
+<div>
+     <h1>Session view: </h1>
+		<p>You can view your image and your name</p>
+		<p>If you press the pencil you can edit the sessions, delete them and create new ones. Administrators have this function</p>
+     <p>Next Session/Sessions:</p>
+     <p>You can view the following sessions and their information such as name, time, stream site, resource site and the chat link.</p>
+</div>
+<div>
+     <h1>Resources:</h1>
+		<p>You can view </p>
+		<p>If you press the pencil you can edit the sessions, delete them and create new ones. Administrators have this function</p>
+     <p>Next Session/Sessions:</p>
+     <p>You can view the following sessions and their information such as name, time, stream site, resource site and the chat link.</p>
+</div>
+  
