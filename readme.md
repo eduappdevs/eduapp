@@ -7,65 +7,65 @@
 
 </div>
 <h1 align='center'>About the project</h1>
-<div align='center'>
+<div >
      Eduapp emerges after the covid 19 pandemic ,as the answer to the challenges that this entails.
      <br/>
      It's an european project , co-funded by erasmus+ programme
      <br/>
-          <h1 align='center'>Partners</h1>
+          <h1>Partners</h1>
           <p>Fundatia Ecologica Green , Romania , Instituto Politécnico de Santarém , Portugal , Stichting Landstede , Netherlands , SOSU OSTJYLLAND , Denmark and IES El Rincón , Spain</p>
-     <h1 align='center'>Objectives</h1>
+     <h1 >Objectives</h1>
           <p>Faciliate and increase the communication between school, students and teachers by developing an application , EduApp , free and open source , customised for each partner school.</p>
    </div>
   
-<details align ='center'>
-   <summary align ='center'>Prototype</summary>
-<div align ='center'><img src="./prototipo/eduapp-1.png" alt="prototipo">
+<details >
+   <summary>Prototype</summary>
+<div ><img src="./prototipo/eduapp-1.png" alt="prototipo">
 </div>
-<div align ='center'><img src="./prototipo/Eduapp-2.png" alt="prototipo">
+<div ><img src="./prototipo/Eduapp-2.png" alt="prototipo">
 </div>
-<div align ='center'><img src="./prototipo/Eduapp-3.png" alt="prototipo">
+<div ><img src="./prototipo/Eduapp-3.png" alt="prototipo">
 </div>
 
 </details>
-<h1 align='center'>Tech stack</h1>
+<h1 >Tech stack</h1>
 
-<div align ='center'>
+<div>
     <a href="https://rubyonrails.org">
         <img src="https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white" alt="Rails"/></a>
    </div>
   
-<div align ='center'>        
+<div >        
      <a href="https://reactjs.org">
             <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React"/></a>
    </div>
      
-<div align ='center'>
+<div >
        <a href="#">
             <img src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" alt="Javascript"/>
      </a>
    </div>
      
-<div align ='center'>
+<div >
      <a href="#">
             <img src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" alt="Html"/>
      </a>
    </div>
      
-<div align ='center'>
+<div >
      <a href="#">
             <img src="https://img.shields.io/badge/Adobe%20XD-470137?style=for-the-badge&logo=Adobe%20XD&logoColor=#FF61F6" alt="AdobeXD"/>
      </a>
    </div>
      
-<div align ='center'>
+<div >
      <a href="#">
             <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white" alt="Github"/>
      </a>
    </div>
      
      
-<div align ='center'>
+<div>
      <a href="#">
             <img src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white" alt="CSS"/>
      </a>
