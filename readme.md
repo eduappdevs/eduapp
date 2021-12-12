@@ -75,6 +75,7 @@
 <h3>How to install and run</h3>
 <p> First, you must install the programs. Now you have to clone the project and used this commands.</p>
 <p>To clone, use:</p>
+
 ```bash
 git clone https://github.com/eduappdevs/eduapp
 cd eduapp/backend/eduapp_db/
@@ -83,11 +84,13 @@ bundle install
 <p>After using these commands, you need to look for the folder config and find database.yml, you need to change the password to the password of the pgAdmin</p>
 
 <p>To have values in the database enter the following command:</p>
+
 ```bash
 rails db:migrate
 rails db:seed
 ```
 <p>After you have followed these steps, you can start the server with:</p>
+
 ```bash
 rails s
 ```
