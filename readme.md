@@ -12,7 +12,7 @@
      <br/>
      It's an european project , co-funded by erasmus+ programme
      <br/>
-     <h1> PARTNERS </>
+          <h1 align='center'>Partners</h1>
           <p>Fundatia Ecologica Green , Romania , Instituto Politécnico de Santarém , Portugal , Stichting Landstede , Netherlands , SOSU OSTJYLLAND , Denmark and IES El Rincón , Spain</p>
    </div>
   
