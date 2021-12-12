@@ -75,11 +75,11 @@
      
 <h1 >User requirements</h1>
      <p>Login/Signup view</p>
-     <p>  Login</>
-     <p>       Fields</p>
-     <p>            Email:email of your account</p>
-     <p>            Password:password of your account</p>
-     <p>            Submit button:if password matches with account password you will log in and will be redirect with home page</p>
+     <p>---Login</>
+     <p>------Fields</p>
+     <p>---------Email:email of your account</p>
+     <p>---------Password:password of your account</p>
+     <p>---------Submit button:if password matches with account password you will log in and will be redirect with home page</p>
      
      
      
