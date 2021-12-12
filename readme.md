@@ -2,7 +2,8 @@
 </div>
 
 - [About the project](#about-the-project)
-- [How to Use](#how-to-use)
+- [Backend](#backend-information)
+- [Frontend] (#frontend-information)
 - [Built with](#built-with)
 
 </div>
@@ -27,8 +28,8 @@
 <div ><img src="./prototipo/Eduapp-3.png" alt="prototipo">
 </div>
 </details>
-<h1>Backend information</h1>
-<p>Eduapp has used pgAdmin as a database with postgreSQL and ruby ​​on rails was used from the software.</p>
+<h1 align='center'>Backend information</h1>
+<p>Eduapp has used pgAdmin as a database with postgreSQL and ruby on rails was used from the software.</p>
 <h3>Diagram E/R</h3>
 <div ><img src="./Diagrama/DiagramaER.png" alt="diagramER">
 </div>
@@ -94,8 +95,10 @@ rails db:seed
 ```bash
 rails s
 ```
+<p>To stop the server you have to use CTRL + C.</p>
 <div>
-    <p></p>
+    <h1>Frontend information:</h1>
+
 </div>
 <h1 >Tech stack</h1>
 
