@@ -8,6 +8,7 @@ import SessionEdit from "../../components/modals/modals-home/sessionEdit";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import FadeOutLoader from "../../components/loader/FadeOutLoader";
 export default function Home() {
   let userInfo = FetchUserInfo(localStorage.userId);
   const idEdit = [];
@@ -15,7 +16,7 @@ export default function Home() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
-  const [pageLoading, setPageLoading] = useState(false);
+  const [pageLoaded, setPageLoaded] = useState(false);
   const openSessionAdd = () => {
     document
       .getElementsByClassName("ModalSessionAdd__main")[0]
@@ -55,9 +56,13 @@ export default function Home() {
   };
   const getSessions = async () => {
     let request = await axios.get("http://localhost:3000/eduapp_user_sessions");
+
     setTimeout(() => {
-      setPageLoading(true);
-    }, 500);
+      FadeOutLoader();
+      setTimeout(() => {
+        setPageLoaded(true);
+      }, 175);
+    }, 200);
     const sessionsPreSorted = [];
     request.data.map((e) => {
       let id = e.id;
@@ -174,7 +179,7 @@ export default function Home() {
       setItsMobileDevice(false);
     }
   }, []);
-  return pageLoading ? (
+  return !pageLoaded ? (
     <>
       <div className="home-main-container">
         <Navbar mobile={ItsMobileDevice} location={"home"} />

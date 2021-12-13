@@ -18,7 +18,7 @@
      <br/>
           <h1>Partners</h1>
           <p>Fundatia Ecologica Green , Romania , Instituto Politécnico de Santarém , Portugal , Stichting Landstede , Netherlands , SOSU OSTJYLLAND , Denmark and IES El Rincón , Spain</p>
-     <h1 >Objectives</h1>
+          <h1>Objectives</h1>
           <p>Faciliate and increase the communication between school, students and teachers by developing an application , EduApp , free and open source , customised for each partner school.</p>
    </div>
   
@@ -76,6 +76,7 @@ git clone https://github.com/eduappdevs/eduapp
 cd eduapp/backend/eduapp_db/
 bundle install
 ```
+
 <p>After using these commands, you need to look for the folder config and find database.yml, you need to change the password to the password of the pgAdmin</p>
 
 <p>To have values in the database enter the following command:</p>
@@ -84,11 +85,13 @@ bundle install
 rails db:migrate
 rails db:seed
 ```
+
 <p>After you have followed these steps, you can start the server with:</p>
 
 ```bash
 rails s
 ```
+
 <p>To stop the server you have to use CTRL + C.</p>
 <h1 align='center'>Frontend information:</h1>
 <p>This is how eduapp started but some visual changes were made.</p>
@@ -110,6 +113,7 @@ git clone https://github.com/eduappdevs/eduapp
 cd eduapp/frontend
 npm start
 ```
+
 <p>To stop the server you have to use CTRL + C.</p>
 
 <h1 >Tech stack</h1>
@@ -177,3 +181,27 @@ npm start
 
 <h1>Use Cases</h1>
 <img src="./Documentation/UseCases.png" />
+
+<h1>Usability</h1>
+<p>We have used orange and blue as principal colors , then we use a different gray scales and white</p>
+<p>As text font we select 'Consolas' font , and usually using the bolder font weight</p>
+<img height='400' src='./Documentation/Usability/colorsExample.png'>
+<p>In the sign up form , we add a advisor in the passwords fields , which gives you feedback if the password it's empty or the confirmation password does not match with the previously written password.</p>
+<img height='400' src='./Documentation/Usability/signUpForm.png'>
+<img height='400' src='./Documentation/Usability/signUpForm2.png'>
+<p>Before the password its written and the confirmation password matches , you aren't able to sign up the account and the submit button were disabled , after the confirmation matches it will be enabled and you can submit and sign up the account.</p>
+<img height='400' src='./Documentation/Usability/signUpForm3.png'>
+<p>In desktop , this is how it looks</p>
+<img height='400' src='./Documentation/Usability/signUpFormDesktop.png'>
+<p>Mobile view - here you can see how the navbar looks , with icon buttons in the bottom of the page</p>
+<img height='400' src='./Documentation/Usability/mobilePreview.png'>
+<p>Desktop view - here you can see how the navbar looks , with text buttons in the top of the page</p>
+<img height='400' src='./Documentation/Usability/desktopPreview.png'>
+<p>Eduapp have a dark mode</p>
+<img height='400' src='./Documentation/Usability/darkModeBefore.png'>
+<img height='400' src='./Documentation/Usability/darkModeAfter.png'>
+<p>Then the page looks like this</p>
+<img height='400' src='./Documentation/Usability/darkModeResources.png'>
+<p>When page were loading , an animation will be on screen</p>
+<p>This it's a frame of it , this hole animation was created in pure css.</p>
+<img height='400' src='./Documentation/Usability/loadingAnimationFrame.png'>

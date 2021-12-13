@@ -1,5 +1,5 @@
 class ResourcesController < ApplicationController
-  before_action :set_resource, only: [:show, :update, :destroy]
+  before_action :set_resource, only: [:show , :update, :destroy]
 
   # GET /resources
   def index
@@ -9,7 +9,6 @@ class ResourcesController < ApplicationController
 
   # GET /resources/1
   def show
-    @resource = Resource.with_attached_files.find(params[:id])
     render json: @resource
   end
 
