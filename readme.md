@@ -8,6 +8,8 @@
 - [User Requirements](#user-requirements)
 - [API Documention](#api-documention)
 - [Use Cases](#use-cases)
+- [Usability](#usability)
+
 
 </div>
 <h1 align='center'>About the project</h1>
