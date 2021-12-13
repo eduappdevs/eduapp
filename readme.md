@@ -62,8 +62,8 @@
 <p>-User table is used to register.</p>
 <p>-Annotations table is used as a calendar for events to be stored.</p>
 <p>-Session table is used to know when you have classes and thei information.</p>
-<p>-Courser table is used to know the students of a courser.</p>
-<p>-Courser chat table is used to create a chat for each courser or subject.</p>
+<p>-Course table is used to know the students of a courser.</p>
+<p>-Course chat table is used to create a chat for each course or subject.</p>
 <p>-Messages table is used to save who send the messages and the contents.</p>
 <p>-Resources table are the documents or information about sessions.</p>
 <p>-Files table is used to save the documents.</p>
