@@ -25,7 +25,7 @@
    </div>
   
 <h1 align='center'>Backend information</h1>
-<p>Eduapp has used pgAdmin as a database with postgreSQL and ruby on rails was used from the software.</p>
+<p>Eduapp has used postgresQL as database, ruby on rails as server-side web application framework.</p>
 <h3>Diagram E/R</h3>
 <div ><img src="./Documentation/Diagram/DiagramER.png" alt="diagramER">
 </div>
