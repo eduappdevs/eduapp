@@ -42,20 +42,20 @@
     <p>USER(user_id,name, image,rol,email,password)</p>
     <p>SESSION(session_id, session_name, date, streaming_platform, resoruces_platform, session_chat_id)</p>
     <p>PARTICIPATES(user_id*, session_id*)</p>
-    <h4>User and Courser</h4>
-    <p>COURSER(couser_id, courser_name, couser_participants)</p>
+    <h4>User and Course</h4>
+    <p>COURSER(couse_id, course_name, couse_participants)</p>
     <p>USER(user_id,name, image,rol,email,password)</p>
     <p>HAVE(couser_id*, user_id*)</p>
-     <h4>Courser and Resources</h4>
-    <p>COURSER(couser_id, courser_name, couser_participants)</p>
-     <p>RESORCES(resources_id, resources_name, resources_description, id_courser*)</p>
+     <h4>Course and Resources</h4>
+    <p>COURSE(course_id, course_name, course_participants)</p>
+     <p>RESOURCES(resources_id, resources_name, resources_description, id_course*)</p>
      <h4>Resources and files</h4>
-     <p>RESORCES(resources_id, resources_name, resources_description, id_courser*)</p>
+     <p>RESOURCES(resources_id, resources_name, resources_description, id_course*)</p>
      <p>FILES(files_id, files_content, id_resources*)</p>
-     <h4>Courser, messages and courser chat</h4>
-     <p>COURSER(couser_id, courser_name, couser_participants)</p>
+     <h4>Course, messages and course chat</h4>
+     <p>COURSER(course_id, course_name, course_participants)</p>
      <p>MESSAGES(messages_id, writer_at, message_text, user_id)</p>
-     <p>COURSER_CHAT(courser_chat_id, message_id*,chat_image,courser_name,courder_id*)</p>    
+     <p>COURSE_CHAT(course_chat_id, message_id*,chat_image,course_name,course_id*)</p>    
 </div>
 
 <h3>Explanation of the diagrams contents:</h3>
