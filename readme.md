@@ -79,7 +79,7 @@ cd eduapp/backend/eduapp_db/
 bundle install
 ```
 
-<p>After using these commands, you need to look for the folder config and find database.yml, you need to change the password to the password of the pgAdmin</p>
+<p>After using these commands, you need to look inside config folder and find database.yml, there you must change the database password and put your postgresQL password , otherwise , the database will not work</p>
 
 <p>To have values in the database enter the following command:</p>
 
