@@ -5,6 +5,9 @@
 - [Backend](#backend-information)
 - [Frontend](#frontend-information)
 - [Built with](#built-with)
+- [User Requirements](#user-requirements)
+- [API Documention](#api-documention)
+- [Use Cases](#use-cases)
 
 </div>
 <h1 align='center'>About the project</h1>
@@ -22,10 +25,10 @@
 <h1 align='center'>Backend information</h1>
 <p>Eduapp has used pgAdmin as a database with postgreSQL and ruby on rails was used from the software.</p>
 <h3>Diagram E/R</h3>
-<div ><img src="./Diagrama/DiagramaER.png" alt="diagramER">
+<div ><img src="./Documentation/Diagram/DiagramER.png" alt="diagramER">
 </div>
 <h3>Diagram UML</h3>
-<div ><img src="./Diagrama/DiagramaUML.png" alt="diagramUML">
+<div ><img src="./Documentation/Diagram/DiagramUML.png" alt="diagramUML">
 </div>
 <h3>Relational diagram:</h3>
 <div>
@@ -107,11 +110,9 @@ git clone https://github.com/eduappdevs/eduapp
 cd eduapp/frontend
 npm start
 ```
-
 <p>To stop the server you have to use CTRL + C.</p>
 
 <h1 >Tech stack</h1>
-
 <div>
     <a href="https://rubyonrails.org">
         <img src="https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white" alt="Rails"/></a>
@@ -153,18 +154,26 @@ npm start
      </a>
    </div>
 
-
 <h1>User Requirements</h1>
 <p>Eduapp has three type of user, it depends on the type your user has more functions or not.</p>
-<h3>1.Students user are able to:</h3>
+<h3>1. Students user are able to:</h3>
 <p>View your account's calendar, resources, upcoming sessions, and chats.</p>
-<h3>2.Teacher user are able to: </h3>
+<h3>2. Teacher user are able to: </h3>
 <p>They have the same functionality as students, but they can edit, delete, and create events in calendars, resources, and remove students from their classes.</p>
-<h3>3.Secretariat user are able to: </h3>
+<h3>3. Secretary user are able to: </h3>
 <p>They have control over the users of their school.</p>
-<h3>4.Administrator user are able to:</h3>
-<p>They have the same functionality as secretariat, but they has full control over the user of the secretariat of the educational center. </p>
+<h3>4. Administrator user are able to:</h3>
+<p>They have the same functionality as secretary, but they has full control over the user of the secretary  of the educational center. </p>
 
+<h1>API Documention<img  width="80" height="35" src="https://miro.medium.com/max/802/1*dLWPk_rziSpWhPx1UWONbQ@2x.png"/> </h1>
 
-<h1>API Documention</h1>
-<br></br>
+<a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUPn">Resources Database Table</a>
+<br/>
+<a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUPr">User Info Database Table</a>
+<br/>
+<a align="left" href="https://documenter.getpostman.com/view/17931022/UVR5qUU8">Session Database Table</a>
+<br/>
+<a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUUB"> User Auth Database Table</a>
+
+<h1>Use Cases</h1>
+<img src="./Documentation/UseCases.png" />
