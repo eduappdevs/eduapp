@@ -2,7 +2,7 @@ import React from "react";
 import "./loader.css";
 export default function Loader() {
   return (
-    <div className="loader__main-container">
+    <div className="loader__main-container" id="loader_main-container">
       <div className="loader__logo-container">
         <div className="loader__logo-text">
           <div className="loader__logo__text__up">

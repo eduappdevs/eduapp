@@ -8,6 +8,7 @@ import SessionEdit from "../../components/modals/modals-home/sessionEdit";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import FadeOutLoader from "../../components/loader/FadeOutLoader";
 export default function Home() {
   let userInfo = FetchUserInfo(localStorage.userId);
   const idEdit = [];
@@ -15,31 +16,35 @@ export default function Home() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
-  const [pageLoading, setPageLoading] = useState(false);
+  const [pageLoaded, setPageLoaded] = useState(false);
   const openSessionAdd = () => {
-    document.getElementsByClassName("ModalSessionAdd__main")[0].classList.remove("ModalSession__hidden");
-  }
-  const openEditSession = async(id) => {
-    let e =  await axios.get("http://localhost:3000/eduapp_user_sessions/" + id);
+    document
+      .getElementsByClassName("ModalSessionAdd__main")[0]
+      .classList.remove("ModalSession__hidden");
+  };
+  const openEditSession = async (id) => {
+    let e = await axios.get("http://localhost:3000/eduapp_user_sessions/" + id);
     let name = e.data.session_name;
     let date = e.data.session_date;
-    let date1 = date.split("-")[0]
+    let date1 = date.split("-")[0];
     let date2 = date.split("-")[1];
-    console.log(date1,date2)
+    console.log(date1, date2);
     let streamingPlatform = e.data.streaming_platform;
     let resourcesPlatform = e.data.resources_platform;
     let chat = e.data.session_chat_id;
     setFields({
-      id:id,
+      id: id,
       session_name: name,
       session_date1: date1,
       session_date2: date2,
       streaming_platform: streamingPlatform,
       resources_platform: resourcesPlatform,
-      session_chat_id: chat
-    })
-    document.getElementsByClassName("ModalSessionEdit__main")[0].classList.remove("ModalSession__hidden");
-  }
+      session_chat_id: chat,
+    });
+    document
+      .getElementsByClassName("ModalSessionEdit__main")[0]
+      .classList.remove("ModalSession__hidden");
+  };
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -51,9 +56,13 @@ export default function Home() {
   };
   const getSessions = async () => {
     let request = await axios.get("http://localhost:3000/eduapp_user_sessions");
+
     setTimeout(() => {
-      setPageLoading(true);
-    }, 500);
+      FadeOutLoader();
+      setTimeout(() => {
+        setPageLoaded(true);
+      }, 175);
+    }, 200);
     const sessionsPreSorted = [];
     request.data.map((e) => {
       let id = e.id;
@@ -96,16 +105,16 @@ export default function Home() {
   const deleteSess = [];
   const deleteModal = (e) => {
     let modal = document.getElementById("modal_question_delete");
-    if(modal.classList.contains("hidden")){
+    if (modal.classList.contains("hidden")) {
       modal.classList.remove("hidden");
     }
     let idDelete = e.target.id;
     deleteSess.pop();
     deleteSess.push(idDelete);
-  }
-  const closeDelete=()=>{
+  };
+  const closeDelete = () => {
     document.getElementById("modal_question_delete").classList.add("hidden");
-  }
+  };
   const deleteSession = () => {
     axios
       .delete("http://localhost:3000/eduapp_user_sessions/" + deleteSess)
@@ -170,7 +179,7 @@ export default function Home() {
       setItsMobileDevice(false);
     }
   }, []);
-  return pageLoading ? (
+  return !pageLoaded ? (
     <>
       <div className="home-main-container">
         <Navbar mobile={ItsMobileDevice} location={"home"} />
@@ -184,12 +193,10 @@ export default function Home() {
                   <img
                     src={
                       userInfo.profile_image != null
-                      ? 
-                      userInfo.profile_image.url
-                      :
-                       "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                        ? userInfo.profile_image.url
+                        : "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                     }
-                    alt={userInfo.user_name,'image'}
+                    alt={(userInfo.user_name, "image")}
                   />
                 </div>
                 <div className="user-name">
@@ -264,7 +271,10 @@ export default function Home() {
                             </div>
                           </div>
                         </div>
-                        <div id="editSessionButton" className="editSessionButton hidden">
+                        <div
+                          id="editSessionButton"
+                          className="editSessionButton hidden"
+                        >
                           <div id="buttonDelete">
                             <svg
                               className="badge badge-danger mr-2"
@@ -286,7 +296,9 @@ export default function Home() {
                           </div>
                           <div className="buttonsessionedit" id="buttonEdit">
                             <svg
-                              onClick={()=>{openEditSession(data.id)}}
+                              onClick={() => {
+                                openEditSession(data.id);
+                              }}
                               id={"edit" + data.id}
                               xmlns="http://www.w3.org/2000/svg"
                               width="15"
@@ -296,13 +308,26 @@ export default function Home() {
                               <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z" />
                             </svg>
                           </div>
-                          <div id="modal_question_delete" className="modal_question_delete hidden">
+                          <div
+                            id="modal_question_delete"
+                            className="modal_question_delete hidden"
+                          >
                             <div className="question_delete">
-                            <p>¿Seguro que quieres eliminarlo?</p>
-                            <div className="button">
-                            <button className="buttonYes" onClick={deleteSession}>Si</button>
-                            <button className="buttonYes" onClick={closeDelete}>No</button>
-                            </div>
+                              <p>¿Seguro que quieres eliminarlo?</p>
+                              <div className="button">
+                                <button
+                                  className="buttonYes"
+                                  onClick={deleteSession}
+                                >
+                                  Si
+                                </button>
+                                <button
+                                  className="buttonYes"
+                                  onClick={closeDelete}
+                                >
+                                  No
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -318,11 +343,11 @@ export default function Home() {
                   })}
                 </div>
               ) : (
-                <h1>An error ocurred</h1>
+                <h1>You have no sessions left</h1>
               )}
             </div>
           </div>
-        <SessionEdit fields= {editFields} />
+          <SessionEdit fields={editFields} />
         </section>
         <SessionAdd />
         <BottomButtons mobile={ItsMobileDevice} location={"home"} />

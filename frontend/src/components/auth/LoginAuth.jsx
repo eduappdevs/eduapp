@@ -12,16 +12,19 @@ export default class LoginAuth extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
   handleSubmit = (event) => {
+    event.preventDefault();
     try {
       const { email, password } = this.state;
       const userData = new FormData();
       userData.append("user[email]", email);
       userData.append("user[password]", password);
-      API.login(userData);
+      API.login(userData).then((res) => {
+        console.log(res);
+        window.location.href = "/";
+      });
     } catch (error) {
       console.log("error");
     }
-    event.preventDefault();
   };
   handleChange = (event) => {
     this.setState({

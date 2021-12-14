@@ -48,11 +48,19 @@ const apiSettings = {
   },
   logout: async () => {
     const endpoint = `${USERS}/sign_out`;
-    console.log(endpoint, {
-      headers: { Authorization: localStorage.userToken }})
-    return await await axios.delete(endpoint, {
-      headers: { Authorization: localStorage.userToken },
-    });
+    return await await axios
+      .delete(endpoint, {
+        headers: { Authorization: localStorage.userToken },
+      })
+      .then((res) => {
+        console.log("logged out");
+      })
+      .catch((err) => {
+        console.log(err);
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userToken");
+        window.location.reload();
+      });
   },
   // User Info
   fetchInfo: async (userId) => {

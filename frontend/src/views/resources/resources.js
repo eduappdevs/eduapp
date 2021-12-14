@@ -8,6 +8,7 @@ import OpenedResource from "./openedResource/openedResource";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
 import API from "../../API";
+import FadeOutLoader from "../../components/loader/FadeOutLoader";
 let resources = [];
 export default function Resources(props) {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -35,8 +36,11 @@ export default function Resources(props) {
         });
         resources = res.data;
         setTimeout(() => {
-          setResourcesLoaded(true);
-        }, 500);
+          FadeOutLoader();
+          setTimeout(() => {
+            setResourcesLoaded(true);
+          }, 175);
+        }, 200);
       });
       console.log("prueba", API.fetchResources());
     }

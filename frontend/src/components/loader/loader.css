@@ -8,6 +8,8 @@
   justify-content: center;
   align-items: center;
   background-color: var(--blue);
+  opacity: 1;
+  transition: all 0.3s;
 }
 .loader__logo-container {
   display: flex;
@@ -39,7 +41,6 @@
   justify-content: center;
   align-items: center;
 }
-
 .loader__logo__text__up {
   display: flex;
   z-index: 3;
