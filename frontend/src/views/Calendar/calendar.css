@@ -55,6 +55,7 @@
     max-width: 1000px;
     margin: 0 auto;
     grid-template-columns: repeat(7, 9em);
+    grid-area: "l","M";
     grid-gap: 20px;
 }
 .calendar-container-month

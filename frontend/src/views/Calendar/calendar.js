@@ -12,6 +12,8 @@ export default function Calendar() {
   const [daysMonth, setDaysMonth] = useState("");
   const [yearActual, setYearActual] = useState("");
   const today = new Date();
+  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  console.log(weekDays[today.getUTCDay()-1])
   const day = today.getDate().toString();
   const year = today.getFullYear().toString();
   const month = today.getMonth();
@@ -29,7 +31,6 @@ export default function Calendar() {
     "November",
     "December",
   ];
-  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const nDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   const lastArrow = () => {
     if (monthActual !== 0) {
@@ -120,7 +121,7 @@ export default function Calendar() {
                 <div className="calendar-container-month">
                   {Array.from(Array(daysMonth), (e, i) => {
                     if (i + 1 === today.getDate()) {
-                      return <div className=""><p className="color:blue;">{i + 1}</p></div>;
+                      return <div className="calendar_today"><p className="color:blue;">{i + 1}</p></div>;
                     } else {
                       return (
                         <div key={i} className="">

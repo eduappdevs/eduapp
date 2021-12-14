@@ -6,6 +6,7 @@ class CreateEduappUserSessions < ActiveRecord::Migration[6.1]
       t.string :streaming_platform
       t.string :resources_platform
       t.string :session_chat_id
+      t.references :course, foreign_key: true
 
       t.timestamps
     end

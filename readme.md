@@ -161,6 +161,9 @@ npm start
    </div>
 
 <h1>User Requirements</h1>
+<h2>Platform</h2>
+<p>This app are going developing in both platforms, mobile and desktop.</p>
+<p>You must to log in or instead sign up if you are not already registered, otherwise you won't have access to the application.</p>
 <p>Eduapp has three type of user, it depends on the type your user has more functions or not.</p>
 <h3>1. Students user are able to:</h3>
 <p>View your account's calendar, resources, upcoming sessions, and chats.</p>
@@ -185,25 +188,72 @@ npm start
 <img src="./Documentation/UseCases.png" />
 
 <h1>Usability</h1>
-<p>We have used orange and blue as principal colors , then we use a different gray scales and white</p>
-<p>As text font we select 'Consolas' font , and usually using the bolder font weight</p>
+<p>We have used orange and blue as principal colors , then we use a different gray scales and white.</p>
+<p>After an intensive search we have found the perfect combination with orange and blue as principal colors, combined with a bolder font weight.</p>
 <img height='400' src='./Documentation/Usability/colorsExample.png'>
-<p>In the sign up form , we add a advisor in the passwords fields , which gives you feedback if the password it's empty or the confirmation password does not match with the previously written password.</p>
+<p>In the sign up form , we have added a advisor in the passwords fields , which gives you feedback if the password it's empty or the confirmation password does not match with the previously written password.</p>
 <img height='400' src='./Documentation/Usability/signUpForm.png'>
 <img height='400' src='./Documentation/Usability/signUpForm2.png'>
-<p>Before the password its written and the confirmation password matches , you aren't able to sign up the account and the submit button were disabled , after the confirmation matches it will be enabled and you can submit and sign up the account.</p>
 <img height='400' src='./Documentation/Usability/signUpForm3.png'>
-<p>In desktop , this is how it looks</p>
+<p>Before the password its written and the confirmation password matches , you aren't able to sign up the account and the submit button were disabled , after the confirmation matches it will be enabled and you can submit and sign up the account.</p>
+<p>This is the function which checks if the password it is empty or the confirmation password matches with the previously password field.</p>
+
+```bash
+  checkPasswordMatch = () => {
+    //Check first password field is not empty
+    if (this.state.password.length > 0) {
+      this.setState({
+        passwordEmpty: false,
+      });
+      if (this.state.password === this.state.password_confirmation) {
+        this.setState({
+          passwordMatches: true,
+        });
+        document
+          .getElementById("registration__submit")
+          .removeAttribute("disabled");
+      } else {
+        this.setState({
+          passwordMatches: false,
+        });
+        document
+          .getElementById("registration__submit")
+          .setAttribute("disabled", true);
+      }
+    } else {
+      this.setState({
+        passwordEmpty: true,
+      });
+    }
+    //Check if password_confirmation matches
+  };
+```
+<h2>This app has implemented a full responsiveness, with individual development for mobile and desktop</h2>
+<p>In desktop , this is how it looks sign up form:</p>
 <img height='400' src='./Documentation/Usability/signUpFormDesktop.png'>
-<p>Mobile view - here you can see how the navbar looks , with icon buttons in the bottom of the page</p>
+<h2>Mobile view</h2>
+<p>Here you can see how the navbar looks , with icon buttons in the bottom of the page becouse it is more easier to users.</p>
 <img height='400' src='./Documentation/Usability/mobilePreview.png'>
-<p>Desktop view - here you can see how the navbar looks , with text buttons in the top of the page</p>
+<p>We have decided to change the styles of the navbar buttons, choosing a transparent background, the buttons have a default blue background if you are not in that location, if you click in that button this will change to orange to give you feedback about where you are. </p>
+<h3 align="center">Before/After</h3>
+<div align="center">
+<img height='400' src="./Documentation/PrototypeScreenshots/prototypeMobile.png"/>
+<img height='400' src='./Documentation/Usability/mobilePreview.png'>
+</div>
+<h2>Desktop view</h2> 
+<p>Here you can see how the navbar looks, placed at the top of the page, the reason why we have decided to change that is becouse in a desktop environment it is more common to see the navbar at the top and text in the buttons instead of icons.</p>
 <img height='400' src='./Documentation/Usability/desktopPreview.png'>
-<p>Eduapp have a dark mode</p>
+<h2>Eduapp have a dark mode</h2>
+<p>The reason why we have decided to implement a dark mode it is becouse in the last time it is very common to see in all the apps.</p>
+<p>A dark mode gives you a comfortable experience in situation where the light it is dark, otherwise you force your eyes to see the screen, although this were uncomfortable.</p>
 <img height='400' src='./Documentation/Usability/darkModeBefore.png'>
 <img height='400' src='./Documentation/Usability/darkModeAfter.png'>
 <p>Then the page looks like this</p>
 <img height='400' src='./Documentation/Usability/darkModeResources.png'>
-<p>When page were loading , an animation will be on screen</p>
+
+<h2>Loading animation</h2>
+<p>When page were loading , an animation will be on screen.</p>
 <p>This it's a frame of it , this hole animation was created in pure css.</p>
+<p>This gives you feedback when something is loading.</p>
 <img height='400' src='./Documentation/Usability/loadingAnimationFrame.png'>
+
