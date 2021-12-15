@@ -1,3 +1,3 @@
 class Institution < ApplicationRecord
-    has_many :course, foreign_key: "course_id"
+    has_many :course
 end
