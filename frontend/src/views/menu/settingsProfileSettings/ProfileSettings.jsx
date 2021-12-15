@@ -92,7 +92,7 @@ export default function ProfileSettings() {
         <div className="commitChanges" onClick={commitChanges}>
           <span>SAVE CHANGES</span>
         </div>
-        <p>Your courses</p>
+        <p className="textColor">Your courses</p>
         <ul className="coursesList">
           {courses.map((course) => {
             return <li>{course.course_name}</li>;
