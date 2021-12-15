@@ -81,8 +81,8 @@ export default function Calendar() {
             </div>
             <Paper>
               <Scheduler  data={schedulerData}>
-                {/* <WeekView startDayHour={9}
-                endDayHour={14}/> */}
+                <WeekView startDayHour={9}
+                endDayHour={14}/>
                 <ViewState  currentDate={currentDate} />
                 <DayView startDayHour={0} endDayHour={12} />
                 <Appointments />
