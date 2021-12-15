@@ -3,7 +3,10 @@ class ResourcesController < ApplicationController
 
   # GET /resources
   def index
-    @resources = Resource.all
+    @q = Resource.ransack(course_id_eq: params[:id]);
+    @resources = @q.result(distinct: true).all
+
+
     render json: @resources
   end
 

@@ -3,7 +3,9 @@ class EduappUserSessionsController < ApplicationController
 
   # GET /eduapp_user_sessions
   def index
-    @eduapp_user_sessions = EduappUserSession.all
+    @q = EduappUserSession.ransack(course_id_eq: params[:id]);
+    @eduapp_user_sessions = @q.result(distinct: true).all
+
 
     render json: @eduapp_user_sessions
   end

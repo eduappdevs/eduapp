@@ -7,13 +7,16 @@ import ResourcesModal from "../../components/modals/resourcesModal";
 import OpenedResource from "./openedResource/openedResource";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
-import API from "../../API";
-import FadeOutLoader from "../../components/loader/FadeOutLoader";
+import {GetCourses} from '../../hooks/GetCourses'
 let resources = [];
 export default function Resources(props) {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [resourcesFilter, setResourcesFilter] = useState("");
   const [resourcesLoaded, setResourcesLoaded] = useState(false);
+  let courses;
+  courses = GetCourses();
+
+
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -23,27 +26,22 @@ export default function Resources(props) {
       }
     }, 4000);
   };
-  useEffect(() => {
-    async function fetchData() {
-      const resources__url = "http://localhost:3000/resources";
-      await axios.get(resources__url).then((res) => {
-        console.log(res);
-        res.data.map((x) => {
-          if (x.files != null) {
-            x.files = x.files.url;
-          }
-        });
-        resources = res.data;
-        setTimeout(() => {
-          FadeOutLoader();
-          setTimeout(() => {
-            setResourcesLoaded(true);
-          }, 175);
-        }, 200);
+  const getResources = async (id) =>{
+    
+    const resources__url = `http://localhost:3000/resources?${id}`;
+    await axios.get(resources__url).then((res) => {
+      console.log(res);
+      res.data.map((x) => {
+        if (x.files != null) {
+          x.files = x.files.url;
+        }
       });
-      console.log("prueba", API.fetchResources());
-    }
-    fetchData();
+      resources = resources + res.data;
+    });
+
+  }
+  useEffect(() => {
+    
     checkMediaQueries();
     //First check
     if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -68,8 +66,13 @@ export default function Resources(props) {
     setResourcesFilter(e.target.value);
   };
 
-  return resourcesLoaded ? (
+  return courses ? (
+    
     <>
+
+    {courses.map((c)=>{
+      getResources(c.id)
+    })}
       <div className="resources-main-container">
         <Navbar mobile={ItsMobileDevice} location={"resources"} />
         <section
@@ -129,7 +132,9 @@ export default function Resources(props) {
                           <div className="resourceInfo-container">
                             <div className="resourceInfo__creationDate">
                               <div className="resourceInfo__creationDate__icon">
-                                D
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 16 16">
+  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+</svg>
                               </div>
                               <div className="resourceInfo__creationDate__content">
                                 <div className="resourceInfo__cretionDate_date">
@@ -142,7 +147,9 @@ export default function Resources(props) {
                             </div>
                             <div className="resourceInfo__createdBy">
                               <div className="resourceInfo__createdBy__icon">
-                                T
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+</svg>
                               </div>
                               <div className="resourceInfo__createdBy__content">
                                 {data.createdBy}

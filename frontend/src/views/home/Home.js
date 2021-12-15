@@ -9,6 +9,7 @@ import axios from "axios";
 import Loader from "../../components/loader/Loader";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import FadeOutLoader from "../../components/loader/FadeOutLoader";
+import { GetCourses } from "../../hooks/GetCourses";
 export default function Home() {
   let userInfo = FetchUserInfo(localStorage.userId);
   const idEdit = [];
@@ -16,7 +17,11 @@ export default function Home() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
-  const [pageLoaded, setPageLoaded] = useState(false);
+  let courses;
+  courses = GetCourses();
+  const sessionsPreSorted = [];
+  let sessionsSorted ;
+
   const openSessionAdd = () => {
     document
       .getElementsByClassName("ModalSessionAdd__main")[0]
@@ -54,16 +59,9 @@ export default function Home() {
       }
     }, 4000);
   };
-  const getSessions = async () => {
-    let request = await axios.get("http://localhost:3000/eduapp_user_sessions");
-
-    setTimeout(() => {
-      FadeOutLoader();
-      setTimeout(() => {
-        setPageLoaded(true);
-      }, 175);
-    }, 200);
-    const sessionsPreSorted = [];
+  const getSessions = async (id) => {
+    console.log(id,'entra')
+    let request = await axios.get(`http://localhost:3000/eduapp_user_sessions?id=${id}`);
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -71,8 +69,7 @@ export default function Home() {
       let streamingPlatform = e.streaming_platform;
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
-      let sorter =
-        date.split("-")[0].split(":")[0] + date.split("-")[0].split(":")[1];
+      let sorter = date.split("-")[0].split(":")[0] + date.split("-")[0].split(":")[1];
       sessionsPreSorted.push({
         id,
         name,
@@ -84,7 +81,12 @@ export default function Home() {
       });
     });
 
-    const sessionSorted = sessionsPreSorted.sort(function (a, b) {
+
+
+    
+
+    console.log(sessionsPreSorted)
+    sessionsSorted = sessionsPreSorted.sort(function (a, b) {
       var a = parseInt(a.sorter);
       var b = parseInt(b.sorter);
       if (a < b) {
@@ -95,12 +97,7 @@ export default function Home() {
       }
       return 0;
     });
-    setSessions(sessionSorted);
-    try {
-      setFirstSessionId(sessionSorted[0].id);
-    } catch (error) {
-      console.log(error);
-    }
+    setSessions(sessionsSorted);
   };
   const deleteSess = [];
   const deleteModal = (e) => {
@@ -167,7 +164,6 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      getSessions();
     } catch (error) {
       console.log(error);
     }
@@ -179,8 +175,13 @@ export default function Home() {
       setItsMobileDevice(false);
     }
   }, []);
-  return pageLoaded ? (
+  return courses ? (
     <>
+      {
+       courses.map((c)=>{
+       getSessions(c.id)
+})
+      }
       <div className="home-main-container">
         <Navbar mobile={ItsMobileDevice} location={"home"} />
         <section

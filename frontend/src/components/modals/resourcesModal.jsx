@@ -64,6 +64,10 @@ export default function ResourcesModal() {
     }
     console.log("ccc", currentlyUser);
     finalData.append("createdBy", currentlyUser);
+    finalData.append("course_id", e.target[2].value);
+
+
+
     document.getElementsByClassName(
       "resources__createResourceModal"
     )[0].style.display = "none";
@@ -97,6 +101,13 @@ export default function ResourcesModal() {
           autoComplete="off"
           required
         />
+        <input
+          type="text"
+          name="course"
+          placeholder="Course"
+          autoComplete="off"
+          required
+        />
         <div className="fileInputs">
           <div className="firstfile">
             <input
@@ -117,6 +128,7 @@ export default function ResourcesModal() {
             </label>
           </div>
         </div>
+        
         <button type="submit">SUBMIT</button>
       </form>
 
