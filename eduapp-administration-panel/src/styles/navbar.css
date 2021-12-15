@@ -1,0 +1,19 @@
+.navbar-container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 20vh;
+  width: 3em;
+  display: flex;
+  flex-direction: column;
+  background-color: orange;
+}
+.navbar-container > * {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.navbar-container > * > svg {
+  fill: white;
+}

@@ -59,15 +59,11 @@ const apiSettings = {
       });
   },
   // User Info
+
   fetchInfo: async (userId) => {
     const endpoint = `${USERS_INFO}/${userId}`;
     console.log(endpoint);
     return await (await fetch(endpoint)).json();
-  },
-  createInfo: async (body) => {
-    const endpoint = `${USERS_INFO}`;
-    console.log(endpoint);
-    return await await axios.post(endpoint, body);
   },
   deleteInfo: async (infoId) => {
     const endpoint = `${USERS_INFO}/${infoId}`;

@@ -1,7 +1,11 @@
+import ControlPanel from "./views/ControlPanel";
+
 function App() {
-  return <div className="App">
-    
-  </div>;
+  return (
+    <div className="App">
+      <ControlPanel />
+    </div>
+  );
 }
 
 export default App;

@@ -46,6 +46,6 @@ class EduappUserSessionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def eduapp_user_session_params
-      params.require(:eduapp_user_session).permit(:session_name, :session_date, :streaming_platform, :resources_platform, :session_chat_id)
+      params.require(:eduapp_user_session).permit(:session_name, :session_date, :streaming_platform, :resources_platform, :session_chat_id , :course_id)
     end
 end

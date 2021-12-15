@@ -3,8 +3,13 @@ const API_URL = "http://localhost:3000";
 const USERS = `${API_URL}/users`;
 const INSTITUTIONS = `${API_URL}/institutions`;
 const COURSES = `${API_URL}/courses`;
+const USERS_INFO = `${API_URL}/user_infos`;
+
+const token =
+  "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
 
 const saveInLocalStorage = (userDetails) => {
+  console.log(userDetails);
   if (userDetails.data.message.id == null) {
     throw "error";
   }
@@ -25,10 +30,18 @@ const apiSettings = {
     const endpoint = `${USERS}`;
     return await await axios.post(endpoint, body);
   },
+  fetchUserInfos: async () => {
+    const endpoint = `${USERS_INFO}`;
+    return await await axios.get(endpoint);
+  },
+  createInfo: async (body) => {
+    const endpoint = `${USERS_INFO}`;
+    return await await axios.post(endpoint, body);
+  },
   deleteUser: async (body) => {
     const endpoint = `${USERS}`;
     return await await axios.delete(endpoint, {
-      headers: { Authorization: localStorage.userToken },
+      headers: { Authorization: token },
     });
   },
   editUser: async (body) => {
@@ -36,14 +49,18 @@ const apiSettings = {
     return await await axios.put(endpoint, body);
   },
   //Institutions
+  fetchInstitutions: async () => {
+    const endpoint = `${INSTITUTIONS}`;
+    return await await axios.get(endpoint);
+  },
   createInstitution: async (body) => {
     const endpoint = `${INSTITUTIONS}`;
     return await await axios.post(endpoint, body);
   },
-  deleteInstitution: async (body) => {
+  deleteInstitution: async (id) => {
     const endpoint = `${INSTITUTIONS}`;
-    return await await axios.delete(endpoint, {
-      headers: { Authorization: localStorage.userToken },
+    return await await axios.delete(endpoint + `/${id}`, {
+      headers: { Authorization: token },
     });
   },
   editInstitution: async (body) => {
@@ -51,6 +68,10 @@ const apiSettings = {
     return await await axios.put(endpoint, body);
   },
   //Courses
+  fetchCourses: async () => {
+    const endpoint = `${COURSES}`;
+    return await await axios.get(endpoint);
+  },
   createCourse: async (body) => {
     const endpoint = `${COURSES}`;
     return await await axios.post(endpoint, body);
@@ -58,7 +79,7 @@ const apiSettings = {
   deleteCourse: async (body) => {
     const endpoint = `${COURSES}`;
     return await await axios.delete(endpoint, {
-      headers: { Authorization: localStorage.userToken },
+      headers: { Authorization: token },
     });
   },
   editCourse: async (body) => {
