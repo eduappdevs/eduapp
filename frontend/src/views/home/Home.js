@@ -347,8 +347,8 @@ export default function Home() {
               )}
             </div>
           </div>
-          <SessionEdit fields={editFields} />
         </section>
+        <SessionEdit fields={editFields} />
         <SessionAdd />
         <BottomButtons mobile={ItsMobileDevice} location={"home"} />
       </div>
