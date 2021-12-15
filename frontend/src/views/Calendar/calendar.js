@@ -32,15 +32,14 @@ export default function Calendar() {
       title: "Go to a gym",
     },
   ];
-  const Appointment =()=>{
+  const Appointment = () => {
     <Appointments.Appointment
-    style={{
-      backgroundColor: '#FFC107',
-      borderRadius: '8px',
-    }}
-  >
-  </Appointments.Appointment>
-  }
+      style={{
+        backgroundColor: "#FFC107",
+        borderRadius: "8px",
+      }}
+    ></Appointments.Appointment>;
+  };
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -80,14 +79,23 @@ export default function Calendar() {
               </svg>
             </div>
             <Paper>
-              <Scheduler  data={schedulerData}>
-                <WeekView startDayHour={9}
-                endDayHour={14}/>
-                <ViewState  currentDate={currentDate} />
+              <Scheduler data={schedulerData}>
+                <WeekView startDayHour={9} endDayHour={14} />
+                <ViewState currentDate={currentDate} />
                 <DayView startDayHour={0} endDayHour={12} />
                 <Appointments />
               </Scheduler>
             </Paper>
+          </div>
+          <div className="button-calendar-option">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              class="bi bi-plus-circle-fill"
+              viewBox="0 0 16 16"
+            >
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+            </svg>
           </div>
         </section>
       </div>

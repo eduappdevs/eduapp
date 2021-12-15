@@ -46,7 +46,7 @@ export default function SessionAdd() {
   };
   return (
     <>
-      <div className={"ModalSessionAdd__main ModalSession__hidden"}>
+      <div className={"ModalSessionAdd__main ModalSession__hidden "}>
         <div className="home__addForm" id="home__addFormID">
           <div className="informationForm">
             <div className="buttonClose" onClick={close}>
