@@ -4,6 +4,7 @@ const USERS = `${API_URL}/users`;
 const INSTITUTIONS = `${API_URL}/institutions`;
 const COURSES = `${API_URL}/courses`;
 const USERS_INFO = `${API_URL}/user_infos`;
+const TUITIONS = `${API_URL}/tuitions`;
 
 const token =
   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
@@ -53,6 +54,10 @@ const apiSettings = {
     const endpoint = `${INSTITUTIONS}`;
     return await await axios.get(endpoint);
   },
+  fetchInstitution: async (id) => {
+    const endpoint = `${INSTITUTIONS}/${id}`;
+    return await await axios.get(endpoint);
+  },
   createInstitution: async (body) => {
     const endpoint = `${INSTITUTIONS}`;
     return await await axios.post(endpoint, body);
@@ -85,6 +90,11 @@ const apiSettings = {
   editCourse: async (body) => {
     const endpoint = `${COURSES}`;
     return await await axios.put(endpoint, body);
+  },
+  //Users tuition
+  enrollUser: async (body) => {
+    const endpoint = `${TUITIONS}`;
+    return await await axios.post(endpoint, body);
   },
 };
 

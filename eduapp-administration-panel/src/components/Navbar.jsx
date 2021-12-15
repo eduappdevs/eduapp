@@ -5,6 +5,9 @@ export default function Navbar() {
     let institutions = document.getElementById("cp-institutions");
     let courses = document.getElementById("cp-courses");
     let users = document.getElementById("cp-users");
+    let institutionsButton = document.getElementById("institutions");
+    let coursesButton = document.getElementById("courses");
+    let usersButton = document.getElementById("users");
 
     // eslint-disable-next-line default-case
     switch (location) {
@@ -12,25 +15,41 @@ export default function Navbar() {
         institutions.classList.remove("hidden");
         courses.classList.add("hidden");
         users.classList.add("hidden");
+        institutionsButton.classList.add("active");
+        coursesButton.classList.remove("active");
+        usersButton.classList.remove("active");
         break;
       // eslint-disable-next-line no-fallthrough
       case "courses":
         institutions.classList.add("hidden");
         courses.classList.remove("hidden");
         users.classList.add("hidden");
+        institutionsButton.classList.remove("active");
+        coursesButton.classList.add("active");
+        usersButton.classList.remove("active");
         break;
       // eslint-disable-next-line no-fallthrough
       case "users":
         institutions.classList.add("hidden");
         courses.classList.add("hidden");
         users.classList.remove("hidden");
+        institutionsButton.classList.remove("active");
+        coursesButton.classList.remove("active");
+        usersButton.classList.add("active");
         break;
     }
   };
   return (
     <div className="navbar-container">
+      <div className="logo">
+        <img
+          src="http://eduapp-project.eu/wp-content/uploads/2021/03/Logo-EduApp-1-150x150.png"
+          alt="eduapplogo"
+        />
+      </div>
       <div
-        className="institutions"
+        className="institutions active"
+        id="institutions"
         onClick={() => {
           changeLocation("institutions");
         }}
@@ -52,6 +71,7 @@ export default function Navbar() {
       </div>
       <div
         className="courses"
+        id="courses"
         onClick={() => {
           changeLocation("courses");
         }}
@@ -69,6 +89,7 @@ export default function Navbar() {
       </div>
       <div
         className="users"
+        id="users"
         onClick={() => {
           changeLocation("users");
         }}

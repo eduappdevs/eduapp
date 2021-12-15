@@ -5,6 +5,7 @@ import {
   EDUAPP_SESSIONS,
   USERS,
   USERS_INFO,
+  TUITIONS,
 } from "./config";
 
 const saveInLocalStorage = (userDetails) => {
@@ -62,7 +63,6 @@ const apiSettings = {
 
   fetchInfo: async (userId) => {
     const endpoint = `${USERS_INFO}/${userId}`;
-    console.log(endpoint);
     return await (await fetch(endpoint)).json();
   },
   deleteInfo: async (infoId) => {
@@ -72,6 +72,20 @@ const apiSettings = {
   updateInfo: async (infoId, body) => {
     const endpoint = `${USERS_INFO}/${infoId}`;
     return await await axios.put(endpoint, body);
+  },
+
+  //User courses
+  getCourses: async () => {
+    const endpoint = `${TUITIONS}`;
+    let courses = [];
+    await await axios.get(endpoint).then((res) => {
+      res.data.map((course) => {
+        if (course.user_id.toString() === localStorage.userId) {
+          return courses.push(course);
+        }
+      });
+    });
+    return courses;
   },
 };
 export default apiSettings;

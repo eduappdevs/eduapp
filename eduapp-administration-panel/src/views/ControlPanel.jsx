@@ -22,6 +22,16 @@ export default function ControlPanel() {
       console.log(error);
     }
   };
+
+  const getInstitution = (id) => {
+    let res;
+    institutions.map((i) => {
+      if (i.id === id) {
+        res = i.name;
+      }
+    });
+    return res;
+  };
   const fetchUsers = async () => {
     try {
       await API.fetchUserInfos().then((res) => {
@@ -81,13 +91,33 @@ export default function ControlPanel() {
         payload.append("user_name", res.data.message.email.split("@")[0]);
         console.log("a ver que devuelves ", res);
 
-        API.createInfo(payload);
+        API.createInfo(payload).then((res) => {
+          window.location.reload();
+        });
       })
       .catch((err) => console.log);
   };
   const userEnroll = (e) => {
     e.preventDefault();
-    console.log("ENROLLED!");
+    const payload = new FormData();
+    payload.append(
+      "course_id",
+      e.target.tuition_course.value.split(":")[1].split("/")[0]
+    );
+    payload.append(
+      "institution_id",
+      e.target.tuition_course.value.split(":")[1].split("/")[1]
+    );
+    payload.append("user_id", e.target.tuition_user.value);
+    payload.append("course_name", e.target.tuition_course.value.split(":")[0]);
+    payload.append(
+      "institution_name",
+      getInstitution(e.target.tuition_course.value.split(":")[1].split("/")[1])
+    );
+
+    API.enrollUser(payload).then((res) => {
+      console.log("User tuition has been completed successfully!");
+    });
   };
   useEffect(() => {
     fetchInstitutions();
@@ -167,11 +197,20 @@ export default function ControlPanel() {
           <div className="user_tuition">
             <h3>ENROLL</h3>
             <form action="submit" onSubmit={userEnroll}>
+              <p>Course</p>
               <select name="tuition_course" id="tuition_course">
                 {courses.map((i) => {
-                  return <option value={i.id}>{i.name}</option>;
+                  return (
+                    <option
+                      value={i.name + ":" + i.id + "/" + i.institution_id}
+                    >
+                      {i.name} of {getInstitution(i.institution_id)}
+                    </option>
+                  );
                 })}
               </select>
+              <p>User</p>
+
               <select name="tuition_user" id="tuition_user">
                 {users.map((i) => {
                   return (

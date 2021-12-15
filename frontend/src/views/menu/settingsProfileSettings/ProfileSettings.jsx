@@ -1,11 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./ProfileSettings.css";
 import MenuHeader from "../menuHeader/MenuHeader";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import { GetCourses } from "../../../hooks/GetCourses";
 import { useState } from "react/cjs/react.development";
 import API from "../../../API";
+import Loader from "../../../components/loader/Loader";
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
+  let courses;
+  courses = GetCourses();
+
+  console.log(courses);
+
   const [userName, setUserName] = useState(null);
   const [changeImage, setChangeImage] = useState(null);
 
@@ -39,7 +46,7 @@ export default function ProfileSettings() {
     API.updateInfo(localStorage.userId, newUserInfo);
     window.location.reload();
   };
-  return (
+  return courses !== undefined ? (
     <div className="profileSettings_container profileSettings__hidden">
       <MenuHeader
         backTo={() => {
@@ -83,9 +90,17 @@ export default function ProfileSettings() {
         </div>
 
         <div className="commitChanges" onClick={commitChanges}>
-          <span>SAVE AND CHANGE</span>
+          <span>SAVE CHANGES</span>
         </div>
+        <p>Your courses</p>
+        <ul className="coursesList">
+          {courses.map((course) => {
+            return <li>{course.course_name}</li>;
+          })}
+        </ul>
       </div>
     </div>
+  ) : (
+    <Loader />
   );
 }

@@ -68,3 +68,7 @@
   border-radius: 10px;
   cursor: pointer;
 }
+.coursesList {
+  list-style: none;
+  opacity: 0.7;
+}

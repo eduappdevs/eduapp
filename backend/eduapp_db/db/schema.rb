@@ -99,8 +99,11 @@ ActiveRecord::Schema.define(version: 10) do
   end
 
   create_table "tuitions", force: :cascade do |t|
+    t.integer "institution_id"
     t.integer "course_id"
     t.integer "user_id"
+    t.string "course_name"
+    t.string "institution_name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
