@@ -1,18 +1,24 @@
-.calendar-container{
-    flex-wrap: wrap;
-    color: var(--textColor);
-    width: 100vw;
+.desktopSection >.calendar-container {
+    height: 100vh;
+  }
+.calendar{
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    width: 100%;
 }
-.calendar-header{
+.calendar>.calendar-container{
+    color: var(--textColor);
+}
+.calendar >.calendar-container>.calendar-header{
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: row;
     margin-top: 2%;
-    margin-left: 2%;
-    margin-right: 2%;
 }
-.calendar-container
+.calendar 
+>.calendar-container
 >.button-arrow-back
 >svg{
     flex: 1;
@@ -21,7 +27,8 @@
     margin-left: 2%;
     margin-right: 2%;
 }
-.calendar-container
+.calendar 
+>.calendar-container
 >.button-arrow-follow
 >svg{
     cursor: pointer;
@@ -29,92 +36,26 @@
     margin-left: 2%;
     margin-right: 2%;
 }
-.calendar-header
->.button-today{
-    border: 1px solid var(--textColor);
-    margin-left: 2%;
-    margin-right: 2%;
-    border-radius: 25px;
-    cursor: pointer;
-    pointer-events: none;
-}
-.calendar-header
->.button-today
->p{
-    transition: all 0.3s;
-    font-family: "Consolas";
-    margin: 1.5vh;
-    
-}
-.calendar-header
->.button-day{
-    border: 1px solid var(--textColor);
-    margin-left: 2%;
-    margin-right: 2%;
-    border-radius: 25px;
-    cursor: pointer;
-    pointer-events: none;
-
-}
-.calendar-header
->.button-day
->p{
-    transition: all 0.3s;
-    font-family: "Consolas";
-    margin: 1.5vh;
-    
-}
-.calendar-header
->.button-week{
-    border: 1px solid var(--textColor);
-    margin-left: 2%;
-    margin-right: 2%;
-    border-radius: 25px;
-    cursor: pointer;
-    pointer-events: none;
-}
-.calendar-header
->.button-week
->p{
-    transition: all 0.3s;
-    font-family: "Consolas";
-    margin: 1.5vh;  
-}
-.calendar-header
->.button-month{
-    border: 1px solid var(--textColor);
-    margin-left: 2%;
-    margin-right: 2%;
-    border-radius: 25px;
-    cursor: pointer;
-    pointer-events: none;
-
-}
-.calendar-header
->.button-month
->p{
-    transition: all 0.3s;
-    font-family: "Consolas";
-    margin: 1.5vh;
-    
-}
-.calendar-container
+.calendar 
+>.calendar-container
 >.calendar_month
 >.container-weekDays{
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
     width: 100%;
-
+    grid-template-columns: repeat(7, 9em);
+    justify-content: center;
+    grid-row: 5;
 }
-.calendar-container
+.calendar 
+>.calendar-container
 >.calendar_month
 >.calendar-container-month{
     display: grid;
     width: 100%;
     max-width: 1000px;
     margin: 0 auto;
-    grid-template-columns: repeat(auto-fill, 9em);
-  
+    grid-template-columns: repeat(7, 9em);
+    grid-area: "l","M";
     grid-gap: 20px;
 }
 .calendar-container-month
@@ -134,3 +75,6 @@
     align-items: center;
     justify-content: center;
 }
+.mt-1 {
+    margin-top: 0 !important;
+  }

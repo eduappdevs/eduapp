@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_09_120500) do
+ActiveRecord::Schema.define(version: 10) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,12 +43,38 @@ ActiveRecord::Schema.define(version: 2021_12_09_120500) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "calendar_annotations", force: :cascade do |t|
+    t.string "annotation_date"
+    t.string "annotation_name"
+    t.string "annotation_description"
+    t.boolean "isGlobal"
+    t.integer "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "courses", force: :cascade do |t|
+    t.string "name"
+    t.bigint "institution_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["institution_id"], name: "index_courses_on_institution_id"
+  end
+
   create_table "eduapp_user_sessions", force: :cascade do |t|
     t.string "session_name"
     t.string "session_date"
     t.string "streaming_platform"
     t.string "resources_platform"
     t.string "session_chat_id"
+    t.bigint "course_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["course_id"], name: "index_eduapp_user_sessions_on_course_id"
+  end
+
+  create_table "institutions", force: :cascade do |t|
+    t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -59,23 +85,22 @@ ActiveRecord::Schema.define(version: 2021_12_09_120500) do
     t.index ["jti"], name: "index_jwt_denylist_on_jti"
   end
 
-  create_table "models", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["email"], name: "index_models_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_models_on_reset_password_token", unique: true
-  end
-
   create_table "resources", force: :cascade do |t|
     t.string "name"
     t.string "description"
-    t.string "files"
+    t.string "firstfile"
+    t.string "secondfile"
+    t.string "thirdfile"
     t.string "createdBy"
+    t.bigint "course_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["course_id"], name: "index_resources_on_course_id"
+  end
+
+  create_table "tuitions", force: :cascade do |t|
+    t.integer "course_id"
+    t.integer "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -103,5 +128,8 @@ ActiveRecord::Schema.define(version: 2021_12_09_120500) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "courses", "institutions"
+  add_foreign_key "eduapp_user_sessions", "courses"
+  add_foreign_key "resources", "courses"
   add_foreign_key "user_infos", "users"
 end

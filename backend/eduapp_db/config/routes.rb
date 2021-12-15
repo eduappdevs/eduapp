@@ -1,4 +1,8 @@
 Rails.application.routes.draw do  
+  resources :calendar_annotations
+  resources :tuitions
+  resources :courses
+  resources :institutions
   resources :resources
   resources :eduapp_user_sessions
   resources :user_infos
