@@ -14,7 +14,6 @@ export default function Resources(props) {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [resourcesFilter, setResourcesFilter] = useState("");
   const [resourcesLoaded, setResourcesLoaded] = useState(false);
-
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -126,6 +125,29 @@ export default function Resources(props) {
                             >
                               {data.name}
                             </span>
+                          </div>
+                          <div className="resourceInfo-container">
+                            <div className="resourceInfo__creationDate">
+                              <div className="resourceInfo__creationDate__icon">
+                                D
+                              </div>
+                              <div className="resourceInfo__creationDate__content">
+                                <div className="resourceInfo__cretionDate_date">
+                                  {data.created_at.split("T")[0]}
+                                </div>
+                                <div className="resourceInfo__cretionDate_time">
+                                  {data.created_at.split("T")[1].split(".")[0]}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="resourceInfo__createdBy">
+                              <div className="resourceInfo__createdBy__icon">
+                                T
+                              </div>
+                              <div className="resourceInfo__createdBy__content">
+                                {data.createdBy}
+                              </div>
+                            </div>
                           </div>
                         </li>
                       </>

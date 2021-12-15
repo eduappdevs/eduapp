@@ -45,6 +45,6 @@ class ResourcesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def resource_params
-      params.permit(:name, :description, :firstfile , :secondfile , :thirdfile)
+      params.permit(:name, :description, :firstfile , :secondfile , :thirdfile , :createdBy , :course_id)
     end
 end

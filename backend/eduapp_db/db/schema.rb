@@ -91,6 +91,7 @@ ActiveRecord::Schema.define(version: 10) do
     t.string "firstfile"
     t.string "secondfile"
     t.string "thirdfile"
+    t.string "createdBy"
     t.bigint "course_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

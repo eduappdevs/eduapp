@@ -1,3 +1,4 @@
 class EduappUserSession < ApplicationRecord
-    it { should belong_to(:course) } 
+    belongs_to :course
+
 end
