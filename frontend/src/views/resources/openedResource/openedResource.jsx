@@ -126,15 +126,27 @@ export default function OpenedResource(props) {
                           .length - 1
                       ]
                     ) ? (
-                      <div
-                        className={"resource__image"}
-                        style={{
-                          backgroundImage: `url(${file.replace(
-                            "localhost:3001",
-                            "localhost:3000"
-                          )}) `,
-                        }}
-                      />
+                      <>
+                        <h1 it="fileTitle">
+                          {file.split("/")[file.split("/").length - 1]}
+                        </h1>
+                        <div
+                          className={"resource__image"}
+                          style={{
+                            backgroundImage: `url(${file.replace(
+                              "localhost:3001",
+                              "localhost:3000"
+                            )}) `,
+                          }}
+                        />
+                        <a
+                          className="fileDownload-button"
+                          name="file"
+                          href={file}
+                        >
+                          OPEN
+                        </a>
+                      </>
                     ) : (
                       <>
                         <>

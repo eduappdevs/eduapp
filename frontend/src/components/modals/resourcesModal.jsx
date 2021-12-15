@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
 import "./modal.css";
 import API from "../../API";
 let finalData = new FormData();
 
 export default function ResourcesModal() {
   const [filesToUpload, setFilesToUpload] = useState([]);
+  const [currentlyUser, setCurrentlyUser] = useState("");
   const FILE_LIMIT = 3;
   const handleFileSelect = (e) => {
     e.preventDefault();
@@ -16,6 +16,12 @@ export default function ResourcesModal() {
       setFilesToUpload(Array.from(e.target.files));
     }
   };
+  const getCurrentlyUser = async () => {
+    await API.fetchInfo(localStorage.userId).then((res) => {
+      setCurrentlyUser(res.user_name);
+    });
+  };
+  getCurrentlyUser();
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(e);
@@ -56,6 +62,8 @@ export default function ResourcesModal() {
     if (thirdfile !== null && thirdfile !== undefined) {
       finalData.append("thirdfile", thirdfile);
     }
+    console.log("ccc", currentlyUser);
+    finalData.append("createdBy", currentlyUser);
     document.getElementsByClassName(
       "resources__createResourceModal"
     )[0].style.display = "none";

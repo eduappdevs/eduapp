@@ -75,6 +75,7 @@ ActiveRecord::Schema.define(version: 2021_12_09_120500) do
     t.string "name"
     t.string "description"
     t.string "files"
+    t.string "createdBy"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

@@ -6,6 +6,7 @@ class CreateResources < ActiveRecord::Migration[6.1]
       t.string :firstfile
       t.string :secondfile
       t.string :thirdfile
+      t.string :createdBy
       t.timestamps
     end
   end

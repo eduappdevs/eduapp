@@ -179,7 +179,7 @@ export default function Home() {
       setItsMobileDevice(false);
     }
   }, []);
-  return !pageLoaded ? (
+  return pageLoaded ? (
     <>
       <div className="home-main-container">
         <Navbar mobile={ItsMobileDevice} location={"home"} />
