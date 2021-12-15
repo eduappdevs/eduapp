@@ -4,58 +4,43 @@ import "./calendar.css";
 import Navbar from "../../components/navbar/navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import Loader from "../../components/loader/Loader";
+import Paper from "@material-ui/core/Paper";
+import { ViewState } from "@devexpress/dx-react-scheduler";
+
+import {
+  Scheduler,
+  DayView,
+  Appointments,
+  WeekView,
+  MonthView,
+} from "@devexpress/dx-react-scheduler-material-ui";
 
 export default function Calendar() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
-  const [monthActual, setMonthActual] = useState("");
-  const [daysMonth, setDaysMonth] = useState("");
-  const [yearActual, setYearActual] = useState("");
   const today = new Date();
-  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  console.log(weekDays[today.getUTCDay()-1])
-  const day = today.getDate().toString();
-  const year = today.getFullYear().toString();
-  const month = today.getMonth();
-  const monthsNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+  const currentDate = today;
+  const schedulerData = [
+    {
+      startDate: "2021-12-15T09:45",
+      endDate: "2021-12-15T11:00",
+      title: "Meeting",
+    },
+    {
+      startDate: "2021-12-15T12:00",
+      endDate: "2021-12-15T13:30",
+      title: "Go to a gym",
+    },
   ];
-  const nDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  const lastArrow = () => {
-    if (monthActual !== 0) {
-      setMonthActual(monthActual - 1);
-      setDaysMonth(nDays[monthActual - 1]);
-      setYearActual(year);
-    } else {
-      setMonthActual(11);
-      setDaysMonth(nDays[11]);
-      setYearActual(year - 1);
-    }
-  };
-  const nextArrow = () => {
-    if (monthActual !== 11) {
-      setMonthActual(monthActual + 1);
-      setDaysMonth(nDays[monthActual + 1]);
-      setYearActual(year + 1);
-    } else {
-      setMonthActual(0);
-      setDaysMonth(nDays[0]);
-    }
-  };
-  const leapYear = () => {
-    return year % 400 === 0 ? true : year % 100 === 0 ? false : year % 4 === 0;
-  };
+  const Appointment =()=>{
+    <Appointments.Appointment
+    style={{
+      backgroundColor: '#FFC107',
+      borderRadius: '8px',
+    }}
+  >
+  </Appointments.Appointment>
+  }
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -67,14 +52,6 @@ export default function Calendar() {
   };
   useEffect(() => {
     checkMediaQueries();
-    setMonthActual(month);
-    setDaysMonth(nDays[month]);
-    setYearActual(year);
-    // if (leapYear != true) {
-    //   const nDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    // } else {
-    //   const nDays = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    // }
     if (window.matchMedia("(max-width: 1100px)").matches) {
       setItsMobileDevice(true);
     } else {
@@ -89,49 +66,28 @@ export default function Calendar() {
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
           <div className="calendar">
-            <div className="calendar-container">
-              <div className="calendar-header">
-                <div className="button-arrow-back">
-                  <svg
-                    onClick={lastArrow}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="25"  
-                    height="25"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-                  </svg>
-                </div>
-                <div>
-                  {monthsNames[monthActual]} {yearActual}
-                </div>
-                <div className="button-arrow-follow">
-                  <svg
-                    onClick={nextArrow}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="25"
-                    height="25"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                  </svg>
-                </div>
-              </div>
-              <div className="calendar_month">
-                <div className="calendar-container-month">
-                  {Array.from(Array(daysMonth), (e, i) => {
-                    if (i + 1 === today.getDate()) {
-                      return <div className="calendar_today"><p className="color:blue;">{i + 1}</p></div>;
-                    } else {
-                      return (
-                        <div key={i} className="">
-                          <p className="text-sm mt-1">{weekDays[i]}</p><p className="text-sm p-1 my-1">{i+1}</p></div>
-                      );
-                    }
-                  })}
-                </div>
-              </div>
+            <div className="button-menu">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                class="bi bi-list"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"
+                />
+              </svg>
             </div>
+            <Paper>
+              <Scheduler  data={schedulerData}>
+                {/* <WeekView startDayHour={9}
+                endDayHour={14}/> */}
+                <ViewState  currentDate={currentDate} />
+                <DayView startDayHour={0} endDayHour={12} />
+                <Appointments />
+              </Scheduler>
+            </Paper>
           </div>
         </section>
       </div>

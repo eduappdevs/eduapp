@@ -1,80 +1,16 @@
-.desktopSection >.calendar-container {
-    height: 100vh;
-  }
-.calendar{
-    display: flex;
-    justify-content:center;
-    align-items: center;
-    width: 100%;
+.desktopSection{
+    height: 100vh;  
 }
-.calendar>.calendar-container{
+.calendar{
+    background-color: var(--backgroundColor);
+
+}
+.button-menu{
+    position: relative;
+    width:50px;
+    height:50px;
     color: var(--textColor);
 }
-.calendar >.calendar-container>.calendar-header{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-    margin-top: 2%;
+.paper{
+    background-color: var(--backgroundColor);
 }
-.calendar 
->.calendar-container
->.button-arrow-back
->svg{
-    flex: 1;
-    cursor: pointer;
-    pointer-events: none;
-    margin-left: 2%;
-    margin-right: 2%;
-}
-.calendar 
->.calendar-container
->.button-arrow-follow
->svg{
-    cursor: pointer;
-    pointer-events: none;
-    margin-left: 2%;
-    margin-right: 2%;
-}
-.calendar 
->.calendar-container
->.calendar_month
->.container-weekDays{
-    display: grid;
-    width: 100%;
-    grid-template-columns: repeat(7, 9em);
-    justify-content: center;
-    grid-row: 5;
-}
-.calendar 
->.calendar-container
->.calendar_month
->.calendar-container-month{
-    display: grid;
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    grid-template-columns: repeat(7, 9em);
-    grid-area: "l","M";
-    grid-gap: 20px;
-}
-.calendar-container-month
->.calendar_today{
-    border: 1px solid var(--textColor);
-    border-radius: 5px;
-    background-color: var(--orange);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.calendar-container-month
->.calendar_days{
-    border: 1px solid var(--textColor);
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.mt-1 {
-    margin-top: 0 !important;
-  }

@@ -10,6 +10,7 @@ export default function SessionAdd() {
       "streaming_platform",
       "resources_platform",
       "session_chat_id",
+      "course_id"
     ];
     let json = [];
     var obj = e.target;
@@ -21,13 +22,15 @@ export default function SessionAdd() {
     let platform = obj.streaming.value;
     let date = start + "-" + end;
     let chat = obj.chat.value;
+    let course_id = obj.course_id.value;
     console.log(date);
-    json.push(name, date, resources, platform, chat);
+    json.push(name, date, resources, platform, chat,course_id);
     console.log(json);
     let SessionJson = {};
     for (let i = 0; i <= context.length - 1; i++) {
       SessionJson[context[i]] = json[i];
     }
+    console.log(json)
     axios
       .post("http://localhost:3000/eduapp_user_sessions", SessionJson)
       .then((res) => {
@@ -88,6 +91,10 @@ export default function SessionAdd() {
               <div>
                 <label>Chat:</label>
                 <input name="chat" type="text"></input>
+              </div>
+              <div>
+                <label>Course:</label>
+                <input name="course_id" type="text"></input>
               </div>
               <button
                 className="home__buttonSubmit"
