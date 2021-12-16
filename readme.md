@@ -185,7 +185,7 @@ npm start
 <a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUUB"> User Auth Database Table</a>
 
 <h1>Use Cases</h1>
-<img src="./Documentation/UseCases.png" />
+<img src="./Documentation/UseCases.jpg" />
 
 <h1>Usability</h1>
 <p>We have used orange and blue as principal colors , then we use a different gray scales and white.</p>
