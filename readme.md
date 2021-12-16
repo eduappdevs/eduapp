@@ -260,6 +260,15 @@ npm start
 <h3>Technology stack and comparison</h3>
 <p>In our case , currently we are developing EduApp as a web app , using a full responsiveness , but we like to make it downloadable , 
 making eduapp as a hybrid app.</p>
+<div >        
+     <a href="https://reactjs.org">
+            <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React"/></a>
+   </div>
+     
 We are using react js as frontend framework , react provides us many advantages , such an easier learning, reusable components, ReactJS is choosing by most developers, becouse it provide us a very rich JavaScript library
+<div>
+    <a href="https://rubyonrails.org">
+        <img src="https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white" alt="Rails"/></a>
+   </div>
 At backend we have decide to use Ruby on rails , which provide us a Model View Controller architecture , a fast development when you know the basics of it , 
 a great number of helpful tools and libraries , also it haves many disadvantages , like the price of a mistake , you have to pay attention to all the small details ,otherwise your ruby on rails journey will becomes difficult.
