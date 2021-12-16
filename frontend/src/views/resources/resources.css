@@ -1,28 +1,342 @@
-.resource_item{
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 20px;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgb(151, 148, 148);
-    flex-direction: row;
-    width: 80%;
-    height: 10vh;
+.resources-main-container {
+  display: flex;
+  flex-basis: auto;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  height: 100%;
+  width: 100%;
 }
-.resource_item >*{
-    flex: 1;
+.resources-main-container > section {
+  flex-grow: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: rgb(36, 36, 36);
 }
-.resources_container{
-    width: 100%;
-    height: 100%;
-    
+.resources-container {
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  position: relative;
+  font-family: "Consolas";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
-.resources_container >ul{
-    list-style: none;
-    display: flex;
-    flex-direction: column ;
-    justify-content: center;
-    align-items: center;
+.resources-container > ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding-inline-start: 0;
+  width: 70%;
+}
+.resources {
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: row;
+  /* padding: 15px; */
+  /*box-shadow: 0 4px 8px rgb(185, 185, 185);*/
+  /* background-color: var(--blue); */
+  border-radius: 12px;
+  box-shadow: var(--shadowColor);
+  justify-content: center;
+  margin-top: 20px;
+  cursor: pointer;
+  z-index: 9999;
+  transition: 0.3s all ease;
+  text-transform: uppercase;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.resource-opened {
+  display: flex;
+  flex-direction: column;
+}
+
+.resource-opened > .resource-name-container > .resource-name {
+  font-family: "Consolas";
+}
+.resource-opened > .resource-description-container > .resource-description {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.resource-opened > .close-resource-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.resource-opened > .resource-name-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  background-color: var(--blue);
+}
+.resource-opened > .resource-content-container {
+  flex: 4;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: white;
+  color: rgb(32, 32, 32);
+  opacity: 1;
+  transition: all 0.3s;
+  overflow-x: hidden;
+  flex-direction: column;
+}
+
+.resourceitem {
+  width: 90vw;
+  min-height: 2em;
+  transition: all 0.4s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.resource-name {
+  font-size: 1.5em;
+  transition: all 0.3s;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  width: 60vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.resource-description {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex: 0.5;
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 80%;
+  color: rgb(26, 26, 26);
+  background-color: rgba(255, 255, 255, 0.185);
+}
+.resourceInfo-container {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 2.5em;
+  background-color: var(--orange);
+  pointer-events: none;
+  font-family: "Consolas";
+  font-weight: 800;
+}
+.resourceInfo__createdBy {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  padding: 10px 10px;
+  justify-content: right;
+  align-items: center;
+}
+
+.resourceInfo__createdBy__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+.resourceInfo__creationDate {
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+.resourceInfo__creationDate__content,
+.resourceInfo__createdBy__content {
+  font-size: 75%;
+}
+.resourceInfo__creationDate__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+.resource-content-container > span,
+.resource-name-container > span {
+  text-align: center;
+}
+.resource-files {
+  flex: 1.5;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(158, 158, 158, 0.233);
+  border-top: 1px solid rgb(0, 136, 255);
+  overflow-y: scroll;
+}
+.hidden {
+  display: none !important;
+  opacity: 0;
+}
+.close-resource {
+  cursor: pointer;
+  padding: 15px 10px;
+  pointer-events: all;
+}
+.close-resource::after {
+  display: block;
+  height: 4px;
+  width: 22px;
+  content: "";
+  background-color: rgb(105, 105, 105);
+  transform: translateY(-3.6px) rotate(45deg);
+  transition: all 0.3s;
+}
+.close-resource::before {
+  display: block;
+  height: 4px;
+  width: 22px;
+  content: "";
+  background-color: rgb(105, 105, 105);
+  transform: rotate(-45deg);
+  transition: all 0.3s;
+}
+.close-resource:hover:before {
+  transform: translate(0.6px, 4px) rotate(-135deg);
+}
+.close-resource:hover:after {
+  transform: rotate(135deg);
+}
+
+.resources-container > ul > li > * {
+  color: white;
+}
+.resource-name-container {
+  background-color: var(--blue);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px 20px;
+}
+.resourcesSearchBar {
+  height: 6vh;
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+.resourcesSearchBar > form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  height: 65%;
+}
+.resourcesSearchBar > form > input {
+  width: 90%;
+  z-index: 2;
+  height: 100%;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 3px solid var(--orange);
+  text-indent: 15px;
+  font-size: 25px;
+  transition: 0.3s all;
+  color: var(--blue);
+  text-indent: 15%;
+  background: none !important;
+}
+
+.resourcesSearchBar > form > input:hover {
+  border-bottom: 3px solid var(--blue);
+}
+.resourcesSearchBar > form > input:focus {
+  outline: none;
+  border-bottom: 3px solid var(--blue);
+}
+.searchInputIcon > svg {
+  fill: var(--orange);
+  z-index: 500;
+  transform: scale(0.8);
+  left: 16%;
+  position: absolute;
+  transform: translateY(-4px);
+}
+.searchInputIcon {
+  display: flex;
+  width: 100%;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+}
+.resourcesSearchBar > form > input:focus ~ .searchInputIcon {
+  display: none;
+}
+.mobileSection > .resourcesSearchBar > form {
+  width: 85%;
+}
+.mobileSection > .resources-container > ul {
+  width: 95%;
+}
+.desktopSection {
+  width: 60% !important;
+  position: relative;
+}
+#RESOURCES_ERROR {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: gray;
+  flex-direction: column;
+}
+#RESOURCES_ERROR > p {
+  cursor: pointer;
+}
+@media (min-width: 900px) {
+
+ .resourceitem{
+   width: 70%;
+ }
+}
+
+@media (max-width: 1100px) {
+  .resources-container {
+    margin-bottom: 20%;
+  }
+}
+
+.resources__addNewResource{
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 80%;
+  right: 0;
+  margin-right: 5%;
+  border-radius: 80%;
+  background-color: var(--orange);
+  cursor: pointer;
+}
+.resources__addNewResource>svg{
+  width: 50px;
+  height: 50px;
 
 }

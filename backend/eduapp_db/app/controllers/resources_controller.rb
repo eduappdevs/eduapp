@@ -1,9 +1,11 @@
 class ResourcesController < ApplicationController
-  before_action :set_resource, only: [:show, :update, :destroy]
+  before_action :set_resource, only: [:show , :update, :destroy]
 
   # GET /resources
   def index
-    @resources = Resource.all
+    @q = Resource.ransack(course_id_eq: params[:id]);
+    @resources = @q.result(distinct: true).all
+
 
     render json: @resources
   end
@@ -46,6 +48,6 @@ class ResourcesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def resource_params
-      params.require(:resource).permit(:name, :description)
+      params.permit(:name, :description, :firstfile , :secondfile , :thirdfile , :createdBy , :course_id)
     end
 end

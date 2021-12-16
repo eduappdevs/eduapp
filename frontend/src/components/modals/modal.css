@@ -1,0 +1,147 @@
+.resources__createResourceModal {
+  width: 40%;
+  height: 60%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--orange);
+  border-radius: 10px;
+  box-shadow: 0 0 4px rgb(41, 41, 41);
+  border: 2px solid rgba(36, 36, 36, 0.034);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999999999;
+}
+.resources__logoModal {
+  position: absolute;
+  top: -9%;
+}
+.resources__logoModal > img {
+  width: 80px;
+  height: 80px;
+}
+.resources__createResourceModal > h1 {
+  position: absolute;
+  top: 5%;
+  color: white;
+}
+
+.resources__createResourceModal > form {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin-top: 15%;
+  transform: scale(1.1);
+}
+.resources__createResourceModal > form > input {
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-indent: 10px;
+  color: var(--blue);
+  font-weight: 900;
+  width: 100%;
+}
+.resources__createResourceModal > form > input::placeholder {
+  text-indent: 10px;
+  color: var(--blue);
+  font-weight: 900;
+}
+.resources__createResourceModal > form > input:focus {
+  outline: none;
+}
+.fileInputs {
+  display: flex;
+  flex-direction: row;
+  height: 80px;
+  width: 100%;
+}
+.fileInputs > div {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.fileInputs > div > input {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  position: absolute;
+}
+.fileInputs > div > label {
+  flex: 1;
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  fill: white;
+}
+.resources__createResourceModal > form > button {
+  background-color: white;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+  width: 50%;
+  transform: translateX(50%);
+  font-weight: 900;
+  color: var(--blue);
+  cursor: pointer;
+}
+#resources__closeResourceModal {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  border: none;
+  border-radius: 5px;
+  background-color: rgb(255, 64, 64);
+  color: white;
+  padding: 8px;
+  cursor: pointer;
+}
+@media (max-width: 750px) {
+  .resources__createResourceModal {
+    width: 100%;
+    height: 100%;
+    border-radius: 0px;
+  }
+  .resources__logoModal {
+    position: absolute;
+    top: 3%;
+  }
+  .resources__createResourceModal > h1 {
+    position: absolute;
+    top: 12%;
+    color: white;
+  }
+  .resources__createResourceModal > form > input {
+    width: 100%;
+  }
+  .resources__createResourceModal > form {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    margin-top: 15%;
+    transform: scale(1.1);
+  }
+}
+@media (min-width: 750px) and (max-width: 1200px) {
+  .resources__createResourceModal {
+    width: 70%;
+    height: 60%;
+  }
+}

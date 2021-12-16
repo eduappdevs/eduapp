@@ -1,0 +1,191 @@
+.openedResource__main-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* background-color: rgb(255, 255, 255); */
+  background-color: var(--backgroundColor);
+  z-index: 9999999999999999999999;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(0);
+  transition: 0.3s all;
+}
+
+.resourceOpened__header {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 2px solid rgba(202, 202, 202, 0.616);
+  background-color: var(--blue);
+  flex: 0.1;
+  height: 10%;
+}
+.resourceOpened__backToResources {
+  flex: 0.5;
+  width: 20%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.resourceOpened__backToResources > .resourceOpened__backToResources__container {
+  transform: scale(1.2);
+  border-radius: 5px;
+  background-color: white;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.resourceOpened__backToResources
+  > .resourceOpened__backToResources__container
+  > svg {
+  fill: var(--blue);
+}
+.resourceOpened__name {
+  display: flex;
+  flex: 1.5;
+  width: 20vw;
+  text-overflow: ellipsis;
+  color: rgb(255, 255, 255);
+}
+.resourceOpened__name > h1 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 150px;
+  white-space: nowrap;
+}
+.resourceOpened__buttons {
+  float: right;
+  height: 100%;
+  display: flex;
+  margin-right: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
+}
+
+.resources__deleteButton {
+  cursor: pointer;
+  position: relative;
+  bottom: 3px;
+  padding: 5px;
+  border: none;
+  width: 35px;
+  height: 35px;
+  pointer-events: all;
+  opacity: 0.7;
+  fill: white;
+  display: flex;
+  justify-content: center;
+  color: white;
+  text-decoration: underline white;
+  align-items: center;
+  flex: 1;
+}
+.resources__editButton {
+  cursor: pointer;
+  position: relative;
+  bottom: 3px;
+  padding: 5px;
+  border: none;
+  width: 35px;
+  height: 35px;
+  opacity: 0.7;
+  pointer-events: all;
+  fill: white;
+  display: flex;
+  justify-content: center;
+  text-decoration: underline white;
+  align-items: center;
+  color: white;
+  flex: 1;
+}
+.resourceOpened__info > h1 {
+  text-align: center;
+  color: var(--textColor);
+  flex: 0.3;
+  height: 30%;
+  opacity: 0.7;
+}
+.resourceOpened__info > p {
+  text-align: center;
+  font-size: 120%;
+  color: var(--textColor);
+}
+.resourceOpened__files {
+  flex: 0.6;
+  height: 100%;
+  width: 100%;
+  color: var(--textColor);
+}
+.resourceOpened__files::before {
+  content: "";
+  width: 100%;
+  background-color: var(--secondaryColor);
+  height: 1px;
+  display: block;
+}
+.resourceOpened__files > h1 {
+  text-align: center;
+  color: var(--textColor);
+  opacity: 0.5;
+}
+.resourceOpened__files > ul {
+  border: 1px solid var(--secondaryColor);
+
+  width: 100vw;
+  position: absolute;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 64%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.resourceOpened__files > ul > li {
+  border-bottom: 1px solid var(--secondaryColor);
+  padding: 10px 0;
+  height: auto;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.openedResource__hidden {
+  transform: translateX(-5000px);
+}
+
+.resources__NO_FILES {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  opacity: 0.3;
+}
+.fileDownload-button {
+  padding: 10px 20px;
+  background-color: var(--orange);
+  color: white;
+  font-weight: 900;
+  text-decoration: none;
+}
+.resource__image {
+  width: 300px;
+  height: 300px;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-position: center;
+}
+.resourceOpened__date {
+  position: absolute;
+  left: 15px;
+  bottom: 0;
+}

@@ -1,5 +1,17 @@
-Rails.application.routes.draw do
+Rails.application.routes.draw do  
+  resources :calendar_annotations
+  resources :tuitions
+  resources :courses
+  resources :institutions
   resources :resources
-  devise_for :users
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resources :eduapp_user_sessions
+  resources :user_infos
+  default_url_options :host => "localhost:3000"
+  devise_for :users,
+             controllers: {
+               sessions: 'users/sessions',
+               registrations: 'users/registrations'
+             }
+  get '/member-data', to: 'members#show'
+
 end

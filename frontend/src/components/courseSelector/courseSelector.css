@@ -1,0 +1,37 @@
+.courseSelector-container{
+    width: 100vw;
+    height: 3.5em;
+    background-color: rgba(255, 255, 255, 0.034);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.courseSelector-container > ul {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 85%;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+}
+.courseSelector-container > ul > li{
+    background-color: var(--blue);
+    flex: 0.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    color: white;
+    height: 100%;
+    padding: 0 10px;
+    
+}
