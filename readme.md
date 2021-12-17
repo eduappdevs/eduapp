@@ -178,10 +178,10 @@ npm start
 
 
 <h3>Sessions page</h3>
-<p>To see any session you must been enrolled in atleast one course , otherwise , this page will be empty.</p>
+<p>To see any session you must been enrolled in at least one course , otherwise , this page will be empty.</p>
 <p>Then you must select the course you will like to see the sessions of.</p>
 <h3>Resources page</h3>
-<p>To see any resource you must been enrolled in atleast one course , otherwise , this page will be empty.</p>
+<p>To see any resource you must been enrolled in at least one course , otherwise , this page will be empty.</p>
 <p>You must select the course to see the resources of that course, you can also filter the resources with the search bar placed at the top of the page.</p>
 <p>If you are a teacher of that course you will see a plus icon , who provide you the access to a form modal, to add a new resource.</p>
 
