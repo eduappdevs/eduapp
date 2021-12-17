@@ -80,8 +80,8 @@
 }
 .coursesList > li > img{
   flex: 0.1;
-  width: 70px;
-  height: 70px;
+  width: 50px;
+  height: 50px;
 }
 .textColor{
   color: var(--textColor);
@@ -90,8 +90,8 @@
 .coursesContainer{
   margin-top: 70px;
   width: 90%;
-  height: 45%;
   display: flex;
+  padding: 10% 0;
   align-items: center;
   flex-direction: column;
   background-color: #4b90ff10;
@@ -102,12 +102,14 @@
 }
 .coursesLogo{
   position: absolute;
-  transform: translateY(-50%);
+  transform: translateY(-90%);
   width: 100px;
   height: 100px;
 }
 .coursesList{
   margin-top: 30px;
+  height: 100%;
+  overflow-y: auto;
 }
 .coursesList > li{
   margin-top: 30px;
@@ -119,6 +121,7 @@
   border-radius: 10px;
   color: var(--textColor);
   padding: 0 10px;
+  overflow: hidden;
 }
 .youareadmin{
   position: absolute;

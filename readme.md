@@ -10,6 +10,7 @@
 - [Use Cases](#use-cases)
 - [Usability](#usability)
 - [Tech stack and comparison](#tech-stack-and-comparison)
+- [Personal opinion and comparison](#personal-opinion-and-comparison)
 
 
 
@@ -77,7 +78,7 @@
 
 ```bash
 git clone https://github.com/eduappdevs/eduapp
-cd eduapp/backend/eduapp_db/
+cd eduapp/backend/eduapp_db
 bundle install
 ```
 
@@ -284,3 +285,6 @@ We are using react js as frontend framework , react provides us many advantages 
    </div>
 At backend we have decide to use Ruby on rails , which provide us a Model View Controller architecture , a fast development when you know the basics of it , 
 a great number of helpful tools and libraries , also it haves many disadvantages , like the price of a mistake , you have to pay attention to all the small details ,otherwise your ruby on rails journey will becomes difficult.
+
+<h1>Personal opinion and conclusions</h1>
+<p>It is a pleasure to us be part of this project , as our first project working in with other people,becoming this project a challenge , we found many difficults in the journey, but we also have learned so much through it,although this it is just the beggining of the project and so much things will happen through the journey.</p>
