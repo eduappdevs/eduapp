@@ -166,7 +166,7 @@ npm start
 <h2>Platform</h2>
 <p>This app is being developed in both platforms, mobile and desktop as a hybrid app.</p>
 <p>If an administrator has signed up an account for you, you must log in, otherwise you won't have access to the application.</p>
-<p>Eduapp has three type of user, depending on it the permissions you will have.</p>
+<p>Eduapp has four type of user, depending on it the permissions you will have.</p>
 <h3>1. Students user are able to:</h3>
 <p>View your account's calendar, resources, upcoming sessions, and chats.</p>
 <h3>2. Teacher user are able to: </h3>
