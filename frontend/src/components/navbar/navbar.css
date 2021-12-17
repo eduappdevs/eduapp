@@ -105,7 +105,7 @@ header > .profile-menu-mobile {
   top: 0%;
   left: 0;
   background-color: var(--backgroundColor);
-  transform: translateX(105vh);
+  transform: translateX(205vh);
   transition: 0.3s all;
   z-index: 9999999999999;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
@@ -157,7 +157,7 @@ header > .profile-menu-mobile > ul > li > a {
 
 header > .profile-menu-desktop {
   display: flex;
-  width: 20%;
+  width: 30%;
   height: 100%;
   position: absolute;
   right: 0;

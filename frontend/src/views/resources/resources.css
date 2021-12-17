@@ -7,11 +7,11 @@
   width: 100%;
 }
 .resources-main-container > section {
-  flex-grow: 10;
   height: 100%;
   display: flex;
   flex-direction: column;
   color: rgb(36, 36, 36);
+
 }
 .resources-container {
   width: 100%;
@@ -108,15 +108,6 @@
   justify-content: center;
   align-items: center;
 }
-.resource-name {
-  font-size: 1.5em;
-  transition: all 0.3s;
-  font-weight: bold;
-  letter-spacing: 0.5px;
-  width: 60vw;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
 
 .resource-description {
   width: 100%;
@@ -131,6 +122,17 @@
   color: rgb(26, 26, 26);
   background-color: rgba(255, 255, 255, 0.185);
 }
+.resource-name {
+  font-size: 1.5em;
+  transition: all 0.3s;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  width: 60vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 10px 0;
+}
+
 .resourceInfo-container {
   width: 100%;
   overflow: hidden;
@@ -139,7 +141,8 @@
   justify-content: center;
   align-items: center;
   height: 2.5em;
-  background-color: var(--orange);
+  background-color: rgb(80, 162, 255);
+  margin-bottom: 1px;
   pointer-events: none;
   font-family: "Consolas";
   font-weight: 800;
@@ -234,64 +237,11 @@
   justify-content: center;
   padding: 10px 20px;
 }
-.resourcesSearchBar {
-  height: 6vh;
-  margin: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-}
-.resourcesSearchBar > form {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80%;
-  height: 65%;
-}
-.resourcesSearchBar > form > input {
-  width: 90%;
-  z-index: 2;
-  height: 100%;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: 3px solid var(--orange);
-  text-indent: 15px;
-  font-size: 25px;
-  transition: 0.3s all;
-  color: var(--blue);
-  text-indent: 15%;
-  background: none !important;
-}
-
-.resourcesSearchBar > form > input:hover {
-  border-bottom: 3px solid var(--blue);
-}
-.resourcesSearchBar > form > input:focus {
-  outline: none;
-  border-bottom: 3px solid var(--blue);
-}
-.searchInputIcon > svg {
-  fill: var(--orange);
-  z-index: 500;
-  transform: scale(0.8);
-  left: 16%;
-  position: absolute;
-  transform: translateY(-4px);
-}
-.searchInputIcon {
-  display: flex;
-  width: 100%;
-  position: absolute;
-  justify-content: center;
-  align-items: center;
-}
-.resourcesSearchBar > form > input:focus ~ .searchInputIcon {
-  display: none;
-}
-.mobileSection > .resourcesSearchBar > form {
-  width: 85%;
+.mobileSection{
+  width: 90% !important;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .mobileSection > .resources-container > ul {
   width: 95%;
@@ -300,14 +250,14 @@
   width: 60% !important;
   position: relative;
 }
-#RESOURCES_ERROR {
+#courseNotSelectedeAdvisor{
   display: flex;
   justify-content: center;
   align-items: center;
   color: gray;
   flex-direction: column;
 }
-#RESOURCES_ERROR > p {
+#courseNotSelectedeAdvisor > p {
   cursor: pointer;
 }
 @media (min-width: 900px) {
@@ -322,21 +272,89 @@
     margin-bottom: 20%;
   }
 }
-
+.resources-toolbar{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  border: 2px solid var(--orange);
+  border-radius: 10px;
+  overflow: hidden;
+}
 .resources__addNewResource{
-  position: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
-  top: 80%;
   right: 0;
-  margin-right: 5%;
-  border-radius: 80%;
-  background-color: var(--orange);
+  flex: 0.1;
   cursor: pointer;
+  z-index: 999999;
+  width: 100%;
+  height: 6vh;
 }
 .resources__addNewResource>svg{
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
+  margin-right: 10px;
+  fill: var(--blue);
 
+}
+
+.resourcesSearchBar {
+  height: 6vh;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  flex-grow: 1;
+  width: 100%;
+
+}
+.resourcesSearchBar > form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.resourcesSearchBar > form > input {
+  width: 100%;
+  z-index: 2;
+  height: 100%;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  text-indent: 15px;
+  font-size: 25px;
+  transition: 0.3s all;
+  color: var(--blue);
+  text-indent: 15%;
+  background: none !important;
+  transform: translateY(-1px);
+  font-weight: 800;
+
+}
+
+
+.resourcesSearchBar > form > input:focus {
+  outline: none;
+}
+.searchInputIcon > svg {
+  fill: var(--orange);
+  z-index: 500;
+  transform: scale(0.8);
+  left: 10%;
+  position: absolute;
+}
+.searchInputIcon {
+  display: flex;
+  width: 100%;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+}
+.resourcesSearchBar > form > input:focus ~ .searchInputIcon {
+  display: none;
+}
+.mobileSection > .resourcesSearchBar > form {
+  width: 85%;
 }

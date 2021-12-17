@@ -19,12 +19,10 @@
 }
 .user > .user-container {
   display: flex;
-  justify-content: center;
   flex-direction: column;
+  width: 100%;
 }
-.desktopSection > .user > .user-container {
-  height: 100vh;
-}
+
 .user > .user-container > .information-user > .profile-picture {
   display: flex;
   justify-content: center;
@@ -67,7 +65,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  flex-direction: column;
+  flex-direction: column
 }
 .user > .user-container > .sessions > .sessions-container {
   display: flex;
@@ -192,7 +190,7 @@
   width: 100%;
   justify-content: space-evenly;
   align-items: center;
-  padding: 10px;
+  padding: 8px 0
 }
 .hidden {
   display: none !important;

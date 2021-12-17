@@ -21,7 +21,7 @@ export default function MenuHeader(props) {
         </svg>
       </div>
       <div className="MenuHeaderName">
-        <p>{props.backToName}</p>
+        <p>{props.location}</p>
       </div>
     </div>
   );

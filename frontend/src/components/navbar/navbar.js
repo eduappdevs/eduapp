@@ -107,9 +107,6 @@ export default function Navbar({ mobile, location }) {
           onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}
         >
           <div className="profile-button-box">
-            <span className="profile-name">
-              {userInfo.user_name}
-            </span>
             <div className="profile-pic">
               
               <img

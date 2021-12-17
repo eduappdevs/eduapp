@@ -16,7 +16,7 @@ export default function MenuSettings() {
         backTo={() => {
           closeMenuSettings();
         }}
-        backToName={"Settings"}
+        location={"SETTINGS"}
       />
 
       <ul>

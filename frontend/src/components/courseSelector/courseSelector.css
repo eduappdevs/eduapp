@@ -1,12 +1,11 @@
 .courseSelector-container{
-    width: 100vw;
+    width: 100%;
     height: 3.5em;
-    background-color: rgba(255, 255, 255, 0.034);
     overflow: hidden;
     display: flex;
     justify-content: center;
-    align-items: center;
-
+    align-items: end;
+    z-index: 1;
 }
 .courseSelector-container > ul {
     list-style: none;
@@ -27,11 +26,16 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    border-radius: 10px;
+    border-radius: 10px 10px 0 0;
     margin-right: 5px;
     cursor: pointer;
     color: white;
     height: 100%;
     padding: 0 10px;
+    z-index: 2;
+    margin-top: 1px;
     
+}
+.activeCourse {
+    background-color: var(--orange) !important;
 }

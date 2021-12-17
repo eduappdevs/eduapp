@@ -10,17 +10,17 @@ import Loader from "../../components/loader/Loader";
 import { GetCourses } from '../../hooks/GetCourses'
 import DarkModeChanger from '../../components/DarkModeChanger'
 import CourseSelector from "../../components/courseSelector/CourseSelector";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 
 export default function Resources(props) {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [resourcesFilter, setResourcesFilter] = useState("");
   const [resources, setResources] = useState([])
   const [courseSelected , setCourseSelected] = useState('')
+  let userInfo = FetchUserInfo(localStorage.userId)
 
   let courses;
   courses = GetCourses();
-
-
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -89,18 +89,18 @@ export default function Resources(props) {
     getResources(id)
   }
 
-  return courses ? (
+  return courses && userInfo ? (
 
     <>
 
-
+  
       <div className="resources-main-container">
         <Navbar mobile={ItsMobileDevice} location={"resources"} />
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
-
-
+          <CourseSelector handleChangeCourse = {handleChangeSelector}/>
+          <div className="resources-toolbar">
           <div className="resourcesSearchBar">
             <form action="">
               <input type="text" onChange={handleSearchResources} />
@@ -118,16 +118,22 @@ export default function Resources(props) {
               </div>
             </form>
           </div>
-          <CourseSelector handleChangeCourse = {handleChangeSelector}/>
+          {courseSelected && courses.filter(course => course.course_id === courseSelected)[0].isTeacher
+          || userInfo.isAdmin
+          ?
+            <div className="resources__addNewResource" onClick={createResource}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+</svg>
+            </div>
+          : ''}
+
+          </div>
 
 
 
           <div className="resources-container">
-          <div className="resources__addNewResource" onClick={createResource}>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="white" class="bi bi-plus" viewBox="0 0 16 16">
-  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-</svg>
-          </div>
+          
            
      
             {resources.length > 0 ? (
@@ -194,7 +200,7 @@ export default function Resources(props) {
                 })}
               </ul>
             ) : (
-              <div id="RESOURCES_ERROR">
+              <div id="courseNotSelectedeAdvisor">
                 <h3>You must select a course</h3>
               </div>
             )}

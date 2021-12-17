@@ -198,7 +198,7 @@ export default function ControlPanel() {
             </form>
           </div>
           <div className="user_tuition">
-            <h3>ENROLL</h3>
+            <h1>ENROLL</h1>
             <form action="submit" onSubmit={userEnroll}>
               <p>Course</p>
               <select name="tuition_course" id="tuition_course">

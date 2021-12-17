@@ -30,12 +30,15 @@
 }
 .MenuHeaderName {
   flex: 1;
-  width: 100%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   color: white;
   font-size: 140%;
   font-family: "Consolas";
-  justify-content: flex-start;
-  font-weight: 300;
+  justify-content: center;
+  font-weight: 700;
+  text-align: center;
   text-transform: uppercase;
 }

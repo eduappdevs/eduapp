@@ -2,7 +2,7 @@ import React from "react";
 import MenuSettings from "./menu-settings/MenuSettings";
 import MenuHeader from "./menuHeader/MenuHeader";
 import API from "../../API";
-import ProfileSettings from "./settingsProfileSettings/ProfileSettings";
+import ProfileSettings from "./profileOptions/ProfileSettings";
 export default function Menu(props) {
   const openMenuSettings = () => {
     document
@@ -26,7 +26,7 @@ export default function Menu(props) {
         backTo={() => {
           props.handleCloseMenu();
         }}
-        backToName={props.location}
+        
       />
 
       <ul>
