@@ -3,7 +3,7 @@ import "./modal.css";
 import API from "../../API";
 let finalData = new FormData();
 
-export default function ResourcesModal() {
+export default function ResourcesModal(props) {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [currentlyUser, setCurrentlyUser] = useState("");
   const FILE_LIMIT = 3;
@@ -64,7 +64,7 @@ export default function ResourcesModal() {
     }
     console.log("ccc", currentlyUser);
     finalData.append("createdBy", currentlyUser);
-    finalData.append("course_id", e.target[2].value);
+    finalData.append("course_id", props.course);
 
 
 
@@ -99,13 +99,6 @@ export default function ResourcesModal() {
           type="text"
           name="description"
           placeholder="Description"
-          autoComplete="off"
-          required
-        />
-        <input
-          type="text"
-          name="course"
-          placeholder="Course"
           autoComplete="off"
           required
         />

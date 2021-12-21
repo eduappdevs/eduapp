@@ -208,7 +208,7 @@ export default function Resources(props) {
             )}
           </div>
         </section>
-        <ResourcesModal />
+        <ResourcesModal course={courseSelected} />
 
         <BottomButtons mobile={ItsMobileDevice} location={"resources"} />
       </div>
