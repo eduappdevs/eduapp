@@ -73,7 +73,8 @@ export default function ControlPanel() {
     window.location.reload();
   };
   const deleteCourse = (id) => {
-    API.deleteCourse(id);
+    console.log(id);
+    // API.deleteCourse(id);
   };
   const createUser = (event) => {
     event.preventDefault();

@@ -56,7 +56,8 @@
   transform: translateX(-75%);
   margin-top: 3px;
   margin-left: 5px;
-  cursor: pointer;
+  cursor: pointer;  
+  fill: var(--textColor);
 }
 
 .user > .user-container > .sessions {
