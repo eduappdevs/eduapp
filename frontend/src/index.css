@@ -16,6 +16,7 @@ code {
   --blue:#4B91FF;
   --textColor: #000;
   --backgroundColor: #fff;
+  --backgroundColorLow: rgb(29, 29, 29);
   --shadowColor : rgba(158, 158, 158, 0.411);
   --secondaryColor : rgba(158, 158, 158, 0.311);
   --headerBackground : var(--blue);

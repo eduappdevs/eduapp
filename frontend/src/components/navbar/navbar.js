@@ -10,6 +10,8 @@ export default function Navbar({ mobile, location }) {
   const [inResources, setInResources] = useState(false);
   const [inCalendar, setInCalendar] = useState(false);
   const [inChat, setInChat] = useState(false);
+  const [inManagement, setInManagement] = useState(false);
+
   let userInfo = FetchUserInfo(localStorage.userId);
 
   useEffect(() => {
@@ -20,24 +22,39 @@ export default function Navbar({ mobile, location }) {
         setInCalendar(false);
         setInChat(false);
         setInHome(false);
+        setInManagement(false)
+
         break;
       case "home":
         setInResources(false);
         setInCalendar(false);
         setInChat(false);
         setInHome(true);
+        setInManagement(false)
+
         break;
       case "calendar":
         setInResources(false);
         setInCalendar(true);
         setInChat(false);
         setInHome(false);
+        setInManagement(false)
+        
         break;
       case "chat":
         setInResources(false);
         setInCalendar(false);
         setInChat(true);
         setInHome(false);
+        setInManagement(false)
+
+        break;
+        case "management":
+        setInResources(false);
+        setInCalendar(false);
+        setInChat(false);
+        setInHome(false);
+        setInManagement(true)
         break;
     }
   }, [location]);
@@ -100,6 +117,11 @@ export default function Navbar({ mobile, location }) {
             <li className={inChat ? "activeLocation" : console.log()}>
               <Link to="/Chat"> Chat</Link>
             </li>
+            {userInfo.isAdmin && (
+              <li className={inManagement ? "activeLocation" : console.log()}>
+              <Link to="/management">Management</Link>
+            </li>
+            )}
           </ul>
         </div>
         <div

@@ -8,6 +8,7 @@ const  DarkModeChanger = (mode)=>{
       document.documentElement.style.setProperty('--headerBackground', 'var(--backgroundColor)');
       document.documentElement.style.setProperty('--headerButtonBG', 'var(--blue)');
       document.documentElement.style.setProperty('--headerButtonFill', 'white');
+      document.documentElement.style.setProperty('--backgroundColorLow', 'rgb(29, 29, 29)');
       document.getElementById('darkmode').classList.add('activeMode')
       document.getElementById('lightmode').classList.remove('activeMode')
     }else{
@@ -19,6 +20,8 @@ const  DarkModeChanger = (mode)=>{
       document.documentElement.style.setProperty('--headerBackground', 'var(--blue)');
       document.documentElement.style.setProperty('--headerButtonBG', 'white');
       document.documentElement.style.setProperty('--headerButtonFill', 'var(--blue)');
+      document.documentElement.style.setProperty('--backgroundColorLow', 'rgb(230, 230, 230)');
+
       document.getElementById('darkmode').classList.remove('activeMode')
       document.getElementById('lightmode').classList.add('activeMode')
     }

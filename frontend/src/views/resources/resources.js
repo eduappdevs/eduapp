@@ -73,9 +73,9 @@ export default function Resources(props) {
       .getElementById(`resource__${e.target.id}__opened`)
       .classList.remove("openedResource__hidden");
   };
-  const createResource = () => {
+  const createResourceModal = () => {
     document.getElementsByClassName(
-      "resources__createResourceModal"
+      "resourceModal-container"
     )[0].style.display = "flex";
   };
 
@@ -89,9 +89,10 @@ export default function Resources(props) {
     getResources(id)
   }
 
-  return courses && userInfo ? (
+  return  courses && userInfo?.isAdmin || !userInfo?.isAdmin ? (
 
     <>
+    
 
   
       <div className="resources-main-container">
@@ -99,7 +100,7 @@ export default function Resources(props) {
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
-          <CourseSelector handleChangeCourse = {handleChangeSelector}/>
+          <div className="resources-toolbar-container">
           <div className="resources-toolbar">
           <div className="resourcesSearchBar">
             <form action="">
@@ -121,7 +122,7 @@ export default function Resources(props) {
           {courseSelected && courses.filter(course => course.course_id === courseSelected)[0].isTeacher
           || userInfo.isAdmin
           ?
-            <div className="resources__addNewResource" onClick={createResource}>
+            <div className="resources__addNewResource" onClick={createResourceModal}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
 </svg>
@@ -129,9 +130,10 @@ export default function Resources(props) {
           : ''}
 
           </div>
+          </div>
+          
 
-
-
+          <CourseSelector handleChangeCourse = {handleChangeSelector}/>
           <div className="resources-container">
           
            

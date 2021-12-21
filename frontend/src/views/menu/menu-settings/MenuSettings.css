@@ -61,3 +61,40 @@
 .activeMode {
   background-color: var(--blue) !important;
 }
+.languageSelector {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+
+}
+
+
+.languageSelector >select{
+  border: 1px solid rgba(255, 255, 255, 0);
+  background-color: var(--blue);
+  color: white;
+  outline: none;
+  height: 15%;
+  width: 80%;
+  border-radius: 20px;
+  transition: 0.3s ease all;
+}
+.languageSelector > select:focus{
+  outline: none;
+  border: 1px solid rgba(255, 255, 255, 0) !important;
+  border-color: rgba(255, 255, 255, 0) !important;
+  border-color: inherit;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+
+
+}
+.languageSelector > select > option{
+
+  position: relative;
+  line-height: 1;
+  transition: 0.3s ease all;
+  z-index: 2;
+}
