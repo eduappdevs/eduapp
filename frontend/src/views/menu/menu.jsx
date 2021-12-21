@@ -3,7 +3,10 @@ import MenuSettings from "./menu-settings/MenuSettings";
 import MenuHeader from "./menuHeader/MenuHeader";
 import API from "../../API";
 import ProfileSettings from "./profileOptions/ProfileSettings";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+
 export default function Menu(props) {
+  let userInfo = FetchUserInfo(localStorage.userId)
   const openMenuSettings = () => {
     document
       .getElementsByClassName("MenuSettings__main-container")[0]
@@ -53,6 +56,7 @@ export default function Menu(props) {
         <li>
           <a>Tutorial</a>
         </li>
+        
         <li>
           <a onClick={API.logout}>Log out</a>
         </li>

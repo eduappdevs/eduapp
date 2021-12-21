@@ -1,0 +1,188 @@
+.managementpanel__main{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.managementpanel__container{
+    flex: 0.8;
+    overflow: auto;
+}
+@media (min-width: 1100px){
+    .managementpanel__container{
+        flex: 0.9;
+    }
+}
+
+.managementpanel__item{
+    height: 100%;
+    width: 100%;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--backgroundColorLow);
+}
+.managementpanel__item__header{
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.managementpanel__item__header > h1{
+    text-align: center;
+    cursor: pointer;
+    border-radius: 10px;
+    color: var(--blue);
+
+}
+.managementpanel__item > div{
+    display: flex;
+    flex-direction: column;
+}
+.managementpanel__item > div > div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+
+}
+
+.managementpanel__institutions{
+left: 0;
+}
+.managementpanel__courses{
+    left: 100vw;
+}
+.managementpanel__users{
+    left: 200vw;
+}
+.managementpanel__enrollments{
+    left: 300vw;
+}
+.management__form-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: var(--backgroundColor);
+    border-radius: 15px;
+    padding: 25px 15px;
+    margin-top: 20px;
+    width: 100%;
+    
+    
+}
+.management__form-container > h3{
+    color: var(--textColor);
+    background-color: var(--orange);
+    padding: 10px 15px;
+    border-radius: 10px;
+    color: white;
+}
+.management__form-container > form{
+    display: flex;
+    flex-direction: column;
+}
+.management__form-container > form > *{
+    margin-top: 15px;
+}
+.management__form-container > form > input{
+    border: none;
+    border-radius: 7px ;
+    background-color: var(--backgroundColorLow);
+    padding: 10px 20px;
+    transition: all .3s ease;
+
+
+}
+.management__form-container > form > input:focus{
+    outline: none;
+}
+.management__form-container > form > label{
+    color: var(--textColor);
+}
+.management__form-container > form > button{
+    background-color: var(--orange);
+    border: none;
+    color: white;
+    border-radius: 10px;
+    padding: 10px 5px !important;
+    
+}
+.management__form-container > form > select{
+    border: 1px solid rgba(255, 255, 255, 0);
+    background-color: var(--blue);
+    padding: 10px 25px;
+    color: white;
+    outline: none;
+    transition: 0.3s ease all;
+}
+.management__form-container > form > select:focus{
+    outline: none;
+    border: 1px solid rgba(255, 255, 255, 0) !important;
+    border-color: rgba(255, 255, 255, 0) !important;
+    border-color: inherit;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+
+
+}
+.management__form-container > form > select > option{
+
+    position: relative;
+    line-height: 1;
+    transition: 0.3s ease all;
+    z-index: 2;
+
+}
+
+input[type=checkbox] {
+    position: relative;
+    cursor: pointer;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 0 0 0 !important;
+    padding: 0 0 0 0 !important;
+}
+input[type=checkbox]:before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 0;
+    left: -4px;
+    background-color:var(--backgroundColorLow);
+
+}
+input[type=checkbox]:checked:before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 0;
+    left: -4px;
+    background-color:#1E80EF;
+}
+input[type=checkbox]:checked:after {
+    content: "";
+    display: block;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    position: absolute;
+    top: 2px;
+    left: 2.9px;
+
+}
+
+@media (min-width:1100px){
+
+}

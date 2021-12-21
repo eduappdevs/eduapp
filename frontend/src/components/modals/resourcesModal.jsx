@@ -77,11 +77,12 @@ export default function ResourcesModal() {
   };
   const closeModal = () => {
     document.getElementsByClassName(
-      "resources__createResourceModal"
+      "resourceModal-container"
     )[0].style.display = "none";
   };
   return (
-    <div className="resources__createResourceModal">
+    <div className="resourceModal-container">
+      <div className="resources__createResourceModal">
       <div className="resources__logoModal">
         <img src="\assets\logo.png" alt="logo" />
       </div>
@@ -136,5 +137,9 @@ export default function ResourcesModal() {
         CANCEL
       </button>
     </div>
+    <div className="resourcesModal-outside" onClick={closeModal}></div>
+    </div>
+    
+
   );
 }
