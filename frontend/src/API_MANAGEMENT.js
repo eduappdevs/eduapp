@@ -5,7 +5,7 @@ const INSTITUTIONS = `${API_URL}/institutions`;
 const COURSES = `${API_URL}/courses`;
 const USERS_INFO = `${API_URL}/user_infos`;
 const TUITIONS = `${API_URL}/tuitions`;
-
+const EDUAPP_SESSIONS =`${API_URL}/eduapp_user_sessions`; 
 const token =
   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
 
@@ -94,6 +94,11 @@ const apiSettings = {
   //Users tuition
   enrollUser: async (body) => {
     const endpoint = `${TUITIONS}`;
+    return await await axios.post(endpoint, body);
+  },
+  //Session
+  createSession: async (body) => {
+    const endpoint = `${EDUAPP_SESSIONS}`;
     return await await axios.post(endpoint, body);
   },
 };

@@ -166,7 +166,6 @@ export default function Home() {
     checkMediaQueries();
     DarkModeChanger(localStorage.getItem('darkMode'))
 
-
     if (window.matchMedia("(max-width: 900px)").matches) {
       setItsMobileDevice(true);
     } else {
@@ -197,7 +196,7 @@ export default function Home() {
                 </div>
                 <div className="user-name">
                   <h1>{userInfo.user_name}</h1>
-                  <div className="edit" onClick={activeEditMenu}>
+                  {/* <div className="edit" onClick={activeEditMenu}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="15"
@@ -206,7 +205,7 @@ export default function Home() {
                     >
                       <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z" />
                     </svg>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="home__Add hidden" id="buttonAdd">

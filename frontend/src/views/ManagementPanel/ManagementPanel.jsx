@@ -7,14 +7,56 @@ import API from '../../API_MANAGEMENT'
 let institutions;
 let courses;
 let users;
+let sessions;
 
 export default function ManagementPanel() {
     const [ItsMobileDevice, setItsMobileDevice] = useState(false);
     const [institutionsLoading, setInstitutionsLoading] = useState(true);
     const [coursesLoading, setCoursesLoading] = useState(true);
     const [usersLoading, setUsersLoading] = useState(true);
-    
 
+
+    const postSession = (e) => {
+        e.preventDefault();
+        const context = [
+            "session_name",
+            "session_date",
+            "streaming_platform",
+            "resources_platform",
+            "session_chat_id",
+            "course_id"
+          ];
+        let json = [];
+        var obj = e.target;
+        let name = obj.session_name.value;
+        let start = obj.start.value;
+        let end = obj.end.value;
+        let resources = obj.resources.value;
+        let platform = obj.streaming.value;
+        let date = start + "-" + end;
+        let chat = obj.chat.value;
+        let course_id = obj.course_id.value;
+        json.push(name, date, resources, platform, chat,course_id);
+        let SessionJson = {};
+        for (let i = 0; i <= context.length - 1; i++) {
+          SessionJson[context[i]] = json[i];
+        }
+        API.createSession(SessionJson);
+        window.location.reload();
+    };
+    const deleteSession = (id) =>{
+        API.deleteSession(id);
+    }
+    const fetchSessions = async () => {
+        try {
+            await API.fetchCourses().then((res) => {
+                courses = res.data;
+                setCoursesLoading(false);
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
     const fetchInstitutions = async () => {
         try {
             await API.fetchInstitutions().then((res) => {
@@ -220,7 +262,7 @@ export default function ManagementPanel() {
                                     <h3>CREATE AN USER</h3>
                                     <form action="submit" onSubmit={createUser}>
                                         <label htmlFor="email">Email </label>
-                                        <input  autoComplete='off' type="text" name="email" />
+                                        <input autoComplete='off' type="text" name="email" />
                                         <label htmlFor="password">Password</label>
                                         <input autoComplete='off' type="password" name="password" />
                                         <label htmlFor="isAdmin">Admin</label>
@@ -237,7 +279,8 @@ export default function ManagementPanel() {
                             <h1>Enrollments</h1>
                             <div className="user_tuition management__form-container">
                                 <form action="submit" onSubmit={userEnroll}>
-                                    <p>Course</p>
+
+                                    <label htmlFor="tuition_course">Course</label>
                                     <select name="tuition_course" id="tuition_course">
                                         {courses.map((i) => {
                                             return (
@@ -249,7 +292,8 @@ export default function ManagementPanel() {
                                             );
                                         })}
                                     </select>
-                                    <p>User</p>
+                                    <label htmlFor="tuition_user">User</label>
+
 
                                     <select name="tuition_user" id="tuition_user">
                                         {users.map((i) => {
@@ -264,6 +308,49 @@ export default function ManagementPanel() {
                                     <input type="checkbox" name="isTeacher" id="isTeacher" value='isTeacher' />
                                     <button type="submit">ENROLL</button>
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="managementpanel__sessions managementpanel__item">
+                        <div className="managementpanel__item__header">
+                            <h1>Sessions</h1>
+                            <div id="cp-sessions" className="sessions">
+                                <div className="sessions__post management__form-container">
+                                    <h3>CREATE A SESSIONS</h3>
+                                    <form action="submit" onSubmit={postSession}>
+                                        <label htmlFor="institution_name">Subject:</label>
+                                        <input id="session_name" autoComplete='off' type="text" name="session_name" required />
+                                        <label htmlFor="institution_name">Schedule:</label>
+                                        <div className="timeInputs">
+                                            <input id="start" name="start" type="time" required></input>
+                                            <input id="end" name="end" type="time" required></input>
+                                        </div>
+                                        <label htmlFor="institution_name">Streaming Link:</label>
+                                        <input id="streaming" autoComplete='off' type="text" name="streaming" required />
+                                        <label htmlFor="session_resources">Resources Link:</label>
+                                        <input id="resources" name="resources" type="text" required></input>
+                                        <label htmlFor="session_chat">Chat Link:</label>
+                                        <input id="chat" name="chat" type="text" required></input>
+                                        <label htmlFor="course_id">Course:</label>
+                                        <select name="course_id" id="course_id" required>
+                                            {courses.map((i) => {
+                                                return <option value={i.id}>{i.name}</option>;
+                                            })}
+                                        </select>
+                                        <button type="submit">SUBMIT</button>
+                                    </form>
+                                </div>
+                                {/* <div className="sessions__delete management__form-container">
+                                    <h3>DELETE A SESSION</h3>
+                                    <form action="submit" onSubmit={deleteSession}>
+                                        <select name="sessions" id="sessions_delete">
+                                            {sessions.map((i) => {
+                                                return <option value={i.id}>{i.name}</option>;
+                                            })}
+                                        </select>
+                                        <button type="submit">DELETE</button>
+                                    </form>
+                                </div> */}
                             </div>
                         </div>
                     </div>
