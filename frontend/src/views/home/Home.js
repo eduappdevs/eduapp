@@ -168,8 +168,13 @@ export default function Home() {
       console.log(error);
     }
     checkMediaQueries();
+<<<<<<< Updated upstream
 
     if (window.matchMedia("(max-width: 1100px)").matches) {
+=======
+    DarkModeChanger(localStorage.getItem('darkMode'))
+    if (window.matchMedia("(max-width: 900px)").matches) {
+>>>>>>> Stashed changes
       setItsMobileDevice(true);
     } else {
       setItsMobileDevice(false);
