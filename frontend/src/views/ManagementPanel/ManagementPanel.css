@@ -1,10 +1,18 @@
 .managementpanel__main{
+    display:flex;
+    justify-content: center;
+    align-items: center;
     width: 100vw;
     height: 100vh;
-    display: flex;
     flex-direction: column;
 }
 .managementpanel__container{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    flex-direction: column;
     flex: 0.8;
     overflow: auto;
 }
@@ -13,8 +21,8 @@
         flex: 0.9;
     }
 }
-
 .managementpanel__item{
+    z-index: 100;
     height: 100%;
     width: 100%;
     top: 0;
@@ -28,7 +36,8 @@
     justify-content: center;
     align-items: center;
 }
-.managementpanel__item__header > h1{
+.managementPanel__buttonBack > h3{
+    margin-left: 15px;
     text-align: center;
     cursor: pointer;
     border-radius: 10px;
@@ -51,7 +60,7 @@
 }
 
 .managementpanel__institutions{
-left: 0;
+    left: 0;
 }
 .managementpanel__courses{
     left: 100vw;
@@ -185,9 +194,65 @@ input[type=checkbox]:checked:after {
 
 }
 
+.hidden{
+    display: none;
+}
+
 @media (min-width:1100px){
 
     .managementpanel__item > div > div{
         width: 60% !important;
     }
+}
+.buttonManagementPanel{
+    z-index: 90;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    color: white;
+}
+.buttonManagementPanel>span{
+    text-transform: uppercase;
+    font-family: "Consolas";
+    font-weight: bold;
+    background-color: var(--orange);
+    margin-bottom: 5%;
+    padding: 10px;
+    width: 80%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    box-shadow: 0 2px 5px var(--shadowColor);
+    border: 2px solid var(--shadowColor);
+    text-align: center;
+    pointer-events: all;
+
+}
+.managementPanel__buttonBack{
+    display: flex;
+    margin-top: 40px;
+    justify-content: left !important    ;
+    align-items: center;
+    flex-direction: row !important;
+    padding: 4px;
+    width: 100% !important;
+    border-radius: 5px;
+
+}
+.managementPanel__buttonBack__content{
+    margin-left: 5px;
+    border-radius:5px ;
+    background-color: var(--blue);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row !important;
+    padding: 4px;
+    width: 25% !important;
+    cursor: pointer;
+}
+
+.managementPanel__buttonBack__content>span{
+    margin-bottom: 2px;
 }

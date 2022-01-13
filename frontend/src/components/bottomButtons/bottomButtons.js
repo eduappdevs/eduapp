@@ -95,7 +95,7 @@ export default function BottomButtons({ mobile, location }) {
             </Link>
           )
         }
-        <Link to="/resources">
+        <Link id="resources-test-button" to="/resources">
           <li className={inResources ? "activeButton" : console.log()}>
             <svg
               id="clip"

@@ -19,6 +19,7 @@ export default function Menu(props) {
   };
   return (
     <div
+    id='profile-menu-container'
       className={
         window.matchMedia("(max-width:1100px)").matches
           ? "profile-menu-mobile"
@@ -29,11 +30,12 @@ export default function Menu(props) {
         backTo={() => {
           props.handleCloseMenu();
         }}
+        location="Menu"
         
       />
 
       <ul>
-        <li>
+        <li id='profileOptionTest'>
           <a
             onClick={() => {
               openProfileSettings();

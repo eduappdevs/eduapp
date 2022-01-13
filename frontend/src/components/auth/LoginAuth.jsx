@@ -38,6 +38,7 @@ export default class LoginAuth extends Component {
         <h1>LOG IN</h1>
         <label htmlFor="email">Email</label>
         <input
+          data-testid='email'
           type="email"
           name="email"
           onChange={this.handleChange}
@@ -45,12 +46,13 @@ export default class LoginAuth extends Component {
         />
         <label htmlFor="password">Password</label>
         <input
+          data-testid='password'
           type="password"
           name="password"
           onChange={this.handleChange}
           required
         />
-        <button type="submit">Login</button>
+        <button data-testid="loginButton" type="submit">Login</button>
       </form>
     );
   }

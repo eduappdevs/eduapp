@@ -136,27 +136,27 @@ export default function Home() {
       }
     }, 100);
   };
-  const activeEditMenu = () => {
-    const buttonSession = Array.from(
-      document.querySelectorAll("#editSessionButton")
-    );
-    const buttonadd = document.getElementById("buttonAdd");
-    if (buttonadd.classList.contains("hidden")) {
-      buttonadd.classList.remove("hidden");
-    }
-    buttonSession.map((x) => {
-      try {
-        if (x.classList.contains("hidden")) {
-          x.classList.remove("hidden");
-        } else {
-          x.classList.add("hidden");
-          buttonadd.classList.add("hidden");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  };
+  // const activeEditMenu = () => {
+  //   const buttonSession = Array.from(
+  //     document.querySelectorAll("#editSessionButton")
+  //   );
+  //   const buttonadd = document.getElementById("buttonAdd");
+  //   if (buttonadd.classList.contains("hidden")) {
+  //     buttonadd.classList.remove("hidden");
+  //   }
+  //   buttonSession.map((x) => {
+  //     try {
+  //       if (x.classList.contains("hidden")) {
+  //         x.classList.remove("hidden");
+  //       } else {
+  //         x.classList.add("hidden");
+  //         buttonadd.classList.add("hidden");
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   });
+  // };
 
   const handleChangeSelector = (id) => {
     courseSelected = id
