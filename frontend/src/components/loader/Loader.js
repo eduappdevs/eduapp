@@ -1,6 +1,11 @@
 import React from "react";
 import "./loader.css";
-export default function Loader() {
+export default function Loader(props) {
+  if(props.firstTime){
+    setTimeout(()=>{
+      props.isNotFirstLoad()
+    },300)
+  }
   return (
     <div className="loader__main-container" id="loader_main-container">
       <div className="loader__logo-container">

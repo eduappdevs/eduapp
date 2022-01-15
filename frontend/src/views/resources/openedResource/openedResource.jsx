@@ -26,7 +26,7 @@ export default function OpenedResource(props) {
   };
   const closeResource = () => {
     document
-      .getElementById("resource__res" + id + "__opened")
+      .getElementById("resource__res" + props.data.name + props.courseSelected + "__opened")
       .classList.add("openedResource__hidden");
   };
   const isImage = (image) => {
@@ -36,7 +36,7 @@ export default function OpenedResource(props) {
   };
   return (
     <div
-      id={"resource__res" + id + "__opened"}
+      id={"resource__res" + props.data.name + props.courseSelected + "__opened"}
       className={"openedResource__main-container openedResource__hidden"}
     >
       <div className="resourceOpened__header">

@@ -10,6 +10,8 @@ import Loader from "../../components/loader/Loader";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import FadeOutLoader from "../../components/loader/FadeOutLoader";
 import { GetCourses } from "../../hooks/GetCourses";
+import DarkModeChanger from "../../components/DarkModeChanger";
+import CourseSelector from "../../components/courseSelector/CourseSelector";
 export default function Home() {
   let userInfo = FetchUserInfo(localStorage.userId);
   const idEdit = [];
@@ -17,11 +19,11 @@ export default function Home() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
+  const sessionsPreSorted = [];
+  let sessionsSorted;
   let courses;
   courses = GetCourses();
-  const sessionsPreSorted = [];
-  let sessionsSorted ;
-
+  let courseSelected;
   const openSessionAdd = () => {
     document
       .getElementsByClassName("ModalSessionAdd__main")[0]
@@ -59,9 +61,9 @@ export default function Home() {
       }
     }, 4000);
   };
-  const getSessions = async (id) => {
-    console.log(id,'entra')
-    let request = await axios.get(`http://localhost:3000/eduapp_user_sessions?id=${id}`);
+  const getSessions = async () => {
+
+    let request = await axios.get(`http://localhost:3000/eduapp_user_sessions?id=${courseSelected}`);
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -80,12 +82,6 @@ export default function Home() {
         sorter,
       });
     });
-
-
-
-    
-
-    console.log(sessionsPreSorted)
     sessionsSorted = sessionsPreSorted.sort(function (a, b) {
       var a = parseInt(a.sorter);
       var b = parseInt(b.sorter);
@@ -140,34 +136,35 @@ export default function Home() {
       }
     }, 100);
   };
-  const activeEditMenu = () => {
-    const buttonSession = Array.from(
-      document.querySelectorAll("#editSessionButton")
-    );
-    const buttonadd = document.getElementById("buttonAdd");
-    if (buttonadd.classList.contains("hidden")) {
-      buttonadd.classList.remove("hidden");
-    }
-    buttonSession.map((x) => {
-      try {
-        if (x.classList.contains("hidden")) {
-          x.classList.remove("hidden");
-        } else {
-          x.classList.add("hidden");
-          buttonadd.classList.add("hidden");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  };
+  // const activeEditMenu = () => {
+  //   const buttonSession = Array.from(
+  //     document.querySelectorAll("#editSessionButton")
+  //   );
+  //   const buttonadd = document.getElementById("buttonAdd");
+  //   if (buttonadd.classList.contains("hidden")) {
+  //     buttonadd.classList.remove("hidden");
+  //   }
+  //   buttonSession.map((x) => {
+  //     try {
+  //       if (x.classList.contains("hidden")) {
+  //         x.classList.remove("hidden");
+  //       } else {
+  //         x.classList.add("hidden");
+  //         buttonadd.classList.add("hidden");
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   });
+  // };
 
+  const handleChangeSelector = (id) => {
+    courseSelected = id
+    getSessions(id)
+  }
   useEffect(() => {
-    try {
-    } catch (error) {
-      console.log(error);
-    }
     checkMediaQueries();
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 
     if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -175,18 +172,20 @@ export default function Home() {
     DarkModeChanger(localStorage.getItem('darkMode'))
     if (window.matchMedia("(max-width: 900px)").matches) {
 >>>>>>> Stashed changes
+=======
+    DarkModeChanger(localStorage.getItem('darkMode'))
+
+    if (window.matchMedia("(max-width: 900px)").matches) {
+>>>>>>> a96e697aba8890ec66fbd5ebe5ef9eb2753ca254
       setItsMobileDevice(true);
     } else {
       setItsMobileDevice(false);
     }
   }, []);
+
   return courses ? (
     <>
-      {
-       courses.map((c)=>{
-       getSessions(c.id)
-})
-      }
+
       <div className="home-main-container">
         <Navbar mobile={ItsMobileDevice} location={"home"} />
         <section
@@ -207,7 +206,7 @@ export default function Home() {
                 </div>
                 <div className="user-name">
                   <h1>{userInfo.user_name}</h1>
-                  <div className="edit" onClick={activeEditMenu}>
+                  {/* <div className="edit" onClick={activeEditMenu}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="15"
@@ -216,7 +215,7 @@ export default function Home() {
                     >
                       <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z" />
                     </svg>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="home__Add hidden" id="buttonAdd">
@@ -236,6 +235,8 @@ export default function Home() {
                   </svg>
                 </div>
               </div>
+
+              <CourseSelector handleChangeCourse={handleChangeSelector} />
               {sessions.length > 0 ? (
                 <div className="sessions">
                   <p id="home__nextSession">Next session</p>
@@ -267,12 +268,17 @@ export default function Home() {
                             >
                               <div className="session-platforms">
                                 <p className="session-streamingPlatform">
-                                  {data.streamingPlatform}
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z" />
+                                  </svg>
                                 </p>
                                 <p className="session-resourcesPlatform">
-                                  {data.resourcesPlatform}
+                                  <img width="36" height="36" src="https://img.icons8.com/ios-filled/50/000000/education.png" />
                                 </p>
-                                <p className="session_chat_id">{data.chat}</p>
+                                <p className="session_chat_id"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
+                                  <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                  <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
+                                </svg></p>
                               </div>
                             </div>
                           </div>
@@ -319,19 +325,19 @@ export default function Home() {
                             className="modal_question_delete hidden"
                           >
                             <div className="question_delete">
-                              <p>¿Seguro que quieres eliminarlo?</p>
+                              <p>There is no way back , ¿continue?</p>
                               <div className="button">
                                 <button
                                   className="buttonYes"
                                   onClick={deleteSession}
                                 >
-                                  Si
+                                  Delete
                                 </button>
                                 <button
                                   className="buttonYes"
                                   onClick={closeDelete}
                                 >
-                                  No
+                                  Cancel
                                 </button>
                               </div>
                             </div>
@@ -349,7 +355,7 @@ export default function Home() {
                   })}
                 </div>
               ) : (
-                <h1>You have no sessions left</h1>
+                <h1 id="courseNotSelectedeAdvisor">You must select a course</h1>
               )}
             </div>
           </div>

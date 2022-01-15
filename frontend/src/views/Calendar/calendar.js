@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import "./calendar.css";
 import Navbar from "../../components/navbar/navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
-import Loader from "../../components/loader/Loader";
 import Paper from "@material-ui/core/Paper";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 
@@ -14,10 +13,10 @@ import {
   WeekView,
   MonthView,
 } from "@devexpress/dx-react-scheduler-material-ui";
+import DarkModeChanger from "../../components/DarkModeChanger";
 
 export default function Calendar() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
-  const [pageLoading, setPageLoading] = useState(false);
   const today = new Date();
   const currentDate = today;
   const schedulerData = [
@@ -43,6 +42,7 @@ export default function Calendar() {
   };
   useEffect(() => {
     checkMediaQueries();
+    DarkModeChanger(localStorage.getItem('darkMode'))
     if (window.matchMedia("(max-width: 1100px)").matches) {
       setItsMobileDevice(true);
     } else {

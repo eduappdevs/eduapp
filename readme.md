@@ -9,6 +9,9 @@
 - [API Documention](#api-documention)
 - [Use Cases](#use-cases)
 - [Usability](#usability)
+- [Tech stack and comparison](#tech-stack-and-comparison)
+- [Personal opinion and comparison](#personal-opinion-and-comparison)
+
 
 
 </div>
@@ -75,7 +78,7 @@
 
 ```bash
 git clone https://github.com/eduappdevs/eduapp
-cd eduapp/backend/eduapp_db/
+cd eduapp/backend/eduapp_db
 bundle install
 ```
 
@@ -162,17 +165,27 @@ npm start
 
 <h1>User Requirements</h1>
 <h2>Platform</h2>
-<p>This app are going developing in both platforms, mobile and desktop.</p>
-<p>You must to log in or instead sign up if you are not already registered, otherwise you won't have access to the application.</p>
-<p>Eduapp has three type of user, it depends on the type your user has more functions or not.</p>
+<p>This app is being developed in both platforms, mobile and desktop as a hybrid app.</p>
+<p>If an administrator has signed up an account for you, you must log in, otherwise you won't have access to the application.</p>
+<p>Eduapp has four type of user, depending on it the permissions you will have.</p>
 <h3>1. Students user are able to:</h3>
 <p>View your account's calendar, resources, upcoming sessions, and chats.</p>
 <h3>2. Teacher user are able to: </h3>
-<p>They have the same functionality as students, but they can edit, delete, and create events in calendars, resources, and remove students from their classes.</p>
+<p>They have the same functionality as students, but they have permission to create global events in the calendar, create resources.</p>
 <h3>3. Secretary user are able to: </h3>
-<p>They have control over the users of their school.</p>
+<p>They have control over the users of their school, they manage accounts , the calendar and the sessions.</p>
 <h3>4. Administrator user are able to:</h3>
-<p>They have the same functionality as secretary, but they has full control over the user of the secretary  of the educational center. </p>
+<p>They have full access to the management of the app. </p>
+
+
+<h3>Sessions page</h3>
+<p>To see any session you must been enrolled in at least one course , otherwise , this page will be empty.</p>
+<p>Then you must select the course you will like to see the sessions of.</p>
+<h3>Resources page</h3>
+<p>To see any resource you must been enrolled in at least one course , otherwise , this page will be empty.</p>
+<p>You must select the course to see the resources of that course, you can also filter the resources with the search bar placed at the top of the page.</p>
+<p>If you are a teacher of that course you will see a plus icon , who provide you the access to a form modal, to add a new resource.</p>
+
 
 <h1>API Documention<img  width="80" height="35" src="https://miro.medium.com/max/802/1*dLWPk_rziSpWhPx1UWONbQ@2x.png"/> </h1>
 
@@ -185,7 +198,7 @@ npm start
 <a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUUB"> User Auth Database Table</a>
 
 <h1>Use Cases</h1>
-<img src="./Documentation/UseCases.png" />
+<img src="./Documentation/UseCases.jpg" />
 
 <h1>Usability</h1>
 <p>We have used orange and blue as principal colors , then we use a different gray scales and white.</p>
@@ -257,3 +270,21 @@ npm start
 <p>This gives you feedback when something is loading.</p>
 <img height='400' src='./Documentation/Usability/loadingAnimationFrame.png'>
 
+<h1>Tech stack and comparison</h1>
+<p>In our case , currently we are developing EduApp as a web app , using a full responsiveness , but we like to make it downloadable , 
+making eduapp as a hybrid app.</p>
+<div >        
+     <a href="https://reactjs.org">
+            <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React"/></a>
+   </div>
+     
+We are using react js as frontend framework , react provides us many advantages , such an easier learning, reusable components, ReactJS is choosing by most developers, becouse it provide us a very rich JavaScript library
+<div>
+    <a href="https://rubyonrails.org">
+        <img src="https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white" alt="Rails"/></a>
+   </div>
+At backend we have decide to use Ruby on rails , which provide us a Model View Controller architecture , a fast development when you know the basics of it , 
+a great number of helpful tools and libraries , also it haves many disadvantages , like the price of a mistake , you have to pay attention to all the small details ,otherwise your ruby on rails journey will becomes difficult.
+
+<h1>Personal opinion and conclusions</h1>
+<p>It is a pleasure to us be part of this project , as our first project working in with other people,becoming this project a challenge , we found many difficults in the journey, but we also have learned so much through it,although this it is just the beggining of the project and so much things will happen through the journey.</p>

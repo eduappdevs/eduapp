@@ -16,6 +16,5 @@ export const GetCourses = () => {
 
     getCourses();
   }, []);
-  console.log(courses);
   return courses;
 };

@@ -7,15 +7,20 @@ import ResourcesModal from "../../components/modals/resourcesModal";
 import OpenedResource from "./openedResource/openedResource";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
-import {GetCourses} from '../../hooks/GetCourses'
-let resources = [];
+import { GetCourses } from '../../hooks/GetCourses'
+import DarkModeChanger from '../../components/DarkModeChanger'
+import CourseSelector from "../../components/courseSelector/CourseSelector";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+
 export default function Resources(props) {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [resourcesFilter, setResourcesFilter] = useState("");
-  const [resourcesLoaded, setResourcesLoaded] = useState(false);
+  const [resources, setResources] = useState([])
+  const [courseSelected , setCourseSelected] = useState('')
+  let userInfo = FetchUserInfo(localStorage.userId)
+
   let courses;
   courses = GetCourses();
-
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -26,23 +31,34 @@ export default function Resources(props) {
       }
     }, 4000);
   };
-  const getResources = async (id) =>{
-    
-    const resources__url = `http://localhost:3000/resources?${id}`;
+  const getResources = async (id) => {
+    console.log(id, 'resources')
+
+    const resources__url = `http://localhost:3000/resources?id=${id}`;
     await axios.get(resources__url).then((res) => {
-      console.log(res);
       res.data.map((x) => {
-        if (x.files != null) {
-          x.files = x.files.url;
+        if (x.firstfile != null) {
+          x.firstfile = x.firstfile.url;
+        }
+        if (x.secondfile != null) {
+          x.secondfile = x.secondfile.url;
+        }
+        if (x.thirdfile != null) {
+          x.thirdfile = x.thirdfile.url;
         }
       });
-      resources = resources + res.data;
-    });
+      setResources(res.data)
+      
+      console.log(resources)
+
+      
+    })
 
   }
   useEffect(() => {
-    
+
     checkMediaQueries();
+    DarkModeChanger(localStorage.getItem('darkMode'))
     //First check
     if (window.matchMedia("(max-width: 1100px)").matches) {
       setItsMobileDevice(true);
@@ -52,13 +68,14 @@ export default function Resources(props) {
   }, []);
   const openResource = (e) => {
     e.preventDefault();
+    console.log(e.target.id);
     document
       .getElementById(`resource__${e.target.id}__opened`)
       .classList.remove("openedResource__hidden");
   };
-  const createResource = () => {
+  const createResourceModal = () => {
     document.getElementsByClassName(
-      "resources__createResourceModal"
+      "resourceModal-container"
     )[0].style.display = "flex";
   };
 
@@ -66,18 +83,25 @@ export default function Resources(props) {
     setResourcesFilter(e.target.value);
   };
 
-  return courses ? (
-    
-    <>
+  const handleChangeSelector =(id)=>{
+    console.log(id)
+    setCourseSelected(id)
+    getResources(id)
+  }
 
-    {courses.map((c)=>{
-      getResources(c.id)
-    })}
+  return  courses && userInfo?.isAdmin || !userInfo?.isAdmin ? (
+
+    <>
+    
+
+  
       <div className="resources-main-container">
         <Navbar mobile={ItsMobileDevice} location={"resources"} />
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
+          <div className="resources-toolbar-container">
+          <div className="resources-toolbar">
           <div className="resourcesSearchBar">
             <form action="">
               <input type="text" onChange={handleSearchResources} />
@@ -95,14 +119,29 @@ export default function Resources(props) {
               </div>
             </form>
           </div>
-
-          <div className="resources-container">
-            <div className="resources__addNewResource" onClick={createResource}>
-              Add something
+          {courseSelected && courses.filter(course => course.course_id === courseSelected)[0].isTeacher
+          || userInfo.isAdmin
+          ?
+            <div className="resources__addNewResource" onClick={createResourceModal}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+</svg>
             </div>
-            {resourcesLoaded ? (
+          : ''}
+
+          </div>
+          </div>
+          
+
+          <CourseSelector handleChangeCourse = {handleChangeSelector}/>
+          <div className="resources-container">
+          
+           
+     
+            {resources.length > 0 ? (
+              
               <ul>
-                {resources.map((data) => {
+                {resources.map((data) => {              
                   if (
                     data.name
                       .toLowerCase()
@@ -111,19 +150,19 @@ export default function Resources(props) {
                   ) {
                     return (
                       <>
-                        <OpenedResource data={data} />
+                        <OpenedResource data={data} courseSelected = {courseSelected}/>
 
                         <li
-                          id={"res" + data.id}
+                          id={"res" + data.name+courseSelected}
                           className="resources resourceitem"
                           onClick={openResource}
                         >
                           <div
-                            id={"res" + data.id}
+                            id={"res" + data.name+courseSelected}
                             className="resource-name-container"
                           >
                             <span
-                              id={"res" + data.id}
+                              id={"res" + data.name+courseSelected}
                               className="resource-name"
                             >
                               {data.name}
@@ -132,9 +171,9 @@ export default function Resources(props) {
                           <div className="resourceInfo-container">
                             <div className="resourceInfo__creationDate">
                               <div className="resourceInfo__creationDate__icon">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 16 16">
-  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
-</svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 16 16">
+                                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                                </svg>
                               </div>
                               <div className="resourceInfo__creationDate__content">
                                 <div className="resourceInfo__cretionDate_date">
@@ -147,9 +186,9 @@ export default function Resources(props) {
                             </div>
                             <div className="resourceInfo__createdBy">
                               <div className="resourceInfo__createdBy__icon">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
-  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-</svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                                </svg>
                               </div>
                               <div className="resourceInfo__createdBy__content">
                                 {data.createdBy}
@@ -163,15 +202,13 @@ export default function Resources(props) {
                 })}
               </ul>
             ) : (
-              <div id="RESOURCES_ERROR">
-                <br />
-                <p>or</p>
-                <h3>Refresh the page</h3>
+              <div id="courseNotSelectedeAdvisor">
+                <h3>You must select a course</h3>
               </div>
             )}
           </div>
         </section>
-        <ResourcesModal />
+        <ResourcesModal course={courseSelected} />
 
         <BottomButtons mobile={ItsMobileDevice} location={"resources"} />
       </div>

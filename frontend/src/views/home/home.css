@@ -1,7 +1,8 @@
 .home-main-container {
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   color: var(--textColor);
 }
 .user {
@@ -19,12 +20,10 @@
 }
 .user > .user-container {
   display: flex;
-  justify-content: center;
   flex-direction: column;
+  width: 100%;
 }
-.desktopSection > .user > .user-container {
-  height: 100vh;
-}
+
 .user > .user-container > .information-user > .profile-picture {
   display: flex;
   justify-content: center;
@@ -37,7 +36,7 @@
   height: 135px;
   width: 135px;
   border-radius: 50%;
-  border: 2px solid var(--orange);
+  box-shadow: 0 0 12px rgba(42, 42, 42, 0.445);
 }
 
 .user > .user-container > .information-user > .user-name {
@@ -49,7 +48,7 @@
   justify-content: center;
   align-items: center;
   display: flex;
-  font-size: 50%;
+  font-size: 85%;
 }
 .user > .user-container > .information-user > .user-name > .edit {
   padding: 10px !important;
@@ -58,25 +57,20 @@
   transform: translateX(-75%);
   margin-top: 3px;
   margin-left: 5px;
-  cursor: pointer;
+  cursor: pointer;  
+  fill: var(--textColor);
 }
-.user > .user-container > .information-user > .user-name::before {
-  content: "";
-  display: block;
-  width: 50%;
-  height: 1px;
-  background-color: var(--textColor);
-  position: absolute;
-  margin-top: 10%;
-  border-radius: 30px;
-}
+
 .user > .user-container > .sessions {
-  margin-top: 5%;
   height: 100%;
+  min-height: 10%;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
+  border-radius: 15px 15px 0 0;
+  width: 99%;
+  background-color :var(--backgroundColor)
 }
 .user > .user-container > .sessions > .sessions-container {
   display: flex;
@@ -201,7 +195,7 @@
   width: 100%;
   justify-content: space-evenly;
   align-items: center;
-  padding: 10px;
+  padding: 8px 0
 }
 .hidden {
   display: none !important;
@@ -211,6 +205,7 @@
   width: 70%;
   height: 100%;
   left: 50%;
+  flex: 0.8;
   transform: translateX(-50%);
 }
 
@@ -404,4 +399,8 @@
   background-color: var(--blue);
   border: 2px solid var(--orange);
 
+}
+#sessions_error{
+  text-align: center;
+  width: 100%;
 }

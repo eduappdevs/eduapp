@@ -87,5 +87,14 @@ const apiSettings = {
     });
     return courses;
   },
+  //Session
+  deleteSession: async (sessionId) =>{
+    const endpoint = `${EDUAPP_SESSIONS}/${sessionId}`;
+
+    return await await axios.delete(endpoint,{
+      headers: { Authorization: localStorage.userToken },
+    })
+  },
+
 };
 export default apiSettings;

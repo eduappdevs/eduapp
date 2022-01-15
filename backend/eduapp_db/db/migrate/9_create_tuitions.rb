@@ -6,6 +6,8 @@ class CreateTuitions < ActiveRecord::Migration[6.1]
       t.integer :user_id
       t.string :course_name
       t.string :institution_name
+      t.boolean :isTeacher
+
       
 
       t.timestamps

@@ -3,8 +3,7 @@ header {
   flex-direction: column;
   width: 100%;
   z-index: 9999999999;
-  flex-grow: 1;
-  height: 90px;
+  flex: 0.1;
 }
 header > nav {
   display: flex;
@@ -12,10 +11,10 @@ header > nav {
   justify-content: space-between;
   z-index: 10001;
   background-color: var(--backgroundColor);
-  /* box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219); */
   border-bottom: 3px solid rgba(189, 189, 189, 0.671);
   position: fixed;
   width: 100%;
+  flex: 0.2;
 }
 header > nav > a > .header-logo {
   margin: 15px;
@@ -64,18 +63,19 @@ header > nav > .profile-button {
   align-items: center;
 }
 header > nav > .profile-button > .profile-button-box {
-  height: 80%;
-  width: 80%;
-  border-radius: 20px;
+  height: 70%;
+  width: 60%;
+  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5px 10px;
+  padding: 0px 5px;
+  margin-right: 10px;
   cursor: pointer;
   transition: all 0.3s;
 }
 header > nav > .profile-button > .profile-button-box:hover {
-  background-color: rgba(224, 221, 221, 0.596);
+  background-color: rgba(224, 221, 221, 0.233);
   box-shadow: 0 0 4px rgba(192, 192, 192, 0.231);
 }
 header > nav > .profile-button > .profile-button-box > .profile-name {
@@ -89,7 +89,6 @@ header > nav > .profile-button > .profile-button-box > .profile-pic {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 15px;
 }
 header > nav > .profile-button > .profile-button-box > .profile-pic > img {
   width: 40px;
@@ -99,13 +98,13 @@ header > nav > .profile-button > .profile-button-box > .profile-pic > img {
 /* Mobile menu */
 header > .profile-menu-mobile {
   display: flex;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   position: fixed;
   top: 0%;
   left: 0;
   background-color: var(--backgroundColor);
-  transform: translateX(105vh);
+  transform: translateX(205vh);
   transition: 0.3s all;
   z-index: 9999999999999;
   box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
@@ -124,16 +123,19 @@ header > .profile-menu-mobile > ul {
   list-style: none;
   z-index: 9999999999;
   pointer-events: none;
+  flex: 0.8;
 }
 
 header > .profile-menu-mobile > ul > li {
   text-transform: uppercase;
   font-family: "Consolas";
   font-weight: bold;
-  border-radius: 30px;
   background-color: var(--orange);
-  margin-bottom: 15%;
+  margin-bottom: 5%;
   padding: 10px;
+  width: 80%;
+  text-overflow: ellipsis;
+  overflow: hidden;
   box-shadow: 0 2px 5px var(--shadowColor);
   border: 2px solid var(--shadowColor);
   text-align: center;
@@ -157,9 +159,8 @@ header > .profile-menu-mobile > ul > li > a {
 
 header > .profile-menu-desktop {
   display: flex;
-  width: 20%;
+  width: 30%;
   height: 100%;
-  position: absolute;
   right: 0;
   background-color: var(--backgroundColor);
   transform: translateY(-1000vh);

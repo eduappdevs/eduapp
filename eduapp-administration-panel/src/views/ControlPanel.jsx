@@ -9,7 +9,6 @@ let users;
 export default function ControlPanel() {
   const [institutionsLoading, setInstitutionsLoading] = useState(true);
   const [coursesLoading, setCoursesLoading] = useState(true);
-
   const [usersLoading, setUsersLoading] = useState(true);
 
   const fetchInstitutions = async () => {
@@ -74,10 +73,12 @@ export default function ControlPanel() {
     window.location.reload();
   };
   const deleteCourse = (id) => {
-    API.deleteCourse(id);
+    console.log(id);
+    // API.deleteCourse(id);
   };
   const createUser = (event) => {
     event.preventDefault();
+    let isAdmin = event.target.isAdmin.checked
     const payload = new FormData();
     payload.append("user[email]", event.target.email.value);
     payload.append("user[password]", event.target.password.value);
@@ -89,7 +90,7 @@ export default function ControlPanel() {
         payload.delete("user[password]");
         payload.append("user_id", res.data.message.id);
         payload.append("user_name", res.data.message.email.split("@")[0]);
-        console.log("a ver que devuelves ", res);
+        payload.append("isAdmin", isAdmin);
 
         API.createInfo(payload).then((res) => {
           window.location.reload();
@@ -114,6 +115,7 @@ export default function ControlPanel() {
       "institution_name",
       getInstitution(e.target.tuition_course.value.split(":")[1].split("/")[1])
     );
+    payload.append("isTeacher",e.target.isTeacher.checked);
 
     API.enrollUser(payload).then((res) => {
       console.log("User tuition has been completed successfully!");
@@ -191,11 +193,13 @@ export default function ControlPanel() {
               <input type="text" name="email" />
               <label htmlFor="password">Password</label>
               <input type="password" name="password" />
+              <label htmlFor="isAdmin">Admin</label>
+              <input type="checkbox" name="isAdmin" id="isAdmin" value='isAdmin'/>  
               <button type="submit">SIGN UP</button>
             </form>
           </div>
           <div className="user_tuition">
-            <h3>ENROLL</h3>
+            <h1>ENROLL</h1>
             <form action="submit" onSubmit={userEnroll}>
               <p>Course</p>
               <select name="tuition_course" id="tuition_course">
@@ -219,12 +223,12 @@ export default function ControlPanel() {
                     </option>
                   );
                 })}
-              </select>
+              </select> 
+              <label htmlFor="isTeacher">Teacher</label>
+              <input type="checkbox" name="isTeacher" id="isTeacher" value='isTeacher'/>             
               <button type="submit">ENROLL</button>
             </form>
           </div>
-          <div className="users__delete"></div>
-          <div className="users__edit"></div>
         </div>
       </div>
     </>
