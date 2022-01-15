@@ -48,7 +48,7 @@
   justify-content: center;
   align-items: center;
   display: flex;
-  font-size: 50%;
+  font-size: 85%;
 }
 .user > .user-container > .information-user > .user-name > .edit {
   padding: 10px !important;
