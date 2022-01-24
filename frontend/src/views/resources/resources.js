@@ -58,13 +58,13 @@ export default function Resources(props) {
   useEffect(() => {
 
     checkMediaQueries();
-    DarkModeChanger(localStorage.getItem('darkMode'))
+    // DarkModeChanger(localStorage.getItem('darkMode'))
     //First check
-    if (window.matchMedia("(max-width: 1100px)").matches) {
-      setItsMobileDevice(true);
-    } else {
-      setItsMobileDevice(false);
-    }
+    // if (window.matchMedia("(max-width: 1100px)").matches) {
+    //   setItsMobileDevice(true);
+    // } else {
+    //   setItsMobileDevice(false);
+    // }
   }, []);
   const openResource = (e) => {
     e.preventDefault();
@@ -96,7 +96,8 @@ export default function Resources(props) {
 
   
       <div className="resources-main-container">
-        <Navbar mobile={ItsMobileDevice} location={"resources"} />
+        {/* 
+        <Navbar mobile={ItsMobileDevice} location={"resources"} /> */}
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
@@ -104,8 +105,8 @@ export default function Resources(props) {
           <div className="resources-toolbar">
           <div className="resourcesSearchBar">
             <form action="">
-              <input type="text" onChange={handleSearchResources} />
-              <div className="searchInputIcon">
+              <input id='resourcesSearchBarInput' type="text" onChange={handleSearchResources} />
+              <div id="resourcesSearchBarIcon" className="searchInputIcon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   x="0px"
@@ -210,7 +211,7 @@ export default function Resources(props) {
         </section>
         <ResourcesModal course={courseSelected} />
 
-        <BottomButtons mobile={ItsMobileDevice} location={"resources"} />
+        {/* <BottomButtons mobile={ItsMobileDevice} location={"resources"} /> */}
       </div>
     </>
   ) : (

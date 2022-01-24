@@ -1508,6 +1508,11 @@
     "@types/yargs" "^16.0.0"
     "chalk" "^4.0.0"
 
+"@jsreport/browser-client@^3.1.0":
+  "integrity" "sha512-ZElwn2KRIzkUzAyD5UKGxULZUhokWuPOlMzrmiur4WirqH3yoiHlOJEdnRGkjjE/fhZzCR8gBFZ/TuOW/fsOIw=="
+  "resolved" "https://registry.npmjs.org/@jsreport/browser-client/-/browser-client-3.1.0.tgz"
+  "version" "3.1.0"
+
 "@material-ui/core@^4.0.0", "@material-ui/core@>=4.5.0":
   "integrity" "sha512-sdpgI/PL56QVsEJldwEe4FFaFTLUqN+rd7sSZiRCdx2E/C7z5yK0y/khAWVBH24tXwto7I1hCzNWfJGZIYJKnw=="
   "resolved" "https://registry.npmjs.org/@material-ui/core/-/core-4.12.3.tgz"

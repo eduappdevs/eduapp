@@ -8,13 +8,13 @@ import SessionEdit from "../../components/modals/modals-home/sessionEdit";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import FadeOutLoader from "../../components/loader/FadeOutLoader";
 import { GetCourses } from "../../hooks/GetCourses";
 import DarkModeChanger from "../../components/DarkModeChanger";
 import CourseSelector from "../../components/courseSelector/CourseSelector";
+import jsreport from '@jsreport/browser-client'
+
 export default function Home() {
   let userInfo = FetchUserInfo(localStorage.userId);
-  const idEdit = [];
   const [editFields, setFields] = useState([]);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [sessions, setSessions] = useState([]);
@@ -157,26 +157,27 @@ export default function Home() {
   //     }
   //   });
   // };
-
+  const downloadReport = async() =>{
+    jsreport.serverUrl = 'http://localhost:5488/?authServerConnect';
+    let request = await axios.get(`http://localhost:3000/eduapp_user_sessions?id=1`);
+    const data = {"Sessions": request.data}
+    let report = await jsreport.render({
+      template: {
+        name: 'Session'    
+      },
+      data: JSON.stringify(data)
+    })
+    //report.download('Session_Report.pdf')
+    report.openInWindow({ title: 'Session' });
+  }
   const handleChangeSelector = (id) => {
     courseSelected = id
     getSessions(id)
   }
   useEffect(() => {
     checkMediaQueries();
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-
     if (window.matchMedia("(max-width: 1100px)").matches) {
-=======
-    DarkModeChanger(localStorage.getItem('darkMode'))
-    if (window.matchMedia("(max-width: 900px)").matches) {
->>>>>>> Stashed changes
-=======
-    DarkModeChanger(localStorage.getItem('darkMode'))
-
-    if (window.matchMedia("(max-width: 900px)").matches) {
->>>>>>> a96e697aba8890ec66fbd5ebe5ef9eb2753ca254
+      DarkModeChanger(localStorage.getItem('darkMode'))
       setItsMobileDevice(true);
     } else {
       setItsMobileDevice(false);
@@ -358,6 +359,9 @@ export default function Home() {
                 <h1 id="courseNotSelectedeAdvisor">You must select a course</h1>
               )}
             </div>
+          </div>
+          <div className="reportButton__Sessions" onClick={downloadReport}>
+          <h1>Report</h1>
           </div>
         </section>
         <SessionEdit fields={editFields} />
