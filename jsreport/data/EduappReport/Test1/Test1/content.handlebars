@@ -1,0 +1,50 @@
+<html>
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <style>
+        {
+        {asset "./styles.css"}
+        }
+    </style>
+</head>
+
+<body>
+    <div class="WrapperHeader">
+        <div class="ContentHeader">
+            <img src="{{asset "/EduappReport/Test1/EduappLogo.png" "dataURI"}}" width="40" height="40" />
+            
+    </div>
+        <h1>Eduapp report</h1>
+    </div>
+
+    <table>
+        <thead>
+            <th>Name</th>
+            <th>Description</th>
+            <th>firstfile</th>
+            <th>secondfile</th>
+            <th>thirdfile</th>
+            <th>createdBy</th>
+            <th>id</th>
+
+
+
+
+        </thead>
+        <tbody>
+            {{#each data}}
+            <tr style="cursor:pointer">
+                <td>{{name}}</td>
+                <td>{{description}}</td>
+                <td>{{firstfile}}</td>
+                <td>{{secondfile}}</td>
+                <td>{{thirdfile}}</td>
+                <td>{{createdBy}}</td>
+                <td>{{course_id}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    </body>
+</html>

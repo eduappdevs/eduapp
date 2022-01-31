@@ -1,0 +1,46 @@
+.navbar-container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 20vh;
+  width: 3em;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+.navbar-container > * {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  background-color: orange;
+}
+.logo {
+  flex: 1;
+  cursor: default;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: transparent;
+  pointer-events: none;
+}
+.logo:hover {
+  background-color: transparent;
+}
+.logo > img {
+  width: 100%;
+  height: 100%;
+}
+.navbar-container > *:hover {
+  background-color: rgb(153, 99, 0);
+}
+.navbar-container > * > svg {
+  fill: white;
+}
+
+.active {
+  background-color: rgb(153, 99, 0);
+}

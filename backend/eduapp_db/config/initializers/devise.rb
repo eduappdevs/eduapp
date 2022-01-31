@@ -9,12 +9,20 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
+  config.jwt do |jwt|
+    jwt.secret = ENV['RAILS-SECRET-KEY']
+    jwt.dispatch_requests = [
+      ['POST', %r{^/signin$}],
+    ]
+    jwt.expiration_time = 14.days.to_i
+    
+  end
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = 'e5e1d760275ae23b01632c9c13b6dd86724106a3a6ea5c3660b4ffe94c891970b5b3ab2c8bd1faf3025f36b90770272eea4e900f4be5c5a2427a7eb1fae3a5cc'
+  # config.secret_key = '58790fe94411425f8060bdcdce8201127bd1e62d67d66e565a58b69b93e3ec5cfb89e4cfaba13bcd7ef69f19c4dd754f8ce00cd432c219686fd872eb1c7a4841'
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -79,7 +87,8 @@ Devise.setup do |config|
   # enable this with :database unless you are using a custom strategy.
   # The supported strategies are:
   # :database      = Support basic authentication with authentication key + password
-  # config.http_authenticatable = false
+  config.http_authenticatable = true
+  
 
   # If 401 status code should be returned for AJAX requests. True by default.
   # config.http_authenticatable_on_xhr = true
@@ -126,7 +135,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 12
 
   # Set up a pepper to generate the hashed password.
-  # config.pepper = '0ba889a8c0d5428886c989867376a31b1232b70a4c505a679999255db7450918dea3c6265bf7adf3c594aa8bcb41093319ec5c229b09857ba24ffafc4a6dfcba'
+  # config.pepper = '6d07ecdf1a1ebee93ee5c0f54ddfa083b2c98d420366de8964201fc6ef3c111209f2383e649ea892a1a54e200abf5918d9d543ed1ecd09d6e8fa54bf2e8fd5c3'
 
   # Send a notification to the original email when the user's email is changed.
   # config.send_email_changed_notification = false
