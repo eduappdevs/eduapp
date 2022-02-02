@@ -18,7 +18,7 @@ export default function Home() {
 	const idEdit = [];
 
 	const [editFields, setFields] = useState([]);
-	const [ItsMobileDevice, setItsMobileDevice] = useState(false);
+	const [isMobile, setIsMobile] = useState(false);
 	const [sessions, setSessions] = useState([]);
 	const [firstSessionId, setFirstSessionId] = useState("");
 
@@ -63,9 +63,9 @@ export default function Home() {
 	const checkMediaQueries = () => {
 		setInterval(() => {
 			if (window.matchMedia("(max-width: 1100px)").matches) {
-				setItsMobileDevice(true);
+				setIsMobile(true);
 			} else {
-				setItsMobileDevice(false);
+				setIsMobile(false);
 			}
 		}, 4000);
 	};
@@ -186,18 +186,18 @@ export default function Home() {
 		DarkModeChanger(localStorage.getItem('darkMode'))
 
 		if (window.matchMedia("(max-width: 900px)").matches) {
-			setItsMobileDevice(true);
+			setIsMobile(true);
 		} else {
-			setItsMobileDevice(false);
+			setIsMobile(false);
 		}
 	}, []);
 
 	return courses ? (
 		<>
 			<div className="home-main-container">
-				<Navbar mobile={ItsMobileDevice} location={"home"} />
+				<Navbar mobile={isMobile} location={"home"} />
 				<section
-					className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
+					className={isMobile ? "mobileSection" : "desktopSection"}
 				>
 					<div className="user">
 						<div className="user-container">
@@ -369,7 +369,7 @@ export default function Home() {
 				</section>
 				<SessionEdit fields={editFields} />
 				<SessionAdd />
-				<BottomButtons mobile={ItsMobileDevice} location={"home"} />
+				<BottomButtons mobile={isMobile} location={"home"} />
 			</div>
 		</>
 	) : (
