@@ -35,8 +35,27 @@ export default function Chat() {
 				<div className="chat-search-container"></div>
 
 				<div className="chats-container">
-					<div className="chat-group-container"></div>
-					<div className="chat-user-container"></div>
+					<div className="chat-group-container">
+						<h2>Groups</h2>
+						<ul>
+							<li>
+								<div>
+									<img />
+									<div className="chat-group-info">
+										<h2>Group 1</h2>
+										<p>Monica is writing...</p>
+									</div>
+									<div className="chat-group-pending-messages">20</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div className="chat-user-container">
+						<h2>Users</h2>
+						<ul>
+							<li>User 1</li>
+						</ul>
+					</div>
 				</div>
 				<BottomButtons mobile={isMobile} location={"chat"} />
 			</div>

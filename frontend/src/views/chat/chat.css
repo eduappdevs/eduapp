@@ -1,0 +1,34 @@
+.chat-main-container {
+	height: 100%;
+	width: 100%;
+	font-family: "Consolas";
+}
+
+.chats-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.chat-group-container>h2,
+.chat-user-container>h2 {
+	margin: 1em 0 0 2em;
+}
+
+.chat-group-container>ul>li,
+.chat-user-container>ul>li {
+	width: 80%;
+	height: 10%;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.427);
+	transform: translate(-50%, -50%);
+	position: relative;
+	padding: 15px 15px;
+	border-radius: 10px;
+	left: 50%;
+	margin-top: 2em;
+}
+
+.chat-group-container>ul,
+.chat-user-container>ul {
+	margin-top: 2.5em;
+	list-style: none;
+}
