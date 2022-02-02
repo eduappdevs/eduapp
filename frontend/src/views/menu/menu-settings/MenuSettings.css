@@ -1,63 +1,68 @@
 .MenuSettings__main-container {
-  width: 100%;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  position: fixed;
-  background-color: var(--backgroundColor);
-  transform: translateX(0px);
-  transition: all 0.3s;
-  z-index: 99999999999999;
+	width: 100%;
+	height: 100vh;
+	top: 0;
+	left: 0;
+	position: fixed;
+	background-color: var(--backgroundColor);
+	transform: translateX(0px);
+	transition: all 0.3s;
+	z-index: 99999999999999;
 }
-.MenuSettings__main-container > ul {
-  width: 100%;
-  height: 91%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+
+.MenuSettings__main-container>ul {
+	width: 100%;
+	height: 91%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
 }
-.MenuSettings__main-container > ul > li {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 50%;
-  transform: scale(0.8);
-  color: var(--textColor);
-  font-size: 200%;
+
+.MenuSettings__main-container>ul>li {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 50%;
+	transform: scale(0.8);
+	color: var(--textColor);
+	font-size: 200%;
 }
 
 .MenuSettings__hidden {
-  transform: translateX(200vw);
+	transform: translateX(200vw);
 }
+
 #darkModes {
-  height: 20%;
-  border: 0px solid var(--blue);
-  border-radius: 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 80%;
-  overflow: hidden;
+	height: 20%;
+	border: 0px solid var(--blue);
+	border-radius: 20px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	width: 80%;
+	overflow: hidden;
 }
-#darkModes > li {
-  flex: 1;
-  list-style: none;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgb(41, 99, 133);
+
+#darkModes>li {
+	flex: 1;
+	list-style: none;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgb(41, 99, 133);
 }
-#darkModes > li > svg {
-  height: 30px;
-  width: 30px;
-  fill: white;
+
+#darkModes>li>svg {
+	height: 30px;
+	width: 30px;
+	fill: white;
 }
 
 .activeMode {
-  background-color: var(--blue) !important;
+	background-color: var(--blue) !important;
 }
