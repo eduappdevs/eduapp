@@ -111,12 +111,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px;
-  cursor: pointer;
-  margin-top: 100%;
-}
-.bottom-buttons-desktop > ul > a > li > svg:hover {
-  fill: rgb(204, 204, 204);
+
+} 
+.managementButton > img{
+  width: 40px;
+  height: 40px;
+  margin-right: 2px;
+  fill: white;
+  filter: invert(1);
 }
 .bottom-buttons-desktop > ul > a > li > svg {
   fill: #ffff;

@@ -3,9 +3,7 @@
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
     <style>
-        {
-        {asset "./styles.css"}
-        }
+        {{asset "/EduappReport/Test1/styles.css"}}
     </style>
 </head>
 
@@ -13,38 +11,32 @@
     <div class="WrapperHeader">
         <div class="ContentHeader">
             <img src="{{asset "/EduappReport/Test1/EduappLogo.png" "dataURI"}}" width="40" height="40" />
-            
-    </div>
-        <h1>Eduapp report</h1>
+        </div>
     </div>
 
-    <table>
-        <thead>
-            <th>Name</th>
-            <th>Description</th>
-            <th>firstfile</th>
-            <th>secondfile</th>
-            <th>thirdfile</th>
-            <th>createdBy</th>
-            <th>id</th>
-
-
-
-
-        </thead>
-        <tbody>
+    <div class="container">
+        <h1>Eduapp Report</h1>
+        
+        <ul class="responsive-table">
+            <li class="table-header">
+                <div class="col col-1">Name</div>
+                <div class="col col-2">Description</div>
+                <div class="col col-3">firstfile</div>
+                <div class="col col-4">secondfile</div>
+                <div class="col col-1">thirdfile</div>
+                <div class="col col-2">createdBy</div>
+            </li>
             {{#each data}}
-            <tr style="cursor:pointer">
-                <td>{{name}}</td>
-                <td>{{description}}</td>
-                <td>{{firstfile}}</td>
-                <td>{{secondfile}}</td>
-                <td>{{thirdfile}}</td>
-                <td>{{createdBy}}</td>
-                <td>{{course_id}}</td>
-            </tr>
+                <li class="table-row">
+                    <div class="col col-1">{{name}}</div>
+                    <div class="col col-2">{{description}}</div>
+                    <div class="col col-3">{{#if firstfile}} Yes {{else}} No {{/if}}</div>
+                    <div class="col col-4">{{#if secondfile}} Yes {{else}} No {{/if}}</div>
+                    <div class="col col-1">{{#if thirdfile}} Yes {{else}} No {{/if}}</div>
+                    <div class="col col-2">{{createdBy}}</div>
+                </li>
             {{/each}}
-        </tbody>
-    </table>
+        </ul>
+    </div>
     </body>
 </html>

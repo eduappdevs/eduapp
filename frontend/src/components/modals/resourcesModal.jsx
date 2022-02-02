@@ -3,7 +3,7 @@ import API from "../../API";
 import "./modal.css";
 let finalData = new FormData();
 
-export default function ResourcesModal() {
+export default function ResourcesModal(props) {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [currentlyUser, setCurrentlyUser] = useState("");
   const FILE_LIMIT = 3;
@@ -77,7 +77,7 @@ export default function ResourcesModal() {
 
     console.log("ccc", currentlyUser);
     finalData.append("createdBy", currentlyUser);
-    finalData.append("course_id", e.target[2].value);
+    finalData.append("course_id", props.course);
 
     document.getElementsByClassName(
       "resources__createResourceModal"
@@ -89,12 +89,13 @@ export default function ResourcesModal() {
 
   const closeModal = () => {
     document.getElementsByClassName(
-      "resources__createResourceModal"
+      "resourceModal-container"
     )[0].style.display = "none";
   };
 
   return (
-    <div className="resources__createResourceModal">
+    <div className="resourceModal-container">
+      <div className="resources__createResourceModal">
       <div className="resources__logoModal">
         <img src="\assets\logo.png" alt="logo" />
       </div>
@@ -111,13 +112,6 @@ export default function ResourcesModal() {
           type="text"
           name="description"
           placeholder="Description"
-          autoComplete="off"
-          required
-        />
-        <input
-          type="text"
-          name="course"
-          placeholder="Course"
           autoComplete="off"
           required
         />
@@ -149,5 +143,9 @@ export default function ResourcesModal() {
         CANCEL
       </button>
     </div>
+    <div className="resourcesModal-outside" onClick={closeModal}></div>
+    </div>
+    
+
   );
 }

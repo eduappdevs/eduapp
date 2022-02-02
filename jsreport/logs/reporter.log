@@ -323,3 +323,382 @@ Asset  EduappLogo.png  not found in the store and also not on the disk: Unable t
 2022-01-24T01:16:39.861Z - info: Starting rendering request 15 (user: null) rootId=prqjxucjxitnumt, id=prqjxucjxitnumt
 2022-01-24T01:16:39.861Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=prqjxucjxitnumt, id=prqjxucjxitnumt
 2022-01-24T01:16:40.029Z - info: Rendering request 15 finished in 171 ms rootId=prqjxucjxitnumt, id=prqjxucjxitnumt
+2022-02-02T17:35:37.449Z - info: Initializing jsreport (version: 3.3.0, configuration file: jsreport.config.json, nodejs: 16.13.2)
+2022-02-02T17:35:37.453Z - info: Searching for available extensions in /Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/
+2022-02-02T17:35:37.460Z - info: Extensions location cache contains up to date information, skipping crawling in /Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/
+2022-02-02T17:35:37.467Z - info: Found 35 extension(s)
+2022-02-02T17:35:37.566Z - info: Using extension base@3.0.0
+2022-02-02T17:35:37.571Z - info: Using extension child-templates@3.0.1
+2022-02-02T17:35:37.575Z - info: Using extension cli@3.0.0
+2022-02-02T17:35:37.579Z - info: Using extension components@3.2.0
+2022-02-02T17:35:37.581Z - info: Using extension data@3.0.1
+2022-02-02T17:35:37.582Z - info: Using extension express@3.2.1
+2022-02-02T17:35:37.935Z - info: Using extension freeze@3.0.1
+2022-02-02T17:35:37.937Z - info: Using extension fs-store@3.0.0
+2022-02-02T17:35:38.061Z - info: Using extension handlebars@3.0.0
+2022-02-02T17:35:38.063Z - info: Using extension import-export@3.0.2
+2022-02-02T17:35:38.079Z - info: Using extension jsrender@3.0.0
+2022-02-02T17:35:38.080Z - info: Using extension licensing@3.0.1
+2022-02-02T17:35:38.111Z - info: Using extension localization@3.1.1
+2022-02-02T17:35:38.116Z - info: Using extension npm@3.1.0
+2022-02-02T17:35:38.126Z - info: Using extension pdf-utils@3.2.0
+2022-02-02T17:35:38.130Z - info: Using extension reports@3.0.1
+2022-02-02T17:35:38.132Z - info: Using extension tags@3.1.0
+2022-02-02T17:35:38.134Z - info: Using extension text@3.0.0
+2022-02-02T17:35:38.138Z - info: Using extension version-control@3.0.1
+2022-02-02T17:35:38.167Z - info: Using extension assets@3.2.0
+2022-02-02T17:35:38.181Z - info: Using extension authorization@3.2.0
+2022-02-02T17:35:38.186Z - info: Using extension browser-client@3.1.0
+2022-02-02T17:35:38.189Z - info: Using extension chrome-pdf@3.1.0
+2022-02-02T17:35:38.192Z - info: Using extension docx@3.1.0
+2022-02-02T17:35:38.194Z - info: Using extension html-to-xlsx@3.1.0
+2022-02-02T17:35:38.297Z - info: html-to-xlsx detected chrome as available html engine
+2022-02-02T17:35:38.298Z - info: Using extension pptx@3.1.0
+2022-02-02T17:35:38.300Z - info: Using extension scheduling@3.0.1
+2022-02-02T17:35:38.338Z - info: Using extension scripts@3.2.0
+2022-02-02T17:35:38.339Z - info: Using extension static-pdf@3.0.0
+2022-02-02T17:35:38.340Z - info: Using extension studio@3.3.0
+2022-02-02T17:35:38.479Z - info: Using extension xlsx@3.1.0
+2022-02-02T17:35:38.510Z - info: Using extension public-templates@3.0.0
+2022-02-02T17:35:38.511Z - info: Using extension sample-template@3.1.0
+2022-02-02T17:35:38.514Z - info: Using extension studio-theme-dark@3.0.1
+2022-02-02T17:35:38.516Z - info: Using general timeout for rendering (reportTimeout: 60000)
+2022-02-02T17:35:38.517Z - info: Using fs provider for template store.
+2022-02-02T17:35:38.524Z - info: fs store is persisting using fs for /Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/data
+2022-02-02T17:35:38.527Z - info: fs store is loading data
+2022-02-02T17:35:38.546Z - info: fs store is initialized successfully
+2022-02-02T17:35:38.558Z - info: Creating default express app.
+2022-02-02T17:35:38.586Z - info: jsreport server successfully started on http port: 5488
+2022-02-02T17:35:38.587Z - info: Verifying license key free
+2022-02-02T17:35:38.588Z - info: Using free license
+2022-02-02T17:35:38.591Z - info: Initializing worker threads
+2022-02-02T17:35:38.814Z - info: 2 worker threads initialized in 223ms
+2022-02-02T17:35:38.814Z - info: Starting temp files cleanup with 180000ms threshold
+2022-02-02T17:35:38.815Z - info: reporter initialized
+2022-02-02T17:36:00.049Z - info: Starting rendering request 1 (user: null) rootId=i10cavph3w09498, id=i10cavph3w09498
+2022-02-02T17:36:00.049Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=i10cavph3w09498, id=i10cavph3w09498
+2022-02-02T17:36:01.244Z - info: Rendering request 1 finished in 1267 ms rootId=i10cavph3w09498, id=i10cavph3w09498
+2022-02-02T17:40:04.304Z - info: Starting rendering request 2 (user: null) rootId=7zp3lmz3ms1jeeu, id=7zp3lmz3ms1jeeu
+2022-02-02T17:40:04.304Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=7zp3lmz3ms1jeeu, id=7zp3lmz3ms1jeeu
+2022-02-02T17:40:04.595Z - info: Rendering request 2 finished in 294 ms rootId=7zp3lmz3ms1jeeu, id=7zp3lmz3ms1jeeu
+2022-02-02T17:41:39.620Z - info: Starting rendering request 3 (user: null) rootId=f3hd3lvtkyjp4ua, id=f3hd3lvtkyjp4ua
+2022-02-02T17:41:39.621Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=f3hd3lvtkyjp4ua, id=f3hd3lvtkyjp4ua
+2022-02-02T17:41:39.882Z - info: Rendering request 3 finished in 264 ms rootId=f3hd3lvtkyjp4ua, id=f3hd3lvtkyjp4ua
+2022-02-02T17:41:58.645Z - info: Starting rendering request 4 (user: null) rootId=kpzrm1ocbvwqn52, id=kpzrm1ocbvwqn52
+2022-02-02T17:41:58.646Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=kpzrm1ocbvwqn52, id=kpzrm1ocbvwqn52
+2022-02-02T17:41:58.965Z - info: Rendering request 4 finished in 326 ms rootId=kpzrm1ocbvwqn52, id=kpzrm1ocbvwqn52
+2022-02-02T17:42:23.970Z - info: Starting rendering request 5 (user: null) rootId=0yvyzzahj6hvqtq, id=0yvyzzahj6hvqtq
+2022-02-02T17:42:23.970Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=0yvyzzahj6hvqtq, id=0yvyzzahj6hvqtq
+2022-02-02T17:42:24.205Z - info: Rendering request 5 finished in 237 ms rootId=0yvyzzahj6hvqtq, id=0yvyzzahj6hvqtq
+2022-02-02T17:43:03.909Z - info: Starting rendering request 6 (user: null) rootId=9d65z6zhkeidvjm, id=9d65z6zhkeidvjm
+2022-02-02T17:43:03.909Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=9d65z6zhkeidvjm, id=9d65z6zhkeidvjm
+2022-02-02T17:43:04.239Z - info: Rendering request 6 finished in 329 ms rootId=9d65z6zhkeidvjm, id=9d65z6zhkeidvjm
+2022-02-02T17:44:52.038Z - info: Starting rendering request 7 (user: null) rootId=mpoy15punlwldup, id=mpoy15punlwldup
+2022-02-02T17:44:52.039Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=mpoy15punlwldup, id=mpoy15punlwldup
+2022-02-02T17:44:52.055Z - warn: Error when processing render request 7 Error when evaluating engine handlebars for template /EduappReport/Test1/Test1
+Parse error on line 65:
+.../li>            {{ #each data}}       
+----------------------^
+Expecting 'ID', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', got 'INVALID' Error: Parse error on line 65:
+.../li>            {{ #each data}}       
+----------------------^
+Expecting 'ID', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', got 'INVALID'
+    at Parser.parseError (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:267:19)
+    at Parser.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:336:30)
+    at parseWithoutProcessing (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:46:33)
+    at HandlebarsEnvironment.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:52:13)
+    at Object.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:485:17)
+    at HandlebarsEnvironment.hb.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars.js:42:40)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:33:52)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/worker.js:25:43)
+    at executionFn (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-core/lib/worker/render/executeEngine.js:114:33)
+    at Object.base.apply (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/vm2/lib/contextify.js:644:32) rootId=mpoy15punlwldup, id=mpoy15punlwldup
+2022-02-02T17:44:52.057Z - warn: Rendering request 7 finished with error in 23 ms rootId=mpoy15punlwldup, id=mpoy15punlwldup
+2022-02-02T17:45:00.407Z - info: Starting rendering request 8 (user: null) rootId=r71kpz2386k7d75, id=r71kpz2386k7d75
+2022-02-02T17:45:00.408Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=r71kpz2386k7d75, id=r71kpz2386k7d75
+2022-02-02T17:45:00.422Z - warn: Error when processing render request 8 Error when evaluating engine handlebars for template /EduappReport/Test1/Test1
+Parse error on line 65:
+.../li>            {{ #each data }}      
+----------------------^
+Expecting 'ID', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', got 'INVALID' Error: Parse error on line 65:
+.../li>            {{ #each data }}      
+----------------------^
+Expecting 'ID', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', got 'INVALID'
+    at Parser.parseError (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:267:19)
+    at Parser.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:336:30)
+    at parseWithoutProcessing (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:46:33)
+    at HandlebarsEnvironment.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:52:13)
+    at Object.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:485:17)
+    at HandlebarsEnvironment.hb.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars.js:42:40)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:33:52)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/worker.js:25:43)
+    at executionFn (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-core/lib/worker/render/executeEngine.js:114:33)
+    at Object.base.apply (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/vm2/lib/contextify.js:644:32) rootId=r71kpz2386k7d75, id=r71kpz2386k7d75
+2022-02-02T17:45:00.441Z - warn: Rendering request 8 finished with error in 21 ms rootId=r71kpz2386k7d75, id=r71kpz2386k7d75
+2022-02-02T17:45:06.394Z - info: Starting rendering request 9 (user: null) rootId=14ua0w6n3w83oht, id=14ua0w6n3w83oht
+2022-02-02T17:45:06.395Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=14ua0w6n3w83oht, id=14ua0w6n3w83oht
+2022-02-02T17:45:06.414Z - warn: Error when processing render request 9 Error when evaluating engine handlebars for template /EduappReport/Test1/Test1
+Parse error on line 65:
+.../li>            {{ #each data }}      
+----------------------^
+Expecting 'ID', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', got 'INVALID' Error: Parse error on line 65:
+.../li>            {{ #each data }}      
+----------------------^
+Expecting 'ID', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', got 'INVALID'
+    at Parser.parseError (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:267:19)
+    at Parser.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:336:30)
+    at parseWithoutProcessing (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:46:33)
+    at HandlebarsEnvironment.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:52:13)
+    at Object.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:485:17)
+    at HandlebarsEnvironment.hb.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars.js:42:40)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:33:52)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/worker.js:25:43)
+    at executionFn (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-core/lib/worker/render/executeEngine.js:114:33)
+    at Object.base.apply (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/vm2/lib/contextify.js:644:32) rootId=14ua0w6n3w83oht, id=14ua0w6n3w83oht
+2022-02-02T17:45:06.415Z - warn: Rendering request 9 finished with error in 24 ms rootId=14ua0w6n3w83oht, id=14ua0w6n3w83oht
+2022-02-02T17:45:26.615Z - info: Starting rendering request 10 (user: null) rootId=q21dumzkah2pyw0, id=q21dumzkah2pyw0
+2022-02-02T17:45:26.615Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=q21dumzkah2pyw0, id=q21dumzkah2pyw0
+2022-02-02T17:45:26.904Z - info: Rendering request 10 finished in 290 ms rootId=q21dumzkah2pyw0, id=q21dumzkah2pyw0
+2022-02-02T17:45:53.377Z - info: Starting rendering request 11 (user: null) rootId=1685dl7ddhmfi8p, id=1685dl7ddhmfi8p
+2022-02-02T17:45:53.377Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=1685dl7ddhmfi8p, id=1685dl7ddhmfi8p
+2022-02-02T17:45:53.393Z - warn: Error when processing render request 11 Error when evaluating engine handlebars for template /EduappReport/Test1/Test1
+Parse error on line 65:
+.../li>            {{ #each data}}       
+----------------------^
+Expecting 'ID', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', got 'INVALID' Error: Parse error on line 65:
+.../li>            {{ #each data}}       
+----------------------^
+Expecting 'ID', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', got 'INVALID'
+    at Parser.parseError (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:267:19)
+    at Parser.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:336:30)
+    at parseWithoutProcessing (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:46:33)
+    at HandlebarsEnvironment.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:52:13)
+    at Object.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:485:17)
+    at HandlebarsEnvironment.hb.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars.js:42:40)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:33:52)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/worker.js:25:43)
+    at executionFn (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-core/lib/worker/render/executeEngine.js:114:33)
+    at Object.base.apply (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/vm2/lib/contextify.js:644:32) rootId=1685dl7ddhmfi8p, id=1685dl7ddhmfi8p
+2022-02-02T17:45:53.397Z - warn: Rendering request 11 finished with error in 20 ms rootId=1685dl7ddhmfi8p, id=1685dl7ddhmfi8p
+2022-02-02T17:46:14.473Z - info: Starting rendering request 12 (user: null) rootId=z0k7zcr28lyrcv3, id=z0k7zcr28lyrcv3
+2022-02-02T17:46:14.473Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=z0k7zcr28lyrcv3, id=z0k7zcr28lyrcv3
+2022-02-02T17:46:14.771Z - info: Rendering request 12 finished in 299 ms rootId=z0k7zcr28lyrcv3, id=z0k7zcr28lyrcv3
+2022-02-02T17:46:39.917Z - info: Starting rendering request 13 (user: null) rootId=noiy2de5zbqfq8n, id=noiy2de5zbqfq8n
+2022-02-02T17:46:39.917Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=noiy2de5zbqfq8n, id=noiy2de5zbqfq8n
+2022-02-02T17:46:40.232Z - info: Rendering request 13 finished in 316 ms rootId=noiy2de5zbqfq8n, id=noiy2de5zbqfq8n
+2022-02-02T17:47:43.550Z - info: Starting rendering request 14 (user: null) rootId=uyfmkyfr6ri1au6, id=uyfmkyfr6ri1au6
+2022-02-02T17:47:43.551Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=uyfmkyfr6ri1au6, id=uyfmkyfr6ri1au6
+2022-02-02T17:47:43.775Z - info: Rendering request 14 finished in 228 ms rootId=uyfmkyfr6ri1au6, id=uyfmkyfr6ri1au6
+2022-02-02T17:48:22.623Z - info: Starting rendering request 15 (user: null) rootId=0kpa2rhobzr7iau, id=0kpa2rhobzr7iau
+2022-02-02T17:48:22.623Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=0kpa2rhobzr7iau, id=0kpa2rhobzr7iau
+2022-02-02T17:48:22.793Z - info: Rendering request 15 finished in 173 ms rootId=0kpa2rhobzr7iau, id=0kpa2rhobzr7iau
+2022-02-02T17:48:42.372Z - info: Starting rendering request 16 (user: null) rootId=6vs4gkt73tlbora, id=6vs4gkt73tlbora
+2022-02-02T17:48:42.372Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=6vs4gkt73tlbora, id=6vs4gkt73tlbora
+2022-02-02T17:48:42.623Z - info: Rendering request 16 finished in 256 ms rootId=6vs4gkt73tlbora, id=6vs4gkt73tlbora
+2022-02-02T17:49:18.375Z - info: Starting rendering request 17 (user: null) rootId=yk4wayl0b1g6fwf, id=yk4wayl0b1g6fwf
+2022-02-02T17:49:18.375Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=yk4wayl0b1g6fwf, id=yk4wayl0b1g6fwf
+2022-02-02T17:49:18.652Z - info: Rendering request 17 finished in 283 ms rootId=yk4wayl0b1g6fwf, id=yk4wayl0b1g6fwf
+2022-02-02T17:50:45.562Z - info: Starting rendering request 18 (user: null) rootId=u2o41i1uj05rynw, id=u2o41i1uj05rynw
+2022-02-02T17:50:45.562Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=u2o41i1uj05rynw, id=u2o41i1uj05rynw
+2022-02-02T17:50:45.788Z - info: Rendering request 18 finished in 226 ms rootId=u2o41i1uj05rynw, id=u2o41i1uj05rynw
+2022-02-02T17:50:54.086Z - info: Starting rendering request 19 (user: null) rootId=ggo3f97z9rsmy74, id=ggo3f97z9rsmy74
+2022-02-02T17:50:54.086Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=ggo3f97z9rsmy74, id=ggo3f97z9rsmy74
+2022-02-02T17:50:54.325Z - info: Rendering request 19 finished in 241 ms rootId=ggo3f97z9rsmy74, id=ggo3f97z9rsmy74
+2022-02-02T17:50:58.876Z - info: Starting rendering request 20 (user: null) rootId=2d0frz9fxg29xxj, id=2d0frz9fxg29xxj
+2022-02-02T17:50:58.877Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=2d0frz9fxg29xxj, id=2d0frz9fxg29xxj
+2022-02-02T17:50:59.108Z - info: Rendering request 20 finished in 235 ms rootId=2d0frz9fxg29xxj, id=2d0frz9fxg29xxj
+2022-02-02T17:51:15.424Z - info: Starting rendering request 21 (user: null) rootId=6er75420jtbbrcl, id=6er75420jtbbrcl
+2022-02-02T17:51:15.424Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=6er75420jtbbrcl, id=6er75420jtbbrcl
+2022-02-02T17:51:15.633Z - info: Rendering request 21 finished in 224 ms rootId=6er75420jtbbrcl, id=6er75420jtbbrcl
+2022-02-02T17:51:58.826Z - info: Starting rendering request 22 (user: null) rootId=ikuk2ror7d3yamj, id=ikuk2ror7d3yamj
+2022-02-02T17:51:58.826Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=ikuk2ror7d3yamj, id=ikuk2ror7d3yamj
+2022-02-02T17:51:59.116Z - info: Rendering request 22 finished in 299 ms rootId=ikuk2ror7d3yamj, id=ikuk2ror7d3yamj
+2022-02-02T17:52:17.076Z - info: Starting rendering request 23 (user: null) rootId=v7m18zyzh3bu9ih, id=v7m18zyzh3bu9ih
+2022-02-02T17:52:17.076Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=v7m18zyzh3bu9ih, id=v7m18zyzh3bu9ih
+2022-02-02T17:52:17.261Z - info: Rendering request 23 finished in 188 ms rootId=v7m18zyzh3bu9ih, id=v7m18zyzh3bu9ih
+2022-02-02T17:53:01.597Z - info: Starting rendering request 24 (user: null) rootId=ijvmkog7l9awn57, id=ijvmkog7l9awn57
+2022-02-02T17:53:01.597Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=ijvmkog7l9awn57, id=ijvmkog7l9awn57
+2022-02-02T17:53:01.787Z - info: Rendering request 24 finished in 193 ms rootId=ijvmkog7l9awn57, id=ijvmkog7l9awn57
+2022-02-02T17:53:19.478Z - info: Starting rendering request 25 (user: null) rootId=y2tio4mg8oyfpuc, id=y2tio4mg8oyfpuc
+2022-02-02T17:53:19.479Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=y2tio4mg8oyfpuc, id=y2tio4mg8oyfpuc
+2022-02-02T17:53:19.673Z - info: Rendering request 25 finished in 197 ms rootId=y2tio4mg8oyfpuc, id=y2tio4mg8oyfpuc
+2022-02-02T17:53:44.759Z - info: Starting rendering request 26 (user: null) rootId=k4xknb36mu3neqr, id=k4xknb36mu3neqr
+2022-02-02T17:53:44.759Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=k4xknb36mu3neqr, id=k4xknb36mu3neqr
+2022-02-02T17:53:44.942Z - info: Rendering request 26 finished in 187 ms rootId=k4xknb36mu3neqr, id=k4xknb36mu3neqr
+2022-02-02T17:54:47.972Z - info: Starting rendering request 27 (user: null) rootId=g6plx5wattypy7n, id=g6plx5wattypy7n
+2022-02-02T17:54:47.972Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=g6plx5wattypy7n, id=g6plx5wattypy7n
+2022-02-02T17:54:48.156Z - info: Rendering request 27 finished in 188 ms rootId=g6plx5wattypy7n, id=g6plx5wattypy7n
+2022-02-02T17:55:27.695Z - info: Initializing jsreport (version: 3.3.0, configuration file: jsreport.config.json, nodejs: 16.13.2)
+2022-02-02T17:55:27.697Z - info: Searching for available extensions in /Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/
+2022-02-02T17:55:27.704Z - info: Extensions location cache contains up to date information, skipping crawling in /Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/
+2022-02-02T17:55:27.712Z - info: Found 35 extension(s)
+2022-02-02T17:55:27.818Z - info: Using extension base@3.0.0
+2022-02-02T17:55:27.823Z - info: Using extension child-templates@3.0.1
+2022-02-02T17:55:27.827Z - info: Using extension cli@3.0.0
+2022-02-02T17:55:27.831Z - info: Using extension components@3.2.0
+2022-02-02T17:55:27.832Z - info: Using extension data@3.0.1
+2022-02-02T17:55:27.834Z - info: Using extension express@3.2.1
+2022-02-02T17:55:28.201Z - info: Using extension freeze@3.0.1
+2022-02-02T17:55:28.203Z - info: Using extension fs-store@3.0.0
+2022-02-02T17:55:28.317Z - info: Using extension handlebars@3.0.0
+2022-02-02T17:55:28.319Z - info: Using extension import-export@3.0.2
+2022-02-02T17:55:28.334Z - info: Using extension jsrender@3.0.0
+2022-02-02T17:55:28.335Z - info: Using extension licensing@3.0.1
+2022-02-02T17:55:28.365Z - info: Using extension localization@3.1.1
+2022-02-02T17:55:28.366Z - info: Using extension npm@3.1.0
+2022-02-02T17:55:28.368Z - info: Using extension pdf-utils@3.2.0
+2022-02-02T17:55:28.370Z - info: Using extension reports@3.0.1
+2022-02-02T17:55:28.373Z - info: Using extension tags@3.1.0
+2022-02-02T17:55:28.375Z - info: Using extension text@3.0.0
+2022-02-02T17:55:28.377Z - info: Using extension version-control@3.0.1
+2022-02-02T17:55:28.393Z - info: Using extension assets@3.2.0
+2022-02-02T17:55:28.405Z - info: Using extension authorization@3.2.0
+2022-02-02T17:55:28.409Z - info: Using extension browser-client@3.1.0
+2022-02-02T17:55:28.412Z - info: Using extension chrome-pdf@3.1.0
+2022-02-02T17:55:28.415Z - info: Using extension docx@3.1.0
+2022-02-02T17:55:28.417Z - info: Using extension html-to-xlsx@3.1.0
+2022-02-02T17:55:28.509Z - info: html-to-xlsx detected chrome as available html engine
+2022-02-02T17:55:28.510Z - info: Using extension pptx@3.1.0
+2022-02-02T17:55:28.512Z - info: Using extension scheduling@3.0.1
+2022-02-02T17:55:28.549Z - info: Using extension scripts@3.2.0
+2022-02-02T17:55:28.550Z - info: Using extension static-pdf@3.0.0
+2022-02-02T17:55:28.551Z - info: Using extension studio@3.3.0
+2022-02-02T17:55:28.693Z - info: Using extension xlsx@3.1.0
+2022-02-02T17:55:28.722Z - info: Using extension public-templates@3.0.0
+2022-02-02T17:55:28.723Z - info: Using extension sample-template@3.1.0
+2022-02-02T17:55:28.725Z - info: Using extension studio-theme-dark@3.0.1
+2022-02-02T17:55:28.727Z - info: Using general timeout for rendering (reportTimeout: 60000)
+2022-02-02T17:55:28.727Z - info: Using fs provider for template store.
+2022-02-02T17:55:28.735Z - info: fs store is persisting using fs for /Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/data
+2022-02-02T17:55:28.737Z - info: fs store is loading data
+2022-02-02T17:55:28.759Z - info: fs store is initialized successfully
+2022-02-02T17:55:28.771Z - info: Creating default express app.
+2022-02-02T17:55:28.800Z - info: jsreport server successfully started on http port: 5488
+2022-02-02T17:55:28.801Z - info: Verifying license key free
+2022-02-02T17:55:28.802Z - info: Using free license
+2022-02-02T17:55:28.805Z - info: Initializing worker threads
+2022-02-02T17:55:29.028Z - info: 2 worker threads initialized in 223ms
+2022-02-02T17:55:29.028Z - info: Starting temp files cleanup with 180000ms threshold
+2022-02-02T17:55:29.029Z - info: reporter initialized
+2022-02-02T17:55:55.655Z - info: Starting rendering request 1 (user: null) rootId=vt5zp658fc6quca, id=vt5zp658fc6quca
+2022-02-02T17:55:55.656Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=vt5zp658fc6quca, id=vt5zp658fc6quca
+2022-02-02T17:55:56.016Z - warn: Error when processing render request 1 Error when evaluating engine handlebars for template /EduappReport/Test1/Test1
+(lookupProperty(...) || (depth0 && lookupProperty(...)) || alias2).call is not a function TypeError: (lookupProperty(...) || (depth0 && lookupProperty(...)) || alias2).call is not a function
+    at 1 (eval at compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:34:30), <anonymous>:16:108)
+    at prog (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/runtime.js:268:12)
+    at execIteration (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/helpers/each.js:51:19)
+    at Object.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/helpers/each.js:61:13)
+    at Object.wrapper (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/internal/wrapHelper.js:15:19)
+    at Object.main (eval at compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:34:30), <anonymous>:37:49)
+    at main (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/runtime.js:208:32)
+    at ret (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/runtime.js:212:12)
+    at Object.execute (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:66:20)
+    at Object.execute (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/worker.js:26:43) rootId=vt5zp658fc6quca, id=vt5zp658fc6quca
+2022-02-02T17:55:56.017Z - warn: Rendering request 1 finished with error in 420 ms rootId=vt5zp658fc6quca, id=vt5zp658fc6quca
+2022-02-02T17:55:56.021Z - warn: Error during processing request at http://localhost:5488/api/report
+2022-02-02T17:57:27.221Z - info: Starting rendering request 2 (user: null) rootId=y4tgnrizsk0n5xl, id=y4tgnrizsk0n5xl
+2022-02-02T17:57:27.222Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=y4tgnrizsk0n5xl, id=y4tgnrizsk0n5xl
+2022-02-02T17:57:27.245Z - warn: Error when processing render request 2 Error when evaluating engine handlebars for template /EduappReport/Test1/Test1
+each doesn't match if - 29:15 Error: each doesn't match if - 29:15
+    at validateClose (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/helpers.js:28:11)
+    at Object.prepareBlock (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/helpers.js:142:5)
+    at Object.anonymous (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:65:33)
+    at Parser.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:367:48)
+    at parseWithoutProcessing (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:46:33)
+    at HandlebarsEnvironment.parse (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/base.js:52:13)
+    at Object.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js:485:17)
+    at HandlebarsEnvironment.hb.precompile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars.js:42:40)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:33:52)
+    at Object.compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/worker.js:25:43) rootId=y4tgnrizsk0n5xl, id=y4tgnrizsk0n5xl
+2022-02-02T17:57:27.246Z - warn: Rendering request 2 finished with error in 32 ms rootId=y4tgnrizsk0n5xl, id=y4tgnrizsk0n5xl
+2022-02-02T18:50:24.001Z - info: Starting rendering request 3 (user: null) rootId=9a1j7h2zhkmntnd, id=9a1j7h2zhkmntnd
+2022-02-02T18:50:24.002Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=9a1j7h2zhkmntnd, id=9a1j7h2zhkmntnd
+2022-02-02T18:50:24.899Z - info: Rendering request 3 finished in 904 ms rootId=9a1j7h2zhkmntnd, id=9a1j7h2zhkmntnd
+2022-02-02T18:50:39.033Z - info: Starting rendering request 4 (user: null) rootId=fivcqpfmycywpu0, id=fivcqpfmycywpu0
+2022-02-02T18:50:39.033Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=fivcqpfmycywpu0, id=fivcqpfmycywpu0
+2022-02-02T18:50:39.051Z - warn: Error when processing render request 4 Error when evaluating engine handlebars for template /EduappReport/Test1/Test1
+Missing helper: "ternary" Error: Missing helper: "ternary"
+    at Object.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js:19:13)
+    at Object.wrapper (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/internal/wrapHelper.js:15:19)
+    at 1 (eval at compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:34:30), <anonymous>:16:104)
+    at prog (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/runtime.js:268:12)
+    at execIteration (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/helpers/each.js:51:19)
+    at Object.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/helpers/each.js:61:13)
+    at Object.wrapper (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/internal/wrapHelper.js:15:19)
+    at Object.main (eval at compile (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-handlebars/lib/handlebarsEngine.js:34:30), <anonymous>:37:49)
+    at main (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/runtime.js:208:32)
+    at ret (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/handlebars/dist/cjs/handlebars/runtime.js:212:12) rootId=fivcqpfmycywpu0, id=fivcqpfmycywpu0
+2022-02-02T18:50:39.051Z - warn: Rendering request 4 finished with error in 22 ms rootId=fivcqpfmycywpu0, id=fivcqpfmycywpu0
+2022-02-02T18:50:39.055Z - warn: Error during processing request at http://localhost:5488/api/report
+2022-02-02T18:52:04.779Z - info: Starting rendering request 5 (user: null) rootId=gqbatvk0n7gshu9, id=gqbatvk0n7gshu9
+2022-02-02T18:52:04.779Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=gqbatvk0n7gshu9, id=gqbatvk0n7gshu9
+2022-02-02T18:52:04.986Z - info: Rendering request 5 finished in 208 ms rootId=gqbatvk0n7gshu9, id=gqbatvk0n7gshu9
+2022-02-02T18:52:10.834Z - info: Starting rendering request 6 (user: null) rootId=m8ea839zvgk9enw, id=m8ea839zvgk9enw
+2022-02-02T18:52:10.834Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=m8ea839zvgk9enw, id=m8ea839zvgk9enw
+2022-02-02T18:52:11.027Z - info: Rendering request 6 finished in 196 ms rootId=m8ea839zvgk9enw, id=m8ea839zvgk9enw
+2022-02-02T18:52:52.414Z - info: Starting rendering request 7 (user: null) rootId=v3zho94hs6l3cad, id=v3zho94hs6l3cad
+2022-02-02T18:52:52.414Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=v3zho94hs6l3cad, id=v3zho94hs6l3cad
+2022-02-02T18:52:52.624Z - info: Rendering request 7 finished in 215 ms rootId=v3zho94hs6l3cad, id=v3zho94hs6l3cad
+2022-02-02T18:52:59.277Z - info: Starting rendering request 8 (user: null) rootId=wgz74uzj29uz4bq, id=wgz74uzj29uz4bq
+2022-02-02T18:52:59.277Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=wgz74uzj29uz4bq, id=wgz74uzj29uz4bq
+2022-02-02T18:52:59.467Z - info: Rendering request 8 finished in 194 ms rootId=wgz74uzj29uz4bq, id=wgz74uzj29uz4bq
+2022-02-02T18:53:06.235Z - info: Starting rendering request 9 (user: null) rootId=1tay6adlhwi892k, id=1tay6adlhwi892k
+2022-02-02T18:53:06.235Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=1tay6adlhwi892k, id=1tay6adlhwi892k
+2022-02-02T18:53:06.438Z - info: Rendering request 9 finished in 206 ms rootId=1tay6adlhwi892k, id=1tay6adlhwi892k
+2022-02-02T18:53:26.062Z - info: Starting rendering request 10 (user: null) rootId=8cd6hx7efdbno3s, id=8cd6hx7efdbno3s
+2022-02-02T18:53:26.062Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=8cd6hx7efdbno3s, id=8cd6hx7efdbno3s
+2022-02-02T18:53:26.289Z - info: Rendering request 10 finished in 233 ms rootId=8cd6hx7efdbno3s, id=8cd6hx7efdbno3s
+2022-02-02T18:53:40.991Z - info: Starting rendering request 11 (user: null) rootId=vjh4ot7qyqo32ub, id=vjh4ot7qyqo32ub
+2022-02-02T18:53:40.991Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=vjh4ot7qyqo32ub, id=vjh4ot7qyqo32ub
+2022-02-02T18:53:41.184Z - info: Rendering request 11 finished in 198 ms rootId=vjh4ot7qyqo32ub, id=vjh4ot7qyqo32ub
+2022-02-02T18:53:49.411Z - info: Starting rendering request 12 (user: null) rootId=ilp5ti6fywohhs8, id=ilp5ti6fywohhs8
+2022-02-02T18:53:49.412Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=ilp5ti6fywohhs8, id=ilp5ti6fywohhs8
+2022-02-02T18:53:49.609Z - info: Rendering request 12 finished in 201 ms rootId=ilp5ti6fywohhs8, id=ilp5ti6fywohhs8
+2022-02-02T18:53:53.623Z - info: Starting rendering request 13 (user: null) rootId=faes2t6fis3fpm5, id=faes2t6fis3fpm5
+2022-02-02T18:53:53.623Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=faes2t6fis3fpm5, id=faes2t6fis3fpm5
+2022-02-02T18:53:53.826Z - info: Rendering request 13 finished in 205 ms rootId=faes2t6fis3fpm5, id=faes2t6fis3fpm5
+2022-02-02T18:54:01.586Z - info: Starting rendering request 14 (user: null) rootId=wwhlfl6y2e8dxt3, id=wwhlfl6y2e8dxt3
+2022-02-02T18:54:01.586Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=wwhlfl6y2e8dxt3, id=wwhlfl6y2e8dxt3
+2022-02-02T18:54:01.760Z - info: Rendering request 14 finished in 178 ms rootId=wwhlfl6y2e8dxt3, id=wwhlfl6y2e8dxt3
+2022-02-02T18:54:41.795Z - info: Starting rendering request 15 (user: null) rootId=9c40ytk6m2qz0ed, id=9c40ytk6m2qz0ed
+2022-02-02T18:54:41.795Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=9c40ytk6m2qz0ed, id=9c40ytk6m2qz0ed
+2022-02-02T18:54:41.997Z - info: Rendering request 15 finished in 206 ms rootId=9c40ytk6m2qz0ed, id=9c40ytk6m2qz0ed
+2022-02-02T18:54:54.093Z - info: Starting rendering request 16 (user: null) rootId=gr1j1m52f7j98qx, id=gr1j1m52f7j98qx
+2022-02-02T18:54:54.094Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=gr1j1m52f7j98qx, id=gr1j1m52f7j98qx
+2022-02-02T18:54:54.302Z - info: Rendering request 16 finished in 215 ms rootId=gr1j1m52f7j98qx, id=gr1j1m52f7j98qx
+2022-02-02T18:55:08.183Z - info: Starting rendering request 17 (user: null) rootId=z5w3rtbpuqz4q42, id=z5w3rtbpuqz4q42
+2022-02-02T18:55:08.184Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=z5w3rtbpuqz4q42, id=z5w3rtbpuqz4q42
+2022-02-02T18:55:08.375Z - info: Rendering request 17 finished in 195 ms rootId=z5w3rtbpuqz4q42, id=z5w3rtbpuqz4q42
+2022-02-02T18:55:12.885Z - info: Starting rendering request 18 (user: null) rootId=nq74q2a792wi2fo, id=nq74q2a792wi2fo
+2022-02-02T18:55:12.885Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=nq74q2a792wi2fo, id=nq74q2a792wi2fo
+2022-02-02T18:55:13.090Z - info: Rendering request 18 finished in 210 ms rootId=nq74q2a792wi2fo, id=nq74q2a792wi2fo
+2022-02-02T18:55:17.799Z - info: Starting rendering request 19 (user: null) rootId=7ajygmn8whs33r4, id=7ajygmn8whs33r4
+2022-02-02T18:55:17.799Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=7ajygmn8whs33r4, id=7ajygmn8whs33r4
+2022-02-02T18:55:17.978Z - info: Rendering request 19 finished in 184 ms rootId=7ajygmn8whs33r4, id=7ajygmn8whs33r4
+2022-02-02T18:55:22.098Z - info: Starting rendering request 20 (user: null) rootId=0aepxpdz13o0w1v, id=0aepxpdz13o0w1v
+2022-02-02T18:55:22.098Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=0aepxpdz13o0w1v, id=0aepxpdz13o0w1v
+2022-02-02T18:55:22.293Z - info: Rendering request 20 finished in 195 ms rootId=0aepxpdz13o0w1v, id=0aepxpdz13o0w1v
+2022-02-02T18:55:51.011Z - info: Starting rendering request 21 (user: null) rootId=ob6zrglb8uy0f1q, id=ob6zrglb8uy0f1q
+2022-02-02T18:55:51.011Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=ob6zrglb8uy0f1q, id=ob6zrglb8uy0f1q
+2022-02-02T18:55:51.219Z - info: Rendering request 21 finished in 213 ms rootId=ob6zrglb8uy0f1q, id=ob6zrglb8uy0f1q
+2022-02-02T18:56:12.434Z - info: Starting rendering request 22 (user: null) rootId=usenb06dz6qozhe, id=usenb06dz6qozhe
+2022-02-02T18:56:12.434Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=usenb06dz6qozhe, id=usenb06dz6qozhe
+2022-02-02T18:56:12.639Z - info: Rendering request 22 finished in 210 ms rootId=usenb06dz6qozhe, id=usenb06dz6qozhe
+2022-02-02T18:56:26.283Z - info: Starting rendering request 23 (user: null) rootId=pusy39duh4gg171, id=pusy39duh4gg171
+2022-02-02T18:56:26.283Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=pusy39duh4gg171, id=pusy39duh4gg171
+2022-02-02T18:56:26.486Z - info: Rendering request 23 finished in 205 ms rootId=pusy39duh4gg171, id=pusy39duh4gg171
+2022-02-02T18:56:43.078Z - info: Starting rendering request 24 (user: null) rootId=vrp1x0rpw21731h, id=vrp1x0rpw21731h
+2022-02-02T18:56:43.078Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=vrp1x0rpw21731h, id=vrp1x0rpw21731h
+2022-02-02T18:56:43.274Z - info: Rendering request 24 finished in 200 ms rootId=vrp1x0rpw21731h, id=vrp1x0rpw21731h
+2022-02-02T18:57:13.493Z - info: Starting rendering request 25 (user: null) rootId=o6fthwgbvjls5xu, id=o6fthwgbvjls5xu
+2022-02-02T18:57:13.493Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=o6fthwgbvjls5xu, id=o6fthwgbvjls5xu
+2022-02-02T18:57:13.670Z - info: Rendering request 25 finished in 203 ms rootId=o6fthwgbvjls5xu, id=o6fthwgbvjls5xu
+2022-02-02T18:57:27.136Z - info: Starting rendering request 26 (user: null) rootId=hm5j2jb189glbbu, id=hm5j2jb189glbbu
+2022-02-02T18:57:27.137Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=hm5j2jb189glbbu, id=hm5j2jb189glbbu
+2022-02-02T18:57:27.349Z - info: Rendering request 26 finished in 216 ms rootId=hm5j2jb189glbbu, id=hm5j2jb189glbbu
+2022-02-02T18:57:32.804Z - info: Starting rendering request 27 (user: null) rootId=uq4y12zfml6i0nl, id=uq4y12zfml6i0nl
+2022-02-02T18:57:32.804Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=uq4y12zfml6i0nl, id=uq4y12zfml6i0nl
+2022-02-02T18:57:32.989Z - info: Rendering request 27 finished in 188 ms rootId=uq4y12zfml6i0nl, id=uq4y12zfml6i0nl
+2022-02-02T18:57:39.438Z - info: Starting rendering request 28 (user: null) rootId=va1catwd30jk2n7, id=va1catwd30jk2n7
+2022-02-02T18:57:39.438Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=va1catwd30jk2n7, id=va1catwd30jk2n7
+2022-02-02T18:57:39.619Z - info: Rendering request 28 finished in 183 ms rootId=va1catwd30jk2n7, id=va1catwd30jk2n7

@@ -1,3 +1,22 @@
+.resourceModal-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
+	z-index: 99999999999;
+	display: none;
+}
+
+.resourcesModal-outside {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.356);
+	z-index: 1;
+
+}
+
 .resources__createResourceModal {
 	width: 40%;
 	height: 60%;
