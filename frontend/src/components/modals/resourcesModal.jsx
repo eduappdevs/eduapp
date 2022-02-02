@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import "./modal.css";
 import API from "../../API";
+import "./modal.css";
 let finalData = new FormData();
 
 export default function ResourcesModal() {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [currentlyUser, setCurrentlyUser] = useState("");
   const FILE_LIMIT = 3;
+
   const handleFileSelect = (e) => {
     e.preventDefault();
     if (e.target.files.length > FILE_LIMIT) {
@@ -16,57 +17,67 @@ export default function ResourcesModal() {
       setFilesToUpload(Array.from(e.target.files));
     }
   };
+
   const getCurrentlyUser = async () => {
     await API.fetchInfo(localStorage.userId).then((res) => {
       setCurrentlyUser(res.user_name);
     });
   };
+
   getCurrentlyUser();
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     console.log(e);
     let name = null;
     let description = null;
     let firstfile = null;
     let secondfile = null;
     let thirdfile = null;
+
     if (e.target[0].value != null) {
       name = e.target[0].value;
     }
+
     if (e.target[1].value != null) {
       description = e.target[1].value;
     }
+
     if (filesToUpload != null) {
       firstfile = filesToUpload[0];
     } else {
-      console.log("null");
+      console.log("no files to upload");
     }
+
     if (filesToUpload != null) {
       secondfile = filesToUpload[1];
     } else {
-      console.log("null");
+      console.log("no files to upload");
     }
+
     if (filesToUpload != null) {
       thirdfile = filesToUpload[2];
     } else {
-      console.log("null");
+      console.log("no files to upload");
     }
+
     finalData.append("name", name);
     finalData.append("description", description);
     if (firstfile !== null && firstfile !== undefined) {
       finalData.append("firstfile", firstfile);
     }
+
     if (secondfile !== null && secondfile !== undefined) {
       finalData.append("secondfile", secondfile);
     }
+
     if (thirdfile !== null && thirdfile !== undefined) {
       finalData.append("thirdfile", thirdfile);
     }
+
     console.log("ccc", currentlyUser);
     finalData.append("createdBy", currentlyUser);
     finalData.append("course_id", e.target[2].value);
-
-
 
     document.getElementsByClassName(
       "resources__createResourceModal"
@@ -75,11 +86,13 @@ export default function ResourcesModal() {
     await API.postResource(finalData);
     window.location.reload();
   };
+
   const closeModal = () => {
     document.getElementsByClassName(
       "resources__createResourceModal"
     )[0].style.display = "none";
   };
+
   return (
     <div className="resources__createResourceModal">
       <div className="resources__logoModal">
@@ -128,7 +141,7 @@ export default function ResourcesModal() {
             </label>
           </div>
         </div>
-        
+
         <button type="submit">SUBMIT</button>
       </form>
 
