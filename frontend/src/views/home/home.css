@@ -199,6 +199,8 @@
 .desktopSection {
   width: 70%;
   height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .desktopSection > .user > .user-container > .sessions > .sessions-container {
