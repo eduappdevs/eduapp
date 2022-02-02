@@ -240,8 +240,6 @@
 .mobileSection{
   width: 90% !important;
   position: relative;
-  left: 50%;
-  transform: translateX(-50%);
 }
 .mobileSection > .resources-container > ul {
   width: 95%;
