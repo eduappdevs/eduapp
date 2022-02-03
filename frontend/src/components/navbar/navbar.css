@@ -81,6 +81,7 @@ header>nav>.profile-button>.profile-button-box {
 	padding: 5px 10px;
 	cursor: pointer;
 	transition: all 0.3s;
+	margin-right: 10px;
 }
 
 header>nav>.profile-button>.profile-button-box:hover {
@@ -100,7 +101,7 @@ header>nav>.profile-button>.profile-button-box>.profile-pic {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	margin-left: 15px;
+
 }
 
 header>nav>.profile-button>.profile-button-box>.profile-pic>img {
