@@ -21,8 +21,8 @@ export default function Calendar() {
   const currentDate = today;
   const schedulerData = [
     {
-      startDate: "2021-12-15T09:45",
-      endDate: "2021-12-15T11:00",
+      startDate: "2022-01-06T09:45",
+      endDate: "2022-01-06T11:00",
       title: "Meeting",
     },
     {
@@ -31,14 +31,6 @@ export default function Calendar() {
       title: "Go to a gym",
     },
   ];
-  const Appointment = () => {
-    <Appointments.Appointment
-      style={{
-        backgroundColor: "#FFC107",
-        borderRadius: "8px",
-      }}
-    ></Appointments.Appointment>;
-  };
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -80,19 +72,21 @@ export default function Calendar() {
             </div>
             <Paper>
               <Scheduler data={schedulerData}>
-                <WeekView startDayHour={9} endDayHour={14} />
+                <WeekView startDayHour={6} endDayHour={24} />
                 <ViewState currentDate={currentDate} />
-                <DayView startDayHour={0} endDayHour={12} />
+                <DayView startDayHour={6} endDayHour={25} />
                 <Appointments />
               </Scheduler>
             </Paper>
           </div>
+          
           <div className="button-calendar-option">
           <svg xmlns="http://www.w3.org/2000/svg" fill="white" class="bi bi-plus" viewBox="0 0 16 16">
   <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
 </svg>
           </div>
         </section>
+
       </div>
       <BottomButtons mobile={ItsMobileDevice} location={"calendar"} />
     </div>

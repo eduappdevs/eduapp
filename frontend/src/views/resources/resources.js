@@ -59,7 +59,7 @@ export default function Resources(props) {
 
     checkMediaQueries();
     DarkModeChanger(localStorage.getItem('darkMode'))
-    //First check
+    // First check
     if (window.matchMedia("(max-width: 1100px)").matches) {
       setItsMobileDevice(true);
     } else {
@@ -96,6 +96,7 @@ export default function Resources(props) {
 
   
       <div className="resources-main-container">
+        
         <Navbar mobile={ItsMobileDevice} location={"resources"} />
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
@@ -104,8 +105,8 @@ export default function Resources(props) {
           <div className="resources-toolbar">
           <div className="resourcesSearchBar">
             <form action="">
-              <input type="text" onChange={handleSearchResources} />
-              <div className="searchInputIcon">
+              <input id='resourcesSearchBarInput' type="text" onChange={handleSearchResources} />
+              <div id="resourcesSearchBarIcon" className="searchInputIcon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   x="0px"

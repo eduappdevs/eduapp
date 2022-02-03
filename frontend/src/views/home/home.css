@@ -48,7 +48,7 @@
   justify-content: center;
   align-items: center;
   display: flex;
-  font-size: 50%;
+  font-size: 85%;
 }
 .user > .user-container > .information-user > .user-name > .edit {
   padding: 10px !important;
@@ -57,7 +57,8 @@
   transform: translateX(-75%);
   margin-top: 3px;
   margin-left: 5px;
-  cursor: pointer;
+  cursor: pointer;  
+  fill: var(--textColor);
 }
 
 .user > .user-container > .sessions {
@@ -402,4 +403,14 @@
 #sessions_error{
   text-align: center;
   width: 100%;
+}
+.reportButton__Sessions{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background-color: var(--orange);
+  margin-left: 30%;
+  margin-right: 30%;
+  border-radius: 20px;
 }
