@@ -64,7 +64,7 @@ export default function Home() {
   const getSessions = async () => {
 
     let request = await axios.get(`http://localhost:3000/eduapp_user_sessions?id=${courseSelected}`);
-    request.data.map((e) => {
+    request.data.map((e) =>  {
       let id = e.id;
       let name = e.session_name;
       let date = e.session_date;
