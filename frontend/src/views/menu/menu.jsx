@@ -74,7 +74,7 @@ export default function Menu(props) {
 				<li>
 					<a onClick={(event) => {
 						event.preventDefault();
-						window.location.href = "http://localhost:3002"
+						window.location.href = "http://localhost:3003"
 					}
 					}>Help</a>
 				</li>
