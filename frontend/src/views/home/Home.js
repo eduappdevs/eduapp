@@ -360,9 +360,9 @@ export default function Home() {
               )}
             </div>
           </div>
-          <div className="reportButton__Sessions" onClick={downloadReport}>
+          {/* <div className="reportButton__Sessions" onClick={downloadReport}>
           <h1>Report</h1>
-          </div>
+          </div> */}
         </section>
         <SessionEdit fields={editFields} />
         <SessionAdd />
