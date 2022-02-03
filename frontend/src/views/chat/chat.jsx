@@ -39,21 +39,34 @@ export default function Chat() {
 						<h2>Groups</h2>
 						<ul>
 							<li>
-								<div>
-									<img />
-									<div className="chat-group-info">
-										<h2>Group 1</h2>
-										<p>Monica is writing...</p>
-									</div>
-									<div className="chat-group-pending-messages">20</div>
+								<img className="chat-group-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
+								<div className="chat-group-info">
+									<h2 className="chat-group-name">Eduapp Team</h2>
+									<p className="chat-group-message-state">Monica is writing...</p>
 								</div>
+								<span className="chat-group-pending-messages">20</span>
+							</li>
+							<li>
+								<img className="chat-group-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
+								<div className="chat-group-info">
+									<h2 className="chat-group-name">ROW Team</h2>
+									<p className="chat-group-message-state">Cris is writing...</p>
+								</div>
+								<span className="chat-group-pending-messages">15</span>
 							</li>
 						</ul>
 					</div>
 					<div className="chat-user-container">
 						<h2>Users</h2>
 						<ul>
-							<li>User 1</li>
+							<li>
+								<img className="chat-user-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
+								<h2 className="chat-user-name">Monica<span className="chat-user-pending-messages">1</span></h2>
+							</li>
+							<li>
+								<img className="chat-user-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
+								<h2 className="chat-user-name">Rosa<span className="chat-user-pending-messages">7</span></h2>
+							</li>
 						</ul>
 					</div>
 				</div>

@@ -9,26 +9,66 @@
 	flex-direction: column;
 }
 
-.chat-group-container>h2,
+
+/* .chat-group-container>h2,
 .chat-user-container>h2 {
-	margin: 1em 0 0 2em;
+	margin-left: 1em;
+	padding-bottom: 50px;
+} */
+
+
+.chat-group-container>ul,
+.chat-user-container>ul {
+	list-style: none;
 }
 
 .chat-group-container>ul>li,
 .chat-user-container>ul>li {
 	width: 80%;
 	height: 10%;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.427);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 	transform: translate(-50%, -50%);
 	position: relative;
 	padding: 15px 15px;
 	border-radius: 10px;
 	left: 50%;
 	margin-top: 2em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
-.chat-group-container>ul,
-.chat-user-container>ul {
-	margin-top: 2.5em;
-	list-style: none;
+.chat-group-icon,
+.chat-user-icon {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	border: 2px solid var(--orange);
+	float: left;
+	flex: 0.1;
+}
+
+.chat-group-info {
+	display: flex;
+	flex-direction: column;
+	line-height: 0.5px;
+	flex: 0.8;
+	justify-content: center;
+	align-items: left;
+	margin-left: 1em;
+	margin-top: 15px;
+}
+
+.chat-group-name {
+	height: 1px;
+	padding: 0.1px !important;
+	margin: 0 !important;
+}
+
+.chat-group-pending-messages {
+	flex: 0.1;
+}
+
+.chat-group-message-state {
+	padding-top: 8px;
 }
