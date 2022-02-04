@@ -1,5 +1,14 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+/logs/*
+/data/fs.journal
+/data/fs.version
+/data/monitoring
+/data/profiles
+/data/settings
+/data/storage/*
+/data/samples
+
 # dependencies
 /node_modules
 /.pnp
