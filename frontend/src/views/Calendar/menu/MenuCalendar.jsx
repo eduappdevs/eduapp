@@ -1,8 +1,15 @@
-import React from 'react';
-
+import React from "react";
 export default function MenuCalendar() {
+  const DayOption = () => {
+    
+  };
   return (
-  <div className='menu-calendar-option-container menu-calendar-option-hidden'>
-  </div>
+    <div className="menu_calendarOption_container menu_calendarOption_hidden">
+      <div className="menu-calendar">
+        
+        <span>Day</span>
+
+      </div>
+    </div>
   );
 }

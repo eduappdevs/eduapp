@@ -5,22 +5,94 @@
     flex: 0.8;
     transform: translateX(-50%);
 }
-.calendar-main-container{
+
+.calendar-main-container {
     width: 100vw;
-    color: var(--textColor);
-}
-.calendar{
-    margin-top: 24%;
-    background-color: var(--backgroundColor);
-}
-.button-menu{
-    position: relative;
-    width:50px;
-    height:50px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
     color: var(--textColor);
 }
 
-.button-calendar-option{
+.calendar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30%;
+}
+
+.calendar>.calendar-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.calendar>.calendar-container>.button-menu {
+    padding-top: 10%;
+    position: relative;
+    width: 50px;
+    height: 50px;
+    color: var(--textColor);
+}
+
+.menu_calendarOption_container {
+    width: 100vw;
+    z-index: 99999999999999;
+    transform: translateX(0px);
+    transition: all 0.3s;
+}
+
+.button-close-calendar-option{
+    padding: 5%;
+    color: var(--textColor);
+}
+
+.menu_calendarOption_hidden {
+    display: none !important;
+    opacity: 0;
+}
+.button-menu{
+    height: 100vh;
+}
+.menu-calendar {
+    width: 90%;
+    height: 61vh;
+    background-color: var(--backgroundColor);
+    z-index: 99999999999999;
+    transform: translateX(0px);
+    transition: all 0.3s;
+    box-shadow: 0 0 2px var(--textColor);
+}
+
+.menu-calendar>ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    list-style: none;
+}
+.menu-calendar>ul>svg{
+    display: flex;
+    justify-content: end;
+}
+
+.menu-calendar>ul>li {
+    margin-top: 10%;
+    display: flex;
+    justify-content: center;
+    font-family: "Consolas";
+    align-items: center;
+    background-color: var(--orange);
+    padding: 2%;
+    box-shadow: 0 0 12px rgba(42, 42, 42, 0.445);
+    border-radius: 25px;
+    width: 60%;
+}
+.menu-calendar>ul>li>a{
+    color: var(--backgroundColor);
+}
+
+.button-calendar-option {
     position: fixed;
     display: flex;
     align-items: center;
@@ -30,20 +102,26 @@
     margin-right: 5%;
     border-radius: 80%;
     background-color: var(--orange);
-    margin-top:-5%;
+    margin-top: -5%;
 }
-.button-calendar-option>svg{
+
+.button-calendar-option>svg {
     width: 60px;
     height: 60px;
 
 }
-.MuiPaper-root,.DayScaleEmptyCell-emptyCell-17,.MuiTableCell-root{
+
+.MuiPaper-root,
+.DayScaleEmptyCell-emptyCell-17,
+.MuiTableCell-root {
     background-color: var(--backgroundColor) !important;
 }
 
-.Cell-dayOfWeek-22,.Cell-dayOfMonth-23{
+.Cell-dayOfWeek-22,
+.Cell-dayOfMonth-23 {
     color: var(--orange) !important;
 }
-.Label-text-35{
-    color: var(--textColor)  !important;
+
+.Label-text-35 {
+    color: var(--textColor) !important;
 }
