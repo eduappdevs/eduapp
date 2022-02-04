@@ -1,7 +1,16 @@
-.desktopSection{
-    height: 100vh;  
+.desktopSection {
+    width: 70%;
+    height: 100%;
+    left: 50%;
+    flex: 0.8;
+    transform: translateX(-50%);
+}
+.calendar-main-container{
+    width: 100vw;
+    color: var(--textColor);
 }
 .calendar{
+    margin-top: 24%;
     background-color: var(--backgroundColor);
 }
 .button-menu{

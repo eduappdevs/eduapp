@@ -6,14 +6,14 @@ describe('Management panel', () => {
       test('Search Bar display', () => {
             const component = render(<Resources/>);
             const resourcesSearchBarIcon  = component.container.querySelector("#resourcesSearchBarIcon")
-            expect(resourcesSearchBarIcon).toHaveStyle('display:block');    
+            expect(resourcesSearchBarIcon).toHaveStyle('display:block');
       })
       test('check input in focus', () => {
             const component = render(<Resources/>);
             const resourcesSearchBar = component.container.querySelector('#resourcesSearchBarInput')
             act(() => resourcesSearchBar.focus());
             expect(resourcesSearchBar).toHaveFocus();
-            
+
       })
-      
+
   });

@@ -177,7 +177,7 @@ export default function Home() {
   useEffect(() => {
     checkMediaQueries();
     if (window.matchMedia("(max-width: 1100px)").matches) {
-      DarkModeChanger(localStorage.getItem('darkMode'))
+      DarkModeChanger(localStorage.getItem('darkMode'));
       setItsMobileDevice(true);
     } else {
       setItsMobileDevice(false);
