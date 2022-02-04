@@ -323,3 +323,83 @@ Asset  EduappLogo.png  not found in the store and also not on the disk: Unable t
 2022-01-24T01:16:39.861Z - info: Starting rendering request 15 (user: null) rootId=prqjxucjxitnumt, id=prqjxucjxitnumt
 2022-01-24T01:16:39.861Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=prqjxucjxitnumt, id=prqjxucjxitnumt
 2022-01-24T01:16:40.029Z - info: Rendering request 15 finished in 171 ms rootId=prqjxucjxitnumt, id=prqjxucjxitnumt
+2022-02-03T12:14:16.883Z - info: Initializing jsreport (version: 3.3.0, configuration file: jsreport.config.json, nodejs: 16.13.2)
+2022-02-03T12:14:16.885Z - info: Searching for available extensions in C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\
+2022-02-03T12:14:16.888Z - info: Extensions location cache not found, crawling directories
+2022-02-03T12:14:18.683Z - info: Found 35 extension(s)
+2022-02-03T12:14:18.747Z - info: Using extension base@3.0.0
+2022-02-03T12:14:18.750Z - info: Using extension child-templates@3.0.1
+2022-02-03T12:14:18.753Z - info: Using extension cli@3.0.0
+2022-02-03T12:14:18.756Z - info: Using extension components@3.2.0
+2022-02-03T12:14:18.757Z - info: Using extension data@3.0.1
+2022-02-03T12:14:18.758Z - info: Using extension express@3.2.1
+2022-02-03T12:14:19.035Z - info: Using extension freeze@3.0.1
+2022-02-03T12:14:19.037Z - info: Using extension fs-store@3.0.0
+2022-02-03T12:14:19.119Z - info: Using extension handlebars@3.0.0
+2022-02-03T12:14:19.121Z - info: Using extension import-export@3.0.2
+2022-02-03T12:14:19.132Z - info: Using extension jsrender@3.0.0
+2022-02-03T12:14:19.133Z - info: Using extension licensing@3.0.1
+2022-02-03T12:14:19.156Z - info: Using extension localization@3.1.1
+2022-02-03T12:14:19.157Z - info: Using extension npm@3.1.0
+2022-02-03T12:14:19.159Z - info: Using extension pdf-utils@3.2.0
+2022-02-03T12:14:19.161Z - info: Using extension reports@3.0.1
+2022-02-03T12:14:19.163Z - info: Using extension tags@3.1.0
+2022-02-03T12:14:19.165Z - info: Using extension text@3.0.0
+2022-02-03T12:14:19.166Z - info: Using extension version-control@3.0.1
+2022-02-03T12:14:19.182Z - info: Using extension assets@3.2.0
+2022-02-03T12:14:19.195Z - info: Using extension authorization@3.2.0
+2022-02-03T12:14:19.199Z - info: Using extension browser-client@3.1.0
+2022-02-03T12:14:19.201Z - info: Using extension chrome-pdf@3.1.0
+2022-02-03T12:14:19.204Z - info: Using extension docx@3.1.0
+2022-02-03T12:14:19.207Z - info: Using extension html-to-xlsx@3.1.0
+2022-02-03T12:14:19.282Z - info: html-to-xlsx detected chrome as available html engine
+2022-02-03T12:14:19.282Z - info: Using extension pptx@3.1.0
+2022-02-03T12:14:19.284Z - info: Using extension scheduling@3.0.1
+2022-02-03T12:14:19.313Z - info: Using extension scripts@3.2.0
+2022-02-03T12:14:19.314Z - info: Using extension static-pdf@3.0.0
+2022-02-03T12:14:19.315Z - info: Using extension studio@3.3.0
+2022-02-03T12:14:19.426Z - info: Using extension xlsx@3.1.0
+2022-02-03T12:14:19.450Z - info: Using extension public-templates@3.0.0
+2022-02-03T12:14:19.452Z - info: Using extension sample-template@3.1.0
+2022-02-03T12:14:19.453Z - info: Using extension studio-theme-dark@3.0.1
+2022-02-03T12:14:19.454Z - info: Using general timeout for rendering (reportTimeout: 60000)
+2022-02-03T12:14:19.455Z - info: Using fs provider for template store.
+2022-02-03T12:14:19.458Z - info: fs store is persisting using fs for C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\data
+2022-02-03T12:14:19.461Z - info: fs store is loading data
+2022-02-03T12:14:19.477Z - info: fs store is initialized successfully
+2022-02-03T12:14:19.487Z - info: Creating default express app.
+2022-02-03T12:14:19.511Z - info: jsreport server successfully started on http port: 5488
+2022-02-03T12:14:19.512Z - info: Verifying license key free
+2022-02-03T12:14:19.512Z - info: Using free license
+2022-02-03T12:14:19.515Z - info: Initializing worker threads
+2022-02-03T12:14:19.714Z - info: 2 worker threads initialized in 199ms
+2022-02-03T12:14:19.714Z - info: Starting temp files cleanup with 180000ms threshold
+2022-02-03T12:14:19.715Z - info: reporter initialized
+2022-02-03T12:15:17.517Z - info: Starting rendering request 1 (user: null) rootId=i6yy94liq3uwjmc, id=i6yy94liq3uwjmc
+2022-02-03T12:15:17.517Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=i6yy94liq3uwjmc, id=i6yy94liq3uwjmc
+2022-02-03T12:15:20.773Z - warn: Report render failed: Report cancelled Error: Report cancelled
+    at Object.close (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\advanced-workers\lib\threadWorker.js:138:21)
+    at Object.release (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\advanced-workers\lib\pool.js:38:22)
+    at EventEmitter.<anonymous> (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-core\lib\main\reporter.js:344:16)
+    at Object.onceWrapper (node:events:509:28)
+    at EventEmitter.emit (node:events:390:28)
+    at Socket.<anonymous> (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-express\lib\routes.js:68:20)
+    at Object.onceWrapper (node:events:510:26)
+    at Socket.emit (node:events:402:35)
+    at TCP.<anonymous> (node:net:687:12) rootId=i6yy94liq3uwjmc, id=i6yy94liq3uwjmc
+2022-02-03T12:15:24.146Z - info: Starting rendering request 1 (user: null) rootId=e927s59wd597py1, id=e927s59wd597py1
+2022-02-03T12:15:24.147Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=e927s59wd597py1, id=e927s59wd597py1
+2022-02-03T12:15:24.840Z - info: Rendering request 1 finished in 727 ms rootId=e927s59wd597py1, id=e927s59wd597py1
+2022-02-03T12:18:37.673Z - info: Starting rendering request 2 (user: null) rootId=1adc962z1870air, id=1adc962z1870air
+2022-02-03T12:18:37.674Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=1adc962z1870air, id=1adc962z1870air
+2022-02-03T12:18:37.826Z - warn: Page error: SyntaxError: Unexpected token '}' rootId=1adc962z1870air, id=1adc962z1870air
+2022-02-03T12:18:37.827Z - info: Rendering request 2 finished in 155 ms rootId=1adc962z1870air, id=1adc962z1870air
+2022-02-03T12:18:54.010Z - info: Starting rendering request 3 (user: null) rootId=ec6nngxu9guxky5, id=ec6nngxu9guxky5
+2022-02-03T12:18:54.010Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=ec6nngxu9guxky5, id=ec6nngxu9guxky5
+2022-02-03T12:18:54.173Z - info: Rendering request 3 finished in 164 ms rootId=ec6nngxu9guxky5, id=ec6nngxu9guxky5
+2022-02-03T12:19:05.544Z - info: Starting rendering request 4 (user: null) rootId=uzi6s89xgvncn0d, id=uzi6s89xgvncn0d
+2022-02-03T12:19:05.544Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=uzi6s89xgvncn0d, id=uzi6s89xgvncn0d
+2022-02-03T12:19:05.715Z - info: Rendering request 4 finished in 172 ms rootId=uzi6s89xgvncn0d, id=uzi6s89xgvncn0d
+2022-02-03T12:20:14.083Z - info: Starting rendering request 5 (user: null) rootId=yrofeh5cmdg8qvs, id=yrofeh5cmdg8qvs
+2022-02-03T12:20:14.084Z - info: Rendering template { name: Test1, recipe: chrome-pdf, engine: handlebars, preview: true } rootId=yrofeh5cmdg8qvs, id=yrofeh5cmdg8qvs
+2022-02-03T12:20:14.247Z - info: Rendering request 5 finished in 164 ms rootId=yrofeh5cmdg8qvs, id=yrofeh5cmdg8qvs
