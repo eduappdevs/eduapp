@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./bottomButtons.css";
+import { Link } from "react-router-dom";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 
 export default function BottomButtons({ mobile, location }) {
 	const [inHome, setInHome] = useState(false);
 	const [inResources, setInResources] = useState(false);
 	const [inCalendar, setInCalendar] = useState(false);
+	const [inManagement, setInManagement] = useState(false);
 	const [inChat, setInChat] = useState(false);
 
+	let userInfo = FetchUserInfo(localStorage.userId);
 	useEffect(() => {
 		switch (location) {
 			case "resources":
@@ -15,24 +18,35 @@ export default function BottomButtons({ mobile, location }) {
 				setInCalendar(false);
 				setInChat(false);
 				setInHome(false);
+				setInManagement(false)
 				break;
 			case "home":
 				setInResources(false);
 				setInCalendar(false);
 				setInChat(false);
 				setInHome(true);
+				setInManagement(false)
 				break;
 			case "calendar":
 				setInResources(false);
 				setInCalendar(true);
 				setInChat(false);
 				setInHome(false);
+				setInManagement(false)
 				break;
 			case "chat":
 				setInResources(false);
 				setInCalendar(false);
 				setInChat(true);
 				setInHome(false);
+				setInManagement(false)
+				break;
+			case "management":
+				setInResources(false);
+				setInCalendar(false);
+				setInChat(false);
+				setInHome(false);
+				setInManagement(true)
 				break;
 			default:
 				break;
@@ -72,7 +86,16 @@ export default function BottomButtons({ mobile, location }) {
 						</svg>
 					</li>
 				</Link>
-				<Link to="/resources">
+				{
+					userInfo.isAdmin && (
+						<Link to='/management'>
+							<li className={inManagement ? "activeButton managementButton" : 'managementButton'}>
+								<img src="https://img.icons8.com/material-rounded/96/000000/admin-settings-male.png" alt="Admin Options" />
+							</li>
+						</Link>
+					)
+				}
+				<Link id="resources-test-button" to="/resources">
 					<li className={inResources ? "activeButton" : console.log()}>
 						<svg
 							id="clip"

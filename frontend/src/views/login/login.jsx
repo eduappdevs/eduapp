@@ -10,7 +10,6 @@ export default function Login() {
 			</div>
 			<div className="loginContainer">
 				<div className="loginDiv">
-
 					<LoginAuth />
 				</div>
 			</div>

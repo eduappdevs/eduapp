@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React from "react";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/navbar";
@@ -92,8 +93,8 @@ export default function Home() {
 		});
 
 		sessionsSorted = sessionsPreSorted.sort(function (a, b) {
-			var a = parseInt(a.sorter);
-			var b = parseInt(b.sorter);
+			a = parseInt(a.sorter);
+			b = parseInt(b.sorter);
 			if (a < b) {
 				return -1;
 			}

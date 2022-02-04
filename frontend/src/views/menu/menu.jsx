@@ -49,6 +49,7 @@ export default function Menu(props) {
 				backTo={() => {
 					props.handleCloseMenu();
 				}}
+				location={"MENU"}
 			/>
 			<ul>
 				<li>

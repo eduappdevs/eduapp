@@ -4,29 +4,38 @@ import Login from "./views/login/login";
 import Home from "./views/home/Home";
 import React from "react";
 import requireAuth from "./components/auth/RequireAuth";
+import ManagementPanel from "./views/ManagementPanel/ManagementPanel";
+import { FetchUserInfo } from "./hooks/FetchUserInfo";
+import Loader from "./components/loader/Loader";
 import Calendar from "./views/Calendar/calendar";
 import Chat from "./views/chat/chat";
 
 export default function App() {
-	return (
-		<>
-			<BrowserRouter>
-				{requireAuth() ? (
-					<Routes>
-						<Route exact path="/" element={<Home />} />
-						<Route exact path="/resources" element={<Resources />} />
-						<Route exact path="/calendar" element={<Calendar />} />
-						<Route exact path="/chat" element={<Chat />} />
-						<Route path="*" element={<Navigate to="/" />} />
+	let userinfo = FetchUserInfo(localStorage.userId);
 
-					</Routes>
-				) : (
-					<Routes>
-						<Route exact path="/login" element={<Login />} />
-						<Route path="*" element={<Navigate to="/login" />} />
-					</Routes>
-				)}
-			</BrowserRouter>
+	return userinfo ? (
+		<BrowserRouter>
+			{requireAuth() ? (
+				<Routes>
+					<Route exact path="/" element={<Home />} />
+					<Route exact path="/resources" element={<Resources />} />
+					<Route exact path="/calendar" element={<Calendar />} />
+					<Route exact path="/chat" element={<Chat />} />
+					{
+						userinfo.isAdmin &&
+						<Route exact path="/management" element={<ManagementPanel />} />
+					}
+					<Route path="*" element={<Navigate to="/" />} />
+				</Routes>
+			) : (
+				<Routes>
+					<Route exact path="/login" element={<Login />} />
+					<Route path="*" element={<Navigate to="/login" />} />
+				</Routes>
+			)}
+		</BrowserRouter>
+	) :
+		<>
+			<Loader />
 		</>
-	);
 }
