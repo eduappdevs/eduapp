@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Navbar from "../../components/navbar/navbar";
 import DarkModeChanger from "../../components/DarkModeChanger";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
-import "./chat.css";
+import "./ChatMenu.css";
 
-export default function Chat() {
+export default function ChatMenu() {
 	const [isMobile, setIsMobile] = useState(false);
 
 	const checkMediaQueries = () => {
@@ -19,7 +19,7 @@ export default function Chat() {
 
 	useEffect(() => {
 		checkMediaQueries();
-		DarkModeChanger(localStorage.getItem('darkMode'))
+		DarkModeChanger(localStorage.getItem('darkMode'));
 
 		if (window.matchMedia("(max-width: 900px)").matches) {
 			setIsMobile(true);
@@ -93,7 +93,13 @@ export default function Chat() {
 							</li>
 						</ul>
 					</div>
+					<div className="chat-add-button">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="white" class="bi bi-plus" viewBox="0 0 16 16">
+							<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+						</svg>
+					</div>
 				</div>
+
 				<BottomButtons mobile={isMobile} location={"chat"} />
 			</div>
 		</>
