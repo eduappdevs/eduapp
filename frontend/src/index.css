@@ -21,5 +21,6 @@ code {
 	--secondaryColor: rgba(158, 158, 158, 0.311);
 	--headerBackground: var(--blue);
 	--headerButtonBG: white;
-	--headerButtonFill: var(--blue),
+	--headerButtonFill: var(--blue);
+	--navbarHeight: 12.2%;
 }

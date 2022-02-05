@@ -94,22 +94,23 @@ const apiSettings = {
 		});
 		return courses;
 	},
-	
 
 	//Institutions 
 	fetchInstitutions: async () => {
 		const endpoint = `${INSTITUTIONS}`;
-		return await await axios.get(endpoint);
+		return await axios.get(endpoint);
 	},
+
 	//Users
 	fetchCourses: async () => {
 		const endpoint = `${COURSES}`;
-		return await await axios.get(endpoint);
+		return await axios.get(endpoint);
 	},
+
 	//User infos
 	fetchUserInfos: async () => {
 		const endpoint = `${USERS_INFO}`;
-		return await await axios.get(endpoint);
+		return await axios.get(endpoint);
 	},
 };
 

@@ -51,7 +51,7 @@ export default function Menu(props) {
 				}}
 				location={"MENU"}
 			/>
-			<ul>
+			<ul style={{ height: '80%' }}>
 				<li>
 					<a
 						onClick={() => {
