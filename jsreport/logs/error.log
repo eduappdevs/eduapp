@@ -1,0 +1,13 @@
+2022-01-23T23:27:49.816Z - error: Error when processing OData POST: /odata/assets Error: Unable to find or read file C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\styles.css. ENOENT: no such file or directory, open 'C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\styles.css'
+    at module.exports (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-core\lib\shared\createError.js:10:13)
+    at MainReporter.createError (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-core\lib\shared\reporter.js:47:12)
+    at readFile (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-assets\lib\assetsShared.js:193:20)
+    at async AsyncFunction.<anonymous> (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-assets\lib\main.js:132:9)
+    at async ListenerCollection.fire (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-core\lib\shared\listenerCollection.js:157:21)
+    at async Object.insert (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-core\lib\main\store\collection.js:102:5)
+caused by: Error: ENOENT: no such file or directory, open 'C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\styles.css'
+2022-01-23T23:27:57.727Z - error: Error when processing OData POST: /odata/assets Error: Entity name can not be empty
+    at module.exports (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-core\lib\shared\createError.js:10:13)
+    at module.exports (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-core\lib\main\validateEntityName.js:26:11)
+    at Object.insert (C:\Users\Usuario\Desktop\PROJECTS\EDUAPP\eduapp\jsreport\node_modules\@jsreport\jsreport-core\lib\main\store\collection.js:86:7)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)

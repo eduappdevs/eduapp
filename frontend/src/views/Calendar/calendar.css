@@ -1,95 +1,27 @@
 .desktopSection {
     width: 70%;
-    height: 100%;
-    left: 50%;
-    flex: 0.8;
-    transform: translateX(-50%);
+	height: 100%;
+	left: 50%;
+	transform: translateX(-50%);
 }
 
 .calendar-main-container {
     width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    height: 156vh;
     color: var(--textColor);
+
 }
 
 .calendar {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    margin-bottom: 30%;
 }
 
 .calendar>.calendar-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
-}
-
-.calendar>.calendar-container>.button-menu {
-    padding-top: 10%;
-    position: relative;
-    width: 50px;
-    height: 50px;
-    color: var(--textColor);
-}
-
-.menu_calendarOption_container {
     width: 100vw;
-    z-index: 99999999999999;
-    transform: translateX(0px);
-    transition: all 0.3s;
-}
-
-.button-close-calendar-option{
-    padding: 5%;
-    color: var(--textColor);
-}
-
-.menu_calendarOption_hidden {
-    display: none !important;
-    opacity: 0;
-}
-.button-menu{
-    height: 100vh;
-}
-.menu-calendar {
-    width: 90%;
-    height: 61vh;
-    background-color: var(--backgroundColor);
-    z-index: 99999999999999;
-    transform: translateX(0px);
-    transition: all 0.3s;
-    box-shadow: 0 0 2px var(--textColor);
-}
-
-.menu-calendar>ul {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    list-style: none;
-}
-.menu-calendar>ul>svg{
-    display: flex;
-    justify-content: end;
-}
-
-.menu-calendar>ul>li {
-    margin-top: 10%;
-    display: flex;
-    justify-content: center;
-    font-family: "Consolas";
-    align-items: center;
-    background-color: var(--orange);
-    padding: 2%;
-    box-shadow: 0 0 12px rgba(42, 42, 42, 0.445);
-    border-radius: 25px;
-    width: 60%;
-}
-.menu-calendar>ul>li>a{
-    color: var(--backgroundColor);
 }
 
 .button-calendar-option {
@@ -110,18 +42,48 @@
     height: 60px;
 
 }
-
+.MuiPaper-root{
+    top: 13vh !important;
+}
 .MuiPaper-root,
-.DayScaleEmptyCell-emptyCell-17,
+.DayScaleEmptyCell-emptyCell-34,
 .MuiTableCell-root {
     background-color: var(--backgroundColor) !important;
 }
-
-.Cell-dayOfWeek-22,
-.Cell-dayOfMonth-23 {
-    color: var(--orange) !important;
+.Cell-dayView-42,.Cell-dayOfWeek-39,.Cell-dayOfMonth-40{
+    color: var(--textColor)!important;
 }
-
-.Label-text-35 {
+.Cell-highlightedText-41 {
+    color: var(--orange) !important;
+    font-weight: bold !important;
+}
+.Label-text-51,.Label-text-52 {
     color: var(--textColor) !important;
+}
+.MuiButton-label{
+    color: var(--textColor) !important;
+}
+.MuiButton-outlined{
+    border: 1px solid var(--textColor) !important;
+}
+.MuiSvgIcon-root{
+    fill: var(--textColor) !important;
+}
+.MuiInputBase-root{
+    color: var(--textColor) !important;
+}
+.MuiOutlinedInput-notchedOutline{
+    border-color: var(--textColor) !important;
+}
+.MuiList-root,.MuiMenu-list,.MuiList-padding{
+    color: var(--textColor) !important;
+}
+.MuiTypography-root, .Text-text-623, .MuiTypography-h6{
+    color: var(--textColor) !important;
+}
+.MuiTableCell-root, .MuiTableCell-head, .HeaderCell-cell-321{
+    color: var(--textColor) !important;
+}
+.Cell-selected-324{
+    background-color: var(--orange) !important;
 }

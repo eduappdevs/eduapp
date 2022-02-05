@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import axios from "axios";
 import API from "../../API";
+
 export default class LoginAuth extends Component {
   constructor(props) {
     super(props);
@@ -11,13 +11,17 @@ export default class LoginAuth extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
+
   handleSubmit = (event) => {
     event.preventDefault();
+
     try {
       const { email, password } = this.state;
       const userData = new FormData();
+
       userData.append("user[email]", email);
       userData.append("user[password]", password);
+
       API.login(userData).then((res) => {
         console.log(res);
         window.location.href = "/";
@@ -26,6 +30,7 @@ export default class LoginAuth extends Component {
       console.log("error");
     }
   };
+
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,

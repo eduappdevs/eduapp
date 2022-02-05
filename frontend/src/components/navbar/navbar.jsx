@@ -1,156 +1,138 @@
-import "./navbar.css";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Menu from "../../views/menu/menu";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import "./navbar.css";
 
 export default function Navbar({ mobile, location }) {
-  const [ProfileMenuOpened, setProfileMenuOpened] = useState(false);
-  const [inHome, setInHome] = useState(false);
-  const [inResources, setInResources] = useState(false);
-  const [inCalendar, setInCalendar] = useState(false);
-  const [inChat, setInChat] = useState(false);
-  const [inManagement, setInManagement] = useState(false);
+	const [ProfileMenuOpened, setProfileMenuOpened] = useState(false);
+	const [inHome, setInHome] = useState(false);
+	const [inResources, setInResources] = useState(false);
+	const [inCalendar, setInCalendar] = useState(false);
+	const [inChat, setInChat] = useState(false);
+	let userInfo = FetchUserInfo(localStorage.userId);
 
-  let userInfo = FetchUserInfo(localStorage.userId);
+	useEffect(() => {
+		switch (location) {
+			case "resources":
+				setInResources(true);
+				setInCalendar(false);
+				setInChat(false);
+				setInHome(false);
+				break;
+			case "home":
+				setInResources(false);
+				setInCalendar(false);
+				setInChat(false);
+				setInHome(true);
+				break;
+			case "calendar":
+				setInResources(false);
+				setInCalendar(true);
+				setInChat(false);
+				setInHome(false);
+				break;
+			case "chat":
+				setInResources(false);
+				setInCalendar(false);
+				setInChat(true);
+				setInHome(false);
+				break;
+			default:
+				break;
+		}
+	}, [location]);
 
-  useEffect(() => {
-    // eslint-disable-next-line default-case
-    switch (location) {
-      case "resources":
-        setInResources(true);
-        setInCalendar(false);
-        setInChat(false);
-        setInHome(false);
-        setInManagement(false)
+	const openProfileMenu = () => {
+		setProfileMenuOpened(true);
+		if (mobile) {
+			const menu = document.querySelector(".profile-menu-mobile");
 
-        break;
-      case "home":
-        setInResources(false);
-        setInCalendar(false);
-        setInChat(false);
-        setInHome(true);
-        setInManagement(false)
+			menu.style.display = "flex";
+			menu.style.transform = "translateX(110vh)";
+			setTimeout(() => {
+				menu.style.transform = "translateX(0)";
+			}, 300);
+		} else {
+			const menu = document.querySelector(".profile-menu-desktop");
 
-        break;
-      case "calendar":
-        setInResources(false);
-        setInCalendar(true);
-        setInChat(false);
-        setInHome(false);
-        setInManagement(false)
-        
-        break;
-      case "chat":
-        setInResources(false);
-        setInCalendar(false);
-        setInChat(true);
-        setInHome(false);
-        setInManagement(false)
+			menu.style.display = "flex";
+			menu.style.transform = "translateX(110vh)";
+			setTimeout(() => {
+				menu.style.transform = "translateX(0)";
+			}, 300);
+		}
+	};
 
-        break;
-        case "management":
-        setInResources(false);
-        setInCalendar(false);
-        setInChat(false);
-        setInHome(false);
-        setInManagement(true)
-        break;
-    }
-  }, [location]);
-  const openProfileMenu = () => {
-    setProfileMenuOpened(true);
-    if (mobile) {
-      const menu = document.querySelector(".profile-menu-mobile");
-      menu.style.display = "flex";
-      menu.style.transform = "translateX(110vh)";
-      setTimeout(() => {
-        menu.style.transform = "translateX(0)";
-      }, 300);
-    } else {
-      const menu = document.querySelector(".profile-menu-desktop");
-      menu.style.display = "flex";
-      menu.style.transform = "translateX(110vh)";
-      setTimeout(() => {
-        menu.style.transform = "translateX(0)";
-      }, 300);
-    }
-  };
-  const closeProfileMenu = () => {
-    setProfileMenuOpened(false);
-    if (mobile) {
-      const menu = document.querySelector(".profile-menu-mobile");
+	const closeProfileMenu = () => {
+		setProfileMenuOpened(false);
+		if (mobile) {
+			const menu = document.querySelector(".profile-menu-mobile");
 
-      menu.style.transform = "translateX(110vh)";
-      setTimeout(() => {
-        menu.style.display = "none";
-      }, 300);
-    } else {
-      const menu = document.querySelector(".profile-menu-desktop");
+			menu.style.transform = "translateX(110vh)";
+			setTimeout(() => {
+				menu.style.display = "none";
+			}, 300);
+		} else {
+			const menu = document.querySelector(".profile-menu-desktop");
 
-      menu.style.transform = "translateX(110vh)";
-      setTimeout(() => {
-        menu.style.display = "none";
-      }, 300);
-    }
-  };
+			menu.style.transform = "translateX(110vh)";
+			setTimeout(() => {
+				menu.style.display = "none";
+			}, 300);
+		}
+	};
 
-  return (
-    <header>
-      <nav>
-        <Link to="/">
-          <div className="header-logo">
-            <img src="\assets\logo.png" alt="logo" />
-          </div>
-        </Link>
-        <div className={mobile ? "hidden" : "nav-locations"}>
-          <ul>
-            <li className={inHome ? "activeLocation" : console.log()}>
-              <Link to="/"> Home</Link>
-            </li>
-            <li className={inCalendar ? "activeLocation" : console.log()}>
-              <Link to="/Calendar"> Calendar</Link>
-            </li>
-            <li className={inResources ? "activeLocation" : console.log()}>
-              <Link to="/Resources"> Resources</Link>
-            </li>
-            <li className={inChat ? "activeLocation" : console.log()}>
-              <Link to="/Chat"> Chat</Link>
-            </li>
-            {userInfo.isAdmin && (
-              <li className={inManagement ? "activeLocation" : console.log()}>
-              <Link to="/management">Management</Link>
-            </li>
-            )}
-          </ul>
-        </div>
-        <div
-          className="profile-button"
-          onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}
-        >
-          <div className="profile-button-box">
-            <div className="profile-pic">
-              
-              <img
-                src={
-                  userInfo.profile_image != null
-                  ? 
-                  userInfo.profile_image.url
-                  :
-                   "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
-                }
-                alt=""
-              />
-            </div>
-          </div>
-        </div>
-      </nav>
-      <Menu
-        location={location}
-        handleCloseMenu={() => {
-          closeProfileMenu();
-        }}
-      />
-    </header>
-  );
+	return (
+		<header>
+			<nav>
+				<Link to="/">
+					<div className="header-logo">
+						<img src="\assets\logo.png" alt="logo" />
+					</div>
+				</Link>
+				<div className={mobile ? "hidden" : "nav-locations"}>
+					<ul>
+						<li className={inHome ? "activeLocation" : console.log()}>
+							<Link to="/"> Home</Link>
+						</li>
+						<li className={inCalendar ? "activeLocation" : console.log()}>
+							<Link to="/Calendar"> Calendar</Link>
+						</li>
+						<li className={inResources ? "activeLocation" : console.log()}>
+							<Link to="/Resources"> Resources</Link>
+						</li>
+						<li className={inChat ? "activeLocation" : console.log()}>
+							<Link to="/Chat"> Chat</Link>
+						</li>
+					</ul>
+				</div>
+				<div
+					className="profile-button"
+					onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}
+				>
+					<div className="profile-button-box">
+						<div className="profile-pic">
+							<img
+								src={
+									userInfo.profile_image != null
+										?
+										userInfo.profile_image.url
+										:
+										"http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+								}
+								alt="Profile"
+							/>
+						</div>
+					</div>
+				</div>
+			</nav>
+			<Menu
+				location={location}
+				handleCloseMenu={() => {
+					closeProfileMenu();
+				}}
+			/>
+		</header>
+	);
 }

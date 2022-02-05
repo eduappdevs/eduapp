@@ -1,416 +1,402 @@
 .home-main-container {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  color: var(--textColor);
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	color: var(--textColor);
 }
+
 .user {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 30%;
-}
-.user > .user-container > .information-user {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-.user > .user-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	margin-bottom: 30%;
 }
 
-.user > .user-container > .information-user > .profile-picture {
-  display: flex;
-  justify-content: center;
-  height: 100%;
-  margin-top: 50px;
-  width: 100%;
+.user>.user-container>.information-user {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
 }
 
-.user > .user-container > .information-user > .profile-picture > img {
-  height: 135px;
-  width: 135px;
-  border-radius: 50%;
-  box-shadow: 0 0 12px rgba(42, 42, 42, 0.445);
+.user>.user-container {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
 }
 
-.user > .user-container > .information-user > .user-name {
-  text-decoration: none;
-  color: var(--textColor);
-  font-weight: bold;
-  text-indent: 0;
-  font-family: "Consolas";
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  font-size: 85%;
-}
-.user > .user-container > .information-user > .user-name > .edit {
-  padding: 10px !important;
-  position: absolute;
-  left: 70%;
-  transform: translateX(-75%);
-  margin-top: 3px;
-  margin-left: 5px;
-  cursor: pointer;  
-  fill: var(--textColor);
+.user>.user-container>.information-user>.profile-picture {
+	display: flex;
+	justify-content: center;
+	height: 100%;
+	margin-top: 50px;
+	width: 100%;
 }
 
-.user > .user-container > .sessions {
-  height: 100%;
-  min-height: 10%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 15px 15px 0 0;
-  width: 99%;
-  background-color :var(--backgroundColor)
-}
-.user > .user-container > .sessions > .sessions-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  height: auto;
-  width: 70vw;
-  border: 1px solid rgb(136, 136, 136);
-  border-radius: 25px;
-  background-color: var();
-  box-shadow: 0px 1.7px 3.1px rgba(0, 0, 0, 0.041),
-    0px 5.6px 10.5px rgba(0, 0, 0, 0.034), 0px 25px 47px rgba(0, 0, 0, 0.02);
-  font-weight: bold;
-  text-indent: 0;
-  font-family: "Consolas";
-  font-size: 18px;
-  margin-top: 3vh;
-  margin-bottom: 3vh;
-  transition: all 0.3s;
-  padding: 10px;
-  z-index: 200;
-  cursor: pointer;
-  pointer-events: visibleFill;
+.user>.user-container>.information-user>.profile-picture>img {
+	height: 135px;
+	width: 135px;
+	border-radius: 50%;
+	border: 2px solid var(--orange);
 }
 
-.user > .user-container > .sessions > .sessions-container > .sessions-closed {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  pointer-events: none;
-}
-.user
-  > .user-container
-  > .sessions
-  > .sessions-container
-  > .sessions-closed
-  > .session-before
-  > .arrow {
-  height: 20px;
-  width: 100%;
-  flex: 1;
-  overflow: hidden;
-}
-.arrow > svg {
-  height: 100%;
-  width: 15px;
-}
-.rotate > svg {
-  transform: rotate(180deg);
-}
-.user
-  > .user-container
-  > .sessions
-  > .sessions-container
-  > .sessions-closed
-  > .session-before
-  > .arrow
-  > svg {
-  fill: var(--orange);
-}
-.user
-  > .user-container
-  > .sessions
-  > .sessions-container
-  > .sessions-closed
-  > .session-before {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-left: 8%;
-  width: 80%;
-}
-.user
-  > .user-container
-  > .sessions
-  > .sessions-container
-  > .sessions-closed
-  > .session-before
-  > span {
-  flex: 3;
-  margin-left: 5%;
-  font-size: 80%;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.user
-  > .user-container
-  > .sessions
-  > .sessions-container
-  > .sessions-closed
-  > .session-before
-  > .session-date {
-  font-size: 70%;
+.user>.user-container>.information-user>.user-name {
+	text-decoration: none;
+	color: var(--textColor);
+	font-weight: bold;
+	text-indent: 0;
+	font-family: "Consolas";
+	justify-content: center;
+	align-items: center;
+	display: flex;
+	font-size: 50%;
 }
 
-.user
-  > .user-container
-  > .sessions
-  > .sessions-container
-  > .sessions-closed
-  > .session-description {
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  flex-direction: row;
-  height: 100px;
-  flex: 3;
+.user>.user-container>.information-user>.user-name>.edit {
+	padding: 10px !important;
+	position: absolute;
+	left: 70%;
+	transform: translateX(-75%);
+	margin-top: 3px;
+	margin-left: 5px;
+	cursor: pointer;
 }
+
+.user>.user-container>.sessions {
+	margin-top: 5%;
+	height: 100%;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	flex-direction: column;
+}
+
+.user>.user-container>.sessions>.sessions-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	height: auto;
+	width: 70vw;
+	border: 1px solid rgb(136, 136, 136);
+	border-radius: 25px;
+	background-color: var();
+	box-shadow: 0px 1.7px 3.1px rgba(0, 0, 0, 0.041),
+		0px 5.6px 10.5px rgba(0, 0, 0, 0.034), 0px 25px 47px rgba(0, 0, 0, 0.02);
+	font-weight: bold;
+	text-indent: 0;
+	font-family: "Consolas";
+	font-size: 18px;
+	margin-top: 3vh;
+	margin-bottom: 3vh;
+	transition: all 0.3s;
+	padding: 10px;
+	z-index: 200;
+	cursor: pointer;
+	pointer-events: visibleFill;
+}
+
+.user>.user-container>.sessions>.sessions-container>.sessions-closed {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	pointer-events: none;
+}
+
+.user>.user-container>.sessions>.sessions-container>.sessions-closed>.session-before>.arrow {
+	height: 20px;
+	width: 100%;
+	flex: 1;
+	overflow: hidden;
+}
+
+.arrow>svg {
+	height: 100%;
+	width: 15px;
+}
+
+.rotate>svg {
+	transform: rotate(180deg);
+}
+
+.user>.user-container>.sessions>.sessions-container>.sessions-closed>.session-before>.arrow>svg {
+	fill: var(--orange);
+}
+
+.user>.user-container>.sessions>.sessions-container>.sessions-closed>.session-before {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-left: 8%;
+	width: 80%;
+}
+
+.user>.user-container>.sessions>.sessions-container>.sessions-closed>.session-before>span {
+	flex: 3;
+	margin-left: 5%;
+	font-size: 80%;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.user>.user-container>.sessions>.sessions-container>.sessions-closed>.session-before>.session-date {
+	font-size: 70%;
+}
+
+.user>.user-container>.sessions>.sessions-container>.sessions-closed>.session-description {
+	display: flex;
+	justify-content: right;
+	align-items: center;
+	flex-direction: row;
+	height: 100px;
+	flex: 3;
+}
+
 .sessions-after {
-  width: 90%;
+	width: 90%;
 }
+
 .session-platforms {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: space-evenly;
-  align-items: center;
-  padding: 8px 0
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	justify-content: space-evenly;
+	align-items: center;
+	padding: 8px 0;
 }
+
 .hidden {
-  display: none !important;
-  opacity: 0;
+	display: none !important;
+	opacity: 0;
 }
+
 .desktopSection {
-  width: 70%;
-  height: 100%;
-  left: 50%;
-  flex: 0.8;
-  transform: translateX(-50%);
+	width: 70%;
+	height: 100%;
+	left: 50%;
+	transform: translateX(-50%);
 }
 
-.desktopSection > .user > .user-container > .sessions > .sessions-container {
-  padding: 20px;
-  width: 40vw;
+.desktopSection>.user>.user-container>.sessions>.sessions-container {
+	padding: 20px;
+	width: 40vw;
 }
+
 .home__addForm {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  flex-direction: column;
-  background-color: rgba(0, 0, 0, 0.36);
-  border-radius: 0px;
-  font-weight: bold;
-  text-indent: 0;
-  font-family: "Consolas";
-  font-size: 18px;
-  z-index: 9999999999;
-  cursor: pointer;
-  pointer-events: visibleFill;
-  width: 100%;
-  height: 100%;
-  list-style: none;
-  transform: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	top: 0;
+	left: 0;
+	flex-direction: column;
+	background-color: rgba(0, 0, 0, 0.36);
+	border-radius: 0px;
+	font-weight: bold;
+	text-indent: 0;
+	font-family: "Consolas";
+	font-size: 18px;
+	z-index: 9999999999;
+	cursor: pointer;
+	pointer-events: visibleFill;
+	width: 100%;
+	height: 100%;
+	list-style: none;
+	transform: none;
 }
-.mobileForm {
-  position: fixed;
-  z-index: 9999999999;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100vw;
-}
-.home__addForm > .informationForm > .addFormContent > div {
-  margin-bottom: 10%;
-  margin-top: 5%;
-}
-.home__addForm > .informationForm {
-  background-color: var(--backgroundColor);
-  padding: 15px;
-  border-radius: 20px;
-  padding: 5%;
-}
-.home__Add > .home__buttonadd {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 5%;
-}
-.home__addForm > .informationForm > .buttonClose {
-  margin-left: 90%;
-  z-index: 1000;
-}
-.addFormContent > div > input {
-  margin-top: 10%;
-  border: none;
-  height: 2.5em;
-  width: 100%;
 
-  border-radius: 10px;
-  box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
-  text-indent: 10px;
+.mobileForm {
+	position: fixed;
+	z-index: 9999999999;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
 }
-.addFormContent > div > input:focus {
-  outline: none;
+
+.home__addForm>.informationForm>.addFormContent>div {
+	margin-bottom: 10%;
+	margin-top: 5%;
 }
+
+.home__addForm>.informationForm {
+	background-color: var(--backgroundColor);
+	padding: 15px;
+	border-radius: 20px;
+	padding: 5%;
+}
+
+.home__Add>.home__buttonadd {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 5%;
+}
+
+.home__addForm>.informationForm>.buttonClose {
+	margin-left: 90%;
+	z-index: 1000;
+}
+
+.addFormContent>div>input {
+	margin-top: 10%;
+	border: none;
+	height: 2.5em;
+	width: 100%;
+
+	border-radius: 10px;
+	box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
+	text-indent: 10px;
+}
+
+.addFormContent>div>input:focus {
+	outline: none;
+}
+
 .timeInputs {
-  margin-top: 8px;
-  border: none;
-  height: 2.5em;
-  width: 100%;
-  display: flex;
-  overflow: hidden;
-  flex-direction: row;
-  border-radius: 10px;
-  box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
-  text-indent: 10px;
+	margin-top: 8px;
+	border: none;
+	height: 2.5em;
+	width: 100%;
+	display: flex;
+	overflow: hidden;
+	flex-direction: row;
+	border-radius: 10px;
+	box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
+	text-indent: 10px;
 }
-.timeInputs > input {
-  flex: 1;
-  width: 50%;
-  border: none;
-  padding: 3px;
+
+.timeInputs>input {
+	flex: 1;
+	width: 50%;
+	border: none;
+	padding: 3px;
 }
-.timeInputs > input:first-child {
-  border-right: 1px solid var(--blue);
+
+.timeInputs>input:first-child {
+	border-right: 1px solid var(--blue);
 }
-.timeInputs > input:focus {
-  outline: none;
+
+.timeInputs>input:focus {
+	outline: none;
 }
 
 .home__buttonSubmit {
-  z-index: 1000;
-  padding: 10px;
-  margin-top: 20px;
-  border: none;
-  border-radius: 25px;
-  background-color: var(--orange);
-  color: #ffff;
-  width: 20vw;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.472);
-  font-family: "Consolas";
-  font-weight: 900;
-  font-size: 100%;
-  transition: all 0.2s;
-  cursor: pointer;
+	z-index: 1000;
+	padding: 10px;
+	margin-top: 20px;
+	border: none;
+	border-radius: 25px;
+	background-color: var(--orange);
+	color: #ffff;
+	width: 20vw;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.472);
+	font-family: "Consolas";
+	font-weight: 900;
+	font-size: 100%;
+	transition: all 0.2s;
+	cursor: pointer;
 }
+
 .schedule {
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
+
 .timeLabels {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  margin-top: 10px;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	margin-top: 10px;
 }
-.timeLabels > label {
-  flex: 1;
-  width: 50%;
-  text-align: center;
+
+.timeLabels>label {
+	flex: 1;
+	width: 50%;
+	text-align: center;
 }
-.editSessionButton{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
+
+.editSessionButton {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
 }
-.modal_question_delete{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  flex-direction: column;
-  background-color: rgba(0, 0, 0, 0.36);
-  border-radius: 0px;
-  text-indent: 0;
-  font-family: "Consolas";
-  font-size: 18px;
-  z-index: 9999999999;
-  width: 100%;
-  height: 100%;
-  list-style: none;
-  transform: none;
+
+.modal_question_delete {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	top: 0;
+	left: 0;
+	flex-direction: column;
+	background-color: rgba(0, 0, 0, 0.36);
+	border-radius: 0px;
+	text-indent: 0;
+	font-family: "Consolas";
+	font-size: 18px;
+	z-index: 9999999999;
+	width: 100%;
+	height: 100%;
+	list-style: none;
+	transform: none;
 }
-.question_delete{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 20px;
-  border-radius: 30px;
-  border: 2px solid var(--blue);
-  background-color: var(--backgroundColor);
+
+.question_delete {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	padding: 20px;
+	border-radius: 30px;
+	border: 2px solid var(--blue);
+	background-color: var(--backgroundColor);
 }
-.question_delete>.button{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  height: 100%;
-  width: 100%;
+
+.question_delete>.button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	height: 100%;
+	width: 100%;
 }
+
 .question_delete>.button>button {
-  margin-right: 50px;
-    margin-left: 50px;
-  width: 10vw;
-  font-weight: bold;
-  font-family: "Consolas";
-  font-size: 15px;
+	margin-right: 50px;
+	margin-left: 50px;
+	width: 10vw;
+	font-weight: bold;
+	font-family: "Consolas";
+	font-size: 15px;
 }
+
 .buttonYes {
-  list-style: none;
-  border-radius: 10px;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background-color: var(--orange);
-  border: 2px solid var(--blue);
+	list-style: none;
+	border-radius: 10px;
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	background-color: var(--orange);
+	border: 2px solid var(--blue);
+}
 
+.button :hover {
+	background-color: var(--blue);
+	border: 2px solid var(--orange);
 }
-.button :hover{
-  background-color: var(--blue);
-  border: 2px solid var(--orange);
 
-}
-#sessions_error{
-  text-align: center;
-  width: 100%;
-}
-.reportButton__Sessions{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  background-color: var(--orange);
-  margin-left: 30%;
-  margin-right: 30%;
-  border-radius: 20px;
+#sessions_error {
+	text-align: center;
+	width: 100%;
 }
