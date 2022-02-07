@@ -66,7 +66,7 @@ svg {
 	z-index: 500;
 	/* Chrome */
 	transform: scale(250%) rotate(45deg);
-	/* Safari */
+	/* Firefox, Safari */
 	-webkit-transform: scale(250%) rotate(45deg);
 	right: 91%;
 	position: absolute;
@@ -74,11 +74,11 @@ svg {
 }
 
 .main-chat-send-button>svg {
-	fill: var(--backgroundColor);
+	fill: white;
 	z-index: 500;
 	/* Chrome */
 	transform: scale(270%) rotate(45deg);
-	/* Safari */
+	/* Firefox, Safari */
 	-webkit-transform: scale(270%) rotate(45deg);
 	background-color: var(--blue);
 	border-radius: 50%;

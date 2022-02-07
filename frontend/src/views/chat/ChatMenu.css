@@ -1,5 +1,5 @@
 .chat-main-container {
-	height: 134.5vh;
+	height: 65em;
 	width: 100%;
 	font-family: "Consolas";
 }
@@ -102,7 +102,7 @@
 }
 
 .chat-search-container {
-	margin-top: 3em;
+	margin-top: 4em;
 	height: 6vh;
 	display: flex;
 	justify-content: center;
