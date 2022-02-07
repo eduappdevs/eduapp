@@ -1,0 +1,51 @@
+.self-message,
+.foreign-message {
+	position: relative;
+	max-width: 13.5em;
+
+	background-color: var(--blue);
+	font-size: 1.25em;
+	border-radius: 1rem;
+	box-shadow: 0 0.125rem 0.5rem rgba(140, 140, 140, 0.3), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.3);
+}
+
+/* Message Triangle Tail Edit */
+/* .self-message::before,
+.foreign-message::before {
+	content: '';
+	position: absolute;
+	width: 0;
+	height: 0;
+	transform: rotate(180deg);
+	border: 1rem solid transparent;
+	border-top: none;
+
+	border-bottom-color: var(--blue);
+	filter: drop-shadow(0 -0.0625rem 0.0625rem rgba(0, 0, 0, .1));
+} */
+
+.self-message::before {
+	right: 1.5em;
+	top: 2em;
+}
+
+.foreign-message::before {
+	top: 3.2em;
+	left: 1.5em;
+}
+
+.self-message>p,
+.foreign-message>p {
+	color: var(--textColor);
+	padding: 10px 1.25em 10px 1.25em;
+}
+
+.self-align {
+	float: right;
+	margin-right: 10px;
+}
+
+.foreign-align {
+	float: left;
+	margin-left: 10px;
+}

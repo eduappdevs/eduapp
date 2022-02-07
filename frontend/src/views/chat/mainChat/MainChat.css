@@ -8,6 +8,14 @@
 	display: none;
 }
 
+.main-chat-messages-container>div:first-child {
+	margin-top: 6em;
+}
+
+.main-chat-messages-container>div:last-child {
+	margin-bottom: 20%;
+}
+
 .main-chat-input-container {
 	bottom: 0;
 	width: 100%;
@@ -17,7 +25,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: rgba(158, 158, 158, 0.3);
+	background-color: rgb(79, 79, 79);
 }
 
 .main-chat-input-container>.main-chat-input-text {

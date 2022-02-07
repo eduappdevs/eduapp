@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../../../components/navbar/navbar';
 import ChatHeader from '../chatHeader/ChatHeader';
 import DarkModeChanger from "../../../components/DarkModeChanger";
+import ChatBubble from './chatBubbles/ChatBubble';
 import "./MainChat.css";
 
 export default function MainChat() {
@@ -37,7 +38,16 @@ export default function MainChat() {
 
 				<ChatHeader chatName={"MONICA"} />
 
-				<div className="main-chat-messages-container"></div>
+				<div className="main-chat-messages-container">
+					<ChatBubble message={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} foreign={false} />
+					<ChatBubble message={"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."} foreign={true} />
+					<ChatBubble message={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} foreign={false} />
+					<ChatBubble message={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} foreign={true} />
+					<ChatBubble message={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} foreign={true} />
+					<ChatBubble message={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} foreign={true} />
+					<ChatBubble message={"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English."} foreign={false} latestMessage={true} />
+				</div>
+
 				<div className="main-chat-input-container">
 					<div className="main-chat-attachment-button">
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="grey" class="bi bi-paperclip" viewBox="0 0 16 16">
