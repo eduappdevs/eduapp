@@ -15,7 +15,6 @@ import {
   DateNavigator,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import DarkModeChanger from "../../components/DarkModeChanger";
-import MenuCalendar from "./menu/MenuCalendar";
 import "./calendar.css";
 
 export default function Calendar() {
