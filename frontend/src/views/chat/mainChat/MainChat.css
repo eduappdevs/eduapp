@@ -4,6 +4,10 @@
 	font-family: "Consolas";
 }
 
+svg {
+	cursor: pointer;
+}
+
 #navbar {
 	display: none;
 }
@@ -64,9 +68,8 @@
 	transform: scale(250%) rotate(45deg);
 	/* Safari */
 	-webkit-transform: scale(250%) rotate(45deg);
-	right: 83%;
+	right: 91%;
 	position: absolute;
-	width: 20%;
 	height: 20%;
 }
 
