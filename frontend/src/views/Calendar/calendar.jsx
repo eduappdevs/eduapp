@@ -14,6 +14,7 @@ import {
   ViewSwitcher,
   TodayButton,
   DateNavigator,
+  AppointmentTooltip
 } from "@devexpress/dx-react-scheduler-material-ui";
 import DarkModeChanger from "../../components/DarkModeChanger";
 import "./calendar.css";
@@ -80,6 +81,7 @@ export default function Calendar() {
                 <TodayButton />
                 <ViewSwitcher />
                 <Appointments />
+                <AppointmentTooltip/>
               </Scheduler>
             </Paper>
             </div>

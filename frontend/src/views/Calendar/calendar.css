@@ -1,8 +1,8 @@
 .desktopSection {
     width: 70%;
-	height: 100%;
-	left: 50%;
-	transform: translateX(-50%);
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .calendar-main-container {
@@ -42,48 +42,170 @@
     height: 60px;
 
 }
-.MuiPaper-root{
+
+.MuiPaper-root {
     top: 13vh !important;
 }
+
 .MuiPaper-root,
 .DayScaleEmptyCell-emptyCell-34,
 .MuiTableCell-root {
     background-color: var(--backgroundColor) !important;
 }
-.Cell-dayView-42,.Cell-dayOfWeek-39,.Cell-dayOfMonth-40{
-    color: var(--textColor)!important;
+
+.Cell-dayView-42,
+.Cell-dayOfWeek-39,
+.Cell-dayOfMonth-40 {
+    color: var(--textColor) !important;
 }
+
 .Cell-highlightedText-41 {
     color: var(--orange) !important;
     font-weight: bold !important;
 }
-.Label-text-51,.Label-text-52 {
+
+.Label-text-51,
+.Label-text-52 {
     color: var(--textColor) !important;
 }
-.MuiButton-label{
+
+.MuiButton-label {
     color: var(--textColor) !important;
 }
-.MuiButton-outlined{
+
+.MuiButton-outlined {
     border: 1px solid var(--textColor) !important;
 }
-.MuiSvgIcon-root{
+
+/* .MuiSvgIcon-root {
     fill: var(--textColor) !important;
-}
-.MuiInputBase-root{
+} */
+
+.MuiInputBase-root {
     color: var(--textColor) !important;
 }
-.MuiOutlinedInput-notchedOutline{
+
+.MuiOutlinedInput-notchedOutline {
     border-color: var(--textColor) !important;
 }
-.MuiList-root,.MuiMenu-list,.MuiList-padding{
+
+.MuiList-root,
+.MuiMenu-list,
+.MuiList-padding {
     color: var(--textColor) !important;
 }
-.MuiTypography-root, .Text-text-623, .MuiTypography-h6{
+
+.MuiTypography-root,
+.Text-text-623,
+.MuiTypography-h6 {
     color: var(--textColor) !important;
 }
-.MuiTableCell-root, .MuiTableCell-head, .HeaderCell-cell-321{
+
+.MuiTableCell-root,
+.MuiTableCell-head,
+.HeaderCell-cell-321 {
     color: var(--textColor) !important;
 }
-.Cell-selected-324{
+
+.Cell-selected-324 {
     background-color: var(--orange) !important;
+}
+
+.Cell-selected-601 {
+    color: #fff;
+    width: 2.3 em;
+    cursor: default;
+    display: inline-block;
+    background: var(--orange) !important;
+    line-height: 2.3;
+    border-radius: 50%;
+}
+
+.Cell-today-602 {
+    color: var(--orange) !important;
+    font-weight: bold;
+}
+
+.makeStyles-lens-612 {
+    color: rgb(100, 181, 246) !important;
+}
+
+.makeStyles-title-600,
+.makeStyles-dateAndTitle-605 {
+    color: var(--textColor) !important;
+}
+
+.makeStyles-title-600,
+.makeStyles-dateAndTitle-605 {
+    color: var(--textColor) !important;
+}
+
+.makeStyles-text-599,
+.makeStyles-dateAndTitle-605 {
+    color: var(--textColor) !important;
+}
+
+.makeStyles-text-599 {
+    color: var(--textColor) !important;
+}
+
+.makeStyles-icon-601 {
+    color: var(--textColor) !important;
+}
+
+.makeStyles-content-598 {
+    background-color: var(--backgroundColor) !important;
+}
+
+.Cell-selected-703 {
+    color: #fff;
+    width: 2.3 em;
+    cursor: default;
+    display: inline-block;
+    background: var(--orange)!important;
+    line-height: 2.3;
+    border-radius: 50%;
+}
+.Cell-today-704{
+    color: var(--orange);
+    font-weight: bold;
+}
+
+.makeStyles-text-683 {
+    color: var(--textColor) !important;
+}
+
+.makeStyles-title-684,
+.makeStyles-dateAndTitle-689 {
+    color: var(--textColor) !important;
+}
+
+.makeStyles-title-684,
+.makeStyles-dateAndTitle-689 {
+    color: var(--textColor) !important;
+}
+
+.makeStyles-content-682 {
+    background-color: var(--backgroundColor) !important;
+}
+
+.makeStyles-icon-685 {
+    color: var(--textColor) !important;
+}
+
+.MuiIconButton-label {
+    color: var(--textColor) !important;
+}
+
+.MuiSelect-icon {
+    color: var(--textColor) !important;
+}
+.makeStyles-content-690{
+    background-color: var(--backgroundColor) !important;
+}
+.Cell-today-776{
+    color: var(--orange) !important;
+}
+.VerticalAppointment-container-587{
+    color: var(--textColor) !important;
 }
