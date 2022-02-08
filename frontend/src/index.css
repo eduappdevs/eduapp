@@ -7,6 +7,14 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+@font-face {
+	font-family: Consolas;
+	/* Safari */
+	src: url("fonts/Consolas.woff") format("woff");
+	/* Normal Browser */
+	src: url("fonts/Consolas.ttf") format("ttf");
+}
+
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
 		monospace;

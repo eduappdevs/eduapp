@@ -6,7 +6,7 @@
 .chat-menu-container {
 	height: 65em;
 	width: 100%;
-	font-family: "Consolas";
+	font-family: Consolas;
 }
 
 .chats-container {
