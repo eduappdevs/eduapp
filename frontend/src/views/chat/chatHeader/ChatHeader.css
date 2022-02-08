@@ -57,6 +57,13 @@
 	margin-right: 20px;
 }
 
+.ChatHeaderName>p {
+	max-width: 160px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 .ChatHeaderOptions {
 	margin-top: 4px;
 	left: 87%;

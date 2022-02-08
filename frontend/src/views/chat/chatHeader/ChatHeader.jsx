@@ -4,7 +4,7 @@ import "./ChatHeader.css";
 export default function ChatHeader(props) {
 	return (
 		<div className="ChatHeader">
-			<div onClick={() => { console.log("go back"); }} className="ChatHeaderBack">
+			<div onClick={() => { props.closeHandler(); }} className="ChatHeaderBack">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="16"

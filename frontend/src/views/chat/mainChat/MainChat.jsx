@@ -5,7 +5,7 @@ import DarkModeChanger from "../../../components/DarkModeChanger";
 import ChatBubble from './chatBubbles/ChatBubble';
 import "./MainChat.css";
 
-export default function MainChat() {
+export default function MainChat(props) {
 	const [isMobile, setIsMobile] = useState(false);
 
 	const checkMediaQueries = () => {
@@ -36,7 +36,7 @@ export default function MainChat() {
 					<Navbar mobile={isMobile} location={"chat"} />
 				</div>
 
-				<ChatHeader chatName={"MONICA"} />
+				<ChatHeader chatName={props.chatName} closeHandler={() => { props.closeHandler(); }} />
 
 				<div className="main-chat-messages-container">
 					<ChatBubble message={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} foreign={false} />

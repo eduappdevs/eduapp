@@ -1,4 +1,9 @@
-.chat-main-container {
+#chat-box {
+	display: none;
+	transition: all 0.3s;
+}
+
+.chat-menu-container {
 	height: 65em;
 	width: 100%;
 	font-family: "Consolas";
@@ -56,10 +61,10 @@
 }
 
 .chat-name {
-	height: 1px;
 	padding: 0.1px !important;
 	margin: 0 !important;
 	color: var(--textColor);
+	max-width: 198px;
 }
 
 .chat-pending-messages {

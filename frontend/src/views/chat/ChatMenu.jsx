@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Navbar from "../../components/navbar/navbar";
 import DarkModeChanger from "../../components/DarkModeChanger";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
+import MainChat from "./mainChat/MainChat";
 import "./ChatMenu.css";
 
 export default function ChatMenu() {
 	const [isMobile, setIsMobile] = useState(false);
+	const [chatTitle, setChatTitle] = useState(true);
 
 	const checkMediaQueries = () => {
 		setInterval(() => {
@@ -16,6 +18,28 @@ export default function ChatMenu() {
 			}
 		}, 4000);
 	};
+
+	const openChat = (event) => {
+		const chatBox = document.getElementById("chat-box");
+		const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
+
+		if ((event.target.nodeName).toLowerCase() !== "li") {
+			let temp = event.target;
+			while ((temp.nodeName).toLowerCase() !== "li") temp = temp.parentElement;
+			event.target = temp;
+		}
+		setChatTitle(event.target.childNodes[1].childNodes[0].innerHTML);
+		chatMenu.style.display = "none";
+		chatBox.style.display = "flex";
+	};
+
+	const closeChat = () => {
+		const chatBox = document.getElementById("chat-box");
+		const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
+
+		chatBox.style.display = "none";
+		chatMenu.style.display = "block";
+	}
 
 	useEffect(() => {
 		checkMediaQueries();
@@ -30,12 +54,15 @@ export default function ChatMenu() {
 
 	return (
 		<>
-			<div className="chat-main-container">
+			<div id="chat-box">
+				<MainChat chatName={chatTitle} closeHandler={() => { closeChat(); }} />
+			</div>
+			<div className="chat-menu-container">
 				<Navbar mobile={isMobile} location={"chat"} />
 
 				<div className="chat-search-container">
 					<form action="">
-						<input type="text" onChange={console.log("typing new search")} />
+						<input type="text" />
 						<div className="chat-search-icon">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -55,7 +82,7 @@ export default function ChatMenu() {
 					<div className="chat-group-container">
 						<h2>Groups</h2>
 						<ul>
-							<li>
+							<li onClick={openChat}>
 								<img className="chat-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
 								<div className="chat-info chat-writing-state">
 									<h2 className="chat-name">Eduapp Team</h2>
@@ -63,9 +90,9 @@ export default function ChatMenu() {
 								</div>
 								<p className="chat-pending-messages"><span>20</span></p>
 							</li>
-							<li>
+							<li onClick={openChat}>
 								<img className="chat-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
-								<div className="chat-info chat-idle-state ">
+								<div className="chat-info chat-idle-state">
 									<h2 className="chat-name">ROW Team</h2>
 									<p className="chat-message-state">Cris is writing...</p>
 								</div>
@@ -76,7 +103,7 @@ export default function ChatMenu() {
 					<div className="chat-user-container">
 						<h2>Users</h2>
 						<ul>
-							<li>
+							<li onClick={openChat}>
 								<img className="chat-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
 								<div className="chat-info chat-writing-state">
 									<h2 className="chat-name">Felix</h2>
@@ -84,9 +111,9 @@ export default function ChatMenu() {
 								</div>
 								<p className="chat-pending-messages"><span>20</span></p>
 							</li>
-							<li>
+							<li onClick={openChat}>
 								<img className="chat-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
-								<div className="chat-info chat-idle-state ">
+								<div className="chat-info chat-idle-state">
 									<h2 className="chat-name">Adri</h2>
 								</div>
 								<p className="chat-pending-messages"><span>15</span></p>
