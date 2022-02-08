@@ -24,6 +24,10 @@
     width: 100vw;
 }
 
+.calendar-api {
+    margin-bottom: 3px;
+}
+
 .button-calendar-option {
     position: fixed;
     display: flex;
@@ -77,10 +81,6 @@
     border: 1px solid var(--textColor) !important;
 }
 
-/* .MuiSvgIcon-root {
-    fill: var(--textColor) !important;
-} */
-
 .MuiInputBase-root {
     color: var(--textColor) !important;
 }
@@ -107,24 +107,6 @@
     color: var(--textColor) !important;
 }
 
-.Cell-selected-324 {
-    background-color: var(--orange) !important;
-}
-
-.Cell-selected-601 {
-    color: #fff;
-    width: 2.3 em;
-    cursor: default;
-    display: inline-block;
-    background: var(--orange) !important;
-    line-height: 2.3;
-    border-radius: 50%;
-}
-
-.Cell-today-602 {
-    color: var(--orange) !important;
-    font-weight: bold;
-}
 
 .makeStyles-lens-612 {
     color: rgb(100, 181, 246) !important;
@@ -157,19 +139,7 @@
     background-color: var(--backgroundColor) !important;
 }
 
-.Cell-selected-703 {
-    color: #fff;
-    width: 2.3 em;
-    cursor: default;
-    display: inline-block;
-    background: var(--orange)!important;
-    line-height: 2.3;
-    border-radius: 50%;
-}
-.Cell-today-704{
-    color: var(--orange);
-    font-weight: bold;
-}
+
 
 .makeStyles-text-683 {
     color: var(--textColor) !important;
@@ -200,12 +170,40 @@
 .MuiSelect-icon {
     color: var(--textColor) !important;
 }
-.makeStyles-content-690{
+
+.makeStyles-content-690 {
     background-color: var(--backgroundColor) !important;
 }
-.Cell-today-776{
-    color: var(--orange) !important;
+
+
+
+.VerticalAppointment-container-587 {
+    color: var(--textColor) !important;
 }
-.VerticalAppointment-container-587{
+
+/* Selected day */
+.makeStyles-content-762,
+.makeStyles-content-606 {
+    padding: 12px 8px;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    line-height: 1.43;
+    padding-top: 8px;
+    letter-spacing: 0.01071em;
+    background-color: var(--backgroundColor) !important;
+}
+
+.makeStyles-icon-765,
+.makeStyles-dateAndTitle-769,
+.makeStyles-text-763,
+.makeStyles-dateAndTitle-613,
+.makeStyles-icon-609 {
+    color: var(--textColor) !important;
+}
+
+.makeStyles-text-607 {
+    display: inline-block;
     color: var(--textColor) !important;
 }
