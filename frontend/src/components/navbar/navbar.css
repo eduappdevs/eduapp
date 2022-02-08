@@ -17,6 +17,7 @@ header>nav {
 	border-bottom: 3px solid rgba(189, 189, 189, 0.671);
 	position: fixed;
 	width: 100%;
+	height: var(--navbarHeight);
 }
 
 header>nav>a>.header-logo {

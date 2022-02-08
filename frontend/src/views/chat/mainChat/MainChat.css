@@ -1,0 +1,88 @@
+.main-chat-container {
+	height: 100%;
+	width: 100%;
+	font-family: "Consolas";
+}
+
+svg {
+	cursor: pointer;
+}
+
+#navbar {
+	display: none;
+}
+
+.main-chat-messages-container>div:first-child {
+	margin-top: 6em;
+}
+
+.main-chat-messages-container>div:last-child {
+	margin-bottom: 20%;
+}
+
+.main-chat-input-container {
+	bottom: 0;
+	width: 100%;
+	height: 10vh;
+	z-index: 999999;
+	position: fixed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgb(79, 79, 79);
+}
+
+.main-chat-input-container>.main-chat-input-text {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+}
+
+.main-chat-input-container>.main-chat-input-text>textarea {
+	width: 70%;
+	height: 48px;
+	font-size: 20px;
+	font-family: "Consolas";
+	border-radius: 10px;
+	color: var(--textColor);
+	background: var(--backgroundColor) !important;
+	box-shadow: none;
+	border: none !important;
+	resize: none !important;
+	margin-right: 7.5px;
+}
+
+.main-chat-input-container>.main-chat-input-text>textarea:focus {
+	outline: 0px solid transparent;
+}
+
+.main-chat-attachment-button {
+	margin-bottom: 2.05vh;
+}
+
+.main-chat-attachment-button>svg {
+	fill: var(--orange);
+	z-index: 500;
+	/* Chrome */
+	transform: scale(250%) rotate(45deg);
+	/* Firefox, Safari */
+	-webkit-transform: scale(2.5) rotate(45deg);
+	right: 91%;
+	position: absolute;
+	height: 20%;
+}
+
+.main-chat-send-button>svg {
+	fill: white;
+	z-index: 500;
+	/* Chrome */
+	transform: scale(270%) rotate(45deg);
+	/* Firefox, Safari */
+	-webkit-transform: scale(2.7) rotate(45deg);
+	background-color: var(--blue);
+	border-radius: 50%;
+	left: 90%;
+	bottom: 4vh;
+	position: absolute;
+}

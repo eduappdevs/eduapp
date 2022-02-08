@@ -1,7 +1,12 @@
-.chat-main-container {
-	height: 130vh;
+#chat-box {
+	display: none;
+	transition: all 0.3s;
+}
+
+.chat-menu-container {
+	height: 65em;
 	width: 100%;
-	font-family: "Consolas";
+	font-family: Consolas;
 }
 
 .chats-container {
@@ -56,10 +61,10 @@
 }
 
 .chat-name {
-	height: 1px;
 	padding: 0.1px !important;
 	margin: 0 !important;
 	color: var(--textColor);
+	max-width: 198px;
 }
 
 .chat-pending-messages {
@@ -102,7 +107,7 @@
 }
 
 .chat-search-container {
-	margin-top: 3em;
+	margin-top: 4em;
 	height: 6vh;
 	display: flex;
 	justify-content: center;
@@ -164,4 +169,21 @@
 
 .chat-search-container>form>input:focus~.chat-search-icon {
 	display: none;
+}
+
+.chat-add-button {
+	position: fixed;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	top: 80%;
+	right: 0;
+	margin-right: 5%;
+	border-radius: 80%;
+	background-color: var(--orange);
+}
+
+.chat-add-button>svg {
+	width: 60px;
+	height: 60px;
 }

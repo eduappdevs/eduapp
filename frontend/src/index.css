@@ -7,6 +7,14 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+@font-face {
+	font-family: Consolas;
+	/* Normal Browser */
+	src: url("fonts/Consolas.ttf") format("ttf");
+	/* Safari */
+	src: url("fonts/Consolas.woff") format("woff");
+}
+
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
 		monospace;
@@ -21,5 +29,6 @@ code {
 	--secondaryColor: rgba(158, 158, 158, 0.311);
 	--headerBackground: var(--blue);
 	--headerButtonBG: white;
-	--headerButtonFill: var(--blue),
+	--headerButtonFill: var(--blue);
+	--navbarHeight: 12.2%;
 }
