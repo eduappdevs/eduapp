@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/navbar/navbar";
 import DarkModeChanger from "../../components/DarkModeChanger";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
@@ -23,11 +23,12 @@ export default function ChatMenu() {
 		const chatBox = document.getElementById("chat-box");
 		const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
 
-		if ((event.target.nodeName).toLowerCase() !== "li") {
+		if (event.target.nodeName.toLowerCase() !== "li") {
 			let temp = event.target;
-			while ((temp.nodeName).toLowerCase() !== "li") temp = temp.parentElement;
+			while (temp.nodeName.toLowerCase() !== "li") temp = temp.parentElement;
 			event.target = temp;
 		}
+
 		setChatTitle(event.target.childNodes[1].childNodes[0].innerHTML);
 		chatMenu.style.display = "none";
 		chatBox.style.display = "flex";
@@ -39,11 +40,11 @@ export default function ChatMenu() {
 
 		chatBox.style.display = "none";
 		chatMenu.style.display = "block";
-	}
+	};
 
 	useEffect(() => {
 		checkMediaQueries();
-		DarkModeChanger(localStorage.getItem('darkMode'));
+		DarkModeChanger(localStorage.getItem("darkMode"));
 
 		if (window.matchMedia("(max-width: 900px)").matches) {
 			setIsMobile(true);
@@ -55,7 +56,12 @@ export default function ChatMenu() {
 	return (
 		<>
 			<div id="chat-box">
-				<MainChat chatName={chatTitle} closeHandler={() => { closeChat(); }} />
+				<MainChat
+					chatName={chatTitle}
+					closeHandler={() => {
+						closeChat();
+					}}
+				/>
 			</div>
 			<div className="chat-menu-container">
 				<Navbar mobile={isMobile} location={"chat"} />
@@ -83,20 +89,32 @@ export default function ChatMenu() {
 						<h2>Groups</h2>
 						<ul>
 							<li onClick={openChat}>
-								<img className="chat-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
+								<img
+									className="chat-icon"
+									src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+									alt="Chat User Icon"
+								/>
 								<div className="chat-info chat-writing-state">
 									<h2 className="chat-name">Eduapp Team</h2>
 									<p className="chat-writing">Equisde is writing...</p>
 								</div>
-								<p className="chat-pending-messages"><span>20</span></p>
+								<p className="chat-pending-messages">
+									<span>20</span>
+								</p>
 							</li>
 							<li onClick={openChat}>
-								<img className="chat-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
+								<img
+									className="chat-icon"
+									src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+									alt="Chat User Icon"
+								/>
 								<div className="chat-info chat-idle-state">
 									<h2 className="chat-name">ROW Team</h2>
 									<p className="chat-message-state">Cris is writing...</p>
 								</div>
-								<p className="chat-pending-messages"><span>15</span></p>
+								<p className="chat-pending-messages">
+									<span>15</span>
+								</p>
 							</li>
 						</ul>
 					</div>
@@ -104,24 +122,41 @@ export default function ChatMenu() {
 						<h2>Users</h2>
 						<ul>
 							<li onClick={openChat}>
-								<img className="chat-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
+								<img
+									className="chat-icon"
+									src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+									alt="Chat User Icon"
+								/>
 								<div className="chat-info chat-writing-state">
 									<h2 className="chat-name">Felix</h2>
 									<p className="chat-writing">Writing...</p>
 								</div>
-								<p className="chat-pending-messages"><span>20</span></p>
+								<p className="chat-pending-messages">
+									<span>20</span>
+								</p>
 							</li>
 							<li onClick={openChat}>
-								<img className="chat-icon" src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png" alt="Chat User Icon" />
+								<img
+									className="chat-icon"
+									src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+									alt="Chat User Icon"
+								/>
 								<div className="chat-info chat-idle-state">
 									<h2 className="chat-name">Adri</h2>
 								</div>
-								<p className="chat-pending-messages"><span>15</span></p>
+								<p className="chat-pending-messages">
+									<span>15</span>
+								</p>
 							</li>
 						</ul>
 					</div>
 					<div className="chat-add-button">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="white" class="bi bi-plus" viewBox="0 0 16 16">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="white"
+							class="bi bi-plus"
+							viewBox="0 0 16 16"
+						>
 							<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
 						</svg>
 					</div>

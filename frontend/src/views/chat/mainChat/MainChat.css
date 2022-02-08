@@ -67,7 +67,7 @@ svg {
 	/* Chrome */
 	transform: scale(250%) rotate(45deg);
 	/* Firefox, Safari */
-	-webkit-transform: scale(250%) rotate(45deg);
+	-webkit-transform: scale(2.5) rotate(45deg);
 	right: 91%;
 	position: absolute;
 	height: 20%;
@@ -79,7 +79,7 @@ svg {
 	/* Chrome */
 	transform: scale(270%) rotate(45deg);
 	/* Firefox, Safari */
-	-webkit-transform: scale(270%) rotate(45deg);
+	-webkit-transform: scale(2.7) rotate(45deg);
 	background-color: var(--blue);
 	border-radius: 50%;
 	left: 90%;

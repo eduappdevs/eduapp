@@ -54,6 +54,7 @@
 }
 
 .user>.user-container>.information-user>.user-name>.edit {
+	display: none;
 	padding: 10px !important;
 	position: absolute;
 	left: 70%;
