@@ -9,7 +9,6 @@ import { FetchUserInfo } from "./hooks/FetchUserInfo";
 import Loader from "./components/loader/Loader";
 import Calendar from "./views/Calendar/calendar";
 import ChatMenu from "./views/chat/ChatMenu";
-import MainChat from "./views/chat/mainChat/MainChat";
 
 export default function App() {
 	let userinfo = FetchUserInfo(localStorage.userId);
@@ -22,7 +21,6 @@ export default function App() {
 					<Route exact path="/resources" element={<Resources />} />
 					<Route exact path="/calendar" element={<Calendar />} />
 					<Route exact path="/chat" element={<ChatMenu />} />
-					<Route exact path="/mainchat" element={<MainChat />} />
 					{
 						userinfo.isAdmin &&
 						<Route exact path="/management" element={<ManagementPanel />} />
