@@ -9,10 +9,10 @@ body {
 
 @font-face {
 	font-family: Consolas;
-	/* Safari */
-	src: url("fonts/Consolas.woff") format("woff");
 	/* Normal Browser */
 	src: url("fonts/Consolas.ttf") format("ttf");
+	/* Safari */
+	src: url("fonts/Consolas.woff") format("woff");
 }
 
 code {
