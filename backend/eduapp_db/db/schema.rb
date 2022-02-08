@@ -44,9 +44,11 @@ ActiveRecord::Schema.define(version: 10) do
   end
 
   create_table "calendar_annotations", force: :cascade do |t|
-    t.string "annotation_date"
-    t.string "annotation_name"
+    t.string "annotation_start_date"
+    t.string "annotation_end_date"
+    t.string "annotation_title"
     t.string "annotation_description"
+    t.string "location"
     t.boolean "isGlobal"
     t.integer "user_id"
     t.datetime "created_at", precision: 6, null: false

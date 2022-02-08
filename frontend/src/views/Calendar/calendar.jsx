@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
@@ -18,22 +19,29 @@ import DarkModeChanger from "../../components/DarkModeChanger";
 import "./calendar.css";
 
 export default function Calendar() {
+  const [annotations, setAnnotations] = useState([])
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
+  let temp = []
+  const getCalendar = async() => {
+    let annotations = await axios.get("http://localhost:3000/calendar_annotations/");
+    for (let e of annotations.data) {
+        let id = e.id;
+        let startDate = e.annotation_start_date;
+        let endDate = e.annotation_end_date;
+        let title = e.annotation_title;
+        let description = e.annotation_description;
+        temp.push({
+          id: id,
+          startDate: startDate,
+          endDate: endDate,
+          title: title
+        });
 
+    }
+    setAnnotations(temp)
+  }
   const today = new Date();
   const currentDate = today;
-  const schedulerData = [
-    {
-      startDate: "2022-01-06T09:45",
-      endDate: "2022-01-06T11:00",
-      title: "Meeting",
-    },
-    {
-      startDate: "2021-12-15T12:00",
-      endDate: "2021-12-15T13:30",
-      title: "Go to a gym",
-    },
-  ];
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -44,8 +52,10 @@ export default function Calendar() {
       }
     }, 4000);
   };
+
   useEffect(() => {
     checkMediaQueries();
+    getCalendar();
     DarkModeChanger(localStorage.getItem("darkMode"));
     if (window.matchMedia("(max-width: 1100px)").matches) {
       setItsMobileDevice(true);
@@ -60,27 +70,18 @@ export default function Calendar() {
         <div className="calendar">
           <div className="calendar-container">
             <div className="calendar-api">
-              <Paper>
-                <Scheduler data={schedulerData}>
-                  <ViewState
-                    defaultCurrentDate={currentDate}
-                    defaultCurrentViewName="Week"
-                  />
-                  <WeekView
-                    startDayHour={today.getHours() - 1.5}
-                    endDayHour={today.getHours() + 7.5}
-                  />
-                  <DayView
-                    startDayHour={today.getHours() - 1.5}
-                    endDayHour={today.getHours() + 7.5}
-                  />
-                  <Toolbar/>
-                  <DateNavigator />
-                  <TodayButton />
-                  <ViewSwitcher />
-                  <Appointments />
-                </Scheduler>
-              </Paper>
+            <Paper>
+              <Scheduler data={annotations}>
+                <ViewState defaultCurrentDate={currentDate} />
+                <WeekView startDayHour={6} endDayHour={24} />
+                <DayView startDayHour={6} endDayHour={24} />
+                <Toolbar />
+                <DateNavigator />
+                <TodayButton />
+                <ViewSwitcher />
+                <Appointments />
+              </Scheduler>
+            </Paper>
             </div>
           </div>
         </div>

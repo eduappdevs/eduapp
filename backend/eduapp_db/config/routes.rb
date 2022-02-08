@@ -1,4 +1,5 @@
 Rails.application.routes.draw do  
+  get 'calendar_annotations/index'
   resources :calendar_annotations
   resources :tuitions
   resources :courses
