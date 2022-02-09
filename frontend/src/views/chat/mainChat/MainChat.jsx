@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import ChatHeader from '../chatHeader/ChatHeader';
 import DarkModeChanger from "../../../components/DarkModeChanger";
 import ChatBubble from './chatBubbles/ChatBubble';
+import AppHeader from '../../../components/appHeader/AppHeader';
 import "./MainChat.css";
 
 export default function MainChat(props) {
@@ -31,7 +31,7 @@ export default function MainChat(props) {
 	return (
 		<>
 			<div className="main-chat-container">
-				<ChatHeader chatName={props.chatName} closeHandler={() => { props.closeHandler(); }} />
+				<AppHeader type="main-chat" chatName={props.chatName} closeHandler={() => { props.closeHandler(); }} />
 
 				<div className="main-chat-messages-container">
 					<ChatBubble message={"Lorem Ipsum is simply dummy text of the printing and typesetting industry."} foreign={false} />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/navbar/navbar";
+import Navbar from "../../components/navbar/Navbar";
 import DarkModeChanger from "../../components/DarkModeChanger";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import MainChat from "./mainChat/MainChat";
@@ -31,14 +31,14 @@ export default function ChatMenu() {
 
 		setChatTitle(event.target.childNodes[1].childNodes[0].innerHTML);
 		chatBox.style.display = "flex";
-		setTimeout(()=>{
+		setTimeout(() => {
 			chatBox.classList.add('chat-box-opened');
 			chatBox.classList.remove('chat-box-closed');
 
-		},100)
-		setTimeout(()=>{
+		}, 100)
+		setTimeout(() => {
 			chatMenu.style.display = "none";
-		},400)
+		}, 400)
 
 	};
 
@@ -47,12 +47,12 @@ export default function ChatMenu() {
 		const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
 		chatBox.classList.remove('chat-box-opened');
 		chatBox.classList.add('chat-box-closed');
-		setTimeout(()=>{
+		setTimeout(() => {
 
 			chatBox.style.display = "none";
 			chatMenu.style.display = "block";
 
-		},300)
+		}, 300)
 	};
 
 	useEffect(() => {

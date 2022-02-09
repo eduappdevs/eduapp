@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import Menu from "../../views/menu/menu";
+import Menu from "../../views/menu/Menu";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import "./navbar.css";
+import "./Navbar.css";
 
 export default function Navbar({ mobile, location }) {
 	const [ProfileMenuOpened, setProfileMenuOpened] = useState(false);

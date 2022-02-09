@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./ManagementPanel.css";
 // import DarkModeChanger from "../../components/DarkModeChanger";
-import Navbar from "../../components/navbar/navbar";
+import Navbar from "../../components/navbar/Navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import API from "../../API";
 import Loader from '../../components/loader/Loader'
+import AppHeader from "../../components/appHeader/AppHeader";
 
 let institutions, courses, users, sessions;
 
@@ -197,6 +198,7 @@ export default function ManagementPanel() {
 				button.classList.add("hidden");
 			}
 		);
+		document.getElementsByTagName("header")[0].style.display = "none";
 	};
 
 	const closeThisItem = (input) => {
@@ -207,6 +209,7 @@ export default function ManagementPanel() {
 				button.classList.remove("hidden");
 			}
 		);
+		document.getElementsByTagName("header")[0].style.display = "flex";
 	};
 
 	useEffect(() => {
@@ -226,11 +229,11 @@ export default function ManagementPanel() {
 
 	return (
 		(!institutionsLoading &&
-		institutions !== undefined &&
-		!coursesLoading &&
-		courses !== undefined &&
-		!usersLoading &&
-		users !== undefined) ? (
+			institutions !== undefined &&
+			!coursesLoading &&
+			courses !== undefined &&
+			!usersLoading &&
+			users !== undefined) ? (
 			<div className="managementpanel__main">
 				<Navbar mobile={isMobile} location={"management"} />
 				<div className="managementpanel__container">
@@ -277,36 +280,14 @@ export default function ManagementPanel() {
 					</div>
 					<div
 						id="institutions"
-						className="managementpanel__institutions managementpanel__item hidden "
+						className="managementpanel__institutions managementpanel__item hidden"
 					>
+						<AppHeader closeHandler={() => { closeThisItem("institutions"); }} tabName="Institutions" />
+
 						<div className="managementpanel__item__header">
-							<div
-								className="managementPanel__buttonBack"
-								onClick={() => {
-									closeThisItem("institutions");
-								}}
-							>
-								<div className="managementPanel__buttonBack__content">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										fill="currentColor"
-										class="bi bi-caret-left-fill"
-										viewBox="0 0 16 16"
-									>
-										<path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-									</svg>
-									<span>Back</span>
-
-								</div>
-								<h3>Institutions</h3>
-
-							</div>
-
 							<div id="cp-institutions" className="institutions">
 								<div className="institutions__post management__form-container">
-									
+
 									<form action="submit" onSubmit={postInstitution}>
 										<label htmlFor="institution_name">Institution name</label>
 										<input
@@ -336,32 +317,10 @@ export default function ManagementPanel() {
 						id="courses"
 						className="managementpanel__courses managementpanel__item hidden"
 					>
+						<AppHeader closeHandler={() => { closeThisItem("courses"); }} tabName="Courses" />
 						<div className="managementpanel__item__header">
-							<div
-								className="managementPanel__buttonBack"
-								onClick={() => {
-									closeThisItem("courses");
-								}}
-							>
-								<div className="managementPanel__buttonBack__content">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										fill="currentColor"
-										class="bi bi-caret-left-fill"
-										viewBox="0 0 16 16"
-									>
-										<path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-									</svg>
-									<span>Back</span>
-								</div>
-								<h3>Courses</h3>
-
-							</div>
 							<div id="cp-courses" className="courses">
 								<div className="courses__post management__form-container">
-									
 									<form action="submit" onSubmit={postCourse}>
 										<input type="text" name="name" />
 										<select name="institution_id" id="institution_id">
@@ -390,32 +349,11 @@ export default function ManagementPanel() {
 						id="users"
 						className="managementpanel__users managementpanel__item hidden"
 					>
+						<AppHeader closeHandler={() => { closeThisItem("users"); }} tabName="Users" />
 						<div className="managementpanel__item__header">
-							<div
-								className="managementPanel__buttonBack"
-								onClick={() => {
-									closeThisItem("users");
-								}}
-							>
-								<div className="managementPanel__buttonBack__content">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										fill="currentColor"
-										class="bi bi-caret-left-fill"
-										viewBox="0 0 16 16"
-									>
-										<path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-									</svg>
-									<span>Back</span>
-								</div>
-								<h3>Users</h3>
-
-							</div>
 							<div id="cp-users" className="users">
 								<div className="users__post management__form-container">
-									
+
 									<form action="submit" onSubmit={createUser}>
 										<label htmlFor="email">Email </label>
 										<input autoComplete="off" type="text" name="email" />
@@ -439,29 +377,8 @@ export default function ManagementPanel() {
 						id="enrollments"
 						className="managementpanel__enrollments managementpanel__item hidden"
 					>
-						<div className="managementpanel__item__header">
-							<div
-								className="managementPanel__buttonBack"
-								onClick={() => {
-									closeThisItem("enrollments");
-								}}
-							>
-								<div className="managementPanel__buttonBack__content">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										fill="currentColor"
-										class="bi bi-caret-left-fill"
-										viewBox="0 0 16 16"
-									>
-										<path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-									</svg>
-									<span>Back</span>
-								</div>
-								<h3>Enrollments</h3>
-
-							</div>
+						<AppHeader closeHandler={() => { closeThisItem("enrollments"); }} tabName="Enrollments" />
+						<div className="managementpanel__item__header" style={{ marginLeft: '9%' }}>
 							<div className="user_tuition management__form-container">
 								<form action="submit" onSubmit={userEnroll}>
 									<label htmlFor="tuition_course">Course</label>
@@ -503,32 +420,10 @@ export default function ManagementPanel() {
 						id="sessions"
 						className="managementpanel__sessions managementpanel__item hidden"
 					>
-						<div className="managementpanel__item__header">
-							<div
-								className="managementPanel__buttonBack"
-								onClick={() => {
-									closeThisItem("sessions");
-								}}
-							>
-								<div className="managementPanel__buttonBack__content">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										fill="currentColor"
-										class="bi bi-caret-left-fill"
-										viewBox="0 0 16 16"
-									>
-										<path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-									</svg>
-									<span>Back</span>
-								</div>
-								<h3>Sessions</h3>
-
-							</div>
-							<div id="cp-sessions" className="sessions">
+						<AppHeader closeHandler={() => { closeThisItem("sessions"); }} tabName="Sessions" />
+						<div className="managementpanel__item__header" style={{ height: '95vh' }}>
+							<div id="cp-sessions" className="sessions" style={{ marginBottom: '9vh' }}>
 								<div className="sessions__post management__form-container">
-									
 									<form action="submit" onSubmit={postSession}>
 										<label htmlFor="institution_name">Subject:</label>
 										<input
@@ -592,10 +487,9 @@ export default function ManagementPanel() {
 
 				<BottomButtons mobile={isMobile} location={"management"} />
 			</div>
-		):
-		(
-			<Loader/>
-
-		)
+		) :
+			(
+				<Loader />
+			)
 	);
 }

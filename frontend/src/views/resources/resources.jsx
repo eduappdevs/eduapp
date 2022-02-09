@@ -1,16 +1,16 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import Navbar from "../../components/navbar/navbar";
+import Navbar from "../../components/navbar/Navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
-import ResourcesModal from "../../components/modals/resourcesModal";
-import OpenedResource from "./openedResource/openedResource";
+import ResourcesModal from "../../components/modals/ResourcesModal";
+import OpenedResource from "./openedResource/OpenedResource";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
 import { GetCourses } from '../../hooks/GetCourses'
 import DarkModeChanger from '../../components/DarkModeChanger'
 import CourseSelector from "../../components/courseSelector/CourseSelector";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import "./resources.css";
+import "./Resources.css";
 
 export default function Resources(props) {
 	const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -70,6 +70,9 @@ export default function Resources(props) {
 		document
 			.getElementById(`resource__${e.target.id}__opened`)
 			.classList.remove("openedResource__hidden");
+		setTimeout(() => {
+			document.getElementsByTagName("header")[0].style.display = "none";
+		}, 75);
 	};
 
 	const createResource = () => {
@@ -114,8 +117,8 @@ export default function Resources(props) {
 								</div>
 							</form>
 						</div>
-						{courseSelected && courses.filter(course => course.course_id === courseSelected)[0].isTeacher
-							|| userInfo.isAdmin
+						{courseSelected && (courses.filter(course => course.course_id === courseSelected)[0].isTeacher
+							|| userInfo.isAdmin)
 							?
 							<div className="resources__addNewResource" onClick={createResource}>
 								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">

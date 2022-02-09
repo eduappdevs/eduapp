@@ -169,7 +169,7 @@
 }
 
 .openedResource__hidden {
-	transform: translateX(-5000px);
+	transform: translateX(-500px);
 }
 
 .resources__NO_FILES {

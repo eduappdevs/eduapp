@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./openedResource.css";
+import AppHeader from "../../../components/appHeader/AppHeader";
+import "./OpenedResource.css";
 
 export default function OpenedResource(props) {
 	const [id, setId] = useState(props.data.id);
@@ -35,6 +36,9 @@ export default function OpenedResource(props) {
 		document
 			.getElementById("resource__res" + props.data.name + props.courseSelected + "__opened")
 			.classList.add("openedResource__hidden");
+		setTimeout(() => {
+			document.getElementsByTagName("header")[0].style.display = "flex";
+		}, 150);
 	};
 
 	const isImage = (image) => {
@@ -48,7 +52,14 @@ export default function OpenedResource(props) {
 			id={"resource__res" + props.data.name + props.courseSelected + "__opened"}
 			className={"openedResource__main-container openedResource__hidden"}
 		>
-			<div className="resourceOpened__header">
+			<AppHeader
+				type={"resource"}
+				closeHandler={() => { closeResource(); }}
+				resourceName={name}
+				editResource={() => { editResource(id); }}
+				deleteResource={() => { deleteResource(id); }}
+			/>
+			{/* <div className="resourceOpened__header">
 				<div className="resourceOpened__backToResources">
 					<div
 						className="resourceOpened__backToResources__container"
@@ -114,7 +125,7 @@ export default function OpenedResource(props) {
 						)}
 					</div>
 				</div>
-			</div>
+			</div> */}
 			<div className="resourceOpened__info">
 				<h1>{name}</h1>
 				<p>{description}</p>
