@@ -12,10 +12,21 @@
 
 }
 
+.positionFixed {
+    position: fixed;
+}
+
 .calendar {
+    margin-top: 1.5em;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media screen and (min-width:1000px) {
+    .calendar {
+        margin-top: 5em;
+    }
 }
 
 .calendar>.calendar-container {
@@ -47,95 +58,7 @@
 
 }
 
-.calendar-view-main-container {
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    right: 0;
-}
 
-.calendar-view-hidden {
-    display: none;
-}
-
-.calendar-view {
-    background-color: var(--backgroundColor);
-    border-radius: 10px;
-    box-shadow: 0 0px 5px var(--textColor);
-    opacity: 1;
-    transform: none;
-    transition: opacity 280ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 186ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    transform-origin: 145.898px 0px;
-    width: 100%;
-    margin-left: 20%;
-    margin-right: 20%;
-}
-
-
-.calendar-view-header {
-    display: flex;
-    flex-direction: row;
-    -webkit-box-pack: end;
-    justify-content: flex-end;
-    align-items: flex-start;
-    padding-top: 5%;
-    padding-right: 10%;
-    margin-top: 5%;
-}
-
-.calendar-view-contents {
-    display: flex;
-    flex-direction: column;
-    margin-left: 10%;
-    margin-right: 10%;
-}
-
-.calendar-view-contents-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    flex-direction: row;
-    font-family: "Consolas";
-    color: var(--textColor);
-}
-
-.calendar-view-contents-header>svg {
-    height: 8vh;
-    width: 8vw;
-    fill: var(--orange);
-}
-
-.calendar-view-contents-header>p {
-    margin-left: 15px;
-    text-decoration: none;
-    font-weight: lighter;
-    text-indent: 0;
-    font-size: 20px;
-    margin-top: 3vh;
-    margin-bottom: 3vh;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-}
-
-.calendar-view-contents-info {
-    margin-left: 15%;
-    font-size: 18px;
-    display: flex;
-    flex-direction: column;
-}
-.calendar-view-hour{
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-}
-.calendar-view-hour>p{
-    margin-left: 10px;
-}
 
 /* api calendar css */
 .MuiPaper-root {

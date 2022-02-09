@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
+import { styled } from "@mui/material/styles";
 import Paper from "@material-ui/core/Paper";
 import {
   Scheduler,
@@ -17,18 +18,19 @@ import {
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import DarkModeChanger from "../../components/DarkModeChanger";
-import View from "./eventsView/view"
+import View from "./eventsView/view";
 import "./calendar.css";
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
+  const [activeEvent, setActiveEvent] = useState({});
 
   const today = new Date();
   const currentDate = today;
 
-  let temp = [];
   const getCalendar = async () => {
+    let temp = [];
     let annotations = await axios.get(
       "http://localhost:3000/calendar_annotations/"
     );
@@ -47,9 +49,47 @@ export default function Calendar() {
       });
     }
     setAnnotations(temp);
-    console.log(temp[1].id);
   };
 
+  const getCalendarEvent = (eventId) => {
+    for (let event of annotations) {
+      if (event.id === eventId) {
+        setActiveEvent(event);
+        break;
+      }
+    }
+  };
+
+  const showEventView = async (eventId) => {
+    getCalendarEvent(eventId);
+    document
+      .getElementsByClassName("calendar-view-main-container")[0]
+      .classList.remove("calendar-view-hidden");
+    document
+      .getElementsByClassName("calendar-main-container")[0]
+      .classList.add("positionFixed");
+  };
+
+  const StyledDiv = styled("div")(({ theme }) => ({}));
+  const Appointment = ({ data, children, style, ...restProps }) => (
+    <StyledDiv
+      className={`event_${data.id}`}
+      onClick={() => {
+        showEventView(data.id);
+      }}
+    >
+      <Appointments.Appointment
+        {...restProps}
+        style={{
+          ...style,
+          // backgroundColor: data.bgColor,
+          borderRadius: "8px",
+        }}
+      >
+        {children}
+      </Appointments.Appointment>
+    </StyledDiv>
+  );
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
@@ -64,7 +104,7 @@ export default function Calendar() {
   useEffect(() => {
     checkMediaQueries();
     getCalendar();
-    
+
     DarkModeChanger(localStorage.getItem("darkMode"));
     if (window.matchMedia("(max-width: 1100px)").matches) {
       setItsMobileDevice(true);
@@ -92,21 +132,15 @@ export default function Calendar() {
                   <DateNavigator />
                   <TodayButton />
                   <ViewSwitcher />
-                  <Appointments />
-                  <AppointmentTooltip
-                    showCloseButton
-                    visible={false}
-                    onVisibilityChange={() => {
-                      console.log("Prompt Event View");
-                    }}
-                  />
+                  <Appointments appointmentComponent={Appointment} />
+                  <AppointmentTooltip showCloseButton visible={false} />
                 </Scheduler>
               </Paper>
             </div>
           </div>
         </div>
       </section>
-      <View/>
+      <View data={activeEvent} />
       <div className="button-calendar-option">
         <svg
           xmlns="http://www.w3.org/2000/svg"
