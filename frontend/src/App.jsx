@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Resources from "./views/resources/resources";
-import Login from "./views/login/login";
+import Resources from "./views/resources/Resources";
+import Login from "./views/login/Login";
 import Home from "./views/home/Home";
 import React from "react";
 import requireAuth from "./components/auth/RequireAuth";

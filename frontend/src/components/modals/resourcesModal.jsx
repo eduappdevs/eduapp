@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import API from "../../API";
-import "./modal.css";
+import "./ResourcesModal.css";
 let finalData = new FormData();
 
 export default function ResourcesModal(props) {

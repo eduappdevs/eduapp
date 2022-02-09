@@ -1,10 +1,10 @@
 /* eslint-disable array-callback-return */
 import React from "react";
 import { useEffect, useState } from "react";
-import Navbar from "../../components/navbar/navbar";
+import Navbar from "../../components/navbar/Navbar";
 import BottomButtons from "../../components/bottomButtons/bottomButtons";
-import SessionAdd from "../../components/modals/modals-home/sessionAdd";
-import SessionEdit from "../../components/modals/modals-home/sessionEdit";
+import SessionAdd from "../../components/modals/modals-home/SessionAdd";
+import SessionEdit from "../../components/modals/modals-home/SessionEdit";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
@@ -12,7 +12,7 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { GetCourses } from "../../hooks/GetCourses";
 import DarkModeChanger from "../../components/DarkModeChanger";
 import CourseSelector from "../../components/courseSelector/CourseSelector";
-import "./home.css";
+import "./Home.css";
 
 export default function Home() {
 	let userInfo = FetchUserInfo(localStorage.userId);
