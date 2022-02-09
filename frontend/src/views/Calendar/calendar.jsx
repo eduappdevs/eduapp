@@ -17,6 +17,7 @@ import {
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import DarkModeChanger from "../../components/DarkModeChanger";
+import View from "./eventsView/view"
 import "./calendar.css";
 
 export default function Calendar() {
@@ -105,6 +106,7 @@ export default function Calendar() {
           </div>
         </div>
       </section>
+      <View/>
       <div className="button-calendar-option">
         <svg
           xmlns="http://www.w3.org/2000/svg"
