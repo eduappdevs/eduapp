@@ -153,6 +153,7 @@ header>.profile-menu-mobile>ul>li {
 	border: 2px solid var(--shadowColor);
 	text-align: center;
 	pointer-events: all;
+	width: 65%;
 }
 
 header>.profile-menu-mobile>ul>li>a {

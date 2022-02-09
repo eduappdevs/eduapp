@@ -30,16 +30,29 @@ export default function ChatMenu() {
 		}
 
 		setChatTitle(event.target.childNodes[1].childNodes[0].innerHTML);
-		chatMenu.style.display = "none";
 		chatBox.style.display = "flex";
+		setTimeout(()=>{
+			chatBox.classList.add('chat-box-opened');
+			chatBox.classList.remove('chat-box-closed');
+
+		},100)
+		setTimeout(()=>{
+			chatMenu.style.display = "none";
+		},400)
+
 	};
 
 	const closeChat = () => {
 		const chatBox = document.getElementById("chat-box");
 		const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
+		chatBox.classList.remove('chat-box-opened');
+		chatBox.classList.add('chat-box-closed');
+		setTimeout(()=>{
 
-		chatBox.style.display = "none";
-		chatMenu.style.display = "block";
+			chatBox.style.display = "none";
+			chatMenu.style.display = "block";
+
+		},300)
 	};
 
 	useEffect(() => {
@@ -55,7 +68,7 @@ export default function ChatMenu() {
 
 	return (
 		<>
-			<div id="chat-box">
+			<div id="chat-box" className="chat-box-closed">
 				<MainChat
 					chatName={chatTitle}
 					closeHandler={() => {

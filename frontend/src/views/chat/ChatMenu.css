@@ -1,6 +1,15 @@
 #chat-box {
 	display: none;
 	transition: all 0.3s;
+
+}
+.chat-box-closed
+{
+	transform: translateX(120vw);
+}
+.chat-box-opened
+{
+	transform: translateX(0);
 }
 
 .chat-menu-container {
