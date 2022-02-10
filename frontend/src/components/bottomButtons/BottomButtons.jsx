@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "./bottomButtons.css";
 import { Link } from "react-router-dom";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import "./BottomButtons.css";
 
 export default function BottomButtons({ mobile, location }) {
 	const [inHome, setInHome] = useState(false);
