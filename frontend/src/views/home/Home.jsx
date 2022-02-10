@@ -2,7 +2,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
-import BottomButtons from "../../components/bottomButtons/bottomButtons";
+import BottomButtons from "../../components/bottomButtons/BottomButtons";
 import SessionAdd from "../../components/modals/modals-home/SessionAdd";
 import SessionEdit from "../../components/modals/modals-home/SessionEdit";
 import axios from "axios";

@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
-import BottomButtons from "../../components/bottomButtons/bottomButtons";
+import BottomButtons from "../../components/bottomButtons/BottomButtons";
 import ResourcesModal from "../../components/modals/ResourcesModal";
 import OpenedResource from "./openedResource/OpenedResource";
 import axios from "axios";

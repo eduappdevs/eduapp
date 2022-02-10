@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./ManagementPanel.css";
 // import DarkModeChanger from "../../components/DarkModeChanger";
 import Navbar from "../../components/navbar/Navbar";
-import BottomButtons from "../../components/bottomButtons/bottomButtons";
+import BottomButtons from "../../components/bottomButtons/BottomButtons";
 import API from "../../API";
 import Loader from '../../components/loader/Loader'
 import AppHeader from "../../components/appHeader/AppHeader";

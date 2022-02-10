@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import DarkModeChanger from "../../components/DarkModeChanger";
-import BottomButtons from "../../components/bottomButtons/bottomButtons";
+import BottomButtons from "../../components/bottomButtons/BottomButtons";
 import MainChat from "./mainChat/MainChat";
 import "./ChatMenu.css";
 

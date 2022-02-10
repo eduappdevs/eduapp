@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
-import BottomButtons from "../../components/bottomButtons/bottomButtons";
+import BottomButtons from "../../components/bottomButtons/BottomButtons";
 import Paper from "@material-ui/core/Paper";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import {
