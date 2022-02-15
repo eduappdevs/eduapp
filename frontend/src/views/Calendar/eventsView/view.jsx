@@ -5,40 +5,10 @@ import EditView from "./EditView";
 
 export default function View(props) {
   const [editEvent, setEditEvent] = useState({});
-  function enableScroll() {
-    var wheelEvent =
-      "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
-    window.removeEventListener(
-      wheelEvent,
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-    window.removeEventListener(
-      "touchmove",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-    window.removeEventListener(
-      "keydown",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-  }
   const closeButton = async () => {
     document
       .getElementsByClassName("calendar-view-main-container")[0]
       .classList.add("calendar-view-hidden");
-
-    enableScroll();
   };
   const openEditMenu = async () => {
     let eventEdit = props.data;
@@ -47,11 +17,9 @@ export default function View(props) {
     document
       .getElementsByClassName("calendar-view-edit-main-container")[0]
       .classList.remove("calendar-view-edit-hidden");
-    enableScroll();
     document
       .getElementsByClassName("button-calendar-option")[0]
       .classList.add("button-calendar-option-hidden");
-    enableScroll();
   };
   const getTime = () => {
     if (props.data.startDate !== undefined) {

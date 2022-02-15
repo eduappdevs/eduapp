@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import "./views.css";
 export default function EditView(props) {
   const [updateValue, setUpdateValue] = useState({});
+
   const getTimeStart = () => {
     if (props.data.startDate !== undefined) {
       let start = props.data.startDate;
@@ -10,6 +11,7 @@ export default function EditView(props) {
       return start;
     }
   };
+
   const getTimeEnd = () => {
     if (props.data.startDate !== undefined) {
       let end = props.data.endDate;
@@ -17,34 +19,7 @@ export default function EditView(props) {
       return end;
     }
   };
-  function enableScroll() {
-    var wheelEvent =
-      "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
-    window.removeEventListener(
-      wheelEvent,
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-    window.removeEventListener(
-      "touchmove",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-    window.removeEventListener(
-      "keydown",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-  }
+
   const closeButton = async () => {
     document
       .getElementsByClassName("calendar-view-edit-main-container")[0]
@@ -55,12 +30,13 @@ export default function EditView(props) {
       document
       .getElementsByClassName("calendar-main-container")[0]
       .classList.remove("positionFixed");
-    enableScroll();
   };
+
   const valueInput = async (e) => {
     console.log({ [e.target.name]: e.target.value });
     // setUpdateValue()
   };
+  
   const updateEvent = async (e) => {
     e.preventDefault();
     // var titleValue = document.getElementById("title").value;

@@ -1,10 +1,10 @@
-import React from "react";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import Navbar from "../../components/navbar/navbar";
-import BottomButtons from "../../components/bottomButtons/bottomButtons";
-import { styled } from "@mui/material/styles";
-import Paper from "@material-ui/core/Paper";
+import React from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import Navbar from '../../components/navbar/navbar';
+import BottomButtons from '../../components/bottomButtons/bottomButtons';
+import { styled } from '@mui/material/styles';
+import Paper from '@material-ui/core/Paper';
 import {
   Scheduler,
   DateNavigator,
@@ -15,12 +15,12 @@ import {
   ViewSwitcher,
   TodayButton,
   AppointmentTooltip,
-} from "@devexpress/dx-react-scheduler-material-ui";
-import { ViewState } from "@devexpress/dx-react-scheduler";
-import DarkModeChanger from "../../components/DarkModeChanger";
-import View from "./eventsView/View";
-import "./calendar.css";
-import CreateView from "./eventsView/CreateView";
+} from '@devexpress/dx-react-scheduler-material-ui';
+import { ViewState } from '@devexpress/dx-react-scheduler';
+import DarkModeChanger from '../../components/DarkModeChanger';
+import View from './eventsView/View';
+import './calendar.css';
+import CreateView from './eventsView/CreateView';
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
@@ -33,7 +33,7 @@ export default function Calendar() {
   const getCalendar = async () => {
     let temp = [];
     let annotations = await axios.get(
-      "http://localhost:3000/calendar_annotations/"
+      'http://localhost:3000/calendar_annotations/'
     );
     for (let e of annotations.data) {
       let id = e.id;
@@ -60,49 +60,31 @@ export default function Calendar() {
       }
     }
   };
-  function preventScroll() {
-    var wheelEvent =
-      "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
-    window.addEventListener(
-      wheelEvent,
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-    window.addEventListener(
-      "touchmove",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-    window.addEventListener(
-      "keydown",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-  }
   const openCreate = async () => {
-    document
-      .getElementsByClassName("calendar-view-create-main-container")[0]
-      .classList.remove("calendar-view-create-hidden");
-    preventScroll();
+    const chatBox = document.getElementById('chat-box');
+    chatBox.style.display = 'flex';
+    const backgroundCalendar =
+      document.getElementsByClassName('background-shadow')[0];
+    const calendar = document.getElementsByClassName('calendar')[0];
+    backgroundCalendar.style.display = 'none';
+    calendar.style.position = 'fixed';
+    setTimeout(() => {
+      backgroundCalendar.style.display = 'block';
+    }, 100);
+    setTimeout(() => {
+      chatBox.classList.add('chat-box-opened');
+      chatBox.classList.remove('calendar-view-create-hidden');
+    }, 400);
   };
+
   const showEventView = async (eventId) => {
     getCalendarEvent(eventId);
     document
-      .getElementsByClassName("calendar-view-main-container")[0]
-      .classList.remove("calendar-view-hidden");
-    preventScroll();
+      .getElementsByClassName('calendar-view-main-container')[0]
+      .classList.remove('calendar-view-hidden');
   };
 
-  const StyledDiv = styled("div")(({ theme }) => ({}));
+  const StyledDiv = styled('div')(({ theme }) => ({}));
   const Appointment = ({ data, children, style, ...restProps }) => (
     <StyledDiv
       className={`event_${data.id}`}
@@ -115,7 +97,7 @@ export default function Calendar() {
         style={{
           ...style,
           // backgroundColor: data.bgColor,
-          borderRadius: "8px",
+          borderRadius: '8px',
         }}
       >
         {children}
@@ -124,8 +106,8 @@ export default function Calendar() {
   );
   const checkMediaQueries = () => {
     setInterval(() => {
-      if (window.matchMedia("(max-width: 1100px)").matches) {
-        DarkModeChanger(localStorage.getItem("darkMode"));
+      if (window.matchMedia('(max-width: 1100px)').matches) {
+        DarkModeChanger(localStorage.getItem('darkMode'));
         setItsMobileDevice(true);
       } else {
         setItsMobileDevice(false);
@@ -137,8 +119,8 @@ export default function Calendar() {
     checkMediaQueries();
     getCalendar();
 
-    DarkModeChanger(localStorage.getItem("darkMode"));
-    if (window.matchMedia("(max-width: 1100px)").matches) {
+    DarkModeChanger(localStorage.getItem('darkMode'));
+    if (window.matchMedia('(max-width: 1100px)').matches) {
       setItsMobileDevice(true);
     } else {
       setItsMobileDevice(false);
@@ -147,8 +129,8 @@ export default function Calendar() {
 
   return (
     <div className="calendar-main-container">
-      <Navbar mobile={ItsMobileDevice} location={"calendar"} />
-      <section className={ItsMobileDevice ? "mobileSection" : "desktopSection"}>
+      <Navbar mobile={ItsMobileDevice} location={'calendar'} />
+      <section className={ItsMobileDevice ? 'mobileSection' : 'desktopSection'}>
         <div className="calendar">
           <div className="calendar-container">
             <div className="calendar-api">
@@ -182,9 +164,10 @@ export default function Calendar() {
           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
         </svg>
       </div>
+      <div className="background-shadow"></div>
       <View data={activeEvent} />
       <CreateView />
-      <BottomButtons mobile={ItsMobileDevice} location={"calendar"} />
+      <BottomButtons mobile={ItsMobileDevice} location={'calendar'} />
     </div>
   );
 }

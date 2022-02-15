@@ -1,88 +1,71 @@
-import React from "react";
-import "./views.css";
-import axios from "axios";
+import React from 'react';
+import './views.css';
+import axios from 'axios';
 
 export default function CreateView() {
-  function enableScroll() {
-    var wheelEvent =
-      "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
-    window.removeEventListener(
-      wheelEvent,
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-    window.removeEventListener(
-      "touchmove",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-    window.removeEventListener(
-      "keydown",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      },
-      { passive: false }
-    );
-  }
   const closeButton = async () => {
-    document
-      .getElementsByClassName("calendar-view-create-main-container")[0]
-      .classList.add("calendar-view-create-hidden");
-    document
-      .getElementsByClassName("button-calendar-option")[0]
-      .classList.remove("button-calendar-option-hidden");
-    enableScroll();
+    const chatBox = document.getElementById('chat-box');
+    const calendar = document.getElementsByClassName('calendar')[0];
+    calendar.style.position = 'static';
+    chatBox.style.display = 'flex';
+    const backgroundCalendar =
+      document.getElementsByClassName('background-shadow')[0];
+    chatBox.classList.remove('chat-box-opened');
+    chatBox.classList.add('chat-box-closed');
+    setTimeout(() => {
+      backgroundCalendar.style.display = 'none';
+    }, 150);
   };
+
   const createEvent = async (e) => {
     e.preventDefault();
-    var titleValue = document.getElementById("newTitle").value;
-    var descriptionValue = document.getElementById("newDescription").value;
-    var startValue = document.getElementById("newStartDate").value;
-    var endValue = document.getElementById("newEndDate").value;
+    var titleValue = document.getElementById('newTitle').value;
+    var descriptionValue = document.getElementById('newDescription').value;
+    var startValue = document.getElementById('newStartDate').value;
+    var endValue = document.getElementById('newEndDate').value;
     var newEvent = {};
     if (
-      (titleValue !== "",
-      descriptionValue !== "",
-      startValue !== "",
-      endValue !== "")
+      (titleValue !== '',
+      descriptionValue !== '',
+      startValue !== '',
+      endValue !== '')
     ) {
       newEvent = {
         annotation_start_date: startValue,
         annotation_end_date: endValue,
         annotation_title: titleValue,
         annotation_description: descriptionValue,
-        location: "fr-FR",
+        location: 'fr-FR',
         isGlobal: true,
         user_id: 1,
       };
       axios
-        .post("http://localhost:3000/calendar_annotations/", newEvent)
+        .post('http://localhost:3000/calendar_annotations/', newEvent)
         .then(window.location.reload())
-        .catch(console.log("error"));
+        .catch(console.log('error'));
     } else {
-      console.log("error");
+      alertCreate();
     }
   };
+
+  const alertCreate = async () => {
+    document
+      .getElementsByClassName('calendar-view-alert-create-container')[0]
+      .classList.remove('calendar-view-alert-create-hidden');
+    setTimeout(() => {
+      document
+        .getElementsByClassName('calendar-view-alert-create-container')[0]
+        .classList.add('calendar-view-alert-create-hidden');
+    }, 2000);
+  };
+
   return (
-    <div className="calendar-view-create-main-container calendar-view-create-hidden">
+    <div
+      id="chat-box"
+      className="calendar-view-create-main-container calendar-view-create-hidden"
+    >
       <div className="calendar-view-create">
         <div className="calendar-view-create-header">
-          <div className="calendar-view-create-header-delete-button">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="bi bi-trash3"
-              viewBox="0 0 16 16"
-            >
-              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-            </svg>
-          </div>
           <div
             className="calendar-view-create-header-close-button"
             onClick={closeButton}
@@ -110,7 +93,7 @@ export default function CreateView() {
               <input id="newTitle" name="title" type="text"></input>
             </div>
             <div className="calendar-view-create-hour">
-              <h3>Hour</h3>
+              <h3>Day</h3>
               <div className="calendar-view-create-hour-input">
                 <input id="newStartDate" name="start" type="datetime-local" />
                 <input id="newEndDate" name="end" type="datetime-local" />
@@ -127,6 +110,11 @@ export default function CreateView() {
             </div>
             <button type="submit">Save</button>
           </form>
+        </div>
+      </div>
+      <div className="calendar-view-alert-create-container calendar-view-alert-create-hidden">
+        <div className="calendar-view-alert-create =">
+          <h3>No has introducido los valores correactamente.</h3>
         </div>
       </div>
     </div>

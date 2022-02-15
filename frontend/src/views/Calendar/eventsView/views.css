@@ -247,7 +247,6 @@
     height: 100vh;
     top: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .calendar-view-create {
@@ -278,15 +277,6 @@
     width: 25px;
     height: 25px;
     fill: currentColor;
-}
-
-.calendar-view-create-header-delete-button {
-    width: 25px;
-    height: 25px;
-    fill: currentColor;
-    margin-right: 15%;
-    padding-right: 15%;
-    border-right: 0.5px solid var(--textColor);
 }
 
 .calendar-view-create-contents {
@@ -329,8 +319,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 4%;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 .calendar-view-create-hour-input>input {
@@ -341,6 +330,7 @@
     padding: 0.5em 0.5em 0.5em 0.5em;
     color: var(--textColor);
     margin-right: 5vw;
+    margin-top: 3vh;
 }
 
 .calendar-view-create-description {
@@ -360,22 +350,49 @@
     padding: 5% 5% 5% 5%;
 }
 
-button {
-    margin-left: 49vw;
-    margin-top: 15%;
-    margin-bottom: 15%;
-    border-style: none;
-    color: var(--textColor);
-    font-size: 14px;
-    background-color: var(--blue);
-    border: 0;
-    padding: 1em;
-    border-radius: 5px;
-    cursor: pointer;
-}
 
 .calendar-view-create-send-button>button:focus {
     pointer-events: none;
+}
+
+.calendar-view-alert-create-container {
+    font-family: "Consolas";
+    font-size: 18px;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.calendar-view-alert-create {
+    background-color: var(--backgroundColor);
+    width: 90%;
+    padding: 0.1em 0.1em 0.1em 0.1em;
+    color: var(--textColor);
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--textColor);
+    margin-left: 5vw;
+    margin-right: 5vw;
+    border-radius: 15px;
+}
+
+.calendar-view-alert-create>h3 {
+    margin-top: 3vh;
+    margin-left: 5vw;
+    margin-right: 5vw;
+    margin-bottom: 3vh;
+}
+
+.calendar-view-alert-create-hidden {
+    display: none;
 }
 
 input[type="time"]::-webkit-calendar-picker-indicator {
@@ -399,4 +416,18 @@ input {
 :focus {
     outline-color: transparent;
     outline-style: none;
+}
+
+button {
+    margin-left: 49vw;
+    margin-top: 15%;
+    margin-bottom: 15%;
+    border-style: none;
+    color: white;
+    font-size: 14px;
+    background-color: var(--blue);
+    border: 0;
+    padding: 1em;
+    border-radius: 5px;
+    cursor: pointer;
 }
