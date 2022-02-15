@@ -1,4 +1,8 @@
 Rails.application.routes.draw do  
+  resources :chat_messages
+  resources :chat_participants
+  resources :chat_base_infos
+  resources :chat_bases
   resources :calendar_annotations
   resources :tuitions
   resources :courses

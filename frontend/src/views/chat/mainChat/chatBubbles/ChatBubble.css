@@ -38,6 +38,7 @@
 .foreign-message>p {
 	color: white;
 	padding: 10px 1.25em 10px 1.25em;
+	margin: 10px 0 10px 0;
 }
 
 .self-align {
@@ -48,4 +49,19 @@
 .foreign-align {
 	float: left;
 	margin-left: 10px;
+}
+
+.show-author {
+	font-weight: bolder;
+	font-size: 0.85em;
+	margin-bottom: 0 !important;
+	margin-left: 4px !important;
+	max-width: 60%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.has-author {
+	margin: -15px 0 0 0 !important;
+	padding-bottom: 0;
 }

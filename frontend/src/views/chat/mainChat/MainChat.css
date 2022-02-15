@@ -11,12 +11,14 @@ svg {
 #navbar {
 	display: none;
 }
-.main-chat-messages-container{
+
+.main-chat-messages-container {
 	overflow: auto;
 	height: 100vh;
 }
+
 .main-chat-messages-container>div:first-child {
-	margin-top: 6em;
+	margin-top: 13vh;
 }
 
 .main-chat-messages-container>div:last-child {

@@ -3,19 +3,20 @@
 	transition: all 0.3s;
 
 }
-.chat-box-closed
-{
+
+.chat-box-closed {
 	transform: translateX(120vw);
 }
-.chat-box-opened
-{
+
+.chat-box-opened {
 	transform: translateX(0);
 }
 
 .chat-menu-container {
-	height: 65em;
+	height: 100vh;
 	width: 100%;
 	font-family: Consolas;
+	margin-bottom: 0;
 }
 
 .chats-container {
@@ -195,4 +196,14 @@
 .chat-add-button>svg {
 	width: 60px;
 	height: 60px;
+}
+
+@media screen and (max-height: 680px) {
+	.chat-add-button {
+		top: 75%;
+	}
+
+	.chat-menu-container {
+		margin-bottom: 25%;
+	}
 }
