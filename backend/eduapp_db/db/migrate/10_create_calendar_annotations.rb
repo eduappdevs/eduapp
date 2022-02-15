@@ -5,7 +5,6 @@ class CreateCalendarAnnotations < ActiveRecord::Migration[6.1]
       t.string :annotation_end_date
       t.string :annotation_title
       t.string :annotation_description
-      t.string :location
       t.boolean :isGlobal
       t.integer :user_id
 

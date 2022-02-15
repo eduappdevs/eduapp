@@ -48,7 +48,6 @@ ActiveRecord::Schema.define(version: 10) do
     t.string "annotation_end_date"
     t.string "annotation_title"
     t.string "annotation_description"
-    t.string "location"
     t.boolean "isGlobal"
     t.integer "user_id"
     t.datetime "created_at", precision: 6, null: false

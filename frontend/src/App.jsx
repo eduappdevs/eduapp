@@ -7,7 +7,7 @@ import requireAuth from "./components/auth/RequireAuth";
 import ManagementPanel from "./views/ManagementPanel/ManagementPanel";
 import { FetchUserInfo } from "./hooks/FetchUserInfo";
 import Loader from "./components/loader/Loader";
-import Calendar from "./views/Calendar/calendar";
+import Calendar from "./views/Calendar/Calendar";
 import ChatMenu from "./views/chat/ChatMenu";
 
 export default function App() {

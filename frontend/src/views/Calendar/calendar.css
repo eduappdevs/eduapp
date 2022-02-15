@@ -13,7 +13,7 @@
 }
 
 .positionFixed {
-    position: fixed;
+    overflow-y: hidden;
 }
 
 .calendar {
@@ -50,6 +50,11 @@
     border-radius: 80%;
     background-color: var(--orange);
     margin-top: -5%;
+}
+
+.button-calendar-option-hidden {
+    display: none;
+
 }
 
 .button-calendar-option>svg {

@@ -18,8 +18,9 @@ import {
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import DarkModeChanger from "../../components/DarkModeChanger";
-import View from "./eventsView/view";
+import View from "./eventsView/View";
 import "./calendar.css";
+import CreateView from "./eventsView/CreateView";
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
@@ -59,15 +60,46 @@ export default function Calendar() {
       }
     }
   };
-
+  function preventScroll() {
+    var wheelEvent =
+      "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
+    window.addEventListener(
+      wheelEvent,
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      { passive: false }
+    );
+    window.addEventListener(
+      "touchmove",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      { passive: false }
+    );
+    window.addEventListener(
+      "keydown",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      { passive: false }
+    );
+  }
+  const openCreate = async () => {
+    document
+      .getElementsByClassName("calendar-view-create-main-container")[0]
+      .classList.remove("calendar-view-create-hidden");
+    preventScroll();
+  };
   const showEventView = async (eventId) => {
     getCalendarEvent(eventId);
     document
       .getElementsByClassName("calendar-view-main-container")[0]
       .classList.remove("calendar-view-hidden");
-    document
-      .getElementsByClassName("calendar-main-container")[0]
-      .classList.add("positionFixed");
+    preventScroll();
   };
 
   const StyledDiv = styled("div")(({ theme }) => ({}));
@@ -140,8 +172,7 @@ export default function Calendar() {
           </div>
         </div>
       </section>
-      <View data={activeEvent} />
-      <div className="button-calendar-option">
+      <div className="button-calendar-option" onClick={openCreate}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="white"
@@ -151,6 +182,8 @@ export default function Calendar() {
           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
         </svg>
       </div>
+      <View data={activeEvent} />
+      <CreateView />
       <BottomButtons mobile={ItsMobileDevice} location={"calendar"} />
     </div>
   );
