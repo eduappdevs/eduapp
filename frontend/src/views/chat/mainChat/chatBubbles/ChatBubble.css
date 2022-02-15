@@ -9,6 +9,10 @@
 	box-shadow: 0 0.125rem 0.5rem rgba(140, 140, 140, 0.3), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.3);
 }
 
+.self-message {
+	background-color: white;
+}
+
 /* Message Triangle Tail Edit */
 /* .self-message::before,
 .foreign-message::before {
@@ -41,6 +45,10 @@
 	margin: 10px 0 10px 0;
 }
 
+.self-message>p {
+	color: var(--blue);
+}
+
 .self-align {
 	float: right;
 	margin-right: 10px;
@@ -62,6 +70,6 @@
 }
 
 .has-author {
-	margin: -15px 0 0 0 !important;
+	margin: -15px 0 10px 0 !important;
 	padding-bottom: 0;
 }
