@@ -8,7 +8,6 @@
     height: 100vh;
     top: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .calendar-view-hidden {
@@ -66,7 +65,7 @@
     align-items: center;
     justify-content: flex-start;
     flex-direction: row;
-    font-family: "Consolas";
+    font-family: Consolas;
     color: var(--textColor);
 }
 
@@ -168,7 +167,7 @@
     font-size: 18px;
     display: flex;
     flex-direction: column;
-    font-family: "Consolas";
+    font-family: Consolas;
     color: var(--textColor);
     margin-bottom: 12vh;
 }
@@ -202,8 +201,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 4%;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 .calendar-view-edit-hour-input>input {
@@ -211,9 +209,11 @@
     border: 1px solid var(--textColor);
     border-radius: 10px;
     font-size: 18px;
-    padding: 0.5em 0.5em 0.5em 0.5em;
+    padding: 0.5em 0 0.5em 1em;
     color: var(--textColor);
     margin-right: 5vw;
+    margin-left: 5vw;
+    margin-top: 3vh;
 }
 
 .calendar-view-edit-description {
@@ -240,17 +240,16 @@
 
 .calendar-view-create-main-container {
     position: fixed;
-    overflow-y: scroll;
     display: flex;
     align-items: center;
     width: 100vw;
     height: 100vh;
     top: 0;
     right: 0;
+
 }
 
 .calendar-view-create {
-    overflow-y: scroll;
     background-color: var(--backgroundColor);
     border-radius: 10px;
     box-shadow: 0 0px 5px var(--textColor);
@@ -259,7 +258,8 @@
     transition: opacity 280ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 186ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     transform-origin: 145.898px 0px;
     width: 90%;
-    height: 100vh;
+    height: 90%;
+    overflow-y: auto;
 }
 
 .calendar-view-create-header {
@@ -270,7 +270,7 @@
     align-items: flex-start;
     padding-top: 5%;
     padding-right: 10%;
-    margin-top: 13vh;
+    margin-top: 8vh;
 }
 
 .calendar-view-create-header-close-button {
@@ -285,7 +285,7 @@
     font-size: 18px;
     display: flex;
     flex-direction: column;
-    font-family: "Consolas";
+    font-family: Consolas;
     color: var(--textColor);
     margin-bottom: 12vh;
 }
@@ -327,9 +327,10 @@
     border: 1px solid var(--textColor);
     border-radius: 10px;
     font-size: 18px;
-    padding: 0.5em 0.5em 0.5em 0.5em;
+    padding: 0.5em 0 0.5em 1em;
     color: var(--textColor);
     margin-right: 5vw;
+    margin-left: 5vw;
     margin-top: 3vh;
 }
 
@@ -356,7 +357,7 @@
 }
 
 .calendar-view-alert-create-container {
-    font-family: "Consolas";
+    font-family: Consolas;
     font-size: 18px;
     position: fixed;
     display: flex;
@@ -395,13 +396,14 @@
     display: none;
 }
 
-input[type="time"]::-webkit-calendar-picker-indicator {
-    background: none;
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    padding: 0em 0em 0em 1em;
+    right: 0;
+    transform: translateX(-1.5em);
     border-style: none;
     border-width: 0px;
     border: none;
-    fill: none;
-    padding: 0 0 0 0;
+    filter: var(--calendarIcon);
 }
 
 input {

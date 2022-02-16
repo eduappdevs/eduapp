@@ -1,67 +1,75 @@
-import React from 'react';
-import './views.css';
-import axios from 'axios';
+import React from "react";
+import "./views.css";
+import axios from "axios";
 
 export default function CreateView() {
   const closeButton = async () => {
-    const chatBox = document.getElementById('chat-box');
-    const calendar = document.getElementsByClassName('calendar')[0];
-    calendar.style.position = 'static';
-    chatBox.style.display = 'flex';
+    const chatBox = document.getElementById("create-box");
+    chatBox.style.display = "flex";
+
     const backgroundCalendar =
-      document.getElementsByClassName('background-shadow')[0];
-    chatBox.classList.remove('chat-box-opened');
-    chatBox.classList.add('chat-box-closed');
+      document.getElementsByClassName("background-shadow")[0];
+
+    chatBox.classList.remove("create-box-opened");
+    chatBox.classList.add("create-box-closed");
+
+    const calendarMainScroll = document.getElementsByClassName(
+      "calendar-main-container"
+    )[0];
+
+    calendarMainScroll.classList.remove("disable-scroll");
+
     setTimeout(() => {
-      backgroundCalendar.style.display = 'none';
+      backgroundCalendar.style.display = "none";
     }, 150);
   };
 
   const createEvent = async (e) => {
     e.preventDefault();
-    var titleValue = document.getElementById('newTitle').value;
-    var descriptionValue = document.getElementById('newDescription').value;
-    var startValue = document.getElementById('newStartDate').value;
-    var endValue = document.getElementById('newEndDate').value;
+    var titleValue = document.getElementById("newTitle").value;
+    var descriptionValue = document.getElementById("newDescription").value;
+    var startValue = document.getElementById("newStartDate").value;
+    var endValue = document.getElementById("newEndDate").value;
     var newEvent = {};
+    console.log(typeof endValue);
     if (
-      (titleValue !== '',
-      descriptionValue !== '',
-      startValue !== '',
-      endValue !== '')
+      titleValue !== "" &&
+      descriptionValue !== "" &&
+      startValue !== "" &&
+      endValue !== ""
     ) {
       newEvent = {
         annotation_start_date: startValue,
         annotation_end_date: endValue,
         annotation_title: titleValue,
         annotation_description: descriptionValue,
-        location: 'fr-FR',
         isGlobal: true,
         user_id: 1,
       };
       axios
-        .post('http://localhost:3000/calendar_annotations/', newEvent)
+        .post("http://localhost:3000/calendar_annotations/", newEvent)
         .then(window.location.reload())
-        .catch(console.log('error'));
+        .catch(console.log("error"));
     } else {
+      console.log(newEvent)
       alertCreate();
     }
   };
 
   const alertCreate = async () => {
     document
-      .getElementsByClassName('calendar-view-alert-create-container')[0]
-      .classList.remove('calendar-view-alert-create-hidden');
+      .getElementsByClassName("calendar-view-alert-create-container")[0]
+      .classList.remove("calendar-view-alert-create-hidden");
     setTimeout(() => {
       document
-        .getElementsByClassName('calendar-view-alert-create-container')[0]
-        .classList.add('calendar-view-alert-create-hidden');
+        .getElementsByClassName("calendar-view-alert-create-container")[0]
+        .classList.add("calendar-view-alert-create-hidden");
     }, 2000);
   };
 
   return (
     <div
-      id="chat-box"
+      id="create-box"
       className="calendar-view-create-main-container calendar-view-create-hidden"
     >
       <div className="calendar-view-create">
@@ -93,7 +101,7 @@ export default function CreateView() {
               <input id="newTitle" name="title" type="text"></input>
             </div>
             <div className="calendar-view-create-hour">
-              <h3>Day</h3>
+              <h3>Date</h3>
               <div className="calendar-view-create-hour-input">
                 <input id="newStartDate" name="start" type="datetime-local" />
                 <input id="newEndDate" name="end" type="datetime-local" />

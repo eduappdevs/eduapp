@@ -1,15 +1,32 @@
-#chat-box {
+#chat-box,
+#create-box,
+#edit-box,
+#view-box {
     display: none;
     transition: all 0.3s;
-
 }
 
-.chat-box-closed {
-    transform: translatex(-120vw);
-}
-
-.chat-box-opened {
+.chat-box-closed,
+.create-box-closed,
+.edit-box-closed {
     transition: all 0.3s;
+    transform: translatex(-100vw);
+}
+
+.view-box-opened {
+    transition: all 1s;
+    transform: scale(1) !important;
+}
+
+.view-box-closed {
+    transition: all 0.3s;
+    transform: scale(0);
+}
+
+.chat-box-opened,
+.create-box-opened,
+.edit-box-opened {
+    transition: all 1s;
     transform: translateX(0vw);
 }
 
@@ -32,13 +49,14 @@
 
 .calendar-main-container {
     width: 100vw;
-    height: 156vh;
+    height: 100vh;
     color: var(--textColor);
-
+    overflow-y: scroll;
+    overflow: visible;
 }
 
-.positionFixed {
-    overflow-y: hidden;
+.disable-scroll {
+    overflow: hidden;
 }
 
 .calendar {
@@ -46,6 +64,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
 }
 
 @media screen and (min-width:1000px) {

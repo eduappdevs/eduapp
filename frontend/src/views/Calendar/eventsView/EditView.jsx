@@ -2,62 +2,95 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./views.css";
 export default function EditView(props) {
-  const [updateValue, setUpdateValue] = useState({});
-
-  const getTimeStart = () => {
-    if (props.data.startDate !== undefined) {
-      let start = props.data.startDate;
-      start = start.split("T")[1];
-      return start;
-    }
-  };
-
-  const getTimeEnd = () => {
-    if (props.data.startDate !== undefined) {
-      let end = props.data.endDate;
-      end = end.split("T")[1];
-      return end;
-    }
-  };
-
   const closeButton = async () => {
-    document
-      .getElementsByClassName("calendar-view-edit-main-container")[0]
-      .classList.add("calendar-view-edit-hidden");
-    document
-      .getElementsByClassName("button-calendar-option")[0]
-      .classList.remove("button-calendar-option-hidden");
-      document
-      .getElementsByClassName("calendar-main-container")[0]
-      .classList.remove("positionFixed");
+    const chatBox = document.getElementById("edit-box");
+    chatBox.style.display = "flex";
+
+    const backgroundCalendar =
+      document.getElementsByClassName("background-shadow")[0];
+
+    chatBox.classList.remove("edit-box-opened");
+    chatBox.classList.add("edit-box-closed");
+
+    const calendarMainScroll = document.getElementsByClassName(
+      "calendar-main-container"
+    )[0];
+
+    calendarMainScroll.classList.remove("disable-scroll");
+
+    setTimeout(() => {
+      backgroundCalendar.style.display = "none";
+    }, 150);
   };
 
-  const valueInput = async (e) => {
-    console.log({ [e.target.name]: e.target.value });
-    // setUpdateValue()
-  };
-  
   const updateEvent = async (e) => {
     e.preventDefault();
-    // var titleValue = document.getElementById("title").value;
-    // var descriptionValue = document.getElementById("description").value;
-    // var startValue = document.getElementById("start").value;
-    // var endValue = document.getElementById("end").value;
-    // console.log(titleValue, endValue, startValue, descriptionValue);
-    // axios
-    //   .put(`http://localhost:3000/resources/${props.data.id}`)
-    //   .then()
-    //   .catch();
-    document
-      .getElementsByClassName("calendar-view-edit-main-container")[0]
-      .classList.add("calendar-view-edit-hidden");
+    var titleValue = document.getElementById("editTitle").value;
+    var descriptionValue = document.getElementById("editDescription").value;
+    var startValue = document.getElementById("editStartDate").value;
+    var endValue = document.getElementById("editEndDate").value;
+    var editTitle;
+    var editDescription;
+    var editStartDate;
+    var editEndDate;
+    if (titleValue !== "" && titleValue !== props.data.title) {
+      editTitle = titleValue;
+    } else {
+      editTitle = props.data.title;
+    }
+    if (
+      descriptionValue !== "" &&
+      descriptionValue !== props.data.description
+    ) {
+      editDescription = descriptionValue;
+    } else {
+      editDescription = props.data.description;
+    }
+    if (startValue !== "" && startValue !== props.data.start) {
+      editStartDate = startValue;
+    } else {
+      editStartDate = props.data.startDate;
+    }
+    if (endValue !== "" && endValue !== props.data.end) {
+      editEndDate = endValue;
+    } else {
+      editEndDate = props.data.endDate;
+    }
+    var editEvent = {
+      annotation_start_date: editStartDate,
+      annotation_end_date: editEndDate,
+      annotation_title: editTitle,
+      annotation_description: editDescription,
+      isGlobal: true,
+      user_id: 1,
+    };
+    axios
+      .put(
+        `http://localhost:3000/calendar_annotations/${props.data.id}`,
+        editEvent
+      )
+      .then(window.location.reload())
+      .catch();
+  };
+
+  const deleteEvent = async () => {
+    axios
+      .delete(`http://localhost:3000/calendar_annotations/${props.data.id}`)
+      .then(window.location.reload())
+      .catch();
   };
 
   return (
-    <div className="calendar-view-edit-main-container calendar-view-edit-hidden">
+    <div
+      id="edit-box"
+      className="calendar-view-edit-main-container calendar-view-edit-hidden"
+    >
       <div className="calendar-view-edit">
         <div className="calendar-view-edit-header">
-          <div className="calendar-view-edit-header-delete-button">
+          <div
+            className="calendar-view-edit-header-delete-button"
+            onClick={deleteEvent}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="bi bi-trash3"
@@ -91,31 +124,29 @@ export default function EditView(props) {
             <div className="calendar-view-edit-title">
               <h3>Title</h3>
               <input
-                id="title"
+                id="editTitle"
                 placeholder={props.data.title}
-                name="title"
+                name="editTitle"
                 type="text"
-                onChange={valueInput}
               ></input>
             </div>
             <div className="calendar-view-edit-hour">
               <h3>Hour</h3>
               <div className="calendar-view-edit-hour-input">
                 <input
-                  id="start"
-                  name="start"
-                  type="time"
-                  value={getTimeStart()}
+                  id="editStartDate"
+                  name="editStartDate"
+                  type="datetime-local"
                 />
-                <input id="end" name="end" type="time" value={getTimeEnd()} />
+                <input id="editEndDate" name="end" type="datetime-local" />
               </div>
             </div>
             <div className="calendar-view-edit-description">
               <h3>Description</h3>
               <textarea
-                id="description"
+                id="editDescription"
                 placeholder={props.data.description}
-                name="description"
+                name="editDescription"
                 type="text"
                 maxlength="150"
               />

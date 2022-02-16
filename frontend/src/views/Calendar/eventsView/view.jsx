@@ -10,16 +10,25 @@ export default function View(props) {
       .getElementsByClassName("calendar-view-main-container")[0]
       .classList.add("calendar-view-hidden");
   };
+
   const openEditMenu = async () => {
     let eventEdit = props.data;
     setEditEvent(eventEdit);
-
-    document
-      .getElementsByClassName("calendar-view-edit-main-container")[0]
-      .classList.remove("calendar-view-edit-hidden");
-    document
-      .getElementsByClassName("button-calendar-option")[0]
-      .classList.add("button-calendar-option-hidden");
+    const chatBox = document.getElementById("edit-box");
+    chatBox.style.display = "flex";
+    const backgroundCalendar =
+      document.getElementsByClassName("background-shadow")[0];
+    const calendarMainScroll = document.getElementsByClassName(
+      "calendar-main-container"
+    )[0];
+    setTimeout(() => {
+      calendarMainScroll.classList.add("disable-scroll");
+      backgroundCalendar.style.display = "block";
+    }, 100);
+    setTimeout(() => {
+      chatBox.classList.add("edit-box-opened");
+      chatBox.classList.remove("calendar-view-edit-hidden");
+    }, 400);
   };
   const getTime = () => {
     if (props.data.startDate !== undefined) {
@@ -32,7 +41,10 @@ export default function View(props) {
   };
 
   return (
-    <div className="calendar-view-main-container calendar-view-hidden">
+    <div
+      id="view-box"
+      className="calendar-view-main-container calendar-view-hidden view-box-closed"
+    >
       <div className="calendar-view">
         <div className="calendar-view-header">
           <div
