@@ -233,6 +233,71 @@
     padding: 5% 5% 5% 5%;
 }
 
+.calendar-view-edit-alert-delete-container {
+    font-family: Consolas;
+    font-size: 18px;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.calendar-view-edit-alert-delete {
+    background-color: var(--backgroundColor);
+    width: 90%;
+    padding: 0.1em 0.1em 0.1em 0.1em;
+    color: var(--textColor);
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--textColor);
+    margin-left: 5vw;
+    margin-right: 5vw;
+    border-radius: 15px;
+}
+
+.calendar-view-edit-alert-delete>h3 {
+    margin-top: 3vh;
+    margin-left: 5vw;
+    margin-right: 5vw;
+    margin-bottom: 3vh;
+}
+
+.calendar-view-edit-alert-delete>.buttonsDeleteCalendar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-view-edit-alert-delete>.buttonsDeleteCalendar>div {
+    display: flex;
+    flex-direction: column;
+    border-style: none;
+    color: white;
+    font-size: 14px;
+    background-color: var(--blue);
+    border: 0;
+    padding: 1em;
+    border-radius: 10px;
+    cursor: pointer;
+
+}
+
+.buttonDeleteCalendar {
+    margin-right: 5vw;
+}
+
+.calendar-view-alert-delete-hidden {
+    display: none;
+}
+
+
 /* create */
 .calendar-view-create-hidden {
     display: none !important;

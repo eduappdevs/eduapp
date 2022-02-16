@@ -1,42 +1,42 @@
-import React from "react";
-import "./views.css";
-import axios from "axios";
+import React from 'react';
+import './views.css';
+import axios from 'axios';
 
 export default function CreateView() {
   const closeButton = async () => {
-    const chatBox = document.getElementById("create-box");
-    chatBox.style.display = "flex";
+    const chatBox = document.getElementById('create-box');
+    chatBox.style.display = 'flex';
 
     const backgroundCalendar =
-      document.getElementsByClassName("background-shadow")[0];
+      document.getElementsByClassName('background-shadow')[0];
 
-    chatBox.classList.remove("create-box-opened");
-    chatBox.classList.add("create-box-closed");
+    chatBox.classList.remove('create-box-opened');
+    chatBox.classList.add('create-box-closed');
 
     const calendarMainScroll = document.getElementsByClassName(
-      "calendar-main-container"
+      'calendar-main-container'
     )[0];
 
-    calendarMainScroll.classList.remove("disable-scroll");
+    calendarMainScroll.classList.remove('disable-scroll');
 
     setTimeout(() => {
-      backgroundCalendar.style.display = "none";
+      backgroundCalendar.style.display = 'none';
     }, 150);
   };
 
   const createEvent = async (e) => {
     e.preventDefault();
-    var titleValue = document.getElementById("newTitle").value;
-    var descriptionValue = document.getElementById("newDescription").value;
-    var startValue = document.getElementById("newStartDate").value;
-    var endValue = document.getElementById("newEndDate").value;
+    var titleValue = document.getElementById('newTitle').value;
+    var descriptionValue = document.getElementById('newDescription').value;
+    var startValue = document.getElementById('newStartDate').value;
+    var endValue = document.getElementById('newEndDate').value;
     var newEvent = {};
     console.log(typeof endValue);
     if (
-      titleValue !== "" &&
-      descriptionValue !== "" &&
-      startValue !== "" &&
-      endValue !== ""
+      titleValue !== '' &&
+      descriptionValue !== '' &&
+      startValue !== '' &&
+      endValue !== ''
     ) {
       newEvent = {
         annotation_start_date: startValue,
@@ -44,26 +44,26 @@ export default function CreateView() {
         annotation_title: titleValue,
         annotation_description: descriptionValue,
         isGlobal: true,
-        user_id: 1,
+        user_id: 2,   
       };
       axios
-        .post("http://localhost:3000/calendar_annotations/", newEvent)
+        .post('http://localhost:3000/calendar_annotations/', newEvent)
         .then(window.location.reload())
-        .catch(console.log("error"));
+        .catch(console.log('error'));
     } else {
-      console.log(newEvent)
+      console.log(newEvent);
       alertCreate();
     }
   };
 
   const alertCreate = async () => {
     document
-      .getElementsByClassName("calendar-view-alert-create-container")[0]
-      .classList.remove("calendar-view-alert-create-hidden");
+      .getElementsByClassName('calendar-view-alert-create-container')[0]
+      .classList.remove('calendar-view-alert-create-hidden');
     setTimeout(() => {
       document
-        .getElementsByClassName("calendar-view-alert-create-container")[0]
-        .classList.add("calendar-view-alert-create-hidden");
+        .getElementsByClassName('calendar-view-alert-create-container')[0]
+        .classList.add('calendar-view-alert-create-hidden');
     }, 2000);
   };
 
@@ -121,7 +121,7 @@ export default function CreateView() {
         </div>
       </div>
       <div className="calendar-view-alert-create-container calendar-view-alert-create-hidden">
-        <div className="calendar-view-alert-create =">
+        <div className="calendar-view-alert-create">
           <h3>No has introducido los valores correactamente.</h3>
         </div>
       </div>

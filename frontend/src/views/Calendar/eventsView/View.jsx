@@ -1,42 +1,57 @@
-import React from "react";
-import "./views.css";
-import { useEffect, useState } from "react";
-import EditView from "./EditView";
+import React from 'react';
+import './views.css';
+import { useEffect, useState } from 'react';
+import EditView from './EditView';
 
 export default function View(props) {
   const [editEvent, setEditEvent] = useState({});
   const closeButton = async () => {
+    const editBox = document.getElementById('view-box');
+
+    editBox.style.display = 'flex';
+
+    const backgroundCalendar =
+      document.getElementsByClassName('background-shadow')[0];
+
+    editBox.classList.remove('view-box-opened');
+    editBox.classList.add('view-box-closed');
+
     document
-      .getElementsByClassName("calendar-view-main-container")[0]
-      .classList.add("calendar-view-hidden");
+      .getElementsByClassName('calendar-main-container')[0]
+      .classList.remove('disable-scroll');
+
+    setTimeout(() => {
+      backgroundCalendar.style.display = 'none';
+      editBox.classList.add('calendar-view-hidden');
+    }, 150);
   };
 
   const openEditMenu = async () => {
     let eventEdit = props.data;
     setEditEvent(eventEdit);
-    const chatBox = document.getElementById("edit-box");
-    chatBox.style.display = "flex";
+    const editBox = document.getElementById('edit-box');
+    editBox.style.display = 'flex';
     const backgroundCalendar =
-      document.getElementsByClassName("background-shadow")[0];
+      document.getElementsByClassName('background-shadow')[0];
     const calendarMainScroll = document.getElementsByClassName(
-      "calendar-main-container"
+      'calendar-main-container'
     )[0];
     setTimeout(() => {
-      calendarMainScroll.classList.add("disable-scroll");
-      backgroundCalendar.style.display = "block";
+      calendarMainScroll.classList.add('disable-scroll');
+      backgroundCalendar.style.display = 'block';
     }, 100);
     setTimeout(() => {
-      chatBox.classList.add("edit-box-opened");
-      chatBox.classList.remove("calendar-view-edit-hidden");
+      editBox.classList.add('edit-box-opened');
+      editBox.classList.remove('calendar-view-edit-hidden');
     }, 400);
   };
   const getTime = () => {
     if (props.data.startDate !== undefined) {
       let start = props.data.startDate;
       let end = props.data.endDate;
-      start = start.split("T")[1];
-      end = end.split("T")[1];
-      return start + "-" + end;
+      start = start.split('T')[1];
+      end = end.split('T')[1];
+      return start + '-' + end;
     }
   };
 

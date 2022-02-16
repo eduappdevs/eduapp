@@ -57,6 +57,7 @@
 
 .disable-scroll {
     overflow: hidden;
+    bottom: 0;
 }
 
 .calendar {

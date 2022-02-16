@@ -1,57 +1,57 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import "./views.css";
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import './views.css';
 export default function EditView(props) {
   const closeButton = async () => {
-    const chatBox = document.getElementById("edit-box");
-    chatBox.style.display = "flex";
+    const editBox = document.getElementById('edit-box');
+    editBox.style.display = 'flex';
 
-    const backgroundCalendar =
-      document.getElementsByClassName("background-shadow")[0];
+    // const backgroundCalendar =
+    //   document.getElementsByClassName('background-shadow')[0];
 
-    chatBox.classList.remove("edit-box-opened");
-    chatBox.classList.add("edit-box-closed");
+    editBox.classList.remove('edit-box-opened');
+    editBox.classList.add('edit-box-closed');
 
     const calendarMainScroll = document.getElementsByClassName(
-      "calendar-main-container"
+      'calendar-main-container'
     )[0];
 
-    calendarMainScroll.classList.remove("disable-scroll");
+    calendarMainScroll.classList.remove('disable-scroll');
 
     setTimeout(() => {
-      backgroundCalendar.style.display = "none";
+      editBox.classList.add('calendar-view-edit-hidden');
     }, 150);
   };
 
   const updateEvent = async (e) => {
     e.preventDefault();
-    var titleValue = document.getElementById("editTitle").value;
-    var descriptionValue = document.getElementById("editDescription").value;
-    var startValue = document.getElementById("editStartDate").value;
-    var endValue = document.getElementById("editEndDate").value;
+    var titleValue = document.getElementById('editTitle').value;
+    var descriptionValue = document.getElementById('editDescription').value;
+    var startValue = document.getElementById('editStartDate').value;
+    var endValue = document.getElementById('editEndDate').value;
     var editTitle;
     var editDescription;
     var editStartDate;
     var editEndDate;
-    if (titleValue !== "" && titleValue !== props.data.title) {
+    if (titleValue !== '' && titleValue !== props.data.title) {
       editTitle = titleValue;
     } else {
       editTitle = props.data.title;
     }
     if (
-      descriptionValue !== "" &&
+      descriptionValue !== '' &&
       descriptionValue !== props.data.description
     ) {
       editDescription = descriptionValue;
     } else {
       editDescription = props.data.description;
     }
-    if (startValue !== "" && startValue !== props.data.start) {
+    if (startValue !== '' && startValue !== props.data.start) {
       editStartDate = startValue;
     } else {
       editStartDate = props.data.startDate;
     }
-    if (endValue !== "" && endValue !== props.data.end) {
+    if (endValue !== '' && endValue !== props.data.end) {
       editEndDate = endValue;
     } else {
       editEndDate = props.data.endDate;
@@ -73,11 +73,21 @@ export default function EditView(props) {
       .catch();
   };
 
+  const confirmDeleteEvent = async () => {
+    document
+      .getElementsByClassName('calendar-view-edit-alert-delete-container')[0]
+      .classList.remove('calendar-view-alert-delete-hidden');
+  };
   const deleteEvent = async () => {
     axios
       .delete(`http://localhost:3000/calendar_annotations/${props.data.id}`)
       .then(window.location.reload())
       .catch();
+  };
+  const closeDeleteWindow = async () => {
+    document
+      .getElementsByClassName('calendar-view-edit-alert-delete-container')[0]
+      .classList.add('calendar-view-alert-delete-hidden');
   };
 
   return (
@@ -89,7 +99,7 @@ export default function EditView(props) {
         <div className="calendar-view-edit-header">
           <div
             className="calendar-view-edit-header-delete-button"
-            onClick={deleteEvent}
+            onClick={confirmDeleteEvent}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -153,6 +163,18 @@ export default function EditView(props) {
             </div>
             <button type="submit">Save</button>
           </form>
+        </div>
+        <div className="calendar-view-edit-alert-delete-container calendar-view-alert-delete-hidden">
+          <div className="calendar-view-edit-alert-delete">
+            <h3>¿Deseas eliminar el evento?</h3>
+            <div className="buttonsDeleteCalendar">
+              <div className="buttonDeleteCalendar" onClick={deleteEvent}>
+                Si
+              </div>
+
+              <div onClick={closeDeleteWindow}>No</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
