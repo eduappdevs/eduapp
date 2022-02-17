@@ -2,7 +2,6 @@
 	width: 100vw;
 	height: 100vh;
 	position: fixed;
-	top: 0;
 	/* background-color: rgb(255, 255, 255); */
 	background-color: var(--backgroundColor);
 	z-index: 9999999999999999999999;
@@ -10,6 +9,7 @@
 	flex-direction: column;
 	transform: translateX(0);
 	transition: 0.3s all;
+	top: -15px;
 }
 
 .resourceOpened__header {
@@ -17,8 +17,7 @@
 	flex-direction: row;
 	border-bottom: 2px solid rgba(202, 202, 202, 0.616);
 	background-color: var(--blue);
-	flex: 0.1;
-	height: 10%;
+	height: var(--navbarHeight);
 }
 
 .resourceOpened__backToResources {

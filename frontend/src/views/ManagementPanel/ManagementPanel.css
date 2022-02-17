@@ -110,7 +110,10 @@
 }
 
 .management__form-container>form>input {
-	border: none;
+	border: 1px solid var(--orange );
+	color: var(--blue);
+	font-weight: 900;
+
 	border-radius: 7px;
 	background-color: var(--backgroundColorLow);
 	padding: 10px 20px;

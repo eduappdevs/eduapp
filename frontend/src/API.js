@@ -94,11 +94,20 @@ const apiSettings = {
 		});
 		return courses;
 	},
+	
+	createCourse: async (body) => {
+		const endpoint = `${COURSES}`;
+		return await await axios.post(endpoint, body);
+	},
 
 	//Institutions 
 	fetchInstitutions: async () => {
 		const endpoint = `${INSTITUTIONS}`;
 		return await axios.get(endpoint);
+	},
+	createInstitution: async (body) => {
+		const endpoint = `${INSTITUTIONS}`;
+		return await await axios.post(endpoint, body);
 	},
 
 	//Users
@@ -111,6 +120,11 @@ const apiSettings = {
 	fetchUserInfos: async () => {
 		const endpoint = `${USERS_INFO}`;
 		return await axios.get(endpoint);
+	},
+	//Users tuition
+	enrollUser: async (body) => {
+		const endpoint = `${TUITIONS}`;
+		return await await axios.post(endpoint, body);
 	},
 };
 

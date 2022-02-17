@@ -74,8 +74,6 @@ export default function ResourcesModal(props) {
 		if (thirdfile !== null && thirdfile !== undefined) {
 			finalData.append("thirdfile", thirdfile);
 		}
-
-		console.log("ccc", currentlyUser);
 		finalData.append("createdBy", currentlyUser);
 		finalData.append("course_id", props.course);
 
@@ -88,9 +86,16 @@ export default function ResourcesModal(props) {
 	};
 
 	const closeModal = () => {
+		
 		document.getElementsByClassName(
-			"resourceModal-container"
-		)[0].style.display = "none";
+			"resources__createResourceModal"
+		)[0].classList.remove('resourceModalScale1');
+		setTimeout(()=>{
+			document.getElementsByClassName(
+				"resourceModal-container"
+			)[0].style.display = "none";
+		},300)
+		
 	};
 
 	return (

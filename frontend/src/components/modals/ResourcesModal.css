@@ -16,14 +16,18 @@
 	z-index: 1;
 
 }
-
+.resourceModalScale1{
+	
+	transform: translate(-50%, -50%) scale(1) !important;
+}
 .resources__createResourceModal {
 	width: 40%;
 	height: 60%;
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%)  scale(0);
+	transition: all 0.3s ease-in-out;
 	background-color: var(--orange);
 	border-radius: 10px;
 	box-shadow: 0 0 4px rgb(41, 41, 41);

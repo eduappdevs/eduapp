@@ -75,10 +75,22 @@ export default function Resources(props) {
 		}, 75);
 	};
 
+
 	const createResource = () => {
+		
+		document.getElementsByClassName(
+			"resourceModal-container"
+		)[0].style.display = "flex";
+				
 		document.getElementsByClassName(
 			"resources__createResourceModal"
 		)[0].style.display = "flex";
+		setTimeout(()=>{
+			
+			document.getElementsByClassName(
+				"resources__createResourceModal"
+			)[0].classList.add('resourceModalScale1');
+			},300)
 	};
 
 	const handleSearchResources = (e) => {
@@ -196,7 +208,7 @@ export default function Resources(props) {
 						)}
 					</div>
 				</section>
-				<ResourcesModal />
+				<ResourcesModal course={courseSelected} />
 				<BottomButtons mobile={ItsMobileDevice} location={"resources"} />
 			</div>
 		</>
