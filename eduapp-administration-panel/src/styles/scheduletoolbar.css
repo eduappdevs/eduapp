@@ -1,0 +1,30 @@
+.scheduletoolbar-container{
+    display: flex;
+    flex-direction: column;
+    font-family: sans-serif;
+}
+.scheduletoolbar-container > h1{
+    margin-left: 40px;
+    color: rgb(58, 58, 58);
+}
+.scheduletoolbar-ul{
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+}
+.scheduletoolbar-ul > li{
+    margin-right: 50px;
+    display: flex;
+    justify-content: center;
+    background-color: rgb(51, 122, 255);
+
+
+}
+.scheduletoolbar-ul > li > p{
+    color: white;
+    width: 80px;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    cursor: pointer;
+}
