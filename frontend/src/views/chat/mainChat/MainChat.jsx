@@ -6,6 +6,8 @@ import "./MainChat.css";
 
 export default function MainChat(props) {
   const [isMobile, setIsMobile] = useState(false);
+  const [newMessages, setNewMessages] = useState([]);
+  const acInstance = props.ActionCableManager;
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -17,16 +19,51 @@ export default function MainChat(props) {
     }, 4000);
   };
 
+  const sendMessage = () => {
+    let inputMsg = document.getElementById("message-area");
+    acInstance.sendChannelCmd(
+      "message",
+      inputMsg.value,
+      localStorage.userId,
+      new Date().toISOString()
+    );
+    inputMsg.value = "";
+  };
+
+  const manageIncomingMsg = (newMsg) => {
+    if (
+      newMsg.chat_base.id ===
+      parseInt(acInstance.chatCode[acInstance.chatCode.length - 1])
+    ) {
+      setNewMessages((prevMsgs) => [
+        ...prevMsgs,
+        <ChatBubble
+          message={newMsg.message}
+          isMsgRecent={true}
+          // eslint-disable-next-line eqeqeq
+          foreign={newMsg.user.id != localStorage.userId ? true : false}
+          isGroup={newMsg.chat_base.isGroup}
+          author={newMsg.user.email}
+        />,
+      ]);
+    }
+  };
+
   useEffect(() => {
     checkMediaQueries();
     DarkModeChanger(localStorage.getItem("darkMode"));
+
+    document.addEventListener("new_msg", (e) => {
+      e.stopImmediatePropagation();
+      manageIncomingMsg(e.detail);
+    });
 
     if (window.matchMedia("(max-width: 900px)").matches) {
       setIsMobile(true);
     } else {
       setIsMobile(false);
     }
-  }, []);
+  }, [newMessages, acInstance]);
 
   return (
     <>
@@ -41,9 +78,10 @@ export default function MainChat(props) {
 
         <div className="main-chat-messages-container">
           {props.messages.length !== 0
-            ? props.messages[0].data.map((msg) => {
+            ? props.messages.map((msg) => {
                 return (
                   <ChatBubble
+                    key={msg.user.id + "-" + msg.id}
                     message={msg.message}
                     // eslint-disable-next-line eqeqeq
                     foreign={msg.user.id != localStorage.userId ? true : false}
@@ -53,6 +91,7 @@ export default function MainChat(props) {
                 );
               })
             : null}
+          {newMessages}
         </div>
 
         <div className="main-chat-input-container">
@@ -69,7 +108,7 @@ export default function MainChat(props) {
             </svg>
           </div>
           <div className="main-chat-input-text">
-            <textarea />
+            <textarea id="message-area" />
           </div>
           <div className="main-chat-send-button">
             <svg
@@ -79,6 +118,7 @@ export default function MainChat(props) {
               fill="currentColor"
               class="bi bi-send"
               viewBox="2 -5 15 23"
+              onClick={sendMessage}
             >
               <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z" />
             </svg>

@@ -43,6 +43,9 @@
 	color: white;
 	padding: 10px 1.25em 10px 1.25em;
 	margin: 10px 0 10px 0;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	hyphens: auto;
 }
 
 .self-message>p {
@@ -64,7 +67,7 @@
 	font-size: 0.85em;
 	margin-bottom: 0 !important;
 	margin-left: 4px !important;
-	max-width: 60%;
+	max-width: 80%;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }

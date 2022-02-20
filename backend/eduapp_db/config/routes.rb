@@ -1,4 +1,5 @@
 Rails.application.routes.draw do  
+	mount ActionCable.server => "/chat"
   resources :chat_messages
   resources :chat_participants
   resources :chat_base_infos
@@ -17,5 +18,4 @@ Rails.application.routes.draw do
                registrations: 'users/registrations'
              }
   get '/member-data', to: 'members#show'
-
 end

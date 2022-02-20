@@ -61,7 +61,9 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-  # Uncomment if you wish to allow Action Cable access from any origin.
-  # config.action_cable.disable_request_forgery_protection = true
   config.action_mailer.default_url_options = { :host => "localhost:3001" }
+
+	# Action Cable Config (FMV)
+	config.action_cable.mount_path = "ws://localhost:3000/xxxchat"
+  config.action_cable.allowed_request_origins = ['http://localhost:3001']
 end

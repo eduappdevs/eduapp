@@ -4,8 +4,11 @@ import Navbar from "../../components/navbar/Navbar";
 import DarkModeChanger from "../../components/DarkModeChanger";
 import BottomButtons from "../../components/bottomButtons/BottomButtons";
 import MainChat from "./mainChat/MainChat";
+import ACManager from "../../components/websockets/actioncable/ACManager";
+import Loader from "../../components/loader/Loader";
 import "./ChatMenu.css";
 
+let acManager = new ACManager();
 export default function ChatMenu() {
   const [isMobile, setIsMobile] = useState(false);
   const [chatTitle, setChatTitle] = useState(true);
@@ -26,6 +29,9 @@ export default function ChatMenu() {
   const openChat = (event) => {
     const chatBox = document.getElementById("chat-box");
     const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
+    const loader = document.getElementById("chat-loader");
+    chatMenu.style.display = "none";
+    loader.style.display = "block";
 
     if (event.target.nodeName.toLowerCase() !== "li") {
       let temp = event.target;
@@ -33,24 +39,24 @@ export default function ChatMenu() {
       event.target = temp;
     }
 
-    gatherChatMessages(event.target)
-      .then(() => {
-        setChatTitle(event.target.childNodes[1].childNodes[0].innerHTML);
-        chatBox.style.display = "flex";
+    setChatTitle(event.target.childNodes[1].childNodes[0].innerHTML);
+    acManager.chatCode = event.target.id;
+    acManager.generateChannelConnection(acManager.chatCode).then(() => {
+      acManager.sendChannelCmd("gatherAll").then((msgs) => {
+        acManager.emptyReceivedData();
+        setChatMessages(msgs);
+        chatBox.style.display = "block";
         setTimeout(() => {
           chatBox.classList.add("chat-box-opened");
           chatBox.classList.remove("chat-box-closed");
+          loader.style.display = "none";
         }, 100);
-        setTimeout(() => {
-          chatMenu.style.display = "none";
-        }, 400);
-      })
-      .catch((err) => {
-        console.log(err.message);
       });
+    });
   };
 
   const closeChat = () => {
+    acManager.closeConnection();
     const chatBox = document.getElementById("chat-box");
     const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
     chatBox.classList.remove("chat-box-opened");
@@ -58,7 +64,7 @@ export default function ChatMenu() {
     setTimeout(() => {
       chatBox.style.display = "none";
       chatMenu.style.display = "block";
-    }, 300);
+    }, 200);
   };
 
   const getUserChats = async () => {
@@ -86,25 +92,11 @@ export default function ChatMenu() {
       });
   };
 
-  const gatherChatMessages = async (id) => {
-    axios
-      .get(
-        "http://localhost:3000/chat_messages?chat_base_id=" +
-          id.id[id.id.length - 1]
-      )
-      .then((messages) => {
-        if (Array.isArray(messages)) setChatMessages(messages);
-        else setChatMessages([messages]);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  };
-
   useEffect(() => {
     checkMediaQueries();
     DarkModeChanger(localStorage.getItem("darkMode"));
     getUserChats().then(() => {});
+    acManager.closeConnection();
 
     if (window.matchMedia("(max-width: 900px)").matches) {
       setIsMobile(true);
@@ -115,12 +107,16 @@ export default function ChatMenu() {
 
   return (
     <>
+      <div id="chat-loader">
+        <Loader />
+      </div>
       <div id="chat-box" className="chat-box-closed">
         <MainChat
           chatName={chatTitle}
           closeHandler={() => {
             closeChat();
           }}
+          ActionCableManager={acManager}
           messages={chatMessages}
         />
       </div>

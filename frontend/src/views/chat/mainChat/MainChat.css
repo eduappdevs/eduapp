@@ -12,11 +12,6 @@ svg {
 	display: none;
 }
 
-.main-chat-messages-container {
-	overflow: auto;
-	height: 100vh;
-}
-
 .main-chat-messages-container>div:first-child {
 	margin-top: 13vh;
 }

@@ -1,7 +1,7 @@
-#chat-box {
+#chat-box,
+#chat-loader {
 	display: none;
 	transition: all 0.3s;
-
 }
 
 .chat-box-closed {
