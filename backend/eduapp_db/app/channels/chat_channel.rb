@@ -9,13 +9,6 @@ class ChatChannel < ApplicationCable::Channel
 		puts "CMD: #{data["command"]}"
 
 		case data["command"]
-		when "gatherAll"
-			msgs = []
-			for msg in ChatMessage.order(send_date: :asc).where(chat_base_id: params[:chat_code]) do
-				msgs.append(format_msg(msg))
-			end
-
-			ActionCable.server.broadcast @chat_name, msgs
 		when "message"
 			newMsgHash = {}
 			newMsgHash.merge!(JSON.parse("{\"chat_base_id\": #{params[:chat_code]}}"))

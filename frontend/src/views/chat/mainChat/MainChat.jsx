@@ -71,6 +71,7 @@ export default function MainChat(props) {
           chatName={props.chatName}
           closeHandler={() => {
             props.closeHandler();
+            setTimeout(setNewMessages([]), 100);
           }}
         />
 
@@ -105,6 +106,7 @@ export default function MainChat(props) {
                 );
               })
             : null}
+          {() => {}}
         </div>
 
         <div className="main-chat-input-container">

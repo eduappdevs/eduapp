@@ -26,7 +26,7 @@ export default class ACManager {
 		}
 
 		this.connection.received = (data) => {
-			console.log("RECEIVED: ", data);
+			console.log("RECEIVED SMTH");
 			this.receivedData.data = data;
 			if (this.receivedData.data.command !== undefined && this.receivedData.data.command === "new_message") {
 				document.dispatchEvent(new CustomEvent("new_msg", {
@@ -84,25 +84,6 @@ export default class ACManager {
 			}
 
 			this.connection.send(payload);
-
-			let wsResponse = this.receivedData;
-			let timeOut = 0;
-
-			switch (cmd) {
-				case "gatherAll":
-					return new Promise((resolve, reject) => {
-						(function waitForData() {
-							if (timeOut >= 30000) return reject(new Error("Could not receive new messages."));
-							if (wsResponse.data !== undefined) return resolve(wsResponse.data);
-							setTimeout(() => {
-								waitForData();
-								timeOut += 100;
-							}, 100);
-						})();
-					});
-				default:
-					break;
-			}
 		}
 	}
 

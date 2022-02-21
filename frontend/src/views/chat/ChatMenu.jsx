@@ -5,7 +5,11 @@ import DarkModeChanger from "../../components/DarkModeChanger";
 import BottomButtons from "../../components/bottomButtons/BottomButtons";
 import MainChat from "./mainChat/MainChat";
 import ACManager from "../../components/websockets/actioncable/ACManager";
-import Loader, { runCloseAnimation } from "../../components/loader/Loader";
+import Loader, {
+  runOpenAnimation,
+  runCloseAnimation,
+} from "../../components/loader/Loader";
+import { CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../config";
 import "./ChatMenu.css";
 
 let acManager = new ACManager();
@@ -32,6 +36,7 @@ export default function ChatMenu() {
     const loader = document.getElementById("chat-loader");
     chatMenu.style.display = "none";
     loader.style.display = "block";
+    runOpenAnimation();
 
     if (event.target.nodeName.toLowerCase() !== "li") {
       let temp = event.target;
@@ -42,27 +47,33 @@ export default function ChatMenu() {
     setChatTitle(event.target.childNodes[1].childNodes[0].innerHTML);
     acManager.chatCode = event.target.id;
     acManager.generateChannelConnection(acManager.chatCode).then(() => {
-      acManager.sendChannelCmd("gatherAll").then((msgs) => {
-        acManager.emptyReceivedData();
-        setChatMessages(msgs);
-        setTimeout(() => {
-          let messageBox = document.getElementsByClassName(
-            "main-chat-messages-container"
-          )[0];
-          if (messageBox.childNodes.length !== 0) {
-            messageBox.childNodes[
-              messageBox.childNodes.length - 1
-            ].scrollIntoView();
-          }
+      axios
+        .get(
+          CHAT_MESSAGES +
+            "?chat_base_id=" +
+            event.target.id[event.target.id.length - 1]
+        )
+        .then((msgs) => {
+          setChatMessages(msgs.data);
           setTimeout(() => {
-            runCloseAnimation();
+            let messageBox = document.getElementsByClassName(
+              "main-chat-messages-container"
+            )[0];
+            if (messageBox.childNodes.length !== 0) {
+              console.log(messageBox.offsetHeight);
+              messageBox.childNodes[
+                messageBox.childNodes.length - 1
+              ].scrollIntoView(true);
+            }
             setTimeout(() => {
-              chatBox.style.display = "block";
-              loader.style.display = "none";
-            }, 310);
-          }, 200);
-        }, 100);
-      });
+              runCloseAnimation();
+              setTimeout(() => {
+                chatBox.style.display = "block";
+                loader.style.display = "none";
+              }, 310);
+            }, 200);
+          }, 100);
+        });
     });
   };
 
@@ -71,11 +82,18 @@ export default function ChatMenu() {
     const chatBox = document.getElementById("chat-box");
     const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
     const loader = document.getElementById("chat-loader");
-    chatBox.classList.remove("chat-box-opened");
-    chatBox.classList.add("chat-box-closed");
+    loader.style.display = "block";
+    runOpenAnimation();
+
     setTimeout(() => {
-      chatBox.style.display = "none";
-      chatMenu.style.display = "block";
+      setTimeout(() => {
+        chatBox.style.display = "none";
+        chatMenu.style.display = "block";
+        runCloseAnimation();
+        setTimeout(() => {
+          loader.style.display = "none";
+        }, 310);
+      }, 200);
     }, 200);
   };
 
@@ -83,9 +101,7 @@ export default function ChatMenu() {
     let tempPrivate = [];
     let tempGroups = [];
     axios
-      .get(
-        "http://localhost:3000/chat_participants?user_id=" + localStorage.userId
-      )
+      .get(CHAT_PARTICIPANTS + "?user_id=" + localStorage.userId)
       .then((r) => {
         if (Array.isArray(r.data)) {
           for (let chat of r.data) {

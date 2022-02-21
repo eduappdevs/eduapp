@@ -25,11 +25,14 @@ export default function Loader() {
   );
 }
 
+export function runOpenAnimation() {
+  const loader = document.getElementById("loader_main-container");
+
+  loader.style.opacity = "1";
+}
+
 export function runCloseAnimation() {
   const loader = document.getElementById("loader_main-container");
 
   loader.style.opacity = "0";
-  setTimeout(() => {
-    loader.style.opacity = "1";
-  }, 350);
 }

@@ -7,7 +7,7 @@ class ChatMessagesController < ApplicationController
     if !params[:chat_base_id]
 			@chat_messages = ChatMessage.all
 		else
-			@chat_messages = ChatMessage.where(chat_base_id: params[:chat_base_id])
+			@chat_messages = ChatMessage.order(send_date: :asc).where(chat_base_id: params[:chat_base_id])
 		end
 
     render json: @chat_messages
