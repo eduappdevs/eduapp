@@ -1,7 +1,10 @@
-#chat-box,
+#chat-box {
+	display: none;
+	/* transition: transform 0.3s; */
+}
+
 #chat-loader {
 	display: none;
-	transition: all 0.3s;
 }
 
 .chat-box-closed {
@@ -22,6 +25,10 @@
 .chats-container {
 	display: flex;
 	flex-direction: column;
+}
+
+.chat-user-container {
+	margin-bottom: 10%;
 }
 
 .chat-group-container>h2,
@@ -86,7 +93,6 @@
 	display: flex;
 	background-color: var(--orange);
 	border-radius: 50%;
-	width: 25px;
 	height: 30px;
 }
 
@@ -117,7 +123,7 @@
 }
 
 .chat-search-container {
-	margin-top: 4em;
+	margin-top: 7vh;
 	height: 6vh;
 	display: flex;
 	justify-content: center;
@@ -186,7 +192,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	top: 80%;
+	top: 82%;
 	right: 0;
 	margin-right: 5%;
 	border-radius: 80%;
@@ -194,8 +200,8 @@
 }
 
 .chat-add-button>svg {
-	width: 60px;
-	height: 60px;
+	width: 15vw;
+	height: 15vw;
 }
 
 @media screen and (max-height: 680px) {

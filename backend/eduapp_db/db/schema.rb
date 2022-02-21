@@ -71,7 +71,7 @@ ActiveRecord::Schema.define(version: 14) do
   create_table "chat_messages", force: :cascade do |t|
     t.bigint "chat_base_id", null: false
     t.bigint "user_id", null: false
-    t.string "message"
+    t.text "message"
     t.datetime "send_date"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

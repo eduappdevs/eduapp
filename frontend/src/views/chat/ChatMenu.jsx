@@ -47,6 +47,14 @@ export default function ChatMenu() {
         setChatMessages(msgs);
         chatBox.style.display = "block";
         setTimeout(() => {
+          let messageBox = document.getElementsByClassName(
+            "main-chat-messages-container"
+          )[0];
+          if (messageBox.childNodes.length !== 0) {
+            messageBox.childNodes[
+              messageBox.childNodes.length - 1
+            ].scrollIntoView();
+          }
           chatBox.classList.add("chat-box-opened");
           chatBox.classList.remove("chat-box-closed");
           loader.style.display = "none";
@@ -93,10 +101,11 @@ export default function ChatMenu() {
   };
 
   useEffect(() => {
+    acManager.closeConnection();
     checkMediaQueries();
     DarkModeChanger(localStorage.getItem("darkMode"));
+
     getUserChats().then(() => {});
-    acManager.closeConnection();
 
     if (window.matchMedia("(max-width: 900px)").matches) {
       setIsMobile(true);

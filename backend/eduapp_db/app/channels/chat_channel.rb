@@ -11,7 +11,7 @@ class ChatChannel < ApplicationCable::Channel
 		case data["command"]
 		when "gatherAll"
 			msgs = []
-			for msg in ChatMessage.where(chat_base_id: params[:chat_code]) do
+			for msg in ChatMessage.order(send_date: :asc).where(chat_base_id: params[:chat_code]) do
 				msgs.append(format_msg(msg))
 			end
 

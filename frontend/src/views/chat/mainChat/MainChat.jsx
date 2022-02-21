@@ -35,17 +35,15 @@ export default function MainChat(props) {
       newMsg.chat_base.id ===
       parseInt(acInstance.chatCode[acInstance.chatCode.length - 1])
     ) {
-      setNewMessages((prevMsgs) => [
-        ...prevMsgs,
-        <ChatBubble
-          message={newMsg.message}
-          isMsgRecent={true}
-          // eslint-disable-next-line eqeqeq
-          foreign={newMsg.user.id != localStorage.userId ? true : false}
-          isGroup={newMsg.chat_base.isGroup}
-          author={newMsg.user.email}
-        />,
-      ]);
+      setNewMessages((prevMsgs) => [...prevMsgs, newMsg]);
+      let messageBox = document.getElementsByClassName(
+        "main-chat-messages-container"
+      )[0];
+      if (messageBox.childNodes.length !== 0) {
+        messageBox.childNodes[
+          messageBox.childNodes.length - 1
+        ].scrollIntoView();
+      }
     }
   };
 
@@ -87,11 +85,26 @@ export default function MainChat(props) {
                     foreign={msg.user.id != localStorage.userId ? true : false}
                     isGroup={msg.chat_base.isGroup}
                     author={msg.user.email}
+                    isMsgRecent={false}
                   />
                 );
               })
             : null}
-          {newMessages}
+          {newMessages.length !== 0
+            ? newMessages.map((msg) => {
+                return (
+                  <ChatBubble
+                    key={msg.user.id + "-" + msg.id}
+                    message={msg.message}
+                    // eslint-disable-next-line eqeqeq
+                    foreign={msg.user.id != localStorage.userId ? true : false}
+                    isGroup={msg.chat_base.isGroup}
+                    author={msg.user.email}
+                    isMsgRecent={true}
+                  />
+                );
+              })
+            : null}
         </div>
 
         <div className="main-chat-input-container">

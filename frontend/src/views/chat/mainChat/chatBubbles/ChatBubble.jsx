@@ -8,8 +8,8 @@ export default function ChatBubble(props) {
 
   useEffect(() => {
     setMsgMargin(
-      window.innerWidth / 2 -
-        (props.isMsgRecent ? 0 : 100) -
+      (props.isMsgRecent ? window.innerWidth : window.innerWidth / 2) -
+        100 -
         ref.current.offsetWidth
     );
     setMarginType(
