@@ -1,18 +1,10 @@
 #chat-box {
 	display: none;
-	/* transition: transform 0.3s; */
 }
 
 #chat-loader {
 	display: none;
-}
-
-.chat-box-closed {
-	transform: translateX(120vw);
-}
-
-.chat-box-opened {
-	transform: translateX(0);
+	transition: all 0.3s;
 }
 
 .chat-menu-container {

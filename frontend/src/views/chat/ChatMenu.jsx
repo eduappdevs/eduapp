@@ -5,7 +5,7 @@ import DarkModeChanger from "../../components/DarkModeChanger";
 import BottomButtons from "../../components/bottomButtons/BottomButtons";
 import MainChat from "./mainChat/MainChat";
 import ACManager from "../../components/websockets/actioncable/ACManager";
-import Loader from "../../components/loader/Loader";
+import Loader, { runCloseAnimation } from "../../components/loader/Loader";
 import "./ChatMenu.css";
 
 let acManager = new ACManager();
@@ -45,7 +45,6 @@ export default function ChatMenu() {
       acManager.sendChannelCmd("gatherAll").then((msgs) => {
         acManager.emptyReceivedData();
         setChatMessages(msgs);
-        chatBox.style.display = "block";
         setTimeout(() => {
           let messageBox = document.getElementsByClassName(
             "main-chat-messages-container"
@@ -55,9 +54,13 @@ export default function ChatMenu() {
               messageBox.childNodes.length - 1
             ].scrollIntoView();
           }
-          chatBox.classList.add("chat-box-opened");
-          chatBox.classList.remove("chat-box-closed");
-          loader.style.display = "none";
+          setTimeout(() => {
+            runCloseAnimation();
+            setTimeout(() => {
+              chatBox.style.display = "block";
+              loader.style.display = "none";
+            }, 310);
+          }, 200);
         }, 100);
       });
     });
@@ -67,6 +70,7 @@ export default function ChatMenu() {
     acManager.closeConnection();
     const chatBox = document.getElementById("chat-box");
     const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
+    const loader = document.getElementById("chat-loader");
     chatBox.classList.remove("chat-box-opened");
     chatBox.classList.add("chat-box-closed");
     setTimeout(() => {
