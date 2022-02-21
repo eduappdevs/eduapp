@@ -41,10 +41,16 @@ const apiSettings = {
 	},
 
 	//User
+	createUser: async (body) => {
+		const endpoint = `${USERS}`;
+		return await await axios.post(endpoint, body);
+	},
 	login: async (body) => {
 		const endpoint = `${USERS}/sign_in`;
 		return await axios.post(endpoint, body).then((res) => {
 			saveInLocalStorage(res);
+			
+			  
 		});
 	},
 
@@ -61,6 +67,8 @@ const apiSettings = {
 				console.log(err);
 				localStorage.removeItem("userId");
 				localStorage.removeItem("userToken");
+				localStorage.removeItem("isAdmin");
+
 				window.location.reload();
 			});
 	},

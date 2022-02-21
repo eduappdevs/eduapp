@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import API from "../../API";
-
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import GoogleLoginButton from "../googleLogin/googleLoginButton";
 export default class LoginAuth extends Component {
   constructor(props) {
     super(props);
@@ -10,9 +11,10 @@ export default class LoginAuth extends Component {
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
-  }
 
-  handleSubmit = (event) => {
+  }
+ 
+  handleSubmit =async (event) => {
     event.preventDefault();
 
     try {
@@ -30,6 +32,8 @@ export default class LoginAuth extends Component {
       console.log("error");
     }
   };
+
+  
 
   handleChange = (event) => {
     this.setState({
@@ -58,6 +62,8 @@ export default class LoginAuth extends Component {
           required
         />
         <button data-testid="loginButton" type="submit">Login</button>
+        <span style={{color:'white'}} ><br/>or</span>
+        <GoogleLoginButton useType='login'/>
       </form>
     );
   }

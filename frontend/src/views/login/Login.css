@@ -39,6 +39,7 @@
 	border-radius: 20px;
 	z-index: 333;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	overflow: hidden;

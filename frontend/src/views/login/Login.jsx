@@ -1,13 +1,11 @@
 import React from 'react';
-import { GoogleLogin } from 'react-google-login';
+
 import LoginAuth from "../../components/auth/LoginAuth";
 import "./Login.css";
 
 export default function Login() {
 
-	const responseGoogle = (response) => {
-		console.log(response);
-	}
+
 
 
 	return (
@@ -19,15 +17,8 @@ export default function Login() {
 				<div className="loginDiv">
 					<LoginAuth />
 				</div>
-				<div className="googleButton">
-					<GoogleLogin
-						clientId="34244826007-ute01mc8d42e8hc89bgsiv73njfj9kbe.apps.googleusercontent.com"
-						buttonText="Login"
-						onSuccess={responseGoogle}
-						onFailure={responseGoogle}
-						cookiePolicy={'single_host_origin'}
-					/>
-				</div>
+				
+				
 
 			</div>
 			<svg

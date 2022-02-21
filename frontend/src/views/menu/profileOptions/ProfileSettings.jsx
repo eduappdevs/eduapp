@@ -6,6 +6,7 @@ import { useState } from "react/cjs/react.development";
 import API from "../../../API";
 import Loader from "../../../components/loader/Loader";
 import "./ProfileSettings.css";
+import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
 
 export default function ProfileSettings() {
 	let userInfo = FetchUserInfo(localStorage.userId);
@@ -93,6 +94,7 @@ export default function ProfileSettings() {
 				<div className="commitChanges" onClick={commitChanges}>
 					<span>SAVE CHANGES</span>
 				</div>
+				<GoogleLoginButton useType={'merge'}/>
 				{userInfo.isAdmin && <div className='youareadmin'><p>ADMIN</p> <img src='/assets/admin.svg' alt="teacher" /></div>}
 				<div className="coursesContainer">
 					<img className='coursesLogo' src='/assets/book.svg' alt="book" />

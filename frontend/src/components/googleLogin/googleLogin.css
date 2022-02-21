@@ -1,0 +1,17 @@
+
+.googleButton{
+	margin-top: 20px;
+	border-radius: 20px;
+	overflow: hidden;
+	transform: scale(0.9);
+    text-align: center;
+
+}
+
+.googleButton>button>span{
+	padding: 0  10px 0 0px !important;;
+}
+.googleButton>button>div{
+	margin-right: 0 !important;
+	
+}

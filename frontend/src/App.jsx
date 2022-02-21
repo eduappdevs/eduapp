@@ -14,6 +14,7 @@ export default function App() {
 	let userinfo = FetchUserInfo(localStorage.userId);
 
 	return userinfo ? (
+		
 		<BrowserRouter>
 			{requireAuth() ? (
 				<Routes>
@@ -23,8 +24,16 @@ export default function App() {
 					<Route exact path="/chat" element={<ChatMenu />} />
 					{
 						userinfo.isAdmin &&
-						<Route exact path="/management" element={<ManagementPanel />} />
+						localStorage.setItem('isAdmin',true)
 					}
+					{
+						localStorage.getItem('isAdmin')&&
+						<Route exact path="/management" element={<ManagementPanel />} />
+
+					}
+						
+						
+					
 					<Route path="*" element={<Navigate to="/" />} />
 				</Routes>
 			) : (

@@ -89,7 +89,7 @@
 
 .coursesList>li>img {
 	flex: 0.1;
-	width: 50px;
+	width: 100px;
 	height: 50px;
 }
 
@@ -126,9 +126,8 @@
 
 .coursesList>li {
 	margin-top: 30px;
-	width: 100%;
 	display: flex;
-	justify-content: center;
+	justify-content: space-between;
 	align-items: center;
 	background-color: var(--backgroundColor);
 	border-radius: 10px;
@@ -139,7 +138,7 @@
 
 .youareadmin {
 	position: absolute;
-	top: 12vh;
+	top: 15vh;
 	right: 10px;
 	width: 25%;
 	display: flex;

@@ -72,7 +72,7 @@ export default function Resources(props) {
 			.classList.remove("openedResource__hidden");
 		setTimeout(() => {
 			document.getElementsByTagName("header")[0].style.display = "none";
-		}, 75);
+		}, 50);
 	};
 
 
@@ -90,7 +90,7 @@ export default function Resources(props) {
 			document.getElementsByClassName(
 				"resources__createResourceModal"
 			)[0].classList.add('resourceModalScale1');
-			},300)
+			},1)
 	};
 
 	const handleSearchResources = (e) => {

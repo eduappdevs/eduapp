@@ -87,7 +87,7 @@ export default function BottomButtons({ mobile, location }) {
 					</li>
 				</Link>
 				{
-					userInfo.isAdmin && (
+					localStorage.getItem('isAdmin') && (
 						<Link to='/management'>
 							<li className={inManagement ? "activeButton managementButton" : 'managementButton'}>
 								<img src="https://img.icons8.com/material-rounded/96/000000/admin-settings-male.png" alt="Admin Options" />
