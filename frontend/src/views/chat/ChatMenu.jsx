@@ -56,16 +56,16 @@ export default function ChatMenu() {
         .then((msgs) => {
           setChatMessages(msgs.data);
           setTimeout(() => {
-            let messageBox = document.getElementsByClassName(
-              "main-chat-messages-container"
-            )[0];
-            if (messageBox.childNodes.length !== 0) {
-              console.log(messageBox.offsetHeight);
-              messageBox.childNodes[
-                messageBox.childNodes.length - 1
-              ].scrollIntoView(true);
-            }
             setTimeout(() => {
+              let messageBox = document.getElementsByClassName(
+                "main-chat-messages-container"
+              )[0];
+              if (messageBox.childNodes.length !== 0) {
+                console.log(messageBox.offsetHeight);
+                messageBox.childNodes[
+                  messageBox.childNodes.length - 1
+                ].scrollIntoView(true);
+              }
               runCloseAnimation();
               setTimeout(() => {
                 chatBox.style.display = "block";
@@ -174,7 +174,7 @@ export default function ChatMenu() {
           {groupChats.length !== 0 ? (
             <div className="chat-group-container">
               <h2>Groups</h2>
-              <ul>
+              <ul data-testid="group-chat-list">
                 {groupChats.map((gChats) => {
                   return (
                     <li
@@ -192,9 +192,9 @@ export default function ChatMenu() {
                         </h2>
                         {/* <p className="chat-writing">Equisde is writing...</p> */}
                       </div>
-                      <p className="chat-pending-messages">
+                      {/* <p className="chat-pending-messages">
                         <span>20</span>
-                      </p>
+                      </p> */}
                     </li>
                   );
                 })}
@@ -204,7 +204,7 @@ export default function ChatMenu() {
           {privateChats.length !== 0 ? (
             <div className="chat-user-container">
               <h2>Users</h2>
-              <ul>
+              <ul data-testid="private-chat-list">
                 {privateChats.map((pChats) => {
                   return (
                     <li
@@ -222,9 +222,9 @@ export default function ChatMenu() {
                         </h2>
                         {/* <p className="chat-writing">Writing...</p> */}
                       </div>
-                      <p className="chat-pending-messages">
+                      {/* <p className="chat-pending-messages">
                         <span>20</span>
-                      </p>
+                      </p> */}
                     </li>
                   );
                 })}
