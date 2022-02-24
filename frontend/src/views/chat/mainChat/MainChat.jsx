@@ -11,7 +11,7 @@ export default function MainChat(props) {
 
   const checkMediaQueries = () => {
     setInterval(() => {
-      if (window.matchMedia("(max-width: 1100px)").matches) {
+      if (window.innerWidth > 1000) {
         setIsMobile(true);
       } else {
         setIsMobile(false);
@@ -56,7 +56,7 @@ export default function MainChat(props) {
       manageIncomingMsg(e.detail);
     });
 
-    if (window.matchMedia("(max-width: 900px)").matches) {
+    if (window.innerWidth > 1000) {
       setIsMobile(true);
     } else {
       setIsMobile(false);
