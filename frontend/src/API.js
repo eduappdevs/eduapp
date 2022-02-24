@@ -88,6 +88,30 @@ const apiSettings = {
 		const endpoint = `${USERS_INFO}/${infoId}`;
 		return await axios.put(endpoint, body);
 	},
+	
+	addGoogleId: async (userId,body) =>{
+		
+		const endpoint = `${USERS_INFO}/${userId}`;
+		let finaldata = new FormData();
+		return await await axios.put(endpoint,body).then(()=>{
+			finaldata.append('isLoggedWithGoogle',true)
+			axios.put(endpoint,finaldata).then(()=>{
+				window.location.reload();
+			});
+
+		});
+	},
+	unlinkGoogleId: async (userId,body) =>{
+		
+		const endpoint = `${USERS_INFO}/${userId}`;
+		let finaldata = new FormData();
+		return await await axios.put(endpoint,body).then(()=>{
+			finaldata.append('isLoggedWithGoogle',false)
+			axios.put(endpoint,finaldata).then(()=>{
+				window.location.reload();
+			});
+		});
+	},
 
 	//User courses
 	getCourses: async () => {

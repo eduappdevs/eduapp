@@ -48,6 +48,6 @@ class UserInfosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_info_params
-      params.permit(:user_name, :user_id, :profile_image , :isAdmin)
+      params.permit(:user_name, :user_id, :profile_image , :isAdmin , :googleid , :isLoggedWithGoogle)
     end
 end

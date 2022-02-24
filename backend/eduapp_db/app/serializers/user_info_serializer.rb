@@ -1,7 +1,7 @@
 class UserInfoSerializer < ActiveModel::Serializer
   include Rails.application.routes.url_helpers
 
-  attributes :id, :user_name , :user_id , :profile_image , :isAdmin
+  attributes :id, :user_name , :user_id , :profile_image , :isAdmin , :googleid ,:isLoggedWithGoogle
   def profile_image
     if object.profile_image.attached?
       {

@@ -49,7 +49,6 @@ const apiSettings = {
 			headers: { Authorization: token },
 		});
 	},
-
 	editUser: async (body) => {
 		const endpoint = `${USERS}`;
 		return await await axios.put(endpoint, body);
