@@ -114,10 +114,10 @@ ActiveRecord::Schema.define(version: 10) do
     t.string "profile_image"
     t.bigint "user_id"
     t.boolean "isAdmin"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
     t.string "googleid"
     t.boolean "isLoggedWithGoogle"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_user_infos_on_user_id"
   end
 

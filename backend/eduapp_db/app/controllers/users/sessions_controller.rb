@@ -1,4 +1,5 @@
 class Users::SessionsController < Devise::SessionsController
+
     respond_to :json
   
     private
@@ -11,7 +12,7 @@ class Users::SessionsController < Devise::SessionsController
       headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
       render json: { message: resource, headers: response.headers }, status: :ok
     end
-  
+
     def respond_to_on_destroy
       log_out_success && return if current_user
   

@@ -5,6 +5,9 @@ class CreateUserInfos < ActiveRecord::Migration[6.1]
       t.string :profile_image
       t.references :user, foreign_key: true
       t.boolean :isAdmin
+      t.string :googleid
+      t.boolean :isLoggedWithGoogle
+
       t.timestamps
     end
   end
