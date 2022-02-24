@@ -4,7 +4,7 @@ import MenuSettings from "./menu-settings/MenuSettings";
 import MenuHeader from "./menuHeader/MenuHeader";
 import API from "../../API";
 import ProfileSettings from "./profileOptions/ProfileSettings";
-import jsreport from "@jsreport/browser-client";
+// import jsreport from "@jsreport/browser-client";
 
 export default function Menu(props) {
   const openMenuSettings = () => {
@@ -19,23 +19,24 @@ export default function Menu(props) {
       .classList.remove("profileSettings__hidden");
   };
 
-  const reportGenerator = async () => {
-    const data = await API.fetchResources();
-    const payload = {
-      data: data,
-    };
-    console.log(payload);
+  // const reportGenerator = async () => {
+  //   const data = await API.fetchResources();
+  //   const payload = {
+  //     data: data,
+  //   };
+  //   console.log(payload);
 
-    jsreport.serverUrl = "http://localhost:5488";
-    const report = await jsreport.render({
-      template: {
-        name: "Test1",
-      },
-      data: JSON.stringify(payload),
-    });
+  //   jsreport.serverUrl = "http://localhost:5488";
+  //   const report = await jsreport.render({
+  //     template: {
+  //       name: "Test1",
+  //     },
+  //     data: JSON.stringify(payload),
+  //   });
 
-    report.openInWindow({ title: "myreport" });
-  };
+  //   report.openInWindow({ title: "myreport" });
+  // };
+  // To be moved to admin panel
 
   return (
     <div
@@ -82,7 +83,7 @@ export default function Menu(props) {
             Help
           </a>
         </li>
-        <li>
+        {/* <li>
           <a
             onClick={() => {
               reportGenerator();
@@ -90,7 +91,7 @@ export default function Menu(props) {
           >
             Report
           </a>
-        </li>
+        </li> */}
         <li>
           <a onClick={API.logout}>Log out</a>
         </li>

@@ -22,7 +22,7 @@ export default function ChatMenu() {
 
   const checkMediaQueries = () => {
     setInterval(() => {
-      if (window.innerWidth > 1000) {
+      if (window.innerWidth < 1000) {
         setIsMobile(true);
       } else {
         setIsMobile(false);
@@ -123,11 +123,10 @@ export default function ChatMenu() {
   useEffect(() => {
     acManager.closeConnection();
     checkMediaQueries();
-    DarkModeChanger(localStorage.getItem("darkMode"));
 
     getUserChats().then(() => {});
 
-    if (window.innerWidth > 1000) {
+    if (window.innerWidth < 1000) {
       setIsMobile(true);
     } else {
       setIsMobile(false);
@@ -150,7 +149,7 @@ export default function ChatMenu() {
         />
       </div>
       <div className="chat-menu-container">
-        <Navbar mobile={isMobile} location={"chat"} />
+        {/* <Navbar mobile={isMobile} location={"chat"} /> */}
 
         <div className="chat-search-container">
           <form action="">
@@ -235,7 +234,7 @@ export default function ChatMenu() {
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="white"
-              class="bi bi-plus"
+              className="bi bi-plus"
               viewBox="0 0 16 16"
             >
               <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
@@ -243,7 +242,7 @@ export default function ChatMenu() {
           </div>
         </div>
 
-        <BottomButtons mobile={isMobile} location={"chat"} />
+        {/* <BottomButtons mobile={isMobile} location={"chat"} /> */}
       </div>
     </>
   );

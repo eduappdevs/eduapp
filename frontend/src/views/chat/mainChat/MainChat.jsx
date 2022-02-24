@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import DarkModeChanger from "../../../components/DarkModeChanger";
 import ChatBubble from "./chatBubbles/ChatBubble";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import "./MainChat.css";
@@ -49,7 +48,6 @@ export default function MainChat(props) {
 
   useEffect(() => {
     checkMediaQueries();
-    DarkModeChanger(localStorage.getItem("darkMode"));
 
     document.addEventListener("new_msg", (e) => {
       e.stopImmediatePropagation();
@@ -116,7 +114,7 @@ export default function MainChat(props) {
               width="16"
               height="16"
               fill="grey"
-              class="bi bi-paperclip"
+              className="bi bi-paperclip"
               viewBox="0 0 16 16"
             >
               <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0V3z" />
@@ -131,7 +129,7 @@ export default function MainChat(props) {
               width="16"
               height="16"
               fill="currentColor"
-              class="bi bi-send"
+              className="bi bi-send"
               viewBox="2 -5 15 23"
               onClick={sendMessage}
             >
