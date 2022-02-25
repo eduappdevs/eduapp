@@ -37,7 +37,7 @@ export default function ChatMenu() {
     navbar.style.display = "none";
     bottombtns.style.display = "none";
     loader.style.display = "block";
-    runOpenAnimation();
+    loader.style.opacity = "1";
 
     if (event.target.nodeName.toLowerCase() !== "li") {
       let temp = event.target;
@@ -66,11 +66,13 @@ export default function ChatMenu() {
                   messageBox.childNodes.length - 1
                 ].scrollIntoView(true);
               }
-              runCloseAnimation();
               setTimeout(() => {
-                chatBox.style.display = "block";
-                loader.style.display = "none";
-              }, 310);
+                loader.style.opacity = "0";
+                setTimeout(() => {
+                  chatBox.style.display = "block";
+                  loader.style.display = "none";
+                }, 200);
+              }, 300);
             }, 200);
           }, 100);
         });
@@ -84,19 +86,19 @@ export default function ChatMenu() {
     const loader = document.getElementById("chat-loader");
     const navbar = document.getElementsByTagName("header")[0];
     const bottombtns = document.getElementById("bottom-navigator");
-    navbar.style.display = "block";
-    bottombtns.style.display = "block";
     loader.style.display = "block";
-    runOpenAnimation();
+    loader.style.opacity = "1";
 
     setTimeout(() => {
       setTimeout(() => {
         chatBox.style.display = "none";
-        chatMenu.style.display = "block";
-        runCloseAnimation();
+        loader.style.opacity = "0";
         setTimeout(() => {
           loader.style.display = "none";
-        }, 310);
+          navbar.style.display = "block";
+          bottombtns.style.display = "block";
+          chatMenu.style.display = "block";
+        }, 300);
       }, 200);
     }, 200);
   };
