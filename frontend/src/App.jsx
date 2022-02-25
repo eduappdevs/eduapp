@@ -6,7 +6,10 @@ import React, { useState } from "react";
 import requireAuth from "./components/auth/RequireAuth";
 import ManagementPanel from "./views/ManagementPanel/ManagementPanel";
 import { FetchUserInfo } from "./hooks/FetchUserInfo";
-import Loader from "./components/loader/Loader";
+import Loader, {
+  runCloseAnimation,
+  runOpenAnimation,
+} from "./components/loader/Loader";
 import Calendar from "./views/Calendar/calendar";
 import ChatMenu from "./views/chat/ChatMenu";
 import BottomButtons from "./components/bottomButtons/BottomButtons";
@@ -25,6 +28,7 @@ export default function App() {
       } else {
         setItsMobileDevice(false);
       }
+      runCloseAnimation();
     }, 500);
   };
 
@@ -36,6 +40,9 @@ export default function App() {
   return userinfo ? (
     <>
       <BrowserRouter>
+        <React.Fragment>
+          <Loader />
+        </React.Fragment>
         <React.Fragment>
           <Navbar mobile={ItsMobileDevice} />
         </React.Fragment>

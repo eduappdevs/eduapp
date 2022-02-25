@@ -29,10 +29,14 @@ export function runOpenAnimation() {
   const loader = document.getElementById("loader_main-container");
 
   loader.style.opacity = "1";
+  loader.style.display = "block";
 }
 
 export function runCloseAnimation() {
   const loader = document.getElementById("loader_main-container");
 
   loader.style.opacity = "0";
+  setTimeout(() => {
+    loader.style.display = "none";
+  }, 300);
 }

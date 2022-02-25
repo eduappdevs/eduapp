@@ -184,14 +184,14 @@ export default function Home() {
   useEffect(() => {
     checkMediaQueries();
 
-    if (window.matchMedia("(max-width: 900px)").matches) {
+    if (window.innerWidth < 900) {
       setIsMobile(true);
     } else {
       setIsMobile(false);
     }
   }, []);
 
-  return courses ? (
+  return (
     <>
       <div className="home-main-container">
         <section className={isMobile ? "mobileSection" : "desktopSection"}>
@@ -391,7 +391,5 @@ export default function Home() {
         <SessionAdd />
       </div>
     </>
-  ) : (
-    <Loader />
   );
 }

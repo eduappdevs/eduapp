@@ -10,6 +10,7 @@ export default function Navbar({ mobile }) {
   const [inResources, setInResources] = useState(false);
   const [inCalendar, setInCalendar] = useState(false);
   const [inChat, setInChat] = useState(false);
+  const [inManagement, setInManagement] = useState(false);
   const loc = useLocation();
 
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -25,24 +26,35 @@ export default function Navbar({ mobile }) {
         setInCalendar(false);
         setInChat(false);
         setInHome(false);
+        setInManagement(false);
         break;
       case "home":
         setInResources(false);
         setInCalendar(false);
         setInChat(false);
         setInHome(true);
+        setInManagement(false);
         break;
       case "calendar":
         setInResources(false);
         setInCalendar(true);
         setInChat(false);
         setInHome(false);
+        setInManagement(false);
         break;
       case "chat":
         setInResources(false);
         setInCalendar(false);
         setInChat(true);
         setInHome(false);
+        setInManagement(false);
+        break;
+      case "management":
+        setInResources(false);
+        setInCalendar(false);
+        setInChat(false);
+        setInHome(false);
+        setInManagement(true);
         break;
       default:
         break;
@@ -108,6 +120,9 @@ export default function Navbar({ mobile }) {
             </li>
             <li className={inCalendar ? "activeLocation" : console.log()}>
               <Link to="/calendar"> Calendar</Link>
+            </li>
+            <li className={inManagement ? "activeLocation" : console.log()}>
+              <Link to="/management"> Management</Link>
             </li>
             <li className={inResources ? "activeLocation" : console.log()}>
               <Link to="/resources"> Resources</Link>

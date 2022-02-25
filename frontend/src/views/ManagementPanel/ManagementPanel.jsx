@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ManagementPanel.css";
 import API from "../../API";
-import Loader from "../../components/loader/Loader";
 import AppHeader from "../../components/appHeader/AppHeader";
 
 let institutions, courses, users, sessions;
@@ -507,7 +506,5 @@ export default function ManagementPanel() {
         </div>
       </div>
     </div>
-  ) : (
-    <Loader />
-  );
+  ) : null;
 }
