@@ -14,8 +14,6 @@ function App() {
 					<Route exact path="/schedule" element={<Schedule />} />
 					<Route exact path="/users" element={<Users />} />
 					<Route exact path="/settings" element={<Settings />} />
-					
-
 					<Route path="*" element={<Navigate to="/" />} />
 				</Routes>
 		</BrowserRouter>

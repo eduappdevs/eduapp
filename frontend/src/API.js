@@ -7,6 +7,7 @@ import {
 	USERS_INFO,
 	INSTITUTIONS,
 	COURSES,
+	GLOGIN,
 	TUITIONS,
 } from "./config";
 
@@ -43,7 +44,7 @@ const apiSettings = {
 	//User
 	createUser: async (body) => {
 		const endpoint = `${USERS}`;
-		return await await axios.post(endpoint, body);
+		return await axios.post(endpoint, body);
 	},
 	login: async (body) => {
 		const endpoint = `${USERS}/sign_in`;
@@ -52,6 +53,12 @@ const apiSettings = {
 			
 			  
 		});
+	},
+	loginWithGoogle: async(googleid)=>{
+		const endpoint = `${GLOGIN}`;
+		return await axios.get(endpoint + `?googleid=${googleid}`).then((res)=>{
+			console.log(res)
+		})
 	},
 
 	logout: async () => {
@@ -83,7 +90,10 @@ const apiSettings = {
 		const endpoint = `${USERS_INFO}/${infoId}`;
 		return await axios.delete(endpoint);
 	},
-
+	createInfo: async (body) => {
+		const endpoint = `${USERS_INFO}`;
+		return await await axios.post(endpoint, body);
+	},
 	updateInfo: async (infoId, body) => {
 		const endpoint = `${USERS_INFO}/${infoId}`;
 		return await axios.put(endpoint, body);

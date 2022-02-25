@@ -29,7 +29,6 @@ export default function App() {
 					{
 						localStorage.getItem('isAdmin')&&
 						<Route exact path="/management" element={<ManagementPanel />} />
-
 					}
 						
 						
