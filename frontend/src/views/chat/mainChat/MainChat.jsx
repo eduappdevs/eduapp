@@ -54,6 +54,14 @@ export default function MainChat(props) {
       manageIncomingMsg(e.detail);
     });
 
+    let inputArea = document.getElementById("message-area");
+    inputArea.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (inputArea.value.length !== 0) sendMessage();
+      }
+    });
+
     if (window.innerWidth > 1000) {
       setIsMobile(true);
     } else {

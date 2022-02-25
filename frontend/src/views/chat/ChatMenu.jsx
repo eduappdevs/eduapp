@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Navbar from "../../components/navbar/Navbar";
-import DarkModeChanger from "../../components/DarkModeChanger";
-import BottomButtons from "../../components/bottomButtons/BottomButtons";
 import MainChat from "./mainChat/MainChat";
 import ACManager from "../../components/websockets/actioncable/ACManager";
 import Loader, {
@@ -34,7 +31,11 @@ export default function ChatMenu() {
     const chatBox = document.getElementById("chat-box");
     const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
     const loader = document.getElementById("chat-loader");
+    const navbar = document.getElementsByTagName("header")[0];
+    const bottombtns = document.getElementById("bottom-navigator");
     chatMenu.style.display = "none";
+    navbar.style.display = "none";
+    bottombtns.style.display = "none";
     loader.style.display = "block";
     runOpenAnimation();
 
@@ -61,7 +62,6 @@ export default function ChatMenu() {
                 "main-chat-messages-container"
               )[0];
               if (messageBox.childNodes.length !== 0) {
-                console.log(messageBox.offsetHeight);
                 messageBox.childNodes[
                   messageBox.childNodes.length - 1
                 ].scrollIntoView(true);
@@ -82,6 +82,10 @@ export default function ChatMenu() {
     const chatBox = document.getElementById("chat-box");
     const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
     const loader = document.getElementById("chat-loader");
+    const navbar = document.getElementsByTagName("header")[0];
+    const bottombtns = document.getElementById("bottom-navigator");
+    navbar.style.display = "block";
+    bottombtns.style.display = "block";
     loader.style.display = "block";
     runOpenAnimation();
 

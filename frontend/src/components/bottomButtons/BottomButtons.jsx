@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import "./BottomButtons.css";
 
-export default function BottomButtons({ mobile, location }) {
+export default function BottomButtons({ mobile }) {
   const [inHome, setInHome] = useState(false);
   const [inResources, setInResources] = useState(false);
   const [inCalendar, setInCalendar] = useState(false);
@@ -14,6 +14,10 @@ export default function BottomButtons({ mobile, location }) {
   let userInfo = FetchUserInfo(localStorage.userId);
 
   const changeLocation = () => {
+    if (loc.pathname.substring(1) === "login")
+      document.getElementById("bottom-navigator").style.display = "none";
+    else document.getElementById("bottom-navigator").style.display = "block";
+
     switch (loc.pathname.substring(1)) {
       case "resources":
         setInResources(true);
@@ -61,6 +65,7 @@ export default function BottomButtons({ mobile, location }) {
 
   return (
     <div
+      id="bottom-navigator"
       className={mobile ? "bottom-buttons-mobile" : "bottom-buttons-desktop"}
     >
       <ul>
