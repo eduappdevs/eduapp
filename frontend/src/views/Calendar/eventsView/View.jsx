@@ -1,59 +1,117 @@
-import React from 'react';
-import './views.css';
-import { useEffect, useState } from 'react';
-import EditView from './EditView';
+import React from "react";
+import "./views.css";
+import { useEffect, useState } from "react";
+import EditView from "./EditView";
 
 export default function View(props) {
   const [editEvent, setEditEvent] = useState({});
   const closeButton = async () => {
-    const editBox = document.getElementById('view-box');
+    const editBox = document.getElementById("view-box");
 
-    editBox.style.display = 'flex';
+    editBox.style.display = "flex";
 
     const backgroundCalendar =
-      document.getElementsByClassName('background-shadow')[0];
+      document.getElementsByClassName("background-shadow")[0];
 
-    editBox.classList.remove('view-box-opened');
-    editBox.classList.add('view-box-closed');
+    editBox.classList.remove("view-box-opened");
+    editBox.classList.add("view-box-closed");
 
+    if (props.data.description !== undefined) {
+      document
+        .getElementsByClassName("calendar-view-session-information")[0]
+        .classList.add("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-edit-session-information")[0]
+        .classList.add("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-description")[0]
+        .classList.remove("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-edit-description")[0]
+        .classList.remove("description-hidden");
+    } else {
+      document
+        .getElementsByClassName("calendar-view-session-information")[0]
+        .classList.remove("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-edit-session-information")[0]
+        .classList.remove("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-description")[0]
+        .classList.add("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-edit-description")[0]
+        .classList.add("description-hidden");
+    }
     document
-      .getElementsByClassName('calendar-main-container')[0]
-      .classList.remove('disable-scroll');
+      .getElementsByClassName("calendar-main-container")[0]
+      .classList.remove("disable-scroll");
 
     setTimeout(() => {
-      backgroundCalendar.style.display = 'none';
-      editBox.classList.add('calendar-view-hidden');
+      backgroundCalendar.style.display = "none";
+      editBox.classList.add("calendar-view-hidden");
     }, 150);
   };
 
   const openEditMenu = async () => {
     let eventEdit = props.data;
     setEditEvent(eventEdit);
-    const editBox = document.getElementById('edit-box');
-    editBox.style.display = 'flex';
+
+    const editBox = document.getElementById("edit-box");
+    editBox.style.display = "flex";
+
     const backgroundCalendar =
-      document.getElementsByClassName('background-shadow')[0];
+      document.getElementsByClassName("background-shadow")[0];
     const calendarMainScroll = document.getElementsByClassName(
-      'calendar-main-container'
+      "calendar-main-container"
     )[0];
     setTimeout(() => {
-      calendarMainScroll.classList.add('disable-scroll');
-      backgroundCalendar.style.display = 'block';
+      calendarMainScroll.classList.add("disable-scroll");
+      backgroundCalendar.style.display = "block";
     }, 100);
     setTimeout(() => {
-      editBox.classList.add('edit-box-opened');
-      editBox.classList.remove('calendar-view-edit-hidden');
+      editBox.classList.add("edit-box-opened");
+      editBox.classList.remove("calendar-view-edit-hidden");
     }, 400);
   };
   const getTime = () => {
     if (props.data.startDate !== undefined) {
       let start = props.data.startDate;
       let end = props.data.endDate;
-      start = start.split('T')[1];
-      end = end.split('T')[1];
-      return start + '-' + end;
+      start = start.split("T")[1];
+      end = end.split("T")[1];
+      return start + "-" + end;
     }
   };
+  useEffect(() => {
+    if (props.data.description !== undefined) {
+      document
+        .getElementsByClassName("calendar-view-session-information")[0]
+        .classList.add("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-edit-session-information")[0]
+        .classList.add("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-description")[0]
+        .classList.remove("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-edit-description")[0]
+        .classList.remove("description-hidden");
+    } else {
+      document
+        .getElementsByClassName("calendar-view-session-information")[0]
+        .classList.remove("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-edit-session-information")[0]
+        .classList.remove("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-description")[0]
+        .classList.add("description-hidden");
+      document
+        .getElementsByClassName("calendar-view-edit-description")[0]
+        .classList.add("description-hidden");
+    }
+  });
 
   return (
     <div
@@ -98,7 +156,7 @@ export default function View(props) {
           <div className="calendar-view-contents-header">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
+              fill={props.data.backgroundColor}
               class="bi bi-circle-fill"
               viewBox="0 0 16 16"
             >
@@ -124,6 +182,61 @@ export default function View(props) {
             <div className="calendar-view-description">
               <h3>Description</h3>
               <p>{props.data.description}</p>
+            </div>
+            <div className="calendar-view-session-information description-hidden">
+              <h3>Description</h3>
+              <div className="calendar-view-session-information-icon">
+                <p>
+                  <svg
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="35"
+                    height="35"
+                    class="bi bi-mortarboard"
+                    viewBox="0 0 16 16"
+                    onClick={() => {
+                      window.location.href = props.data.resources;
+                    }}
+                  >
+                    <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5ZM8 8.46 1.758 5.965 8 3.052l6.242 2.913L8 8.46Z" />
+                    <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032Zm-.068 1.873.22-.748 3.496 1.311a.5.5 0 0 0 .352 0l3.496-1.311.22.748L8 12.46l-3.892-1.556Z" />
+                  </svg>
+                </p>
+                <p>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="35"
+                    height="35"
+                    fill="currentColor"
+                    class="bi bi-camera-video"
+                    viewBox="0 0 16 16"
+                    onClick={() => {
+                      window.location.href = props.data.stream;
+                    }}
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z"
+                    />
+                  </svg>
+                </p>
+                <p>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    fill="currentColor"
+                    class="bi bi-chat-dots"
+                    viewBox="0 0 16 16"
+                    onClick={() => {
+                      window.location.href = props.data.chat;
+                    }}
+                  >
+                    <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                    <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
+                  </svg>
+                </p>
+              </div>
             </div>
           </div>
         </div>

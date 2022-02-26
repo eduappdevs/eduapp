@@ -1,93 +1,134 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import './views.css';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { CALENDAR_ID, EDUAPP_SESSIONS } from "../../../config";
+import "./views.css";
 export default function EditView(props) {
   const closeButton = async () => {
-    const editBox = document.getElementById('edit-box');
-    editBox.style.display = 'flex';
-
-    // const backgroundCalendar =
-    //   document.getElementsByClassName('background-shadow')[0];
-
-    editBox.classList.remove('edit-box-opened');
-    editBox.classList.add('edit-box-closed');
+    console.log(props.data);
+    const editBox = document.getElementById("edit-box");
+    editBox.style.display = "flex";
+    editBox.classList.remove("edit-box-opened");
+    editBox.classList.add("edit-box-closed");
 
     const calendarMainScroll = document.getElementsByClassName(
-      'calendar-main-container'
+      "calendar-main-container"
     )[0];
 
-    calendarMainScroll.classList.remove('disable-scroll');
+    calendarMainScroll.classList.remove("disable-scroll");
 
     setTimeout(() => {
-      editBox.classList.add('calendar-view-edit-hidden');
+      editBox.classList.add("calendar-view-edit-hidden");
     }, 150);
   };
 
   const updateEvent = async (e) => {
     e.preventDefault();
-    var titleValue = document.getElementById('editTitle').value;
-    var descriptionValue = document.getElementById('editDescription').value;
-    var startValue = document.getElementById('editStartDate').value;
-    var endValue = document.getElementById('editEndDate').value;
+    var titleValue = document.getElementById("editTitle").value;
+    var descriptionValue = document.getElementById("editDescription").value;
+    var startValue = document.getElementById("editStartDate").value;
+    var endValue = document.getElementById("editEndDate").value;
+    var chatValue = document.getElementById("editChat").value;
+    var resourceValue = document.getElementById("editResources").value;
+    var streamValue = document.getElementById("editStream").value;
     var editTitle;
     var editDescription;
     var editStartDate;
     var editEndDate;
-    if (titleValue !== '' && titleValue !== props.data.title) {
+    var editChat;
+    var editResources;
+    var editStream;
+
+    if (titleValue !== "" && titleValue !== props.data.title) {
       editTitle = titleValue;
     } else {
       editTitle = props.data.title;
     }
     if (
-      descriptionValue !== '' &&
+      descriptionValue !== "" &&
       descriptionValue !== props.data.description
     ) {
       editDescription = descriptionValue;
     } else {
       editDescription = props.data.description;
     }
-    if (startValue !== '' && startValue !== props.data.start) {
+    if (startValue !== "" && startValue !== props.data.start) {
       editStartDate = startValue;
     } else {
       editStartDate = props.data.startDate;
     }
-    if (endValue !== '' && endValue !== props.data.end) {
+    if (endValue !== "" && endValue !== props.data.end) {
       editEndDate = endValue;
     } else {
       editEndDate = props.data.endDate;
     }
-    var editEvent = {
-      annotation_start_date: editStartDate,
-      annotation_end_date: editEndDate,
-      annotation_title: editTitle,
-      annotation_description: editDescription,
-      isGlobal: true,
-      user_id: 1,
-    };
-    axios
-      .put(
-        `http://localhost:3000/calendar_annotations/${props.data.id}`,
-        editEvent
-      )
-      .then(window.location.reload())
-      .catch();
+    if (chatValue !== "" && chatValue !== props.data.chat) {
+      editChat = chatValue;
+    } else {
+      editChat = props.data.chat;
+    }
+    if (resourceValue !== "" && resourceValue !== props.data.resources) {
+      editResources = resourceValue;
+    } else {
+      editResources = props.data.resources;
+    }
+    if (streamValue !== "" && streamValue !== props.data.stream) {
+      editStream = streamValue;
+    } else {
+      editStream = props.data.stream;
+    }
+    if (props.data.description !== undefined) {
+      console.log("a");
+      var editEvent = {
+        annotation_start_date: editStartDate,
+        annotation_end_date: editEndDate,
+        annotation_title: editTitle,
+        annotation_description: editDescription,
+        isGlobal: true,
+        user_id: 1,
+      };
+      axios
+        .put(CALENDAR_ID + "/" + props.data.id, editEvent)
+        .then(window.location.reload())
+        .catch();
+    } else {
+      console.log(editTitle);
+      var editEventSession = {
+        session_name: editTitle,
+        session_start_date: editStartDate,
+        session_end_date: editEndDate,
+        streaming_platform: editStream,
+        resources_platform: editResources,
+        session_chat_id: editChat,
+      };
+      axios
+        .put(EDUAPP_SESSIONS + "/" + props.data.id, editEventSession)
+        .then(window.location.reload())
+        .catch();
+    }
   };
 
   const confirmDeleteEvent = async () => {
     document
-      .getElementsByClassName('calendar-view-edit-alert-delete-container')[0]
-      .classList.remove('calendar-view-alert-delete-hidden');
+      .getElementsByClassName("calendar-view-edit-alert-delete-container")[0]
+      .classList.remove("calendar-view-alert-delete-hidden");
   };
   const deleteEvent = async () => {
-    axios
-      .delete(`http://localhost:3000/calendar_annotations/${props.data.id}`)
-      .then(window.location.reload())
-      .catch();
+    if (props.data.description !== undefined) {
+      axios
+        .delete(CALENDAR_ID + "/" + props.data.id)
+        .then(window.location.reload())
+        .catch();
+    } else {
+      axios
+        .delete(EDUAPP_SESSIONS + "/" + props.data.id)
+        .then(window.location.reload())
+        .catch();
+    }
   };
   const closeDeleteWindow = async () => {
     document
-      .getElementsByClassName('calendar-view-edit-alert-delete-container')[0]
-      .classList.add('calendar-view-alert-delete-hidden');
+      .getElementsByClassName("calendar-view-edit-alert-delete-container")[0]
+      .classList.add("calendar-view-alert-delete-hidden");
   };
 
   return (
@@ -159,6 +200,29 @@ export default function EditView(props) {
                 name="editDescription"
                 type="text"
                 maxlength="150"
+              />
+            </div>
+            <div className="calendar-view-edit-session-information">
+              <h3>Resources</h3>
+              <input
+                placeholder={props.data.resources}
+                id="editResources"
+                name="editResources"
+                type="text"
+              />
+              <h3>Platform stream</h3>
+              <input
+                id="editStream"
+                placeholder={props.data.stream}
+                name="editStream"
+                type="text"
+              />
+              <h3>Session Chat</h3>
+              <input
+                type="text"
+                placeholder={props.data.chat}
+                name="editChat"
+                id="editChat"
               />
             </div>
             <button type="submit">Save</button>

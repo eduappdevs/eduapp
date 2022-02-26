@@ -112,6 +112,7 @@ const apiSettings = {
 		const endpoint = `${USERS_INFO}`;
 		return await axios.get(endpoint);
 	},
+
 };
 
 export default apiSettings;

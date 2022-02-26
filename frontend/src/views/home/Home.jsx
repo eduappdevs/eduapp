@@ -72,26 +72,26 @@ export default function Home() {
   };
 
   const getSessions = async () => {
+    console.log(courseSelected);
     let request = await axios.get(
-      `http://localhost:3000/eduapp_user_sessions?id=${courseSelected}`
+      `http://localhost:3000/eduapp_user_sessions?subject_id=${courseSelected}`
     );
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
-      let date = e.session_date;
+      let startDate = e.session_start_date;
+      let endDate = e.session_end_date;
       let streamingPlatform = e.streaming_platform;
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
-      let sorter =
-        date.split("-")[0].split(":")[0] + date.split("-")[0].split(":")[1];
       sessionsPreSorted.push({
         id,
         name,
-        date,
+        startDate,
+        endDate,
         streamingPlatform,
         resourcesPlatform,
         chat,
-        sorter,
       });
     });
 
@@ -182,6 +182,7 @@ export default function Home() {
 
   const handleChangeSelector = (id) => {
     courseSelected = id;
+    console.log(id);
     getSessions(id);
   };
 
@@ -278,17 +279,15 @@ export default function Home() {
                               <div className="session-platforms">
                                 <p className="session-streamingPlatform">
                                   <svg
+                                    fill="currentColor"
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="35"
                                     height="35"
-                                    fill="currentColor"
-                                    class="bi bi-camera-video"
+                                    class="bi bi-mortarboard"
                                     viewBox="0 0 16 16"
                                   >
-                                    <path
-                                      fill-rule="evenodd"
-                                      d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z"
-                                    />
+                                    <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5ZM8 8.46 1.758 5.965 8 3.052l6.242 2.913L8 8.46Z" />
+                                    <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032Zm-.068 1.873.22-.748 3.496 1.311a.5.5 0 0 0 .352 0l3.496-1.311.22.748L8 12.46l-3.892-1.556Z" />
                                   </svg>
                                 </p>
                                 <p className="session-resourcesPlatform">

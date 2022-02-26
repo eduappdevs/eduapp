@@ -21,7 +21,6 @@ code {
 }
 
 :root {
-	--calendarIcon: invert(0);
 	--orange: #FF8139;
 	--blue: #4B91FF;
 	--textColor: #000;
@@ -32,4 +31,6 @@ code {
 	--headerButtonBG: white;
 	--headerButtonFill: var(--blue);
 	--navbarHeight: 12.2%;
+	--calendarIcon: invert(0);
+	--calendarColorLine: #6d6d6d;
 }

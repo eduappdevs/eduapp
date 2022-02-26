@@ -72,7 +72,6 @@
 .calendar-view-contents-header>svg {
     height: 3em;
     width: 3em;
-    fill: var(--orange);
 }
 
 .calendar-view-contents-header>p {
@@ -103,6 +102,21 @@
 
 .calendar-view-hour>p {
     margin-left: 10px;
+}
+
+.calendar-view-session-information-icon {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-view-session-information-icon>p {
+    margin-right: 15%;
+}
+
+.description-hidden {
+    display: none !important;
 }
 
 /* edit View */
@@ -233,6 +247,21 @@
     padding: 5% 5% 5% 5%;
 }
 
+.calendar-view-edit-session-information {
+    flex-direction: column;
+    margin-top: 20%;
+}
+
+.calendar-view-edit-session-information>input {
+    width: 90%;
+    padding: 0.5em 0.5em 0.5em 1em;
+    background-color: var(--backgroundColor);
+    color: var(--textColor);
+    font-size: 18px;
+    border: 1px solid var(--textColor);
+    border-radius: 5px;
+}
+
 .calendar-view-edit-alert-delete-container {
     font-family: Consolas;
     font-size: 18px;
@@ -259,6 +288,8 @@
     border: 1px solid var(--textColor);
     margin-left: 5vw;
     margin-right: 5vw;
+    margin-top: 5vw;
+    margin-bottom: 5vw;
     border-radius: 15px;
 }
 
@@ -286,6 +317,7 @@
     padding: 1em;
     border-radius: 10px;
     cursor: pointer;
+    margin-bottom: 5vw;
 
 }
 
@@ -368,6 +400,7 @@
     background-color: var(--backgroundColor);
     color: var(--textColor);
     font-size: 18px;
+    font-family: Consolas;
     border: 1px solid var(--textColor);
     border-radius: 5px;
 }
@@ -416,6 +449,36 @@
     padding: 5% 5% 5% 5%;
 }
 
+.calendar-view-create-subject {
+    flex-direction: column;
+    margin-top: 20%;
+    justify-content: center;
+    align-items: center;
+}
+
+.calendar-view-create-subject>select {
+    font-family: Consolas;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-size: 18px;
+    background-color: var(--backgroundColor) !important;
+    color: var(--textColor);
+    height: 60px;
+    padding: 0.5em 0em 0.5em 1.5em;
+    border: 1px solid var(--textColor) !important;
+    background-position-x: 50vw !important;
+    background-position-y: 20px !important;
+    border-radius: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: url("data:image/svg+xml;utf8,<svg viewBox='0 0 140 140' width='24' height='24' xmlns='http://www.w3.org/2000/svg'><g><path d='m121.3,34.6c-1.6-1.6-4.2-1.6-5.8,0l-51,51.1-51.1-51.1c-1.6-1.6-4.2-1.6-5.8,0-1.6,1.6-1.6,4.2 0,5.8l53.9,53.9c0.8,0.8 1.8,1.2 2.9,1.2 1,0 2.1-0.4 2.9-1.2l53.9-53.9c1.7-1.6 1.7-4.2 0.1-5.8z' fill='white'/></g></svg>") no-repeat;
+
+
+
+}
+
+
 
 .calendar-view-create-send-button>button:focus {
     pointer-events: none;
@@ -460,6 +523,7 @@
 .calendar-view-alert-create-hidden {
     display: none;
 }
+
 
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     padding: 0em 0em 0em 1em;

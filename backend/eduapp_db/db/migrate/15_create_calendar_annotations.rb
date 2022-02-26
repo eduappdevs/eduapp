@@ -6,9 +6,11 @@ class CreateCalendarAnnotations < ActiveRecord::Migration[6.1]
       t.string :annotation_title
       t.string :annotation_description
       t.boolean :isGlobal
-      t.integer :user_id
-
+      t.belongs_to :user, null: false, foreign_key: true
+      t.belongs_to :subject, foreign_key: true
       t.timestamps
     end
+    change_column_null(:calendar_annotations, :subject_id, true)
+
   end
 end

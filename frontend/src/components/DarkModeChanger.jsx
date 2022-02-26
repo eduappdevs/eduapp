@@ -1,6 +1,10 @@
 const DarkModeChanger = (mode) => {
   if (parseInt(mode)) {
     localStorage.setItem("darkMode", "1");
+    document.documentElement.style.setProperty(
+      "--calendarColorLine",
+      "#969696"
+    );
     document.documentElement.style.setProperty("--calendarIcon", "invert(1)");
     document.documentElement.style.setProperty("--backgroundColor", "#202124");
     document.documentElement.style.setProperty("--shadowColor", "#3a3a3a00");
@@ -19,6 +23,10 @@ const DarkModeChanger = (mode) => {
     document.getElementById("lightmode").classList.remove("activeMode");
   } else {
     localStorage.setItem("darkMode", "0");
+    document.documentElement.style.setProperty(
+      "--calendarColorLine",
+      "#6d6d6d"
+    );
     document.documentElement.style.setProperty("--calendarIcon", "invert(0)");
     document.documentElement.style.setProperty("--textColor", "#000");
     document.documentElement.style.setProperty("--backgroundColor", "#fff");

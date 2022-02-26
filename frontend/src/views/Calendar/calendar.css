@@ -171,6 +171,14 @@
     color: var(--textColor) !important;
 }
 
+.makeStyles-timeScaleContainer-44 {
+    border: none !important;
+    width: 4.9em !important;
+}
+
+.TicksLayout-table-54 {
+    display: none !important;
+}
 
 .makeStyles-lens-612 {
     color: rgb(100, 181, 246) !important;
@@ -240,9 +248,9 @@
 }
 
 
-
+/* events css */
 .VerticalAppointment-container-587 {
-    color: var(--textColor) !important;
+    color: White !important;
 }
 
 /* Selected day */
@@ -270,4 +278,8 @@
 .makeStyles-text-607 {
     display: inline-block;
     color: var(--textColor) !important;
+}
+
+.VerticalAppointment-textContainer {
+    display: none !important;
 }
