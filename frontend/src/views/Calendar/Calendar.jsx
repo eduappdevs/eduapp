@@ -1,8 +1,6 @@
 import React from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Navbar from "../../components/navbar/navbar";
-import BottomButtons from "../../components/bottomButtons/bottomButtons";
 import { styled } from "@mui/material/styles";
 import Paper from "@material-ui/core/Paper";
 import {
@@ -17,9 +15,8 @@ import {
   AppointmentTooltip,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { ViewState } from "@devexpress/dx-react-scheduler";
-import DarkModeChanger from "../../components/DarkModeChanger";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import { CALENDAR, SUBJECT } from "../../config";
+import { CALENDAR } from "../../config";
 import View from "./eventsView/View";
 import CreateView from "./eventsView/CreateView";
 import "./calendar.css";
@@ -29,7 +26,6 @@ export default function Calendar() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [activeEvent, setActiveEvent] = useState({});
   const [subject, setSubject] = useState([]);
-
   let userInfo = FetchUserInfo(localStorage.userId);
 
   const today = new Date();
@@ -67,15 +63,16 @@ export default function Calendar() {
       }
     }
 
-    for (let event in data.calendarEvents) {
+    for (let calendarEvent in data.calendarEvents) {
       if (data.calendarEvents !== null) {
-        let calendarEvents = data.calendarEvents[event];
+        let calendarEvents = data.calendarEvents[calendarEvent];
         let id = calendarEvents.id;
         let startDate = calendarEvents.annotation_start_date;
         let endDate = calendarEvents.annotation_end_date;
         let title = calendarEvents.annotation_title;
         let description = calendarEvents.annotation_description;
         let subject = calendarEvents.subject_id;
+        let isGlobal = calendarEvents.isGlobal;
         let backgroundColor;
         for (let i in data.colorEvents) {
           if (data.colorEvents[i][0] === subject) {
@@ -90,12 +87,13 @@ export default function Calendar() {
           description: description,
           subject_id: subject,
           backgroundColor: backgroundColor,
+          isGlobal: isGlobal,
         });
       }
     }
 
     for (let session in data.sessions) {
-      console.log(data);
+      console.log(data.sessions);
       if (data.sessions !== null) {
         let e = data.sessions[session];
         let id = e.id;
@@ -129,12 +127,12 @@ export default function Calendar() {
   };
 
   const getSubject = async () => {
-    console.log(localStorage);
     let request = await axios
       .get("http://localhost:3000/subjects?course_id=" + localStorage)
       .then()
       .catch();
     let subject = [];
+    let e = request.data;
     request.data.map((e) => {
       let id = e.id;
       let name = e.name;
@@ -153,6 +151,8 @@ export default function Calendar() {
         break;
       }
     }
+    for (let s of subject) {
+    }
   };
 
   const openCreate = async () => {
@@ -160,8 +160,9 @@ export default function Calendar() {
     chatBox.style.display = "flex";
     const backgroundCalendar =
       document.getElementsByClassName("background-shadow")[0];
-    const calendarMainScroll =
-      document.getElementsByClassName("calendar-main-container")[0];
+    const calendarMainScroll = document.getElementsByClassName(
+      "calendar-main-container"
+    )[0];
     setTimeout(() => {
       calendarMainScroll.classList.add("disable-scroll");
       backgroundCalendar.style.display = "block";
@@ -219,7 +220,6 @@ export default function Calendar() {
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.matchMedia("(max-width: 1100px)").matches) {
-        DarkModeChanger(localStorage.getItem("darkMode"));
         setItsMobileDevice(true);
       } else {
         setItsMobileDevice(false);
@@ -232,7 +232,6 @@ export default function Calendar() {
     getCalendar();
     getSubject();
 
-    DarkModeChanger(localStorage.getItem("darkMode"));
     if (window.matchMedia("(max-width: 1100px)").matches) {
       setItsMobileDevice(true);
     } else {
@@ -242,7 +241,6 @@ export default function Calendar() {
 
   return (
     <div className="calendar-main-container">
-      <Navbar mobile={ItsMobileDevice} location={"calendar"} />
       <section
         className={
           ItsMobileDevice
@@ -286,7 +284,6 @@ export default function Calendar() {
       <div className="background-shadow"></div>
       <View data={activeEvent} />
       <CreateView data={subject} />
-      <BottomButtons mobile={ItsMobileDevice} location={"calendar"} />
     </div>
   );
 }
