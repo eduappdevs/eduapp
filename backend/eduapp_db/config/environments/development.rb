@@ -64,6 +64,5 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { :host => "localhost:3001" }
 
 	# Action Cable Config (FMV)
-	config.action_cable.mount_path = "ws://localhost:3000/xxxchat"
   config.action_cable.allowed_request_origins = ['http://localhost:3001']
 end

@@ -27,7 +27,8 @@
     "webpack-merge": "^4.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start-win": "set PORT=3001 && react-scripts start",
+    "start-unix": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
