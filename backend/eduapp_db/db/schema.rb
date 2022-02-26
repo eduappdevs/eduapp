@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 14) do
+ActiveRecord::Schema.define(version: 15) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,13 +44,17 @@ ActiveRecord::Schema.define(version: 14) do
   end
 
   create_table "calendar_annotations", force: :cascade do |t|
-    t.string "annotation_date"
-    t.string "annotation_name"
+    t.string "annotation_start_date"
+    t.string "annotation_end_date"
+    t.string "annotation_title"
     t.string "annotation_description"
     t.boolean "isGlobal"
-    t.integer "user_id"
+    t.bigint "user_id", null: false
+    t.bigint "subject_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["subject_id"], name: "index_calendar_annotations_on_subject_id"
+    t.index ["user_id"], name: "index_calendar_annotations_on_user_id"
   end
 
   create_table "chat_base_infos", force: :cascade do |t|
@@ -99,14 +103,15 @@ ActiveRecord::Schema.define(version: 14) do
 
   create_table "eduapp_user_sessions", force: :cascade do |t|
     t.string "session_name"
-    t.string "session_date"
+    t.string "session_start_date"
+    t.string "session_end_date"
     t.string "streaming_platform"
     t.string "resources_platform"
     t.string "session_chat_id"
-    t.bigint "course_id"
+    t.bigint "subject_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["course_id"], name: "index_eduapp_user_sessions_on_course_id"
+    t.index ["subject_id"], name: "index_eduapp_user_sessions_on_subject_id"
   end
 
   create_table "institutions", force: :cascade do |t|
@@ -132,6 +137,17 @@ ActiveRecord::Schema.define(version: 14) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["course_id"], name: "index_resources_on_course_id"
+  end
+
+  create_table "subjects", force: :cascade do |t|
+    t.string "name"
+    t.string "teacherInCharge"
+    t.string "description"
+    t.string "color"
+    t.bigint "course_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["course_id"], name: "index_subjects_on_course_id"
   end
 
   create_table "tuitions", force: :cascade do |t|
@@ -169,13 +185,16 @@ ActiveRecord::Schema.define(version: 14) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "calendar_annotations", "subjects"
+  add_foreign_key "calendar_annotations", "users"
   add_foreign_key "chat_base_infos", "chat_bases", column: "chat_base_id"
   add_foreign_key "chat_messages", "chat_bases", column: "chat_base_id"
   add_foreign_key "chat_messages", "users"
   add_foreign_key "chat_participants", "chat_bases", column: "chat_base_id"
   add_foreign_key "chat_participants", "users"
   add_foreign_key "courses", "institutions"
-  add_foreign_key "eduapp_user_sessions", "courses"
+  add_foreign_key "eduapp_user_sessions", "subjects"
   add_foreign_key "resources", "courses"
+  add_foreign_key "subjects", "courses"
   add_foreign_key "user_infos", "users"
 end

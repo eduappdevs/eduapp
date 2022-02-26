@@ -144,7 +144,7 @@ export default function ChatMenu() {
       <div id="chat-loader">
         <Loader />
       </div>
-      <div id="chat-box" className="chat-box-closed">
+      <div id="chat-box">
         <MainChat
           chatName={chatTitle}
           closeHandler={() => {

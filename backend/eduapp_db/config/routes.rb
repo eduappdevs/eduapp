@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :chat_participants
   resources :chat_base_infos
   resources :chat_bases
+  resources :subjects
+  get 'calendar_annotations/index'
   resources :calendar_annotations
   resources :tuitions
   resources :courses

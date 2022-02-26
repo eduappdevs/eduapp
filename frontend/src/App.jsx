@@ -10,7 +10,7 @@ import Loader, {
   runCloseAnimation,
   runOpenAnimation,
 } from "./components/loader/Loader";
-import Calendar from "./views/Calendar/calendar";
+import Calendar from "./views/Calendar/Calendar";
 import ChatMenu from "./views/chat/ChatMenu";
 import BottomButtons from "./components/bottomButtons/BottomButtons";
 import Navbar from "./components/navbar/Navbar";

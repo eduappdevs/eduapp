@@ -1,5 +1,6 @@
 .main-chat-container {
-	width: 100%;
+	width: 100vw;
+	height: 100vh;
 	font-family: "Consolas";
 	margin: 0;
 	overflow-y: scroll;
@@ -44,6 +45,8 @@ svg {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	top: 0;
+	margin-top: 90vh;
 	background-color: rgb(79, 79, 79);
 }
 
@@ -56,7 +59,7 @@ svg {
 
 .main-chat-input-container>.main-chat-input-text>textarea {
 	width: 70%;
-	height: 48px;
+	height: 5vh;
 	font-size: 20px;
 	font-family: "Consolas";
 	border-radius: 10px;
@@ -66,6 +69,7 @@ svg {
 	border: none !important;
 	resize: none !important;
 	margin-right: 7.5px;
+	padding: 5px 5px 5px 5px;
 }
 
 .main-chat-input-container>.main-chat-input-text>textarea:focus {
@@ -96,7 +100,7 @@ svg {
 	/* Firefox, Safari */
 	-webkit-transform: scale(2.7) rotate(45deg);
 	background-color: var(--blue);
-	border-radius: 50%;
+	border-radius: 60%;
 	left: 90%;
 	bottom: 4vh;
 	position: absolute;
