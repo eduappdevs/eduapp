@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import MainChat from "./mainChat/MainChat";
 import ACManager from "../../components/websockets/actioncable/ACManager";
-import Loader, {
-  runOpenAnimation,
-  runCloseAnimation,
-} from "../../components/loader/Loader";
+import Loader from "../../components/loader/Loader";
 import { CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../config";
 import "./ChatMenu.css";
 
@@ -55,6 +52,7 @@ export default function ChatMenu() {
             event.target.id[event.target.id.length - 1]
         )
         .then((msgs) => {
+          console.log("a");
           setChatMessages(msgs.data);
           setTimeout(() => {
             setTimeout(() => {
