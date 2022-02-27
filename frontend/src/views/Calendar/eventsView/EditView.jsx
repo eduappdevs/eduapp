@@ -1,5 +1,4 @@
 import axios from "axios";
-import { render } from "enzyme/build";
 import React, { useEffect, useState } from "react";
 import { CALENDAR_ID, EDUAPP_SESSIONS } from "../../../config";
 import "./views.css";
