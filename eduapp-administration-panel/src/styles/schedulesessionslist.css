@@ -14,3 +14,14 @@ table {
   tr:nth-child(even) {
     background-color: #dddddd;
   }
+
+  .add-session{
+    display: flex;
+    flex-direction: row;
+  }
+
+  .actionsAndSubmit{
+    display: flex;
+    flex-direction: row;
+
+  }
