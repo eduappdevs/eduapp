@@ -1,13 +1,14 @@
 import React from "react";
-import "./views.css";
 import axios from "axios";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
-import { CALENDAR_ID } from "../../../config";
+import { CALENDAR } from "../../../config";
 import { useState } from "react";
+import "./views.css";
 
 export default function CreateView(props) {
   let userInfo = FetchUserInfo(localStorage.userId);
   const [globalValue, setGlobalValue] = useState(true);
+
   const closeButton = async () => {
     const chatBox = document.getElementById("create-box");
     chatBox.style.display = "flex";
@@ -55,7 +56,7 @@ export default function CreateView(props) {
         subject_id: subjectInt,
       };
       console.log(newEvent);
-      axios.post(CALENDAR_ID, newEvent).then(window.location.reload()).catch();
+      axios.post(CALENDAR, newEvent).then(window.location.reload()).catch();
     } else {
       alertCreate();
     }
@@ -63,7 +64,6 @@ export default function CreateView(props) {
 
   const isNotGlobal = (e) => {
     e.preventDefault();
-    console.log();
     if (document.getElementById("subject_name").value === "1") {
       setGlobalValue(true);
     } else {
@@ -99,11 +99,11 @@ export default function CreateView(props) {
               viewBox="0 0 16 16"
             >
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
               />
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
               />
             </svg>

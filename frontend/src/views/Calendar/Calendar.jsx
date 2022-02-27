@@ -15,8 +15,7 @@ import {
   AppointmentTooltip,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { ViewState } from "@devexpress/dx-react-scheduler";
-import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import { CALENDAR } from "../../config";
+import { CALENDAR_USER_ID, SUBJECT } from "../../config";
 import View from "./eventsView/View";
 import CreateView from "./eventsView/CreateView";
 import "./calendar.css";
@@ -26,17 +25,17 @@ export default function Calendar() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [activeEvent, setActiveEvent] = useState({});
   const [subject, setSubject] = useState([]);
-  let userInfo = FetchUserInfo(localStorage.userId);
 
   const today = new Date();
   const currentDate = today;
 
   const getCalendar = async () => {
     let events = [];
-    let annotations = await axios.get(CALENDAR + localStorage.userId);
+    let annotations = await axios.get(CALENDAR_USER_ID + localStorage.userId);
     let data = annotations.data;
 
     for (let globalEvent in data.globalEvents) {
+      console.log(globalEvent);
       if (data.globalEvents !== null) {
         let e = data.globalEvents[globalEvent];
         let id = e.id;
@@ -46,6 +45,7 @@ export default function Calendar() {
         let description = e.annotation_description;
         let subject = e.subject_id;
         let backgroundColor;
+
         for (let i in data.colorEvents) {
           if (data.colorEvents[i][0] === subject) {
             backgroundColor = data.colorEvents[i][1];
@@ -74,6 +74,7 @@ export default function Calendar() {
         let subject = calendarEvents.subject_id;
         let isGlobal = calendarEvents.isGlobal;
         let backgroundColor;
+
         for (let i in data.colorEvents) {
           if (data.colorEvents[i][0] === subject) {
             backgroundColor = data.colorEvents[i][1];
@@ -93,7 +94,6 @@ export default function Calendar() {
     }
 
     for (let session in data.sessions) {
-      console.log(data.sessions);
       if (data.sessions !== null) {
         let e = data.sessions[session];
         let id = e.id;
@@ -105,6 +105,7 @@ export default function Calendar() {
         let chat = e.session_chat_id;
         let subject = e.subject_id;
         let backgroundColor;
+
         for (let i in data.colorEvents) {
           if (data.colorEvents[i][0] === subject) {
             backgroundColor = data.colorEvents[i][1];
@@ -127,12 +128,8 @@ export default function Calendar() {
   };
 
   const getSubject = async () => {
-    let request = await axios
-      .get("http://localhost:3000/subjects?course_id=" + localStorage)
-      .then()
-      .catch();
+    let request = await axios.get(SUBJECT + "?user_id=" + localStorage.user_id);
     let subject = [];
-    let e = request.data;
     request.data.map((e) => {
       let id = e.id;
       let name = e.name;
@@ -140,6 +137,7 @@ export default function Calendar() {
         id: id,
         name: name,
       });
+      return true;
     });
     setSubject(subject);
   };
@@ -151,8 +149,6 @@ export default function Calendar() {
         break;
       }
     }
-    for (let s of subject) {
-    }
   };
 
   const openCreate = async () => {
@@ -163,6 +159,7 @@ export default function Calendar() {
     const calendarMainScroll = document.getElementsByClassName(
       "calendar-main-container"
     )[0];
+
     setTimeout(() => {
       calendarMainScroll.classList.add("disable-scroll");
       backgroundCalendar.style.display = "block";
@@ -176,6 +173,7 @@ export default function Calendar() {
 
   const showEventView = async (eventId) => {
     getCalendarEvent(eventId);
+
     const viewBox = document.getElementById("view-box");
     viewBox.style.display = "flex";
     const backgroundCalendar =
@@ -183,6 +181,7 @@ export default function Calendar() {
     const calendarMainScroll = document.getElementsByClassName(
       "calendar-main-container"
     )[0];
+
     setTimeout(() => {
       viewBox.classList.remove("view-box-closed");
       viewBox.classList.add("view-box-opened");
@@ -190,6 +189,7 @@ export default function Calendar() {
         .getElementsByClassName("calendar-view-main-container")[0]
         .classList.remove("calendar-view-hidden");
     }, 1);
+
     setTimeout(() => {
       calendarMainScroll.classList.add("disable-scroll");
       backgroundCalendar.style.display = "block";
@@ -219,7 +219,7 @@ export default function Calendar() {
 
   const checkMediaQueries = () => {
     setInterval(() => {
-      if (window.matchMedia("(max-width: 1100px)").matches) {
+      if (window.innerWidth < 1100) {
         setItsMobileDevice(true);
       } else {
         setItsMobileDevice(false);
@@ -232,7 +232,7 @@ export default function Calendar() {
     getCalendar();
     getSubject();
 
-    if (window.matchMedia("(max-width: 1100px)").matches) {
+    if (window.innerWidth < 1100) {
       setItsMobileDevice(true);
     } else {
       setItsMobileDevice(false);
@@ -275,7 +275,7 @@ export default function Calendar() {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="white"
-          class="bi bi-plus"
+          className="bi bi-plus"
           viewBox="0 0 16 16"
         >
           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />

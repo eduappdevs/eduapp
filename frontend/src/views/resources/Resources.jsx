@@ -64,17 +64,17 @@ export default function Resources(props) {
 		}
 	}, []);
 
-	const openResource = (e) => {
-		e.preventDefault();
-		console.log(e.target.id);
-		document
-			.getElementById(`resource__${e.target.id}__opened`)
-			.classList.remove("openedResource__hidden");
-		setTimeout(() => {
-			document.getElementsByTagName("header")[0].style.display = "none";
-		}, 50);
-	};
+	
 
+  const openResource = (e) => {
+    e.preventDefault();
+    document
+      .getElementById(`resource__${e.target.id}__opened`)
+      .classList.remove("openedResource__hidden");
+    setTimeout(() => {
+      document.getElementsByTagName("header")[0].style.display = "none";
+    }, 75);
+  };
 
 	const createResource = () => {
 		
