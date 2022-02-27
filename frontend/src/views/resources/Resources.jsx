@@ -143,6 +143,7 @@ export default function Resources(props) {
 						{resources.length > 0 ? (
 							<ul>
 								{resources.map((data) => {
+									console.log(data)
 									if (
 										data.name
 											.toLowerCase()
