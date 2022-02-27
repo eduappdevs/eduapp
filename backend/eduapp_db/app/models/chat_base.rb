@@ -1,0 +1,2 @@
+class ChatBase < ApplicationRecord
+end

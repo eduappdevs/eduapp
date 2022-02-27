@@ -22,8 +22,15 @@ header>nav {
 
 header>nav>a>.header-logo {
 	margin: 15px;
+	margin-top: 2.5vh;
 	height: 60px;
 	width: 60px;
+}
+
+@media screen and (min-width: 1000px) {
+	header>nav>a>.header-logo {
+		margin-top: 3.25vh;
+	}
 }
 
 header>nav>a>.header-logo>img {

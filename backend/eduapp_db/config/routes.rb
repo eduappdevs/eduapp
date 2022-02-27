@@ -1,4 +1,11 @@
 Rails.application.routes.draw do  
+	mount ActionCable.server => "/chat"
+  resources :chat_messages
+  resources :chat_participants
+  resources :chat_base_infos
+  resources :chat_bases
+  resources :subjects
+  get 'calendar_annotations/index'
   resources :calendar_annotations
   resources :tuitions
   resources :courses
@@ -14,5 +21,4 @@ Rails.application.routes.draw do
              }
   get '/google-login', to: 'glogin#login'
   get '/member-data', to: 'members#show'
-
 end

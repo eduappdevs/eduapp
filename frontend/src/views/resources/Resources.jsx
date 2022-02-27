@@ -106,7 +106,7 @@ export default function Resources(props) {
 	return courses && userInfo ? (
 		<>
 			<div className="resources-main-container">
-				<Navbar mobile={ItsMobileDevice} location={"resources"} />
+				
 				<section
 					className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
 				>
@@ -209,7 +209,6 @@ export default function Resources(props) {
 					</div>
 				</section>
 				<ResourcesModal course={courseSelected} />
-				<BottomButtons mobile={ItsMobileDevice} location={"resources"} />
 			</div>
 		</>
 	) : (

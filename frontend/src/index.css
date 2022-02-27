@@ -31,4 +31,6 @@ code {
 	--headerButtonBG: white;
 	--headerButtonFill: var(--blue);
 	--navbarHeight: 12.2%;
+	--calendarIcon: invert(0);
+	--calendarColorLine: #6d6d6d;
 }

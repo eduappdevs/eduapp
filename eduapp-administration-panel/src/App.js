@@ -1,4 +1,3 @@
-// import ControlPanel from "./views/oldControlPanel";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ControlPanel from "./views/ControlPanel";
 import OldControlPanel from './views/oldControlPanel'

@@ -3,11 +3,14 @@ class EduappUserSessionsController < ApplicationController
 
   # GET /eduapp_user_sessions
   def index
-    @q = EduappUserSession.ransack(course_id_eq: params[:id]);
-    @eduapp_user_sessions = @q.result(distinct: true).all
-
-
-    render json: @eduapp_user_sessions
+    if !params[:user_id]
+      @eduapp_user_sessions = EduappUserSession.all
+      render json: @eduapp_user_sessions
+    else
+      @eduapp_user_sessions = EduappUserSession.where(subject_id: params[:subject_id])
+      render json: @eduapp_user_sessions
+    end
+    
   end
 
   # GET /eduapp_user_sessions/1
@@ -48,6 +51,6 @@ class EduappUserSessionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def eduapp_user_session_params
-      params.require(:eduapp_user_session).permit(:session_name, :session_date, :streaming_platform, :resources_platform, :session_chat_id , :course_id)
+      params.require(:eduapp_user_session).permit(:session_name, :session_start_date, :session_end_date, :streaming_platform, :resources_platform, :session_chat_id , :subject_id)
     end
 end
