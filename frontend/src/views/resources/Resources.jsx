@@ -29,9 +29,7 @@ export default function Resources() {
   };
 
   const getResources = async (id) => {
-    console.log(id, "resources");
-
-    const resources__url = `http://localhost:3000/resources?id=${id}`;
+    const resources__url = `http://localhost:3000/resources?course_id=${id}`;
     await axios.get(resources__url).then((res) => {
       res.data.map((x) => {
         if (x.firstfile != null) {
@@ -87,6 +85,7 @@ export default function Resources() {
 
   useEffect(() => {
     checkMediaQueries();
+
     //First check
     if (window.innerWidth < 1100) {
       setItsMobileDevice(true);

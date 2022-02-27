@@ -144,12 +144,11 @@
 
 .resourceOpened__files>ul {
 	border: 1px solid var(--secondaryColor);
-
-	width: 100vw;
+	width: 99.5vw;
 	position: absolute;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	height: 64%;
+	height: 58%;
 	margin: 0;
 	padding: 0;
 	display: flex;
@@ -197,6 +196,15 @@
 	-o-background-size: cover;
 	background-size: cover;
 	background-position: center;
+}
+
+.resource__video {
+	display: flex;
+	flex-direction: column;
+}
+
+.file-media>div>video {
+	height: 25vh !important;
 }
 
 .resourceOpened__date {

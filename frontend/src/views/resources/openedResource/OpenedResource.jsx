@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import AppHeader from "../../../components/appHeader/AppHeader";
+import ReactPlayer from "react-player";
 import "./OpenedResource.css";
 
 export default function OpenedResource(props) {
@@ -44,10 +45,66 @@ export default function OpenedResource(props) {
     }, 100);
   };
 
-  const isImage = (image) => {
+  const manageMediaType = (media) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
-    console.log("isimageclg", image, imageRegex.test(image));
-    return imageRegex.test(image);
+    const videoRegex = new RegExp("^.*(mp4)$");
+
+    if (media != null && (imageRegex.test(media) || videoRegex.test(media))) {
+      if (imageRegex.test(media)) {
+        return (
+          <>
+            <h1 it="fileTitle">
+              {media.split("/")[media.split("/").length - 1]}
+            </h1>
+            <div
+              className={"resource__image"}
+              style={{
+                backgroundImage: `url(${media.replace(
+                  "localhost:3001",
+                  "localhost:3000"
+                )}) `,
+              }}
+            />
+            <a className="fileDownload-button" name="file" href={media}>
+              OPEN
+            </a>
+          </>
+        );
+      } else {
+        console.log(media);
+        return (
+          <>
+            <h1 it="fileTitle">
+              {media.split("/")[media.split("/").length - 1]}
+            </h1>
+            <ReactPlayer
+              url={media}
+              controls={true}
+              width={window.innerWidth - 100}
+              height={250}
+            />
+            <a className="fileDownload-button" name="file" href={media}>
+              DOWNLOAD
+            </a>
+          </>
+        );
+      }
+    } else {
+      return (
+        <>
+          <>
+            <h1 htmlFor="file">
+              {media != null
+                ? media.split("/")[media.split("/").length - 1]
+                : "file"}
+            </h1>
+            <a className="fileDownload-button" name="file" href={media}>
+              DOWNLOAD
+            </a>
+          </>
+        </>
+      );
+    }
   };
 
   return (
@@ -82,53 +139,8 @@ export default function OpenedResource(props) {
               files.map((file) => {
                 return (
                   <>
-                    <li>
-                      {file != null &&
-                      isImage(
-                        file.split("/")[file.split("/").length - 1].split(".")[
-                          file.split("/")[file.split("/").length - 1].split(".")
-                            .length - 1
-                        ]
-                      ) ? (
-                        <>
-                          <h1 it="fileTitle">
-                            {file.split("/")[file.split("/").length - 1]}
-                          </h1>
-                          <div
-                            className={"resource__image"}
-                            style={{
-                              backgroundImage: `url(${file.replace(
-                                "localhost:3001",
-                                "localhost:3000"
-                              )}) `,
-                            }}
-                          />
-                          <a
-                            className="fileDownload-button"
-                            name="file"
-                            href={file}
-                          >
-                            OPEN
-                          </a>
-                        </>
-                      ) : (
-                        <>
-                          <>
-                            <h1 htmlFor="file">
-                              {file != null
-                                ? file.split("/")[file.split("/").length - 1]
-                                : "file"}
-                            </h1>
-                            <a
-                              className="fileDownload-button"
-                              name="file"
-                              href={file}
-                            >
-                              DOWNLOAD
-                            </a>
-                          </>
-                        </>
-                      )}
+                    <li className={file != null ? "file-media" : ""}>
+                      {manageMediaType(file)}
                     </li>
                   </>
                 );
