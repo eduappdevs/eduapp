@@ -6,10 +6,7 @@ import React, { useState } from "react";
 import requireAuth from "./components/auth/RequireAuth";
 import ManagementPanel from "./views/ManagementPanel/ManagementPanel";
 import { FetchUserInfo } from "./hooks/FetchUserInfo";
-import Loader, {
-  runCloseAnimation,
-  runOpenAnimation,
-} from "./components/loader/Loader";
+import Loader, { runCloseAnimation } from "./components/loader/Loader";
 import Calendar from "./views/Calendar/Calendar";
 import ChatMenu from "./views/chat/ChatMenu";
 import BottomButtons from "./components/bottomButtons/BottomButtons";

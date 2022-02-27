@@ -1,0 +1,77 @@
+<html>
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <style>
+        {{asset "/EduappReport/ChatMessagesReport/styles.css"}}
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+</head>
+
+<body>
+    <div class="WrapperHeader">
+        <div class="ContentHeader">
+            <img src="{{asset "/EduappReport/ResourcesReport/EduappLogo.png" "dataURI"}}" width="40" height="40" />
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Eduapp Chat Messages Report</h1>
+
+        <div class="canvas-align">
+            <canvas id="myChart" style="width:100%;max-width:700px;"></canvas>
+        </div>
+        
+        <script>
+            var barData = [{{data.chart_values}}];
+            var msgDates = "{{data.chart_labels}}".split(",");
+            var barColors = ["purple","pink","red","blue","brown","orange","green"];
+
+            new Chart("myChart", {
+                type: "bar",
+                data: {
+                    labels: msgDates,
+                    datasets: [{
+                        backgroundColor: barColors,
+                        data: barData,
+                        label: "Messages By Day",
+                        fill: false,
+                        backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(201, 203, 207, 0.2)'
+                        ],
+                        borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)',
+                        'rgb(201, 203, 207)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    title: {
+                        display: false,
+                        text: "",
+                        fontSize: 35,
+                        color: "black"
+                    },
+                    animation: {
+                        duration: 0
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>

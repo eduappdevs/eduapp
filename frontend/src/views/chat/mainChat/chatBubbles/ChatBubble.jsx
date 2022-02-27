@@ -9,7 +9,7 @@ export default function ChatBubble(props) {
   useEffect(() => {
     setMsgMargin(
       (props.isMsgRecent ? window.innerWidth : window.innerWidth / 2) -
-        100 -
+        50 -
         ref.current.offsetWidth
     );
     setMarginType(
@@ -21,7 +21,7 @@ export default function ChatBubble(props) {
             marginLeft: msgMargin,
           }
     );
-  }, [props.foreign, msgMargin]);
+  }, [props.foreign, msgMargin, props.isMsgRecent]);
 
   return (
     <div className={props.foreign ? "foreign-align" : "self-align"}>
