@@ -1,7 +1,7 @@
 import React from "react";
-import "./views.css";
 import { useEffect, useState } from "react";
 import EditView from "./EditView";
+import "./views.css";
 
 export default function View(props) {
   const [editEvent, setEditEvent] = useState({});
@@ -44,6 +44,7 @@ export default function View(props) {
         .getElementsByClassName("calendar-view-edit-description")[0]
         .classList.add("description-hidden");
     }
+
     document
       .getElementsByClassName("calendar-main-container")[0]
       .classList.remove("disable-scroll");
@@ -66,15 +67,18 @@ export default function View(props) {
     const calendarMainScroll = document.getElementsByClassName(
       "calendar-main-container"
     )[0];
+
     setTimeout(() => {
       calendarMainScroll.classList.add("disable-scroll");
       backgroundCalendar.style.display = "block";
     }, 100);
+
     setTimeout(() => {
       editBox.classList.add("edit-box-opened");
       editBox.classList.remove("calendar-view-edit-hidden");
     }, 400);
   };
+
   const getTime = () => {
     if (props.data.startDate !== undefined) {
       let start = props.data.startDate;
@@ -84,6 +88,7 @@ export default function View(props) {
       return start + "-" + end;
     }
   };
+
   useEffect(() => {
     if (props.data.description !== undefined) {
       document
@@ -127,7 +132,7 @@ export default function View(props) {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="bi bi-pencil"
+              className="bi bi-pencil"
               viewBox="0 0 16 16"
             >
               <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
@@ -143,11 +148,11 @@ export default function View(props) {
               viewBox="0 0 16 16"
             >
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
               />
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
               />
             </svg>
@@ -158,7 +163,7 @@ export default function View(props) {
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill={props.data.backgroundColor}
-              class="bi bi-circle-fill"
+              className="bi bi-circle-fill"
               viewBox="0 0 16 16"
             >
               <circle cx="8" cy="8" r="8" />
@@ -172,7 +177,7 @@ export default function View(props) {
                 width="16"
                 height="16"
                 fill="currentColor"
-                class="bi bi-clock"
+                className="bi bi-clock"
                 viewBox="0 0 16 16"
               >
                 <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
@@ -193,7 +198,7 @@ export default function View(props) {
                     xmlns="http://www.w3.org/2000/svg"
                     width="35"
                     height="35"
-                    class="bi bi-mortarboard"
+                    className="bi bi-mortarboard"
                     viewBox="0 0 16 16"
                     onClick={() => {
                       window.location.href = props.data.resources;
@@ -209,14 +214,14 @@ export default function View(props) {
                     width="35"
                     height="35"
                     fill="currentColor"
-                    class="bi bi-camera-video"
+                    className="bi bi-camera-video"
                     viewBox="0 0 16 16"
                     onClick={() => {
                       window.location.href = props.data.stream;
                     }}
                   >
                     <path
-                      fill-rule="evenodd"
+                      fillRule="evenodd"
                       d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z"
                     />
                   </svg>
@@ -227,7 +232,7 @@ export default function View(props) {
                     width="32"
                     height="32"
                     fill="currentColor"
-                    class="bi bi-chat-dots"
+                    className="bi bi-chat-dots"
                     viewBox="0 0 16 16"
                     onClick={() => {
                       window.location.href = props.data.chat;

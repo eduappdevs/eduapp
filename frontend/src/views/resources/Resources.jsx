@@ -29,8 +29,6 @@ export default function Resources(props) {
   };
 
   const getResources = async (id) => {
-    console.log(id, "resources");
-
     const resources__url = `http://localhost:3000/resources?id=${id}`;
     await axios.get(resources__url).then((res) => {
       res.data.map((x) => {
@@ -45,8 +43,6 @@ export default function Resources(props) {
         }
       });
       setResources(res.data);
-
-      console.log(resources);
     });
   };
 
@@ -63,7 +59,6 @@ export default function Resources(props) {
 
   const openResource = (e) => {
     e.preventDefault();
-    console.log(e.target.id);
     document
       .getElementById(`resource__${e.target.id}__opened`)
       .classList.remove("openedResource__hidden");
@@ -83,7 +78,6 @@ export default function Resources(props) {
   };
 
   const handleChangeSelector = (id) => {
-    console.log(id);
     setCourseSelected(id);
     getResources(id);
   };
