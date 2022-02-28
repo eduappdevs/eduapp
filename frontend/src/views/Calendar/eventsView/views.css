@@ -548,7 +548,6 @@
 	display: none;
 }
 
-
 .calendar-view-create-hour-input>input[type="datetime-local"]::-webkit-calendar-picker-indicator,
 .calendar-view-edit-hour-input>input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 	padding: 0em 0em 0em 1em;
