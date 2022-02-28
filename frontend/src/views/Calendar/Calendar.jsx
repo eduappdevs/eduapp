@@ -33,7 +33,6 @@ export default function Calendar() {
     let events = [];
     let annotations = await axios.get(CALENDAR_USER_ID + localStorage.userId);
     let data = annotations.data;
-    console.log(data);
 
     for (let globalEvent in data.globalEvents) {
       if (data.globalEvents !== null) {
@@ -65,7 +64,6 @@ export default function Calendar() {
 
     for (let calendarEvent in data.calendarEvents) {
       if (data.calendarEvents !== null) {
-        console.log(data.calendarEvents);
         let calendarEvents = data.calendarEvents[calendarEvent];
         let id = calendarEvents.id;
         let startDate = calendarEvents.annotation_start_date;
@@ -126,7 +124,6 @@ export default function Calendar() {
       }
     }
     setAnnotations(events);
-    console.log(annotations);
   };
 
   const getSubject = async () => {

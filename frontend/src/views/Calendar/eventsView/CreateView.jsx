@@ -40,7 +40,6 @@ export default function CreateView(props) {
     var subjectValue = subjectInfo.split('_')[0];
     var subjectInt = parseInt(subjectValue);
     var isGlobalValue = document.getElementById('subject_name').value;
-    console.log(isGlobalValue);
     // var globalCourse = document.getElementById("isGlobalCourse").checked;
     var newEvent = {};
     if (
@@ -60,7 +59,6 @@ export default function CreateView(props) {
         user_id: userInfo.id,
         subject_id: subjectInt,
       };
-      console.log(newEvent);
       axios.post(CALENDAR, newEvent).then(window.location.reload()).catch();
     } else {
       alertCreate();
