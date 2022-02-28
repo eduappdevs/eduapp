@@ -99,7 +99,6 @@ export default function EditView(props) {
         .then(window.location.reload())
         .catch();
     } else {
-      console.log(editTitle);
       var editEventSession = {
         session_name: editTitle,
         session_start_date: editStartDate,

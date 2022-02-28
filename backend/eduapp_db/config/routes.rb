@@ -22,4 +22,5 @@ Rails.application.routes.draw do
   }
 
   get '/member-data', to: 'members#show'
+  get '/ping', to: 'static#home'
 end

@@ -3,9 +3,11 @@ class ResourcesController < ApplicationController
 
   # GET /resources
   def index
-    @q = Resource.ransack(course_id_eq: params[:id]);
-    @resources = @q.result(distinct: true).all
-
+		if !params[:course_id]
+			@resources = Resource.all
+		else
+			@resources = Resource.order(created_at: :desc).where(course_id: params[:course_id])
+		end
 
     render json: @resources
   end
