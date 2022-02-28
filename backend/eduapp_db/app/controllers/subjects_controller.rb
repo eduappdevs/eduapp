@@ -3,7 +3,11 @@ class SubjectsController < ApplicationController
 
   # GET /subjects
   def index
-    @subjects = Subject.all
+    if !params[:name]
+      @subjects = Subject.all
+    else
+      @subjects = Subject.where(name: params[:name])
+    end
 
     render json: @subjects
   end
