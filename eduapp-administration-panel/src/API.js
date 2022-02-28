@@ -7,6 +7,7 @@ const USERS_INFO = `${API_URL}/user_infos`;
 const TUITIONS = `${API_URL}/tuitions`;
 const PING = `${API_URL}/ping`;
 const SUBJECTS = `${API_URL}/subjects`;
+const RESOURCES = `${API_URL}/resources`;
 
 const token =
   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
@@ -27,6 +28,11 @@ const apiSettings = {
     return await axios.post(endpoint, body).then((res) => {
       saveInLocalStorage(res);
     });
+  },
+
+  fetchResources: async () => {
+    const endpoint = `${RESOURCES}`;
+    return await (await fetch(endpoint)).json();
   },
 
   //User
