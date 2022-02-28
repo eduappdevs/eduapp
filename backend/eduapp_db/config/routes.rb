@@ -21,4 +21,5 @@ Rails.application.routes.draw do
              }
   get '/google-login', to: 'glogin#login'
   get '/member-data', to: 'members#show'
+  get '/ping', to: 'static#home'
 end

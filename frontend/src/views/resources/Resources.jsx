@@ -55,6 +55,7 @@ export default function Resources() {
 
     setTimeout(() => {
       document.getElementsByTagName("header")[0].style.display = "none";
+      document.getElementById("resource-list").classList.add("hide-rest-res");
     }, 100);
   };
 
@@ -142,7 +143,7 @@ export default function Resources() {
           </div>
           <div className="resources-container">
             {resources.length > 0 ? (
-              <ul>
+              <ul id="resource-list">
                 {resources.map((data) => {
                   if (
                     data.name

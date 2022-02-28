@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
+import { asynchronizeRequest } from "../../../API";
 import "./OpenedResource.css";
 
 export default function OpenedResource(props) {
@@ -23,10 +24,12 @@ export default function OpenedResource(props) {
   }
 
   const deleteResource = (id) => {
-    axios
-      .delete(`http://localhost:3000/resources/${id}`)
-      .then((res) => console.log, window.location.reload())
-      .catch((err) => console.log);
+    asynchronizeRequest(function () {
+      axios
+        .delete(`http://localhost:3000/resources/${id}`)
+        .then((res) => console.log, window.location.reload())
+        .catch((err) => console.log);
+    });
   };
 
   const editResource = (id) => {
@@ -39,6 +42,7 @@ export default function OpenedResource(props) {
         "resource__res" + props.data.name + props.courseSelected + "__opened"
       )
       .classList.add("openedResource__hidden");
+    document.getElementById("resource-list").classList.remove("hide-rest-res");
 
     setTimeout(() => {
       document.getElementsByTagName("header")[0].style.display = "flex";
@@ -71,7 +75,6 @@ export default function OpenedResource(props) {
           </>
         );
       } else {
-        console.log(media);
         return (
           <>
             <h1 it="fileTitle">

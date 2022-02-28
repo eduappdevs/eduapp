@@ -271,6 +271,10 @@
 	width: 95%;
 }
 
+.hide-rest-res>li:not(:first-child) {
+	display: none;
+}
+
 .desktopSection {
 	width: 60% !important;
 	position: relative;
