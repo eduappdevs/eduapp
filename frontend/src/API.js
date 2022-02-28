@@ -40,6 +40,28 @@ const apiSettings = {
     });
   },
 
+
+	//User
+	createUser: async (body) => {
+		const endpoint = `${USERS}`;
+		return await axios.post(endpoint, body);
+	},
+	login: async (body) => {
+		const endpoint = `${USERS}/sign_in`;
+		return await axios.post(endpoint, body).then((res) => {
+			saveInLocalStorage(res);
+			
+			  
+		});
+	},
+	loginWithGoogle: async(data)=>{
+		console.log(data)
+		const endpoint = `${GLOGIN}`;
+		return await axios.post(endpoint,data).then((res)=>{
+			console.log(res)
+		})
+	},
+
   //User
   createUser: async (body) => {
     const endpoint = `${USERS}`;
@@ -57,6 +79,7 @@ const apiSettings = {
       console.log(res);
     });
   },
+
 
   logout: async () => {
     const endpoint = `${USERS}/sign_out`;
