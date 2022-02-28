@@ -54,9 +54,10 @@ const apiSettings = {
 			  
 		});
 	},
-	loginWithGoogle: async(googleid)=>{
+	loginWithGoogle: async(data)=>{
+		console.log(data)
 		const endpoint = `${GLOGIN}`;
-		return await axios.get(endpoint + `?googleid=${googleid}`).then((res)=>{
+		return await axios.post(endpoint,data).then((res)=>{
 			console.log(res)
 		})
 	},

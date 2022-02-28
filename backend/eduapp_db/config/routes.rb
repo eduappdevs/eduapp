@@ -18,7 +18,8 @@ Rails.application.routes.draw do
              controllers: {
                sessions: 'users/sessions',
                registrations: 'users/registrations',
-             }
-  get '/google-login', to: 'glogin#login'
+               omniauth_callbacks: 'users/omniauth_callbacks'
+  }
+
   get '/member-data', to: 'members#show'
 end
