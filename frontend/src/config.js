@@ -1,4 +1,5 @@
 const API_URL = "http://localhost:3000";
+const PING = `${API_URL}/ping`;
 const USERS = `${API_URL}/users`;
 const RESOURCES = `${API_URL}/resources`;
 const EDUAPP_SESSIONS = `${API_URL}/eduapp_user_sessions`;
@@ -15,6 +16,7 @@ const SUBJECT = `${API_URL}/subjects`;
 
 export {
   API_URL,
+  PING,
   RESOURCES,
   EDUAPP_SESSIONS,
   USERS,
@@ -27,5 +29,5 @@ export {
   SUBJECT,
   CHAT_MESSAGES,
   CHAT_PARTICIPANTS,
-  GLOGIN
+  GLOGIN,
 };
