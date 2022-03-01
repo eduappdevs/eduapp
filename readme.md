@@ -16,60 +16,48 @@
 
 </div>
 <h1 align='center'>About the project</h1>
-<div >
-     Eduapp emerges after the covid 19 pandemic ,as the answer to the challenges that this entails.
+<div>
+     Eduapp emerges after the covid 19 pandemic, as the answer to the challenges that this entails.
      <br/>
-     It's an european project , co-funded by erasmus+ programme
+		 <br/>
+     It's an european project, co-funded by erasmus+ programme
      <br/>
           <h1>Partners</h1>
-          <p>Fundatia Ecologica Green , Romania , Instituto Politécnico de Santarém , Portugal , Stichting Landstede , Netherlands , SOSU OSTJYLLAND , Denmark and IES El Rincón , Spain</p>
+          <p>Fundatia Ecologica Green - Romania, Instituto Politécnico de Santarém - Portugal, Stichting Landstede - Netherlands, SOSU OSTJYLLAND - Denmark and IES El Rincón - Spain</p>
           <h1>Objectives</h1>
-          <p>Faciliate and increase the communication between school, students and teachers by developing an application , EduApp , free and open source , customised for each partner school.</p>
-   </div>
+          <p>Faciliate and increase the communication between school, students and teachers by developing an application, EduApp, free and open source, customised for each partner school.</p>
+</div>
   
 <h1 align='center'>Backend information</h1>
 <p>Eduapp has used postgresQL as database, ruby on rails as server-side web application framework.</p>
 <h3>Diagram E/R</h3>
-<div ><img src="./Documentation/Diagram/DiagramER.png" alt="diagramER">
+<div ><img src="./Documentation/Diagram/ERDiagram.png" alt="diagramER">
 </div>
 <h3>Diagram UML</h3>
 <div ><img src="./Documentation/Diagram/NewUMLDiagram.png" alt="diagramUML">
 </div>
 <h3>Relational diagram:</h3>
 <div>
-    <h4>User and Annotations</h4>
-    <p>Annotation(annotation_id, annotation_description, annotation_start, annotation_end )</p>
-    <p>USER(user_id,name, image,rol,email,password)</p>
-    <p>HAVE(user_id*, annotation_id*)</p>
-    <h4>User and session</h4>
-    <p>USER(user_id,name, image,rol,email,password)</p>
-    <p>SESSION(session_id, session_name, date, streaming_platform, resoruces_platform, session_chat_id)</p>
-    <p>PARTICIPATES(user_id*, session_id*)</p>
-    <h4>User and Course</h4>
-    <p>COURSER(couse_id, course_name, couse_participants)</p>
-    <p>USER(user_id,name, image,rol,email,password)</p>
-    <p>HAVE(couser_id*, user_id*)</p>
-     <h4>Course and Resources</h4>
-    <p>COURSE(course_id, course_name, course_participants)</p>
-     <p>RESOURCES(resources_id, resources_name, resources_description, id_course*)</p>
-     <h4>Resources and files</h4>
-     <p>RESOURCES(resources_id, resources_name, resources_description, id_course*)</p>
-     <p>FILES(files_id, files_content, id_resources*)</p>
-     <h4>Course, messages and course chat</h4>
-     <p>COURSER(course_id, course_name, course_participants)</p>
-     <p>MESSAGES(messages_id, writer_at, message_text, user_id)</p>
-     <p>COURSE_CHAT(course_chat_id, message_id*,chat_image,course_name,course_id*)</p>    
+		<p>INSTITUTIONS(ID, name)</p>
+		<p>COURSE(ID, name, institution_id*)</p>
+		<p>USERS(ID, email, password)</p>
+		<p>USER_INFOS(ID, user_name, profile_img, user_id*, is_admin, googleId, isLoggedWithGoogle)</p>
+		<p>CHAT_BASES(ID, name, is_group)</p>
+		<p>CHAT_BASE_INFOS(ID, chat_base_id*, chat_img)</p>
+		<p>CHAT_PARTICIPANTS(ID, chat_base_id*, user_id*, is_chat_admin)</p>
+		<p>CHAT_MESSAGES(ID, user_id*, message, send_date)</p>
+		<p>SUBJECTS(ID, name, teacherInCharge, description, color, course_id*)</p>
+		<p>RESOURCES(ID, name, description, firstfile, secondfile, thirdfile, user_id*, course_id*)</p>
+		<p>SESSIONS(ID, name, start_date, end_date, streaming_platform, resources_platform, chat_base_id*, subject_id*)</p>
+		<p>CALENDAR_EVENTS(ID, title, start_date, end_date, description, is_global, user_id*)</p>
 </div>
 
 <h3>Explanation of the diagrams contents:</h3>
-<p>-User table is used to register.</p>
-<p>-Annotations table is used as a calendar for events to be stored.</p>
-<p>-Session table is used to know when you have classes and thei information.</p>
-<p>-Course table is used to know the students of a courser.</p>
-<p>-Course chat table is used to create a chat for each course or subject.</p>
-<p>-Messages table is used to save who send the messages and the contents.</p>
-<p>-Resources table are the documents or information about sessions.</p>
-<p>-Files table is used to save the documents.</p>
+<p>- Events, sessions and resources belong to a subject</p>
+<p>- A subject belongs to a course</p>
+<p>- A course belongs to an instutition</p>
+<p>- A user can enroll into a course, and will access all subjects linked to the course</p>
+<p>- A user can participate in a chat if it has been linked to the chat</p>
 <h3>ORM</h3>
 <p></p>
 <h3>How to install and run</h3>
@@ -79,16 +67,17 @@
 ```bash
 git clone https://github.com/eduappdevs/eduapp
 cd eduapp/backend/eduapp_db
+gem install bundle
 bundle install
 ```
 
-<p>After using these commands, you need to look inside config folder and find database.yml, there you must change the database password and put your postgresQL password , otherwise , the database will not work</p>
+<p>After using these commands, you need to look inside the config folder and find the database.yml. There, you must change the database password and put your postgreSQL password, otherwise, the database will not work.</p>
 
-<p>To have values in the database enter the following command:</p>
+<p>To have elegible data in the database, enter the following commands:</p>
 
 ```bash
-rails db:migrate
-rails db:seed
+rails db:create
+rails db:migrate:reset // Used to restart all database values
 ```
 
 <p>After you have followed these steps, you can start the server with:</p>
@@ -100,7 +89,7 @@ rails s
 <p>To stop the server you have to use CTRL + C.</p>
 <h1 align='center'>Frontend information:</h1>
 <p>This is how eduapp started but some visual changes were made.</p>
-<details >
+<details>
 <summary>Prototype</summary>
 <div ><img src="./prototipo/eduapp-1.png" alt="prototipo">
 </div>
@@ -116,7 +105,13 @@ rails s
 ```bash
 git clone https://github.com/eduappdevs/eduapp
 cd eduapp/frontend
-npm start
+npm install
+
+// For Windows users
+npm run start-win
+
+// For Unix system users (Mac, Linux)
+npm run start-unix
 ```
 
 <p>To stop the server you have to use CTRL + C.</p>
@@ -124,44 +119,38 @@ npm start
 <h1 >Tech stack</h1>
 <div>
     <a href="https://rubyonrails.org">
-        <img src="https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white" alt="Rails"/></a>
-   </div>
-  
-<div >        
+        <img src="https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white" alt="Rails"/>
+		</a>
+</div>
+<div>        
      <a href="https://reactjs.org">
-            <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React"/></a>
+        <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React"/></a>
    </div>
-     
-<div >
-       <a href="#">
-            <img src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" alt="Javascript"/>
-     </a>
-   </div>
-     
-<div >
-     <a href="#">
-            <img src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" alt="Html"/>
-     </a>
-   </div>
-     
-<div >
-     <a href="#">
-            <img src="https://img.shields.io/badge/Adobe%20XD-470137?style=for-the-badge&logo=Adobe%20XD&logoColor=#FF61F6" alt="AdobeXD"/>
-     </a>
-   </div>
-     
-<div >
-     <a href="#">
-            <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white" alt="Github"/>
-     </a>
-   </div>
-     
-     
+<div>
+    <a href="#">
+        <img src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" alt="Javascript"/>
+    </a>
+</div>
+<div>
+    <a href="#">
+        <img src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" alt="Html"/>
+    </a>
+</div>
+<div>
+    <a href="#">
+        <img src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white" alt="CSS"/>
+    </a>
+</div>     
+<div>
+    <a href="#">
+        <img src="https://img.shields.io/badge/Adobe%20XD-470137?style=for-the-badge&logo=Adobe%20XD&logoColor=#FF61F6" alt="AdobeXD"/>
+    </a>
+</div>   
 <div>
      <a href="#">
-            <img src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white" alt="CSS"/>
+        <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white" alt="Github"/>
      </a>
-   </div>
+</div>
 
 <h1>User Requirements</h1>
 <h2>Platform</h2>
@@ -171,31 +160,47 @@ npm start
 <h3>1. Students user are able to:</h3>
 <p>View your account's calendar, resources, upcoming sessions, and chats.</p>
 <h3>2. Teacher user are able to: </h3>
-<p>They have the same functionality as students, but they have permission to create global events in the calendar, create resources.</p>
+<p>They have the same functionality as students, but they have permission to create global events in the calendar, create resources and chats.</p>
 <h3>3. Secretary user are able to: </h3>
-<p>They have control over the users of their school, they manage accounts , the calendar and the sessions.</p>
+<p>They have control over the users of their school, they manage accounts, the calendar and the sessions.</p>
 <h3>4. Administrator user are able to:</h3>
 <p>They have full access to the management of the app. </p>
 
 
 <h3>Sessions page</h3>
-<p>To see any session you must been enrolled in at least one course , otherwise , this page will be empty.</p>
+<p>To see any session you must been enrolled in at least one course, otherwise, this page will be empty.</p>
 <p>Then you must select the course you will like to see the sessions of.</p>
 <h3>Resources page</h3>
-<p>To see any resource you must been enrolled in at least one course , otherwise , this page will be empty.</p>
+<p>To see any resource you must been enrolled in at least one course, otherwise, this page will be empty.</p>
 <p>You must select the course to see the resources of that course, you can also filter the resources with the search bar placed at the top of the page.</p>
-<p>If you are a teacher of that course you will see a plus icon , who provide you the access to a form modal, to add a new resource.</p>
+<p>If you are a teacher of that course you will see a plus icon, who provide you the access to a form modal, to add a new resource.</p>
 
 
-<h1>API Documention<img  width="80" height="35" src="https://miro.medium.com/max/802/1*dLWPk_rziSpWhPx1UWONbQ@2x.png"/> </h1>
+<h1>API Documention
+		<img  width="80" height="35" src="https://miro.medium.com/max/802/1*dLWPk_rziSpWhPx1UWONbQ@2x.png"/>
+</h1>
 
-<a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUPn">Resources Database Table</a>
+<a align="left" href="https://documenter.getpostman.com/view/17931022/UVksLtxR">·-· Institutions Database Table</a>
 <br/>
-<a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUPr">User Info Database Table</a>
+<a align="left" href="https://documenter.getpostman.com/view/17931022/UVksLtxP">·-· Courses Database Table</a>
 <br/>
-<a align="left" href="https://documenter.getpostman.com/view/17931022/UVR5qUU8">Session Database Table</a>
+<a align="left" href="https://documenter.getpostman.com/view/17931022/UVksLtxS">·-· Tuitions Database Table</a>
 <br/>
-<a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUUB"> User Auth Database Table</a>
+<a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUPr">·-· User Info Database Table</a>
+<br/>
+<a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUUB">·-· User Auth Database Table</a>
+<br/>
+<a align="left" href="https://documenter.getpostman.com/view/17931022/UVksLtoe">·-· Subjects Database Table</a>
+<br/>
+<a align="left" href="https://documenter.getpostman.com/view/17931022/UVR5qUU8">·-· Session Database Table</a>
+<br/>
+<a align="left" href="https://documenter.getpostman.com/view/17853818/UVR5qUPn">·-· Resources Database Table</a>
+<br/>
+<a align="left" href="https://documenter.getpostman.com/view/17931022/UVksLtt4">·-· Calendar Database Table</a>
+<br/>
+<a align="left" href="https://documenter.getpostman.com/view/17831178/UVksLtt8">·-· Chats Database Table</a>
+<br/>
+
 
 <h1>Use Cases</h1>
 <img src="./Documentation/UseCases.jpg" />
