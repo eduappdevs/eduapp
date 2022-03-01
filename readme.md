@@ -33,7 +33,7 @@
 <div ><img src="./Documentation/Diagram/DiagramER.png" alt="diagramER">
 </div>
 <h3>Diagram UML</h3>
-<div ><img src="./Documentation/Diagram/DiagramUML.pn" alt="diagramUML">
+<div ><img src="./Documentation/Diagram/NewUMLDiagram.png" alt="diagramUML">
 </div>
 <h3>Relational diagram:</h3>
 <div>
