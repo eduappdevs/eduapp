@@ -6,8 +6,9 @@ import Schedulesessionslist from "../components/schedulesessionslist";
 import Scheduleeventslist from "../components/scheduleeventslist";
 import Resourceslist from "../components/resourceslist";
 import InstitutionConfig from "../components/institutionConfig";
-import CoursesConfig from "../components/coursesConfig";
+import CourseConfig from "../components/courseConfig";
 import SubjectsConfig from "../components/subjectsConfig";
+import UserConfig from "../components/userConfig";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
@@ -30,9 +31,11 @@ export default function ControlPanel() {
           ) : location === "institutions" ? (
             <InstitutionConfig />
           ) : location === "courses" ? (
-            <CoursesConfig />
+            <CourseConfig />
           ) : location === "subjects" ? (
             <SubjectsConfig />
+          ) : location === "users" ? (
+            <UserConfig />
           ) : (
             location === "resources" && <Resourceslist />
           )}

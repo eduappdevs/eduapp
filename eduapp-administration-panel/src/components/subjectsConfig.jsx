@@ -41,6 +41,7 @@ export default function SubjectsConfig() {
     }
 
     if (valid) {
+      swapIcons(true);
       API.asynchronizeRequest(function () {
         axios
           .post(API.endpoints.SUBJECTS, {
@@ -52,6 +53,7 @@ export default function SubjectsConfig() {
           })
           .then(() => {
             fetchSubjects();
+            swapIcons(false);
           });
       });
     }
@@ -63,6 +65,16 @@ export default function SubjectsConfig() {
         fetchSubjects();
       });
     });
+  };
+
+  const swapIcons = (state) => {
+    if (state) {
+      document.getElementById("submit-loader").style.display = "block";
+      document.getElementById("ins-add-icon").style.display = "none";
+    } else {
+      document.getElementById("submit-loader").style.display = "none";
+      document.getElementById("ins-add-icon").style.display = "block";
+    }
   };
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as API from "../API";
 
-export default function CoursesConfig() {
+export default function CourseConfig() {
   const [courses, setCourses] = useState(null);
   const [institutions, setInstitutions] = useState([]);
 

@@ -5,44 +5,6 @@ import API from "../API";
 import "../styles/navbar.css";
 
 export default function Navbar(props) {
-  // const changeLocation = (location) => {
-  //   let institutions = document.getElementById("cp-institutions");
-  //   let courses = document.getElementById("cp-courses");
-  //   let users = document.getElementById("cp-users");
-  //   let institutionsButton = document.getElementById("institutions");
-  //   let coursesButton = document.getElementById("courses");
-  //   let usersButton = document.getElementById("users");
-
-  //   switch (location) {
-  //     case "institutions":
-  //       institutions.classList.remove("hidden");
-  //       courses.classList.add("hidden");
-  //       users.classList.add("hidden");
-  //       institutionsButton.classList.add("active");
-  //       coursesButton.classList.remove("active");
-  //       usersButton.classList.remove("active");
-  //       break;
-  //     case "courses":
-  //       institutions.classList.add("hidden");
-  //       courses.classList.remove("hidden");
-  //       users.classList.add("hidden");
-  //       institutionsButton.classList.remove("active");
-  //       coursesButton.classList.add("active");
-  //       usersButton.classList.remove("active");
-  //       break;
-  //     case "users":
-  //       institutions.classList.add("hidden");
-  //       courses.classList.add("hidden");
-  //       users.classList.remove("hidden");
-  //       institutionsButton.classList.remove("active");
-  //       coursesButton.classList.remove("active");
-  //       usersButton.classList.add("active");
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
-
   const generateResourcesReport = async () => {
     const data = await API.fetchResources();
 
@@ -209,7 +171,7 @@ export default function Navbar(props) {
           <li className="button-suboptions">
             <p
               onClick={() => {
-                props.toolbarLocation("subjects");
+                props.toolbarLocation("resources");
               }}
             >
               Resources

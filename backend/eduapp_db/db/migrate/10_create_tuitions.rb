@@ -8,8 +8,6 @@ class CreateTuitions < ActiveRecord::Migration[6.1]
       t.string :institution_name
       t.boolean :isTeacher
 
-      
-
       t.timestamps
     end
   end

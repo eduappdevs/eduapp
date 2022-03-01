@@ -47,11 +47,6 @@ export default function Toolbar(props) {
           <h1>Users</h1>
           <ul className="scheduletoolbar-ul users-toolbar">
             <li>
-              {" "}
-              <p> Add </p>
-            </li>
-            <li>
-              {" "}
               <p> Load </p>
             </li>
             <li>
