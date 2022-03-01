@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 import { CALENDAR, EDUAPP_SESSIONS } from "../../../config";
 import "./views.css";
+import { asynchronizeRequest } from "../../../API";
 
 export default function EditView(props) {
   const closeButton = async () => {
@@ -94,10 +95,11 @@ export default function EditView(props) {
         isGlobal: props.data.isGlobal,
         user_id: localStorage.userId,
       };
-      axios
-        .put(CALENDAR + "/" + props.data.id, editEvent)
-        .then(window.location.reload())
-        .catch();
+      asynchronizeRequest(function () {
+        axios.put(CALENDAR + "/" + props.data.id, editEvent).then(() => {
+          window.location.reload();
+        });
+      });
     } else {
       var editEventSession = {
         session_name: editTitle,
@@ -107,10 +109,13 @@ export default function EditView(props) {
         resources_platform: editResources,
         session_chat_id: editChat,
       };
-      axios
-        .put(EDUAPP_SESSIONS + "/" + props.data.id, editEventSession)
-        .then(window.location.reload())
-        .catch();
+      asynchronizeRequest(function () {
+        axios
+          .put(EDUAPP_SESSIONS + "/" + props.data.id, editEventSession)
+          .then(() => {
+            window.location.reload();
+          });
+      });
     }
   };
 
@@ -122,15 +127,17 @@ export default function EditView(props) {
 
   const deleteEvent = async () => {
     if (props.data.description !== undefined) {
-      axios
-        .delete(CALENDAR + "/" + props.data.id)
-        .then(window.location.reload())
-        .catch();
+      asynchronizeRequest(function () {
+        axios.delete(CALENDAR + "/" + props.data.id).then(() => {
+          window.location.reload();
+        });
+      });
     } else {
-      axios
-        .delete(EDUAPP_SESSIONS + "/" + props.data.id)
-        .then(window.location.reload())
-        .catch();
+      asynchronizeRequest(function () {
+        axios.delete(EDUAPP_SESSIONS + "/" + props.data.id).then(() => {
+          window.location.reload();
+        });
+      });
     }
   };
 

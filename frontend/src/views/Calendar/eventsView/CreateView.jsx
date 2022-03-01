@@ -1,54 +1,54 @@
-import React from 'react';
-import axios from 'axios';
-import { FetchUserInfo } from '../../../hooks/FetchUserInfo';
-import { CALENDAR } from '../../../config';
-import { useState } from 'react';
-import './views.css';
+import React from "react";
+import axios from "axios";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import { CALENDAR } from "../../../config";
+import { useState } from "react";
+import "./views.css";
 
 export default function CreateView(props) {
   let userInfo = FetchUserInfo(localStorage.userId);
   const [globalValue, setGlobalValue] = useState(true);
 
   const closeButton = async () => {
-    const chatBox = document.getElementById('create-box');
-    chatBox.style.display = 'flex';
+    const chatBox = document.getElementById("create-box");
+    chatBox.style.display = "flex";
 
     const backgroundCalendar =
-      document.getElementsByClassName('background-shadow')[0];
+      document.getElementsByClassName("background-shadow")[0];
 
-    chatBox.classList.remove('create-box-opened');
-    chatBox.classList.add('create-box-closed');
+    chatBox.classList.remove("create-box-opened");
+    chatBox.classList.add("create-box-closed");
 
     const calendarMainScroll = document.getElementsByClassName(
-      'calendar-main-container'
+      "calendar-main-container"
     )[0];
 
-    calendarMainScroll.classList.remove('disable-scroll');
+    calendarMainScroll.classList.remove("disable-scroll");
 
     setTimeout(() => {
-      backgroundCalendar.style.display = 'none';
+      backgroundCalendar.style.display = "none";
     }, 150);
   };
 
   const createEvent = async (e) => {
     e.preventDefault();
-    let subjectInfo = document.getElementById('subject_name').value;
-    var titleValue = document.getElementById('newTitle').value;
-    var descriptionValue = document.getElementById('newDescription').value;
-    var startValue = document.getElementById('newStartDate').value;
-    var endValue = document.getElementById('newEndDate').value;
-    var subjectValue = subjectInfo.split('_')[0];
+    let subjectInfo = document.getElementById("subject_name").value;
+    var titleValue = document.getElementById("newTitle").value;
+    var descriptionValue = document.getElementById("newDescription").value;
+    var startValue = document.getElementById("newStartDate").value;
+    var endValue = document.getElementById("newEndDate").value;
+    var subjectValue = subjectInfo.split("_")[0];
     var subjectInt = parseInt(subjectValue);
-    var isGlobalValue = document.getElementById('subject_name').value;
+    var isGlobalValue = document.getElementById("subject_name").value;
     // var globalCourse = document.getElementById("isGlobalCourse").checked;
     var newEvent = {};
     if (
-      titleValue !== '' &&
-      startValue !== '' &&
-      endValue !== '' &&
-      subjectValue !== '' &&
+      titleValue !== "" &&
+      startValue !== "" &&
+      endValue !== "" &&
+      subjectValue !== "" &&
       isGlobalValue !== null &&
-      isGlobalValue !== 'Choose subject'
+      isGlobalValue !== "Choose subject"
     ) {
       newEvent = {
         annotation_start_date: startValue,
@@ -59,7 +59,12 @@ export default function CreateView(props) {
         user_id: userInfo.id,
         subject_id: subjectInt,
       };
-      axios.post(CALENDAR, newEvent).then(window.location.reload()).catch();
+      axios
+        .post(CALENDAR, newEvent)
+        .then(() => {
+          window.location.reload();
+        })
+        .catch();
     } else {
       alertCreate();
     }
@@ -67,20 +72,20 @@ export default function CreateView(props) {
 
   const isNotGlobal = (e) => {
     e.preventDefault();
-    let subjectInfo = document.getElementById('subject_name').value;
-    if (subjectInfo.split('_')[1] !== 'Noticias') {
+    let subjectInfo = document.getElementById("subject_name").value;
+    if (subjectInfo.split("_")[1] !== "Noticias") {
       setGlobalValue(false);
     }
   };
 
   const alertCreate = async () => {
     document
-      .getElementsByClassName('calendar-view-alert-create-container')[0]
-      .classList.remove('calendar-view-alert-create-hidden');
+      .getElementsByClassName("calendar-view-alert-create-container")[0]
+      .classList.remove("calendar-view-alert-create-hidden");
     setTimeout(() => {
       document
-        .getElementsByClassName('calendar-view-alert-create-container')[0]
-        .classList.add('calendar-view-alert-create-hidden');
+        .getElementsByClassName("calendar-view-alert-create-container")[0]
+        .classList.add("calendar-view-alert-create-hidden");
     }, 2000);
   };
 
@@ -138,7 +143,7 @@ export default function CreateView(props) {
               <select name="subject" id="subject_name" onChange={isNotGlobal}>
                 <option selected>Choose subject</option>
                 {props.data.map((subject) => (
-                  <option value={subject.id + '_' + subject.name}>
+                  <option value={subject.id + "_" + subject.name}>
                     {subject.name}
                   </option>
                 ))}
