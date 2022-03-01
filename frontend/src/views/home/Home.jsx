@@ -1,42 +1,43 @@
 /* eslint-disable array-callback-return */
-import React from "react";
-import { useEffect, useState } from "react";
-import SessionAdd from "../../components/modals/modals-home/SessionAdd";
-import SessionEdit from "../../components/modals/modals-home/SessionEdit";
-import axios from "axios";
-import Loader from "../../components/loader/Loader";
-import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import { GetCourses } from "../../hooks/GetCourses";
-import CourseSelector from "../../components/courseSelector/CourseSelector";
-import "./Home.css";
+import React from 'react';
+import { useEffect, useState } from 'react';
+import SessionAdd from '../../components/modals/modals-home/SessionAdd';
+import SessionEdit from '../../components/modals/modals-home/SessionEdit';
+import axios from 'axios';
+import Loader from '../../components/loader/Loader';
+import { FetchUserInfo } from '../../hooks/FetchUserInfo';
+import { GetCourses } from '../../hooks/GetCourses';
+import CourseSelector from '../../components/courseSelector/CourseSelector';
+import './Home.css';
+import { SUBJECT } from '../../config';
+import { asynchronizeRequest } from '../../API';
 
 export default function Home() {
-  let userInfo = FetchUserInfo(localStorage.userId);
   const idEdit = [];
-
   const [editFields, setFields] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const [sessions, setSessions] = useState([]);
-  const [firstSessionId, setFirstSessionId] = useState("");
-
+  const [firstSessionId, setFirstSessionId] = useState('');
+  const [sessionLength, setSessionLength] = useState('');
   const sessionsPreSorted = [];
+  let userInfo = FetchUserInfo(localStorage.userId);
   let sessionsSorted;
   let courses = GetCourses();
   let courseSelected;
 
   const openSessionAdd = () => {
     document
-      .getElementsByClassName("ModalSessionAdd__main")[0]
-      .classList.remove("ModalSession__hidden");
+      .getElementsByClassName('ModalSessionAdd__main')[0]
+      .classList.remove('ModalSession__hidden');
   };
 
   const openEditSession = async (id) => {
-    let e = await axios.get("http://localhost:3000/eduapp_user_sessions/" + id);
+    let e = await axios.get(SUBJECT + '/' + id);
 
     let name = e.data.session_name;
     let date = e.data.session_date;
-    let date1 = date.split("-")[0];
-    let date2 = date.split("-")[1];
+    let date1 = date.split('-')[0];
+    let date2 = date.split('-')[1];
     console.log(date1, date2);
     let streamingPlatform = e.data.streaming_platform;
     let resourcesPlatform = e.data.resources_platform;
@@ -53,13 +54,13 @@ export default function Home() {
     });
 
     document
-      .getElementsByClassName("ModalSessionEdit__main")[0]
-      .classList.remove("ModalSession__hidden");
+      .getElementsByClassName('ModalSessionEdit__main')[0]
+      .classList.remove('ModalSession__hidden');
   };
 
   const checkMediaQueries = () => {
     setInterval(() => {
-      if (window.matchMedia("(max-width: 1100px)").matches) {
+      if (window.matchMedia('(max-width: 1100px)').matches) {
         setIsMobile(true);
       } else {
         setIsMobile(false);
@@ -68,9 +69,7 @@ export default function Home() {
   };
 
   const getSessions = async () => {
-    let request = await axios.get(
-      `http://localhost:3000/eduapp_user_sessions?subject_id=${courseSelected}`
-    );
+    let request = await axios.get(SUBJECT + `?user_id=${localStorage.userId}`);
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -79,6 +78,7 @@ export default function Home() {
       let streamingPlatform = e.streaming_platform;
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
+      let date = startDate.split('T')[1] + ' - ' + endDate.split('T')[1];
       sessionsPreSorted.push({
         id,
         name,
@@ -87,12 +87,15 @@ export default function Home() {
         streamingPlatform,
         resourcesPlatform,
         chat,
+        date,
       });
     });
 
     sessionsSorted = sessionsPreSorted.sort(function (a, b) {
-      a = parseInt(a.sorter);
-      b = parseInt(b.sorter);
+      let aHour = a.startDate.split('T')[1];
+      let bHour = b.startDate.split('T')[1];
+      a = parseInt(aHour);
+      b = parseInt(bHour);
       if (a < b) {
         return -1;
       }
@@ -101,15 +104,16 @@ export default function Home() {
       }
       return 0;
     });
-
+    setSessionLength(sessionsSorted.length);
+    setFirstSessionId(sessionsSorted[0].id);
     setSessions(sessionsSorted);
   };
 
   const deleteSess = [];
   const deleteModal = (e) => {
-    let modal = document.getElementById("modal_question_delete");
-    if (modal.classList.contains("hidden")) {
-      modal.classList.remove("hidden");
+    let modal = document.getElementById('modal_question_delete');
+    if (modal.classList.contains('hidden')) {
+      modal.classList.remove('hidden');
     }
     let idDelete = e.target.id;
     deleteSess.pop();
@@ -117,33 +121,33 @@ export default function Home() {
   };
 
   const closeDelete = () => {
-    document.getElementById("modal_question_delete").classList.add("hidden");
+    document.getElementById('modal_question_delete').classList.add('hidden');
   };
 
   const deleteSession = () => {
-    axios
-      .delete("http://localhost:3000/eduapp_user_sessions/" + deleteSess)
-      .then(() => {
+    asynchronizeRequest(async function () {
+      axios.delete(SUBJECT + '/' + deleteSess).then(() => {
         window.location.reload();
       });
+    });
   };
 
   const openSession = (e) => {
     e.preventDefault();
     const after = document.getElementById(
-      "session-after" + e.target.id.substring(3)
+      'session-after' + e.target.id.substring(3)
     );
-    const img = document.getElementById("button" + e.target.id.substring(3));
-
+    const img = document.getElementById('button' + e.target.id.substring(3));
+    console.log(e.target.id);
     setTimeout(() => {
       try {
         // const session = document.querySelector(e.target.id);
-        if (after.classList.contains("hidden")) {
-          after.classList.remove("hidden");
-          img.classList.add("rotate");
+        if (after.classList.contains('hidden')) {
+          after.classList.remove('hidden');
+          img.classList.add('rotate');
         } else {
-          after.classList.add("hidden");
-          img.classList.remove("rotate");
+          after.classList.add('hidden');
+          img.classList.remove('rotate');
         }
       } catch (error) {
         console.log(error);
@@ -153,37 +157,47 @@ export default function Home() {
 
   const activeEditMenu = () => {
     const buttonSession = Array.from(
-      document.querySelectorAll("#editSessionButton")
+      document.querySelectorAll('#editSessionButton')
     );
-    const buttonadd = document.getElementById("buttonAdd");
+    const buttonadd = document.getElementById('buttonAdd');
 
-    if (buttonadd.classList.contains("hidden")) {
-      buttonadd.classList.remove("hidden");
+    if (buttonadd.classList.contains('hidden')) {
+      buttonadd.classList.remove('hidden');
     }
 
     buttonSession.map((x) => {
       try {
-        if (x.classList.contains("hidden")) {
-          x.classList.remove("hidden");
+        if (x.classList.contains('hidden')) {
+          x.classList.remove('hidden');
         } else {
-          x.classList.add("hidden");
-          buttonadd.classList.add("hidden");
+          x.classList.add('hidden');
+          buttonadd.classList.add('hidden');
         }
       } catch (error) {
         console.log(error);
       }
     });
   };
-
   const handleChangeSelector = (id) => {
     courseSelected = id;
-    getSessions(id);
+    asynchronizeRequest(async function () {
+      getSessions(id);
+    });
+    if (
+      !document
+        .getElementById('courseNotSelectedeAdvisor')
+        .classList.contains('hidden')
+    ) {
+      document
+        .getElementById('courseNotSelectedeAdvisor')
+        .classList.add('hidden');
+    }
   };
 
   useEffect(() => {
     checkMediaQueries();
 
-    if (window.innerWidth < 900) {
+    if (window.innerWidth < 1100) {
       setIsMobile(true);
     } else {
       setIsMobile(false);
@@ -193,7 +207,7 @@ export default function Home() {
   return (
     <>
       <div className="home-main-container">
-        <section className={isMobile ? "mobileSection" : "desktopSection"}>
+        <section className={isMobile ? 'mobileSection' : 'desktopSection'}>
           <div className="user">
             <div className="user-container">
               <div className="information-user">
@@ -202,9 +216,9 @@ export default function Home() {
                     src={
                       userInfo.profile_image != null
                         ? userInfo.profile_image.url
-                        : "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                        : 'http://s3.amazonaws.com/37assets/svn/765-default-avatar.png'
                     }
-                    alt={(userInfo.user_name, "image")}
+                    alt={(userInfo.user_name, 'image')}
                   />
                 </div>
                 <div className="user-name">
@@ -248,15 +262,15 @@ export default function Home() {
                         <div
                           className={
                             firstSessionId === data.id
-                              ? "home__firstSession sessions-container"
-                              : "sessions-container"
+                              ? 'home__firstSession sessions-container'
+                              : 'sessions-container'
                           }
                           onClick={openSession}
-                          id={"ses" + data.id}
+                          id={'ses' + data.id}
                         >
-                          <div className="sessions-closed" id={"ses" + data.id}>
+                          <div className="sessions-closed" id={'ses' + data.id}>
                             <div className="session-before">
-                              <div id={"button" + data.id} className="arrow">
+                              <div id={'button' + data.id} className="arrow">
                                 <svg xmlns="http://www.w3.org/2000/svg">
                                   <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                                 </svg>
@@ -265,7 +279,7 @@ export default function Home() {
                               <span className="session-date">{data.date}</span>
                             </div>
                             <div
-                              id={"session-after" + data.id}
+                              id={'session-after' + data.id}
                               className="sessions-after hidden"
                             >
                               <div className="session-platforms">
@@ -277,18 +291,33 @@ export default function Home() {
                                     height="35"
                                     class="bi bi-mortarboard"
                                     viewBox="0 0 16 16"
+                                    onClick={() => {
+                                      window.location.href =
+                                        data.resources_platform;
+                                    }}
                                   >
                                     <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5ZM8 8.46 1.758 5.965 8 3.052l6.242 2.913L8 8.46Z" />
                                     <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466 4.176 9.032Zm-.068 1.873.22-.748 3.496 1.311a.5.5 0 0 0 .352 0l3.496-1.311.22.748L8 12.46l-3.892-1.556Z" />
                                   </svg>
                                 </p>
                                 <p className="session-resourcesPlatform">
-                                  <img
-                                    width="36"
-                                    height="36"
-                                    src="https://img.icons8.com/ios-filled/50/000000/education.png"
-                                    alt="Resources icon"
-                                  />
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="35"
+                                    height="35"
+                                    fill="currentColor"
+                                    className="bi bi-camera-video"
+                                    viewBox="0 0 16 16"
+                                    onClick={() => {
+                                      window.location.href =
+                                        data.streaming_platform;
+                                    }}
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z"
+                                    />
+                                  </svg>
                                 </p>
                                 <p className="session_chat_id">
                                   <svg
@@ -298,6 +327,10 @@ export default function Home() {
                                     fill="currentColor"
                                     class="bi bi-chat-dots"
                                     viewBox="0 0 16 16"
+                                    onClick={() => {
+                                      window.location.href =
+                                        data.session_chat_id;
+                                    }}
                                   >
                                     <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
                                     <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
@@ -335,7 +368,7 @@ export default function Home() {
                               onClick={() => {
                                 openEditSession(data.id);
                               }}
-                              id={"edit" + data.id}
+                              id={'edit' + data.id}
                               xmlns="http://www.w3.org/2000/svg"
                               width="15"
                               height="15"
@@ -369,7 +402,9 @@ export default function Home() {
                         </div>
                         <p
                           className={
-                            firstSessionId === data.id ? console.log : "hidden"
+                            firstSessionId === data.id && sessionLength > 1
+                              ? console.log()
+                              : 'hidden'
                           }
                         >
                           Sessions
