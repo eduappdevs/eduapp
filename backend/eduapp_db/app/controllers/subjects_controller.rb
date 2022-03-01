@@ -3,13 +3,49 @@ class SubjectsController < ApplicationController
 
   # GET /subjects
   def index
-    if !params[:name]
-      @subjects = Subject.all
-    else
-      @subjects = Subject.where(name: params[:name])
-    end
+    if params[:user_id]
+      
+      @Subjects =[]
+      @Sessions = []
+      @Today = Time.now.strftime("%F")
+      @TodayHourNow = Time.now.strftime("%H")
+      @todaySessions = []
 
-    render json: @subjects
+      @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
+
+      for course in @TuitionsUserId do
+        @Subjects += Subject.where(course_id: course)
+      end
+
+      for subject in @Subjects  do
+        @todaySessions += EduappUserSession.where(subject_id: subject).pluck(:session_start_date)
+      end
+
+      for hour in @todaySessions do
+        if(hour.split('T')[1].split(":")[0] == @TodayHourNow or hour.split('T')[1].split(":")[0] >= @TodayHourNow and hour.split("T")[0] == @Today)
+          @Sessions += EduappUserSession.where(subject_id: @Subjects, session_start_date: hour)
+        else
+
+        end
+      end
+
+      render json: @Sessions
+    elsif  params[:name]
+      @subjects = Subject.where(name: params[:name])
+      render json: @subjects
+    elsif params[:user]
+      @TuitionsUserId = Tuition.where(user_id: params[:user]).pluck(:course_id)
+      @Subjects =[]
+
+      for course in @TuitionsUserId do
+        @Subjects += Subject.where(course_id: course)
+      end
+      
+      render json: @Subjects
+    else
+      @subjects = Subject.all
+      render json: @subjects
+    end
   end
 
   # GET /subjects/1
