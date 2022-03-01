@@ -209,7 +209,7 @@ export default function Navbar(props) {
           <li className="button-suboptions">
             <p
               onClick={() => {
-                props.toolbarLocation("resources");
+                props.toolbarLocation("subjects");
               }}
             >
               Resources

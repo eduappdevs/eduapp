@@ -78,6 +78,10 @@ export default function Toolbar(props) {
         <>
           <h1>Courses configuration</h1>
         </>
+      ) : props.location === "subjects" ? (
+        <>
+          <h1>Subjects configuration</h1>
+        </>
       ) : (
         <h1>Communication configuration</h1>
       )}

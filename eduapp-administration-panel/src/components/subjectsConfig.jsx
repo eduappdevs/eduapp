@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as API from "../API";
 
-export default function CoursesConfig() {
-  const [courses, setCourses] = useState(null);
-  const [institutions, setInstitutions] = useState([]);
+export default function SubjectsConfig() {
+  const [subjects, setSubjects] = useState(null);
+  const [courses, setCourses] = useState([]);
 
-  const fetchInstitutions = () => {
+  const fetchSubjects = () => {
     API.asynchronizeRequest(function () {
-      axios.get(API.endpoints.INSTITUTIONS).then((i) => {
-        setInstitutions(i.data);
+      axios.get(API.endpoints.SUBJECTS).then((sjs) => {
+        setSubjects(sjs.data);
       });
     });
   };
@@ -22,79 +22,52 @@ export default function CoursesConfig() {
     });
   };
 
-  const createCourse = () => {
-    let cName = document.getElementById("c_name").value;
-    let cInst = document.getElementById("institution_chooser").value;
+  const createSubject = () => {
+    let name = document.getElementById("sj_name").value;
+    let teacher = document.getElementById("sj_teacher").value;
+    let desc = document.getElementById("sj_desc").value;
+    let color = document.getElementById("sj_color").value;
+    let sel_course = document.getElementById("course_chooser").value;
 
-    if (cName.length > 1 && cInst !== "--") {
-      swapIcons(true);
+    let info = [name, teacher, desc, color, sel_course];
+
+    let valid = true;
+    for (let i of info) {
+      console.log(i);
+      if (i.length < 2 && i === "-") {
+        valid = false;
+        break;
+      }
+    }
+
+    if (valid) {
       API.asynchronizeRequest(function () {
         axios
-          .post(API.endpoints.COURSES, {
-            name: cName,
-            institution_id: parseInt(cInst),
+          .post(API.endpoints.SUBJECTS, {
+            name: name,
+            teacherInCharge: teacher,
+            description: desc,
+            color: color,
+            course_id: parseInt(sel_course),
           })
-          .then((x) => {
-            if (courses.length === 0) {
-              let instTemp = null;
-              for (let inst of institutions) {
-                if (inst.id === parseInt(cInst)) {
-                  instTemp = inst.name;
-                }
-              }
-
-              axios
-                .post(API.endpoints.SUBJECTS, {
-                  name: "Noticias",
-                  teacherInCharge: instTemp,
-                  description: "Noticias para el instituto " + instTemp,
-                  color: "#96ffb2",
-                  course_id: parseInt(x.data.id),
-                })
-                .then(() => {
-                  fetchCourses();
-                  swapIcons(false);
-                });
-            } else {
-              fetchCourses();
-              swapIcons(false);
-            }
+          .then(() => {
+            fetchSubjects();
           });
       });
     }
   };
 
-  const deleteCourse = (id) => {
+  const deleteSubject = (id) => {
     API.asynchronizeRequest(function () {
-      if (courses.length === 1) {
-        axios.get(API.endpoints.SUBJECTS + "?name=Noticias").then((x) => {
-          axios.delete(API.endpoints.SUBJECTS + "/" + x.data[0].id).then(() => {
-            axios.delete(API.endpoints.COURSES + "/" + id).then(() => {
-              fetchCourses();
-            });
-          });
-        });
-      } else {
-        axios.delete(API.endpoints.COURSES + "/" + id).then(() => {
-          fetchCourses();
-        });
-      }
+      axios.delete(API.endpoints.SUBJECTS + "/" + id).then(() => {
+        fetchSubjects();
+      });
     });
   };
 
-  const swapIcons = (state) => {
-    if (state) {
-      document.getElementById("submit-loader").style.display = "block";
-      document.getElementById("ins-add-icon").style.display = "none";
-    } else {
-      document.getElementById("submit-loader").style.display = "none";
-      document.getElementById("ins-add-icon").style.display = "block";
-    }
-  };
-
   useEffect(() => {
+    fetchSubjects();
     fetchCourses();
-    fetchInstitutions();
   }, []);
 
   return (
@@ -104,21 +77,33 @@ export default function CoursesConfig() {
           <tr>
             <th>Code</th>
             <th>Name</th>
-            <th>Linked Institution</th>
+            <th>Teacher in Charge</th>
+            <th>Description</th>
+            <th>Color</th>
+            <th>Linked Course</th>
             <th>Actions</th>
           </tr>
-          {courses
-            ? courses.map((c) => {
+          {subjects
+            ? subjects.map((sj) => {
                 return (
                   <tr>
                     <td>
-                      <input disabled type="text" value={c.id} />
+                      <input disabled type="text" value={sj.id} />
                     </td>
                     <td>
-                      <input disabled type="text" value={c.name} />
+                      <input disabled type="text" value={sj.name} />
                     </td>
                     <td>
-                      <input disabled type="text" value={c.institution.name} />
+                      <input disabled type="text" value={sj.teacherInCharge} />
+                    </td>
+                    <td>
+                      <input disabled type="text" value={sj.description} />
+                    </td>
+                    <td>
+                      <input disabled type="color" value={sj.color} />
+                    </td>
+                    <td>
+                      <input disabled type="text" value={sj.course.name} />
                     </td>
                     <td
                       style={{
@@ -129,7 +114,7 @@ export default function CoursesConfig() {
                     >
                       <button
                         onClick={() => {
-                          deleteCourse(c.id);
+                          deleteSubject(sj.id);
                         }}
                       >
                         <svg
@@ -156,7 +141,7 @@ export default function CoursesConfig() {
                 alignItems: "center",
               }}
             >
-              <button onClick={createCourse}>
+              <button onClick={createSubject}>
                 <svg
                   xmlns="http://www.w3.org/2000/ svg"
                   width="16"
@@ -174,16 +159,27 @@ export default function CoursesConfig() {
               </button>
             </td>
             <td>
-              <input id="c_name" type="text" placeholder="Name" />
+              <input id="sj_name" type="text" placeholder="Name" />
             </td>
             <td>
-              <select id="institution_chooser">
-                <option selected value="--">
-                  Choose Institution
+              <input id="sj_teacher" type="text" placeholder="Teacher" />
+            </td>
+            <td>
+              <input id="sj_desc" type="text" placeholder="Description" />
+            </td>
+            <td>
+              <input id="sj_color" type="color" placeholder="Description" />
+            </td>
+            <td>
+              <select id="course_chooser">
+                <option selected value="-">
+                  Choose Course
                 </option>
-                {institutions.map((i) => {
-                  return <option value={i.id}>{i.name}</option>;
-                })}
+                {courses
+                  ? courses.map((c) => {
+                      return <option value={c.id}>{c.name}</option>;
+                    })
+                  : null}
               </select>
             </td>
           </tr>
