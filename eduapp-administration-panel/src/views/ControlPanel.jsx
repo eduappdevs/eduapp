@@ -4,11 +4,11 @@ import Navbar from "../components/Navbar";
 import "../styles/users.css";
 import Schedulesessionslist from "../components/schedulesessionslist";
 import Scheduleeventslist from "../components/scheduleeventslist";
-import Resourceslist from "../components/resourceslist";
 import InstitutionConfig from "../components/institutionConfig";
 import CourseConfig from "../components/courseConfig";
 import SubjectsConfig from "../components/subjectsConfig";
 import UserConfig from "../components/userConfig";
+import EnrollConfig from "../components/enrollConfig";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
@@ -36,8 +36,10 @@ export default function ControlPanel() {
             <SubjectsConfig />
           ) : location === "users" ? (
             <UserConfig />
+          ) : location === "enroll" ? (
+            <EnrollConfig />
           ) : (
-            location === "resources" && <Resourceslist />
+            <></>
           )}
         </div>
       </div>

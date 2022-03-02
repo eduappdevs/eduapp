@@ -135,6 +135,14 @@ export default function Navbar(props) {
           >
             <p>Users</p>
           </li>
+          <li
+            onClick={() => {
+              props.toolbarLocation("enroll");
+            }}
+            className="button-suboptions"
+          >
+            <p>Enrollment</p>
+          </li>
         </ul>
       </div>
       <div className="settings-button-container button-container">
@@ -167,15 +175,6 @@ export default function Navbar(props) {
             className="button-suboptions"
           >
             <p>Subjects</p>
-          </li>
-          <li className="button-suboptions">
-            <p
-              onClick={() => {
-                props.toolbarLocation("resources");
-              }}
-            >
-              Resources
-            </p>
           </li>
         </ul>
       </div>

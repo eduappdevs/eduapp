@@ -3,7 +3,11 @@ class UserInfosController < ApplicationController
 
   # GET /user_infos
   def index
-    @user_infos = UserInfo.all
+    if !params[:user_id]
+			@user_infos = UserInfo.all
+		else
+			@user_infos = UserInfo.where(user_id: params[:user_id])
+		end
 
     render json: @user_infos
 	end
@@ -41,15 +45,20 @@ class UserInfosController < ApplicationController
 	def destroyuser
 		user = User.find(params[:id])
 		user_i = UserInfo.find_by(user_id: params[:id])
+		user_tui = Tuition.where(user_id: params[:id])
+
+		for tui in user_tui do
+			tui.destroy
+		end
 
 		if user_i.destroy
 			if user.destroy
 				render json: { message: "Deleted user successfully." }, status: :ok
 			else
-				render json: { message: "Couldn't delete user"}, status: :error
+				render json: { message: "Couldn't delete user"}, status: 500
 			end	
 		else
-			render json: { message: "Couldn't delete user info"}, status: :error
+			render json: { message: "Couldn't delete user info"}, status: 500
 		end
 	end
 

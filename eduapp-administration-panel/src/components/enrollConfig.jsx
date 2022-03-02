@@ -2,8 +2,18 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as API from "../API";
 
-export default function UserConfig() {
+export default function EnrollConfig() {
+  const [tuitions, setTuitions] = useState(null);
   const [users, setUsers] = useState(null);
+  const [courses, setCourses] = useState(null);
+
+  const fetchTuitions = () => {
+    API.asynchronizeRequest(function () {
+      axios.get(API.endpoints.TUITIONS).then((ts) => {
+        setTuitions(ts.data);
+      });
+    });
+  };
 
   const fetchUsers = () => {
     API.asynchronizeRequest(function () {
@@ -13,71 +23,52 @@ export default function UserConfig() {
     });
   };
 
-  const createUser = () => {
-    let isAdmin = document.getElementById("u_admin").checked;
-    let email = document.getElementById("u_email").value;
-    let pass = document.getElementById("u_pass").value;
+  const fetchCourses = () => {
+    API.asynchronizeRequest(function () {
+      axios.get(API.endpoints.COURSES).then((cs) => {
+        setCourses(cs.data);
+      });
+    });
+  };
 
-    if (email && pass) {
-      swapIcons(true);
-      const payload = new FormData();
-      payload.append("user[email]", email);
-      payload.append("user[password]", pass);
+  const fetchAll = () => {
+    fetchCourses();
+    fetchTuitions();
+    fetchUsers();
+  };
 
+  const createTuition = () => {
+    let user = document.getElementById("user_select").value;
+    let course = document.getElementById("course_select").value;
+    let teacher = document.getElementById("t_teacher").checked;
+
+    let valid = true;
+    if (user === "-" && course === "-") valid = false;
+
+    if (valid) {
       API.asynchronizeRequest(function () {
-        API.default.createUser(payload).then((res) => {
-          const payload = new FormData();
-          API.default.createInfo(payload);
-          payload.delete("user[email]");
-          payload.delete("user[password]");
-          payload.append("user_id", res.data.message.id);
-          payload.append("user_name", res.data.message.email.split("@")[0]);
-          payload.append("isAdmin", isAdmin);
+        const payload = new FormData();
+        payload.append("course_id", parseInt(course));
+        payload.append("user_id", parseInt(user));
+        payload.append("isTeacher", teacher);
 
-          API.default.createInfo(payload).then(() => {
-            userEnroll(res.data.message.id);
-            fetchUsers();
-            document.getElementById("u_admin").checked = false;
-            document.getElementById("u_email").value = null;
-            document.getElementById("u_pass").value = null;
-            swapIcons(false);
-          });
+        API.default.enrollUser(payload).then(() => {
+          fetchAll();
         });
       });
     }
   };
 
-  const userEnroll = (uId) => {
-    const payload = new FormData();
-    payload.append("course_id", 1);
-    payload.append("user_id", uId);
-    payload.append("isTeacher", false);
-
-    API.default.enrollUser(payload).then(() => {
-      console.log("User tuition has been completed successfully!");
-    });
-  };
-
-  const deleteUser = (id) => {
+  const deleteTuition = (id) => {
     API.asynchronizeRequest(function () {
-      axios.delete(API.endpoints.USERS + "/remove/" + id).then(() => {
-        fetchUsers();
+      axios.delete(API.endpoints.TUITIONS + "/" + id).then(() => {
+        fetchAll();
       });
     });
   };
 
-  const swapIcons = (state) => {
-    if (state) {
-      document.getElementById("submit-loader").style.display = "block";
-      document.getElementById("ins-add-icon").style.display = "none";
-    } else {
-      document.getElementById("submit-loader").style.display = "none";
-      document.getElementById("ins-add-icon").style.display = "block";
-    }
-  };
-
   useEffect(() => {
-    fetchUsers();
+    fetchAll();
   }, []);
 
   return (
@@ -86,9 +77,9 @@ export default function UserConfig() {
         <table>
           <tr>
             <th>Add</th>
-            <th>Email</th>
-            <th>Password</th>
-            <th>Is Admin</th>
+            <th>User</th>
+            <th>Course</th>
+            <th>Is Teacher</th>
           </tr>
           <tr>
             <td
@@ -98,7 +89,7 @@ export default function UserConfig() {
                 alignItems: "center",
               }}
             >
-              <button onClick={createUser}>
+              <button onClick={createTuition}>
                 <svg
                   xmlns="http://www.w3.org/2000/ svg"
                   width="16"
@@ -116,52 +107,58 @@ export default function UserConfig() {
               </button>
             </td>
             <td>
-              <input id="u_email" type="email" placeholder="Email" />
+              <select id="user_select">
+                <option selected value="-">
+                  Choose User
+                </option>
+                {users
+                  ? users.map((u) => {
+                      return <option value={u.user_id}>{u.user.email}</option>;
+                    })
+                  : null}
+              </select>
             </td>
             <td>
-              <input id="u_pass" type="password" placeholder="Password" />
+              <select id="course_select">
+                <option selected value="-">
+                  Choose Course
+                </option>
+                {courses
+                  ? courses.map((c) => {
+                      return <option value={c.id}>{c.name}</option>;
+                    })
+                  : null}
+              </select>
             </td>
             <td style={{ textAlign: "center" }}>
-              <input id="u_admin" type="checkbox" placeholder="Name" />
+              <input id="t_teacher" type="checkbox" />
             </td>
           </tr>
         </table>
-        {users && users.length !== 0 ? (
+        {tuitions && tuitions.length !== 0 ? (
           <table style={{ marginTop: "50px" }}>
             <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Is Admin</th>
-              <th>Has Google Linked</th>
+              <th>User</th>
+              <th>Course</th>
+              <th>Is Teacher</th>
               <th>Actions</th>
             </tr>
-            {users
-              ? users.map((u) => {
+            {tuitions
+              ? tuitions.map((t) => {
                   return (
                     <tr>
                       <td>
-                        <input type="text" disabled value={u.user_id} />
+                        <input type="text" disabled value={t.user.email} />
                       </td>
                       <td>
-                        <input type="text" disabled value={u.user_name} />
-                      </td>
-                      <td>
-                        <input type="text" disabled value={u.user.email} />
+                        <input type="text" disabled value={t.course.name} />
                       </td>
                       <td style={{ textAlign: "center" }}>
-                        {u.isAdmin ? (
+                        {t.isTeacher ? (
                           <input type="checkbox" disabled checked />
                         ) : (
                           <input type="checkbox" disabled />
                         )}
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          disabled
-                          placeholder="=> Link in App"
-                        />
                       </td>
                       <td
                         style={{
@@ -172,7 +169,7 @@ export default function UserConfig() {
                       >
                         <button
                           onClick={() => {
-                            deleteUser(u.id);
+                            deleteTuition(t.id);
                           }}
                         >
                           <svg

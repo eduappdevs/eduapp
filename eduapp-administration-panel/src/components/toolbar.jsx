@@ -77,6 +77,10 @@ export default function Toolbar(props) {
         <>
           <h1>Subjects configuration</h1>
         </>
+      ) : props.location === "enroll" ? (
+        <>
+          <h1>Enroll a user</h1>
+        </>
       ) : (
         <h1>Communication configuration</h1>
       )}
