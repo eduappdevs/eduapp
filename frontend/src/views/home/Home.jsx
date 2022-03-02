@@ -1,43 +1,37 @@
-/* eslint-disable array-callback-return */
-import React from 'react';
-import { useEffect, useState } from 'react';
-import SessionAdd from '../../components/modals/modals-home/SessionAdd';
-import SessionEdit from '../../components/modals/modals-home/SessionEdit';
-import axios from 'axios';
-import Loader from '../../components/loader/Loader';
-import { FetchUserInfo } from '../../hooks/FetchUserInfo';
-import { GetCourses } from '../../hooks/GetCourses';
-import CourseSelector from '../../components/courseSelector/CourseSelector';
-import './Home.css';
-import { SUBJECT } from '../../config';
-import { asynchronizeRequest } from '../../API';
+import React from "react";
+import { useEffect, useState } from "react";
+import SessionAdd from "../../components/modals/modals-home/SessionAdd";
+import SessionEdit from "../../components/modals/modals-home/SessionEdit";
+import axios from "axios";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import CourseSelector from "../../components/courseSelector/CourseSelector";
+import { SUBJECT } from "../../config";
+import { asynchronizeRequest } from "../../API";
+import "./Home.css";
 
 export default function Home() {
-  const idEdit = [];
   const [editFields, setFields] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const [sessions, setSessions] = useState([]);
-  const [firstSessionId, setFirstSessionId] = useState('');
-  const [sessionLength, setSessionLength] = useState('');
+  const [firstSessionId, setFirstSessionId] = useState("");
+  const [sessionLength, setSessionLength] = useState("");
   const sessionsPreSorted = [];
   let userInfo = FetchUserInfo(localStorage.userId);
   let sessionsSorted;
-  let courses = GetCourses();
-  let courseSelected;
 
   const openSessionAdd = () => {
     document
-      .getElementsByClassName('ModalSessionAdd__main')[0]
-      .classList.remove('ModalSession__hidden');
+      .getElementsByClassName("ModalSessionAdd__main")[0]
+      .classList.remove("ModalSession__hidden");
   };
 
   const openEditSession = async (id) => {
-    let e = await axios.get(SUBJECT + '/' + id);
+    let e = await axios.get(SUBJECT + "/" + id);
 
     let name = e.data.session_name;
     let date = e.data.session_date;
-    let date1 = date.split('-')[0];
-    let date2 = date.split('-')[1];
+    let date1 = date.split("-")[0];
+    let date2 = date.split("-")[1];
     console.log(date1, date2);
     let streamingPlatform = e.data.streaming_platform;
     let resourcesPlatform = e.data.resources_platform;
@@ -54,13 +48,13 @@ export default function Home() {
     });
 
     document
-      .getElementsByClassName('ModalSessionEdit__main')[0]
-      .classList.remove('ModalSession__hidden');
+      .getElementsByClassName("ModalSessionEdit__main")[0]
+      .classList.remove("ModalSession__hidden");
   };
 
   const checkMediaQueries = () => {
     setInterval(() => {
-      if (window.matchMedia('(max-width: 1100px)').matches) {
+      if (window.matchMedia("(max-width: 1100px)").matches) {
         setIsMobile(true);
       } else {
         setIsMobile(false);
@@ -78,7 +72,7 @@ export default function Home() {
       let streamingPlatform = e.streaming_platform;
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
-      let date = startDate.split('T')[1] + ' - ' + endDate.split('T')[1];
+      let date = startDate.split("T")[1] + " - " + endDate.split("T")[1];
       sessionsPreSorted.push({
         id,
         name,
@@ -89,11 +83,13 @@ export default function Home() {
         chat,
         date,
       });
+
+      return true;
     });
 
     sessionsSorted = sessionsPreSorted.sort(function (a, b) {
-      let aHour = a.startDate.split('T')[1];
-      let bHour = b.startDate.split('T')[1];
+      let aHour = a.startDate.split("T")[1];
+      let bHour = b.startDate.split("T")[1];
       a = parseInt(aHour);
       b = parseInt(bHour);
       if (a < b) {
@@ -105,15 +101,15 @@ export default function Home() {
       return 0;
     });
     setSessionLength(sessionsSorted.length);
-    setFirstSessionId(sessionsSorted[0].id);
+    if (sessionsSorted.length > 0) setFirstSessionId(sessionsSorted[0].id);
     setSessions(sessionsSorted);
   };
 
   const deleteSess = [];
   const deleteModal = (e) => {
-    let modal = document.getElementById('modal_question_delete');
-    if (modal.classList.contains('hidden')) {
-      modal.classList.remove('hidden');
+    let modal = document.getElementById("modal_question_delete");
+    if (modal.classList.contains("hidden")) {
+      modal.classList.remove("hidden");
     }
     let idDelete = e.target.id;
     deleteSess.pop();
@@ -121,12 +117,12 @@ export default function Home() {
   };
 
   const closeDelete = () => {
-    document.getElementById('modal_question_delete').classList.add('hidden');
+    document.getElementById("modal_question_delete").classList.add("hidden");
   };
 
   const deleteSession = () => {
     asynchronizeRequest(async function () {
-      axios.delete(SUBJECT + '/' + deleteSess).then(() => {
+      axios.delete(SUBJECT + "/" + deleteSess).then(() => {
         window.location.reload();
       });
     });
@@ -135,19 +131,19 @@ export default function Home() {
   const openSession = (e) => {
     e.preventDefault();
     const after = document.getElementById(
-      'session-after' + e.target.id.substring(3)
+      "session-after" + e.target.id.substring(3)
     );
-    const img = document.getElementById('button' + e.target.id.substring(3));
+    const img = document.getElementById("button" + e.target.id.substring(3));
     console.log(e.target.id);
     setTimeout(() => {
       try {
         // const session = document.querySelector(e.target.id);
-        if (after.classList.contains('hidden')) {
-          after.classList.remove('hidden');
-          img.classList.add('rotate');
+        if (after.classList.contains("hidden")) {
+          after.classList.remove("hidden");
+          img.classList.add("rotate");
         } else {
-          after.classList.add('hidden');
-          img.classList.remove('rotate');
+          after.classList.add("hidden");
+          img.classList.remove("rotate");
         }
       } catch (error) {
         console.log(error);
@@ -157,40 +153,41 @@ export default function Home() {
 
   const activeEditMenu = () => {
     const buttonSession = Array.from(
-      document.querySelectorAll('#editSessionButton')
+      document.querySelectorAll("#editSessionButton")
     );
-    const buttonadd = document.getElementById('buttonAdd');
+    const buttonadd = document.getElementById("buttonAdd");
 
-    if (buttonadd.classList.contains('hidden')) {
-      buttonadd.classList.remove('hidden');
+    if (buttonadd.classList.contains("hidden")) {
+      buttonadd.classList.remove("hidden");
     }
 
     buttonSession.map((x) => {
       try {
-        if (x.classList.contains('hidden')) {
-          x.classList.remove('hidden');
+        if (x.classList.contains("hidden")) {
+          x.classList.remove("hidden");
         } else {
-          x.classList.add('hidden');
-          buttonadd.classList.add('hidden');
+          x.classList.add("hidden");
+          buttonadd.classList.add("hidden");
         }
       } catch (error) {
         console.log(error);
       }
+
+      return true;
     });
   };
   const handleChangeSelector = (id) => {
-    courseSelected = id;
     asynchronizeRequest(async function () {
       getSessions(id);
     });
     if (
       !document
-        .getElementById('courseNotSelectedeAdvisor')
-        .classList.contains('hidden')
+        .getElementById("courseNotSelectedeAdvisor")
+        .classList.contains("hidden")
     ) {
       document
-        .getElementById('courseNotSelectedeAdvisor')
-        .classList.add('hidden');
+        .getElementById("courseNotSelectedeAdvisor")
+        .classList.add("hidden");
     }
   };
 
@@ -207,7 +204,7 @@ export default function Home() {
   return (
     <>
       <div className="home-main-container">
-        <section className={isMobile ? 'mobileSection' : 'desktopSection'}>
+        <section className={isMobile ? "mobileSection" : "desktopSection"}>
           <div className="user">
             <div className="user-container">
               <div className="information-user">
@@ -216,9 +213,9 @@ export default function Home() {
                     src={
                       userInfo.profile_image != null
                         ? userInfo.profile_image.url
-                        : 'http://s3.amazonaws.com/37assets/svn/765-default-avatar.png'
+                        : "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                     }
-                    alt={(userInfo.user_name, 'image')}
+                    alt={(userInfo.user_name, "image")}
                   />
                 </div>
                 <div className="user-name">
@@ -262,15 +259,15 @@ export default function Home() {
                         <div
                           className={
                             firstSessionId === data.id
-                              ? 'home__firstSession sessions-container'
-                              : 'sessions-container'
+                              ? "home__firstSession sessions-container"
+                              : "sessions-container"
                           }
                           onClick={openSession}
-                          id={'ses' + data.id}
+                          id={"ses" + data.id}
                         >
-                          <div className="sessions-closed" id={'ses' + data.id}>
+                          <div className="sessions-closed" id={"ses" + data.id}>
                             <div className="session-before">
-                              <div id={'button' + data.id} className="arrow">
+                              <div id={"button" + data.id} className="arrow">
                                 <svg xmlns="http://www.w3.org/2000/svg">
                                   <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                                 </svg>
@@ -279,7 +276,7 @@ export default function Home() {
                               <span className="session-date">{data.date}</span>
                             </div>
                             <div
-                              id={'session-after' + data.id}
+                              id={"session-after" + data.id}
                               className="sessions-after hidden"
                             >
                               <div className="session-platforms">
@@ -368,7 +365,7 @@ export default function Home() {
                               onClick={() => {
                                 openEditSession(data.id);
                               }}
-                              id={'edit' + data.id}
+                              id={"edit" + data.id}
                               xmlns="http://www.w3.org/2000/svg"
                               width="15"
                               height="15"
@@ -404,7 +401,7 @@ export default function Home() {
                           className={
                             firstSessionId === data.id && sessionLength > 1
                               ? console.log()
-                              : 'hidden'
+                              : "hidden"
                           }
                         >
                           Sessions
