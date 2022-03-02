@@ -34,7 +34,8 @@ export default function UserConfig() {
           payload.append("user_name", res.data.message.email.split("@")[0]);
           payload.append("isAdmin", isAdmin);
 
-          API.default.createInfo(payload).then((res) => {
+          API.default.createInfo(payload).then(() => {
+            userEnroll(res.data.message.id);
             fetchUsers();
             document.getElementById("u_admin").checked = false;
             document.getElementById("u_email").value = null;
@@ -46,26 +47,26 @@ export default function UserConfig() {
     }
   };
 
-  // const userEnroll = (user) => {
-  //   const payload = new FormData();
-  //   payload.append("course_id", 1);
-  //   payload.append("institution_id", 1);
-  //   payload.append("user_id", user);
-  //   payload.append("course_name", user);
-  //   payload.append("institution_name", null);
-  //   payload.append("isTeacher", user);
+  const userEnroll = (uId) => {
+    const payload = new FormData();
+    payload.append("course_id", 1);
+    payload.append("institution_id", 1);
+    payload.append("user_id", uId);
+    payload.append("course_name", "Noticias");
+    payload.append("institution_name", null);
+    payload.append("isTeacher", false);
 
-  //   API.default.enrollUser(payload).then((res) => {
-  //     console.log("User tuition has been completed successfully!");
-  //   });
-  // };
+    API.default.enrollUser(payload).then(() => {
+      console.log("User tuition has been completed successfully!");
+    });
+  };
 
   const deleteUser = (id) => {
-    // API.asynchronizeRequest(function () {
-    //   axios.delete(API.endpoints.USERS + "/" + id).then(() => {
-    //     fetchUsers();
-    //   });
-    // });
+    API.asynchronizeRequest(function () {
+      axios.delete(API.endpoints.USERS + "/remove/" + id).then(() => {
+        fetchUsers();
+      });
+    });
   };
 
   const swapIcons = (state) => {

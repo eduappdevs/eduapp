@@ -38,6 +38,21 @@ class UserInfosController < ApplicationController
     @user_info.destroy
   end
 
+	def destroyuser
+		user = User.find(params[:id])
+		user_i = UserInfo.find_by(user_id: params[:id])
+
+		if user_i.destroy
+			if user.destroy
+				render json: { message: "Deleted user successfully." }, status: :ok
+			else
+				render json: { message: "Couldn't delete user"}, status: :error
+			end	
+		else
+			render json: { message: "Couldn't delete user info"}, status: :error
+		end
+	end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user_info
