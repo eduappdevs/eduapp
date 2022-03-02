@@ -32,6 +32,7 @@ export default function GoogleLoginButton(useType) {
     }
     const loginGoogle = (res) => {
         let info = getInfo(res);
+        API.gLogin(info[1]);
         
 
     }

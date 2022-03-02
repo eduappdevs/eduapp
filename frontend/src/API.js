@@ -8,13 +8,14 @@ import {
 	INSTITUTIONS,
 	COURSES,
 	TUITIONS,
+	GLOGIN
 } from "./config";
 
 const saveInLocalStorage = (userDetails) => {
 	if (userDetails.data.message.id == null) {
 		throw new Error("error");
 	}
-
+	console.log('asaaaaaaaaaaaaaa',userDetails.data.message)
 	localStorage.setItem("userId", userDetails.data.message.id);
 	localStorage.setItem("userToken", userDetails.headers.authorization);
 };
@@ -48,6 +49,7 @@ const apiSettings = {
 	login: async (body) => {
 		const endpoint = `${USERS}/sign_in`;
 		return await axios.post(endpoint, body).then((res) => {
+			console.log('asaaaaaaaaaaaaaaaaaaaaaaa',res)
 			saveInLocalStorage(res);
 			
 			  
@@ -78,6 +80,10 @@ const apiSettings = {
 		const endpoint = `${USERS_INFO}/${userId}`;
 		return (await fetch(endpoint)).json();
 	},
+	createInfo: async (body) => {
+		const endpoint = `${USERS_INFO}`;
+		return await await axios.post(endpoint, body);
+	},
 
 	deleteInfo: async (infoId) => {
 		const endpoint = `${USERS_INFO}/${infoId}`;
@@ -100,6 +106,12 @@ const apiSettings = {
 			});
 
 		});
+	},
+	gLogin:async (googleId)=>{
+		const endpoint = `${GLOGIN}`;
+
+
+		
 	},
 	unlinkGoogleId: async (userId,body) =>{
 		

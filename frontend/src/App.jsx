@@ -16,7 +16,7 @@ export default function App() {
 	return userinfo ? (
 		
 		<BrowserRouter>
-			{requireAuth() ? (
+			{ requireAuth() ? (
 				<Routes>
 					<Route exact path="/" element={<Home />} />
 					<Route exact path="/resources" element={<Resources />} />
@@ -29,11 +29,7 @@ export default function App() {
 					{
 						localStorage.getItem('isAdmin')&&
 						<Route exact path="/management" element={<ManagementPanel />} />
-
 					}
-						
-						
-					
 					<Route path="*" element={<Navigate to="/" />} />
 				</Routes>
 			) : (
