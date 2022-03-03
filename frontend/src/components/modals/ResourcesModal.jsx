@@ -74,18 +74,16 @@ export default function ResourcesModal(props) {
       finalData.append("thirdfile", thirdfile);
     }
     finalData.append("createdBy", currentlyUser);
-    finalData.append("course_id", props.course);
+    finalData.append("course_id", props.subject);
 
     document.getElementById("submit-loader").style.display = "block";
 
-    asynchronizeRequest(async function () {
-      await API.postResource(finalData);
-      document.getElementsByClassName(
-        "resources__createResourceModal"
-      )[0].style.display = "none";
-      document.getElementById("submit-loader").style.display = "none";
-      window.location.reload();
-    });
+    await API.postResource(finalData);
+    document.getElementsByClassName(
+      "resources__createResourceModal"
+    )[0].style.display = "none";
+    document.getElementById("submit-loader").style.display = "none";
+    //window.location.reload();
   };
 
   const closeModal = () => {

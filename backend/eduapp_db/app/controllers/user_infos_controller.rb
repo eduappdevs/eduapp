@@ -3,9 +3,7 @@ class UserInfosController < ApplicationController
 
   # GET /user_infos
   def index
-    @q = UserInfo.ransack(user_id_eq: params[:id]);
-
-    @user_infos = @q.result(distinct: true).all
+    @user_infos = UserInfo.all
 
     render json: @user_infos
   end

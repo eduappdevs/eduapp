@@ -133,10 +133,10 @@ ActiveRecord::Schema.define(version: 15) do
     t.string "secondfile"
     t.string "thirdfile"
     t.string "createdBy"
-    t.bigint "course_id"
+    t.bigint "subject_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["course_id"], name: "index_resources_on_course_id"
+    t.index ["subject_id"], name: "index_resources_on_subject_id"
   end
 
   create_table "subjects", force: :cascade do |t|
@@ -196,7 +196,7 @@ ActiveRecord::Schema.define(version: 15) do
   add_foreign_key "chat_participants", "users"
   add_foreign_key "courses", "institutions"
   add_foreign_key "eduapp_user_sessions", "subjects"
-  add_foreign_key "resources", "courses"
+  add_foreign_key "resources", "subjects"
   add_foreign_key "subjects", "courses"
   add_foreign_key "user_infos", "users"
 end

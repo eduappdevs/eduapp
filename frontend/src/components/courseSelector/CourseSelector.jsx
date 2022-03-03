@@ -1,15 +1,14 @@
-import React /*, {useEffect} */ from 'react';
-import { GetCourses } from '../../hooks/GetCourses';
-import { useState } from 'react/cjs/react.development';
-import './CourseSelector.css';
+import React /*, {useEffect} */ from "react";
+import { GetCourses } from "../../hooks/GetCourses";
+import { useState } from "react/cjs/react.development";
+import "./CourseSelector.css";
 
 export default function CourseSelector(props) {
   let courses = GetCourses();
   const [courseSelected, setCourseSelected] = useState();
 
   const handleChangeCourse = (e, id) => {
-    console.log(e.target.classList);
-    if (e.target.classList.contains('inactiveCourse')) {
+    if (e.target.classList.contains("inactiveCourse")) {
       props.handleChangeCourse(id);
       setCourseSelected(id);
     }
@@ -25,8 +24,8 @@ export default function CourseSelector(props) {
                 <li
                   className={
                     courseSelected === course.course_id
-                      ? 'activeCourse'
-                      : 'inactiveCourse'
+                      ? "activeCourse"
+                      : "inactiveCourse"
                   }
                   onClick={(e) => {
                     handleChangeCourse(e, course.course_id);

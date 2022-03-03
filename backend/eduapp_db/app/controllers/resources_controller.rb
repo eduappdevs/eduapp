@@ -3,13 +3,13 @@ class ResourcesController < ApplicationController
 
   # GET /resources
   def index
-		if !params[:course_id]
+		if !params[:subject_id]
 			@resources = Resource.all
 		else
-			@resources = Resource.order(created_at: :desc).where(course_id: params[:course_id])
+        @Resources = Resource.order(created_at: :desc).where(subject_id: params[:subject_id])
+      puts @Resources
+      render json: @Resources
 		end
-
-    render json: @resources
   end
 
   # GET /resources/1
