@@ -18,38 +18,6 @@ export default function App() {
   let userinfo = FetchUserInfo(localStorage.userId);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
 
-<<<<<<< HEAD
-	return userinfo ? (
-		
-		<BrowserRouter>
-			{ requireAuth() ? (
-				<Routes>
-					<Route exact path="/" element={<Home />} />
-					<Route exact path="/resources" element={<Resources />} />
-					<Route exact path="/calendar" element={<Calendar />} />
-					<Route exact path="/chat" element={<ChatMenu />} />
-					{
-						userinfo.isAdmin &&
-						localStorage.setItem('isAdmin',true)
-					}
-					{
-						localStorage.getItem('isAdmin')&&
-						<Route exact path="/management" element={<ManagementPanel />} />
-					}
-					<Route path="*" element={<Navigate to="/" />} />
-				</Routes>
-			) : (
-				<Routes>
-					<Route exact path="/login" element={<Login />} />
-					<Route path="*" element={<Navigate to="/login" />} />
-				</Routes>
-			)}
-		</BrowserRouter>
-	) :
-		<>
-			<Loader />
-		</>
-=======
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.innerWidth < 1000) {
@@ -102,5 +70,4 @@ export default function App() {
       <Loader />
     </>
   );
->>>>>>> fff524c6bfcd78c71e58cc7b37288cdd5d3c6b14
 }

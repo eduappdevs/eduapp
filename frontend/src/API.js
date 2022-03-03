@@ -39,42 +39,39 @@ const apiSettings = {
       headers: { Authorization: localStorage.userToken },
     });
   },
-	//User
-	createUser: async (body) => {
-		const endpoint = `${USERS}`;
-		return await axios.post(endpoint, body);
-	},
-	login: async (body) => {
-		const endpoint = `${USERS}/sign_in`;
-		return await axios.post(endpoint, body).then((res) => {
-			console.log('asaaaaaaaaaaaaaaaaaaaaaaa',res)
-			saveInLocalStorage(res);
-			
-			  
-		});
-	},
-	loginWithGoogle: async(data)=>{
-		console.log(data)
-		const endpoint = `${GLOGIN}`;
-		return await axios.post(endpoint,data).then((res)=>{
-			console.log(res)
-		})
-	},
+  //User
+  createUser: async (body) => {
+    const endpoint = `${USERS}`;
+    return await axios.post(endpoint, body);
+  },
+  login: async (body) => {
+    const endpoint = `${USERS}/sign_in`;
+    return await axios.post(endpoint, body).then((res) => {
+      saveInLocalStorage(res);
+    });
+  },
+  loginWithGoogle: async (data) => {
+    console.log(data);
+    const endpoint = `${GLOGIN}`;
+    return await axios.post(endpoint, data).then((res) => {
+      console.log(res);
+    });
+  },
 
-  chechToken: async token => {
+  chechToken: async (token) => {
     const endpoint = `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`;
     return await (await fetch(endpoint)).json();
   },
 
-	// User Info
-	fetchInfo: async (userId) => {
-		const endpoint = `${USERS_INFO}/${userId}`;
-		return (await fetch(endpoint)).json();
-	},
-	createInfo: async (body) => {
-		const endpoint = `${USERS_INFO}`;
-		return await await axios.post(endpoint, body);
-	},
+  // User Info
+  fetchInfo: async (userId) => {
+    const endpoint = `${USERS_INFO}/${userId}`;
+    return (await fetch(endpoint)).json();
+  },
+  createInfo: async (body) => {
+    const endpoint = `${USERS_INFO}`;
+    return await await axios.post(endpoint, body);
+  },
   logout: async () => {
     const endpoint = `${USERS}/sign_out`;
     return await axios

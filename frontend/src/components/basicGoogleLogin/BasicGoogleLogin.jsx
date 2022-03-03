@@ -1,6 +1,6 @@
 import React from 'react'
 import { GoogleLogin } from 'react-google-login';
-import API from "../../API";
+import API, {asynchronizeRequest} from "../../API";
 
 export default function BasicGoogleLogin() {
     const responseGoogle = async (response) => {
@@ -16,7 +16,9 @@ export default function BasicGoogleLogin() {
                 formData.append('user[email]', google.email);
                 formData.append('user[password]', response.profileObj.googleId);
 
-                await API.login(formData);
+                await API.login(formData).then(()=>{
+                    window.location.href = "/";
+                });
 
 
             }
@@ -50,17 +52,13 @@ export default function BasicGoogleLogin() {
                 payload.append('user[email]', google.email);
                 payload.append('user[password]', response.profileObj.googleId);
 
-                API.asynchronizeRequest(function () {
-                    API.default.createUser(payload).then((res) => {
+                asynchronizeRequest(function () {
+                    API.createUser(payload).then((res) => {
                         const payload = new FormData();
-                        API.default.createInfo(payload);
-                        payload.delete("user[email]");
-                        payload.delete("user[password]");
                         payload.append("user_id", res.data.message.id);
                         payload.append("user_name", res.data.message.email.split("@")[0]);
                         payload.append("isAdmin", false);
-
-                        API.default.createInfo(payload).then(() => {
+                        API.createInfo(payload).then(() => {
                             userEnroll(res.data.message.id);
 
                             const userData = new FormData();
@@ -72,6 +70,8 @@ export default function BasicGoogleLogin() {
                                 console.log(res);
                                 window.location.href = "/";
                             });
+
+
                         });
                     });
                 });

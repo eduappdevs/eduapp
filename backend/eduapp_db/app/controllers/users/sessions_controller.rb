@@ -2,10 +2,10 @@ class Users::SessionsController < Devise::SessionsController
 
     respond_to :json
 
-    def new 
-      puts 'ENTRA EN NEW SESSIONS CONTROLLER'
-      redirect_to user_google_oauth2_omniauth_authorize_url
-    end
+    # def new 
+    #   puts 'ENTRA EN NEW SESSIONS CONTROLLER'
+    #   redirect_to user_google_oauth2_omniauth_authorize_url
+    # end
   
     private
 
