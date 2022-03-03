@@ -11,7 +11,7 @@ class User < ApplicationRecord
   def self.from_omniauth(access_token)
     data = access_token.info
     puts data
-    puts data['googleid']
+    puts data['googleId']
     user = User.find_by(id: UserInfo.find_by(googleid: data['googleId']))
     user
   end
