@@ -40,6 +40,31 @@ const apiSettings = {
     });
   },
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+	//User
+	createUser: async (body) => {
+		const endpoint = `${USERS}`;
+		return await axios.post(endpoint, body);
+	},
+	login: async (body) => {
+		const endpoint = `${USERS}/sign_in`;
+		return await axios.post(endpoint, body).then((res) => {
+			saveInLocalStorage(res);
+			
+			  
+		});
+	},
+	loginWithGoogle: async(data)=>{
+		console.log(data)
+		const endpoint = `${GLOGIN}`;
+		return await axios.post(endpoint,data).then((res)=>{
+			console.log(res)
+		})
+	},
+=======
+>>>>>>> ba2ffa3104a24bee656bdb6e8645c5cec8ada2f6
   //User
   createUser: async (body) => {
     const endpoint = `${USERS}`;
@@ -57,6 +82,10 @@ const apiSettings = {
       console.log(res);
     });
   },
+<<<<<<< HEAD
+=======
+>>>>>>> develop
+>>>>>>> ba2ffa3104a24bee656bdb6e8645c5cec8ada2f6
 
   logout: async () => {
     const endpoint = `${USERS}/sign_out`;
@@ -124,9 +153,13 @@ const apiSettings = {
     await axios.get(endpoint).then((res) => {
       res.data.map((course) => {
         if (course.user_id.toString() === localStorage.userId) {
+<<<<<<< HEAD
           if (course.course_name !== "Noticias") {
             return courses.push(course);
           }
+=======
+          return courses.push(course);
+>>>>>>> ba2ffa3104a24bee656bdb6e8645c5cec8ada2f6
         }
       });
     });
