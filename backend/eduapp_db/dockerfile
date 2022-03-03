@@ -1,0 +1,17 @@
+FROM ruby:2.6.9
+
+WORKDIR /backend
+
+COPY package*.json ./
+COPY Gemfile* ./
+
+RUN gem install bundler
+RUN bundle install
+
+COPY . .
+
+ENV RAILS-SECRET-KEY = 53ffc295c966edfd46b47f1264bfae49a7c0707744a4a444a1b166e79a0e41fb0edd30839d92984ce3943e2c7ab59adfb83e67d871b6432d4b160e8cb63a0c5f
+
+EXPOSE 3000
+
+CMD [ "rails", "s" , "-b", "0.0.0.0"]

@@ -64,7 +64,7 @@
 }
 
 .bottom-buttons-desktop {
-	display: none;
+	display: none !important;
 }
 
 .bottom-buttons-mobile>ul>a>.bottomMenuProfilePic {

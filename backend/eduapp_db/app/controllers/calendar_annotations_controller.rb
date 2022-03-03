@@ -3,9 +3,25 @@ class CalendarAnnotationsController < ApplicationController
 
   # GET /calendar_annotations
   def index
-    @calendar_annotations = CalendarAnnotation.all
-
-    render json: @calendar_annotations
+    if !params[:user_id]
+      @calendar_annotations = CalendarAnnotation.all
+      render json: @calendar_annotations
+    else
+      @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
+      @calendar_isGlobal = CalendarAnnotation.where(isGlobal: true)
+      @subjects = []
+      for course in @TuitionsUserId do
+        @subjects = Subject.where(course_id: course)
+      end
+      for subject in @subjects do
+        @calendarEvents = CalendarAnnotation.where(subject_id: subject.id)
+        @colorEvents = Subject.where(course_id: @TuitionsUserId).pluck(:id,:color)
+      end
+      for subject in @subjects  do
+        @sessions = EduappUserSession.where(subject_id: subject.id)
+      end
+      render :json => {:globalEvents => @calendar_isGlobal,:calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents}
+    end
   end
 
   # GET /calendar_annotations/1
@@ -46,6 +62,6 @@ class CalendarAnnotationsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def calendar_annotation_params
-      params.require(:calendar_annotation).permit(:annotation_date, :annotation_name, :annotation_description, :isGlobal, :user_id)
+      params.require(:calendar_annotation).permit(:annotation_start_date,:annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :user_id, :subject_id)
     end
 end

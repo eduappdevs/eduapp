@@ -64,17 +64,17 @@ export default function Resources(props) {
 		}
 	}, []);
 
-	const openResource = (e) => {
-		e.preventDefault();
-		console.log(e.target.id);
-		document
-			.getElementById(`resource__${e.target.id}__opened`)
-			.classList.remove("openedResource__hidden");
-		setTimeout(() => {
-			document.getElementsByTagName("header")[0].style.display = "none";
-		}, 50);
-	};
+	
 
+  const openResource = (e) => {
+    e.preventDefault();
+    document
+      .getElementById(`resource__${e.target.id}__opened`)
+      .classList.remove("openedResource__hidden");
+    setTimeout(() => {
+      document.getElementsByTagName("header")[0].style.display = "none";
+    }, 75);
+  };
 
 	const createResource = () => {
 		
@@ -106,7 +106,7 @@ export default function Resources(props) {
 	return courses && userInfo ? (
 		<>
 			<div className="resources-main-container">
-				<Navbar mobile={ItsMobileDevice} location={"resources"} />
+				
 				<section
 					className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
 				>
@@ -143,6 +143,7 @@ export default function Resources(props) {
 						{resources.length > 0 ? (
 							<ul>
 								{resources.map((data) => {
+									console.log(data)
 									if (
 										data.name
 											.toLowerCase()
@@ -209,7 +210,6 @@ export default function Resources(props) {
 					</div>
 				</section>
 				<ResourcesModal course={courseSelected} />
-				<BottomButtons mobile={ItsMobileDevice} location={"resources"} />
 			</div>
 		</>
 	) : (

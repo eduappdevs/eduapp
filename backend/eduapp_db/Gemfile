@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.8'
+# ruby '2.6.9' // Only to be used when build a docker image
 
 
 gem 'rails', '~> 6.1.4', '>= 6.1.4.1'
@@ -14,6 +15,11 @@ gem 'ransack'
 gem 'image_processing', '~> 1.2'
 gem 'active_model_serializers'
 gem 'bootsnap', '>= 1.4.4', require: false
+gem 'omniauth-rails_csrf_protection'
+gem 'omniauth-google-oauth2'
+gem 'omniauth'
+
+
 
 
 

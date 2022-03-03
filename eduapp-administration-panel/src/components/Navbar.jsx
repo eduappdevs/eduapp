@@ -51,10 +51,7 @@ export default function Navbar(props) {
       </div>
       <div className="schedule-button-container button-container">
         <span >
-          <Link to='/'>
           <p  >Schedule</p>
-          </Link>
-        
         </span>
         <ul className="button-suboptions">
           <li href='/schedule' onClick={()=>{
@@ -71,19 +68,8 @@ export default function Navbar(props) {
         </ul>
       </div>
       <div className="users-button-container button-container">
-        <span onClick={()=>{
-              
-              props.toolbarLocation('users')
-
-            }}>
-          <Link to='/users'>
-          <p onClick={()=>{
-              
-              props.toolbarLocation('users')
-
-            }}>Users</p>
-          </Link>
-        
+        <span>
+          <p>Users</p>
         </span>
         <ul className="button-suboptions">
           <li href='/schedule' onClick={()=>{
@@ -96,10 +82,7 @@ export default function Navbar(props) {
       </div>
       <div className="settings-button-container button-container">
         <span>
-          <Link to='/settings'>
           <p > Settings</p>
-          </Link>
-        
         </span>
         <ul className="button-suboptions">
           <li  className="button-suboptions">

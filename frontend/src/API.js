@@ -7,8 +7,8 @@ import {
 	USERS_INFO,
 	INSTITUTIONS,
 	COURSES,
+	GLOGIN,
 	TUITIONS,
-	GLOGIN
 } from "./config";
 
 const saveInLocalStorage = (userDetails) => {
@@ -44,7 +44,7 @@ const apiSettings = {
 	//User
 	createUser: async (body) => {
 		const endpoint = `${USERS}`;
-		return await await axios.post(endpoint, body);
+		return await axios.post(endpoint, body);
 	},
 	login: async (body) => {
 		const endpoint = `${USERS}/sign_in`;
@@ -54,6 +54,13 @@ const apiSettings = {
 			
 			  
 		});
+	},
+	loginWithGoogle: async(data)=>{
+		console.log(data)
+		const endpoint = `${GLOGIN}`;
+		return await axios.post(endpoint,data).then((res)=>{
+			console.log(res)
+		})
 	},
 
 	logout: async () => {
@@ -89,7 +96,10 @@ const apiSettings = {
 		const endpoint = `${USERS_INFO}/${infoId}`;
 		return await axios.delete(endpoint);
 	},
-
+	createInfo: async (body) => {
+		const endpoint = `${USERS_INFO}`;
+		return await await axios.post(endpoint, body);
+	},
 	updateInfo: async (infoId, body) => {
 		const endpoint = `${USERS_INFO}/${infoId}`;
 		return await axios.put(endpoint, body);

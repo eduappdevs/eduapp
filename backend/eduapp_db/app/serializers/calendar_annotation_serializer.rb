@@ -1,3 +1,6 @@
 class CalendarAnnotationSerializer < ActiveModel::Serializer
-  attributes :id, :annotation_date, :annotation_name, :annotation_description, :isGlobal, :user_id
+  attributes :id, :annotation_start_date,:annotation_end_date, :annotation_title, :annotation_description, :isGlobal,:user_id, :subject_id
+  has_one :user
+  has_one :subject
+
 end

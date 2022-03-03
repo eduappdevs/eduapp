@@ -1,8 +1,15 @@
 class Users::SessionsController < Devise::SessionsController
 
     respond_to :json
+
+    def new 
+      puts 'ENTRA EN NEW SESSIONS CONTROLLER'
+      redirect_to user_google_oauth2_omniauth_authorize_url
+    end
   
     private
+
+    
   
     def respond_with(resource, _opts = {})
       headers['Access-Control-Allow-Origin'] = '*'

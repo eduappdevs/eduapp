@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <style>
+        {{asset "/EduappReport/RegisteredCoursesReport/styles.css"}}
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+</head>
+
+<body>
+    <div class="WrapperHeader">
+        <div class="ContentHeader">
+            <img src="{{asset "/EduappReport/ResourcesReport/EduappLogo.png" "dataURI"}}" width="40" height="40" />
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Eduapp Courses Report</h1>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>CODE</th>
+          <th>NAME</th>
+          <th>INSTITUTION ID</th>
+        </tr>
+      <thead>
+      <tbody>
+        {{#each data}}
+        <tr>
+          <td>{{id}}</td>
+          <td>{{name}}</td>
+          <td>{{institution_id}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    <table/>
+</body>
+
+</html>
