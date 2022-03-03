@@ -74,7 +74,7 @@ export default function ResourcesModal(props) {
       finalData.append("thirdfile", thirdfile);
     }
     finalData.append("createdBy", currentlyUser);
-    finalData.append("course_id", props.subject);
+    finalData.append("subject_id", props.subject);
 
     document.getElementById("submit-loader").style.display = "block";
 
@@ -83,7 +83,7 @@ export default function ResourcesModal(props) {
       "resources__createResourceModal"
     )[0].style.display = "none";
     document.getElementById("submit-loader").style.display = "none";
-    //window.location.reload();
+    window.location.reload();
   };
 
   const closeModal = () => {

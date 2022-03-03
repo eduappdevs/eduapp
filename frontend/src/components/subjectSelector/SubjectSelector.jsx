@@ -5,8 +5,6 @@ import "./subjectSelector.css";
 
 export default function SubjectSelector(props) {
   let subjects = GetSubjects(props.data);
-  console.log(subjects.id);
-
   const [subjectSelected, setSubjectSelected] = useState();
 
   const handleChangeSubject = (e, id) => {
