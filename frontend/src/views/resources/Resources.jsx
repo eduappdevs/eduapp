@@ -4,19 +4,19 @@ import ResourcesModal from "../../components/modals/ResourcesModal";
 import OpenedResource from "./openedResource/OpenedResource";
 import axios from "axios";
 import Loader from "../../components/loader/Loader";
-import { GetCourses } from "../../hooks/GetCourses";
-import CourseSelector from "../../components/courseSelector/CourseSelector";
+import SubjectSelector from "../../components/subjectSelector/SubjectSelector";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import "./Resources.css";
+import { GetSubjects } from "../../hooks/GetSubjects";
 
 export default function Resources() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [resourcesFilter, setResourcesFilter] = useState("");
   const [resources, setResources] = useState([]);
-  const [courseSelected, setCourseSelected] = useState("");
+  const [subjectSelected, setSubjectSelected] = useState("");
 
   let userInfo = FetchUserInfo(localStorage.userId);
-  let courses = GetCourses();
+  let subjects = GetSubjects(localStorage.userId);
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -29,7 +29,8 @@ export default function Resources() {
   };
 
   const getResources = async (id) => {
-    const resources__url = `http://localhost:3000/resources?course_id=${id}`;
+    const resources__url = `http://localhost:3000/resources?subject_id=${id}`;
+    console.log(id);
     await axios.get(resources__url).then((res) => {
       res.data.map((x) => {
         if (x.firstfile != null) {
@@ -80,7 +81,7 @@ export default function Resources() {
   };
 
   const handleChangeSelector = (id) => {
-    setCourseSelected(id);
+    setSubjectSelected(id);
     getResources(id);
   };
 
@@ -95,13 +96,16 @@ export default function Resources() {
     }
   }, []);
 
-  return courses && userInfo ? (
+  return subjects && userInfo ? (
     <>
       <div className="resources-main-container">
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
-          <CourseSelector handleChangeCourse={handleChangeSelector} />
+          <SubjectSelector
+            handleChangeSubject={handleChangeSelector}
+            data={localStorage.userId}
+          />
           <div className="resources-toolbar">
             <div className="resourcesSearchBar">
               <form action="">
@@ -120,8 +124,8 @@ export default function Resources() {
                 </div>
               </form>
             </div>
-            {courseSelected &&
-            (courses.filter((course) => course.course_id === courseSelected)[0]
+            {subjectSelected &&
+            (subjects.filter((subject) => subject.id === subjectSelected)[0]
               .isTeacher ||
               userInfo.isAdmin) ? (
               <div
@@ -142,7 +146,7 @@ export default function Resources() {
             )}
           </div>
           <div className="resources-container">
-            {resources.length > 0 ? (
+            {subjects.length > 0 ? (
               <ul id="resource-list">
                 {resources.map((data) => {
                   if (
@@ -155,19 +159,19 @@ export default function Resources() {
                       <>
                         <OpenedResource
                           data={data}
-                          courseSelected={courseSelected}
+                          courseSelected={subjectSelected}
                         />
                         <li
-                          id={"res" + data.name + courseSelected}
+                          id={"res" + data.name + subjectSelected}
                           className="resources resourceitem"
                           onClick={openResource}
                         >
                           <div
-                            id={"res" + data.name + courseSelected}
+                            id={"res" + data.name + subjectSelected}
                             className="resource-name-container"
                           >
                             <span
-                              id={"res" + data.name + courseSelected}
+                              id={"res" + data.name + subjectSelected}
                               className="resource-name"
                             >
                               {data.name}
@@ -228,7 +232,7 @@ export default function Resources() {
             )}
           </div>
         </section>
-        <ResourcesModal course={courseSelected} />
+        <ResourcesModal subject={subjectSelected} />
       </div>
     </>
   ) : (

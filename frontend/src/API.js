@@ -8,6 +8,7 @@ import {
   GLOGIN,
   TUITIONS,
   PING,
+  SUBJECT,
 } from "./config";
 
 // 3010, 4010, somosbluecity.es
@@ -22,6 +23,19 @@ const saveInLocalStorage = (userDetails) => {
 };
 
 const apiSettings = {
+  //Subjects
+  getSubjects: async (id) => {
+    const endpoint = `${SUBJECT}?subject_id=${id}`;
+    let subjects = [];
+    await axios.get(endpoint).then((res) => {
+      res.data.map((subject) => {
+        if (subject.name !== "Noticias") {
+          return subjects.push(subject);
+        }
+      });
+    });
+    return subjects;
+  },
   //Resources
   fetchResources: async () => {
     const endpoint = `${RESOURCES}`;
@@ -29,14 +43,14 @@ const apiSettings = {
   },
 
   postResource: async (body) => {
-    const endpoint = `${RESOURCES}`;
+    const endpoint = `${RESOURCES}/`;
     return await axios.post(endpoint, body, {
       headers: { Authorization: localStorage.userToken },
     });
   },
 
   deleteResource: async (resource_id) => {
-    const endpoint = `${RESOURCES}/${resource_id}`;
+    const endpoint = `${RESOURCES} /${resource_id}`;
     return await axios.delete(endpoint, {
       headers: { Authorization: localStorage.userToken },
     });

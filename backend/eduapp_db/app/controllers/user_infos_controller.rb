@@ -5,12 +5,12 @@ class UserInfosController < ApplicationController
   def index
     if !params[:user_id]
 			@user_infos = UserInfo.all
-		else
+    else
 			@user_infos = UserInfo.where(user_id: params[:user_id])
-		end
+    end
 
     render json: @user_infos
-	end
+  end
 
   # GET /user_infos/1
   def show
