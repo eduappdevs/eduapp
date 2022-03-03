@@ -3,5 +3,4 @@ class Course < ApplicationRecord
     has_many :eduapp_user_session
     has_many :resource
     has_one :calendar_annotation
-    
 end

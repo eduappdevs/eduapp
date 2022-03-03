@@ -1,18 +1,18 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Resources from "./views/resources/Resources";
-import Login from "./views/login/Login";
-import Home from "./views/home/Home";
-import React, { useState } from "react";
-import requireAuth from "./components/auth/RequireAuth";
-import ManagementPanel from "./views/ManagementPanel/ManagementPanel";
-import { FetchUserInfo } from "./hooks/FetchUserInfo";
-import Loader, { runCloseAnimation } from "./components/loader/Loader";
-import Calendar from "./views/Calendar/Calendar";
-import ChatMenu from "./views/chat/ChatMenu";
-import BottomButtons from "./components/bottomButtons/BottomButtons";
-import Navbar from "./components/navbar/Navbar";
-import { useEffect } from "react";
-import DarkModeChanger from "./components/DarkModeChanger";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Resources from './views/resources/Resources';
+import Login from './views/login/Login';
+import Home from './views/home/Home';
+import React, { useState } from 'react';
+import requireAuth from './components/auth/RequireAuth';
+import ManagementPanel from './views/ManagementPanel/ManagementPanel';
+import { FetchUserInfo } from './hooks/FetchUserInfo';
+import Loader, { runCloseAnimation } from './components/loader/Loader';
+import Calendar from './views/Calendar/Calendar';
+import ChatMenu from './views/chat/ChatMenu';
+import BottomButtons from './components/bottomButtons/BottomButtons';
+import Navbar from './components/navbar/Navbar';
+import { useEffect } from 'react';
+import DarkModeChanger from './components/DarkModeChanger';
 
 export default function App() {
   let userinfo = FetchUserInfo(localStorage.userId);
@@ -63,7 +63,7 @@ export default function App() {
 
   useEffect(() => {
     checkMediaQueries();
-    DarkModeChanger(localStorage.getItem("darkMode"));
+    DarkModeChanger(localStorage.getItem('darkMode'));
   }, []);
 
   return userinfo ? (

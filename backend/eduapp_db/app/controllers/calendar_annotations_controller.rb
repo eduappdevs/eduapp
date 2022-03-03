@@ -10,15 +10,19 @@ class CalendarAnnotationsController < ApplicationController
       @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
       @calendar_isGlobal = CalendarAnnotation.where(isGlobal: true)
       @subjects = []
+      @calendarEvents = []
+      @sessions = []
       for course in @TuitionsUserId do
-        @subjects = Subject.where(course_id: course)
+        @subjects += Subject.where(course_id: course).pluck(:id)
       end
+      
       for subject in @subjects do
-        @calendarEvents = CalendarAnnotation.where(subject_id: subject.id)
+        @calendarEvents += CalendarAnnotation.where(isGlobal: false, subject_id: subject)
         @colorEvents = Subject.where(course_id: @TuitionsUserId).pluck(:id,:color)
       end
+      
       for subject in @subjects  do
-        @sessions = EduappUserSession.where(subject_id: subject.id)
+        @sessions += EduappUserSession.where(subject_id: subject)
       end
       render :json => {:globalEvents => @calendar_isGlobal,:calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents}
     end

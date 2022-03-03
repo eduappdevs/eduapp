@@ -1514,3 +1514,132 @@ caused by: Error: ENOENT: no such file or directory, open '/Users/felixmv/Deskto
 2022-02-26T23:40:30.283Z - info: Starting rendering request 30 (user: null) rootId=77sdwh2fzj5j9vo, id=77sdwh2fzj5j9vo
 2022-02-26T23:40:30.284Z - info: Rendering template { name: ChatMessagesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=77sdwh2fzj5j9vo, id=77sdwh2fzj5j9vo
 2022-02-26T23:40:32.611Z - info: Rendering request 30 finished in 2350 ms rootId=77sdwh2fzj5j9vo, id=77sdwh2fzj5j9vo
+2022-02-28T22:14:35.120Z - info: Initializing jsreport (version: 3.3.0, configuration file: jsreport.config.json, nodejs: 16.13.2)
+2022-02-28T22:14:35.122Z - info: Searching for available extensions in /Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/
+2022-02-28T22:14:35.124Z - info: Extensions location cache not found, crawling directories
+2022-02-28T22:14:36.230Z - info: Found 35 extension(s)
+2022-02-28T22:14:36.315Z - info: Using extension base@3.0.0
+2022-02-28T22:14:36.320Z - info: Using extension child-templates@3.0.1
+2022-02-28T22:14:36.324Z - info: Using extension cli@3.0.0
+2022-02-28T22:14:36.328Z - info: Using extension components@3.2.0
+2022-02-28T22:14:36.330Z - info: Using extension data@3.0.1
+2022-02-28T22:14:36.332Z - info: Using extension express@3.2.1
+2022-02-28T22:14:36.794Z - info: Using extension freeze@3.0.1
+2022-02-28T22:14:36.797Z - info: Using extension fs-store@3.0.0
+2022-02-28T22:14:36.916Z - info: Using extension handlebars@3.0.0
+2022-02-28T22:14:36.920Z - info: Using extension import-export@3.0.2
+2022-02-28T22:14:36.939Z - info: Using extension jsrender@3.0.0
+2022-02-28T22:14:36.940Z - info: Using extension licensing@3.0.1
+2022-02-28T22:14:36.973Z - info: Using extension localization@3.1.1
+2022-02-28T22:14:36.974Z - info: Using extension npm@3.1.0
+2022-02-28T22:14:36.977Z - info: Using extension pdf-utils@3.2.0
+2022-02-28T22:14:36.979Z - info: Using extension reports@3.0.1
+2022-02-28T22:14:36.983Z - info: Using extension tags@3.1.0
+2022-02-28T22:14:36.986Z - info: Using extension text@3.0.0
+2022-02-28T22:14:36.987Z - info: Using extension version-control@3.0.1
+2022-02-28T22:14:37.007Z - info: Using extension assets@3.2.0
+2022-02-28T22:14:37.022Z - info: Using extension authorization@3.2.0
+2022-02-28T22:14:37.027Z - info: Using extension browser-client@3.1.0
+2022-02-28T22:14:37.031Z - info: Using extension chrome-pdf@3.1.0
+2022-02-28T22:14:37.035Z - info: Using extension docx@3.1.0
+2022-02-28T22:14:37.037Z - info: Using extension html-to-xlsx@3.1.0
+2022-02-28T22:14:37.136Z - info: html-to-xlsx detected chrome as available html engine
+2022-02-28T22:14:37.137Z - info: Using extension pptx@3.1.0
+2022-02-28T22:14:37.139Z - info: Using extension scheduling@3.0.1
+2022-02-28T22:14:37.181Z - info: Using extension scripts@3.2.0
+2022-02-28T22:14:37.182Z - info: Using extension static-pdf@3.0.0
+2022-02-28T22:14:37.183Z - info: Using extension studio@3.3.0
+2022-02-28T22:14:37.318Z - info: Using extension xlsx@3.1.0
+2022-02-28T22:14:37.353Z - info: Using extension public-templates@3.0.0
+2022-02-28T22:14:37.355Z - info: Using extension sample-template@3.1.0
+2022-02-28T22:14:37.359Z - info: Using extension studio-theme-dark@3.0.1
+2022-02-28T22:14:37.361Z - info: Using general timeout for rendering (reportTimeout: 60000)
+2022-02-28T22:14:37.361Z - info: Using fs provider for template store.
+2022-02-28T22:14:37.368Z - info: fs store is persisting using fs for /Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/data
+2022-02-28T22:14:37.375Z - info: fs store is loading data
+2022-02-28T22:14:37.410Z - info: fs store is initialized successfully
+2022-02-28T22:14:37.429Z - info: Creating default express app.
+2022-02-28T22:14:37.460Z - info: jsreport server successfully started on http port: 5488
+2022-02-28T22:14:37.462Z - info: Verifying license key free
+2022-02-28T22:14:37.463Z - info: Using free license
+2022-02-28T22:14:37.467Z - info: Initializing worker threads
+2022-02-28T22:14:37.732Z - info: 2 worker threads initialized in 265ms
+2022-02-28T22:14:37.733Z - info: Starting temp files cleanup with 180000ms threshold
+2022-02-28T22:14:37.733Z - info: reporter initialized
+2022-02-28T22:19:15.324Z - info: Starting rendering request 1 (user: null) rootId=iuw13zmfdluqum1, id=iuw13zmfdluqum1
+2022-02-28T22:19:15.325Z - info: Rendering template { name: ResourcesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=iuw13zmfdluqum1, id=iuw13zmfdluqum1
+2022-02-28T22:19:18.299Z - info: Starting rendering request 1 (user: null) rootId=0nrauqwvhcktj6f, id=0nrauqwvhcktj6f
+2022-02-28T22:19:18.299Z - info: Rendering template { name: ResourcesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=0nrauqwvhcktj6f, id=0nrauqwvhcktj6f
+2022-02-28T22:19:25.844Z - warn: Report render failed: Report cancelled Error: Report cancelled
+    at Object.close (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/advanced-workers/lib/threadWorker.js:138:21)
+    at Object.release (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/advanced-workers/lib/pool.js:38:22)
+    at EventEmitter.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-core/lib/main/reporter.js:344:16)
+    at Object.onceWrapper (node:events:509:28)
+    at EventEmitter.emit (node:events:390:28)
+    at Socket.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-express/lib/routes.js:68:20)
+    at Object.onceWrapper (node:events:510:26)
+    at Socket.emit (node:events:402:35)
+    at TCP.<anonymous> (node:net:687:12) rootId=0nrauqwvhcktj6f, id=0nrauqwvhcktj6f
+2022-02-28T22:19:25.850Z - warn: Report render failed: Report cancelled Error: Report cancelled
+    at Object.close (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/advanced-workers/lib/threadWorker.js:138:21)
+    at Object.release (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/advanced-workers/lib/pool.js:38:22)
+    at EventEmitter.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-core/lib/main/reporter.js:344:16)
+    at Object.onceWrapper (node:events:509:28)
+    at EventEmitter.emit (node:events:390:28)
+    at Socket.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-express/lib/routes.js:68:20)
+    at Object.onceWrapper (node:events:510:26)
+    at Socket.emit (node:events:402:35)
+    at TCP.<anonymous> (node:net:687:12) rootId=iuw13zmfdluqum1, id=iuw13zmfdluqum1
+2022-02-28T22:19:25.915Z - warn: Error during processing request at http://localhost:5488/api/report, details: Report cancelled, stack: Error: Report cancelled
+    at Object.close (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/advanced-workers/lib/threadWorker.js:138:21)
+    at Object.release (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/advanced-workers/lib/pool.js:38:22)
+    at EventEmitter.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-core/lib/main/reporter.js:344:16)
+    at Object.onceWrapper (node:events:509:28)
+    at EventEmitter.emit (node:events:390:28)
+    at Socket.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-express/lib/routes.js:68:20)
+    at Object.onceWrapper (node:events:510:26)
+    at Socket.emit (node:events:402:35)
+    at TCP.<anonymous> (node:net:687:12)
+2022-02-28T22:19:25.992Z - warn: Error during processing request at http://localhost:5488/api/report, details: Report cancelled, stack: Error: Report cancelled
+    at Object.close (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/advanced-workers/lib/threadWorker.js:138:21)
+    at Object.release (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/advanced-workers/lib/pool.js:38:22)
+    at EventEmitter.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-core/lib/main/reporter.js:344:16)
+    at Object.onceWrapper (node:events:509:28)
+    at EventEmitter.emit (node:events:390:28)
+    at Socket.<anonymous> (/Users/felixmv/Desktop/School/Eduapp/eduapp/jsreport/node_modules/@jsreport/jsreport-express/lib/routes.js:68:20)
+    at Object.onceWrapper (node:events:510:26)
+    at Socket.emit (node:events:402:35)
+    at TCP.<anonymous> (node:net:687:12)
+2022-02-28T22:19:26.386Z - info: Starting rendering request 1 (user: null) rootId=rtm0o523us8al89, id=rtm0o523us8al89
+2022-02-28T22:19:26.387Z - info: Rendering template { name: ChatMessagesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=rtm0o523us8al89, id=rtm0o523us8al89
+2022-02-28T22:19:26.392Z - info: Starting rendering request 1 (user: null) rootId=x52d3mmn43jgeug, id=x52d3mmn43jgeug
+2022-02-28T22:19:26.394Z - info: Rendering template { name: ChatMessagesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=x52d3mmn43jgeug, id=x52d3mmn43jgeug
+2022-02-28T22:19:28.141Z - info: Rendering request 1 finished in 1799 ms rootId=x52d3mmn43jgeug, id=x52d3mmn43jgeug
+2022-02-28T22:19:28.141Z - info: Rendering request 1 finished in 1798 ms rootId=rtm0o523us8al89, id=rtm0o523us8al89
+2022-02-28T22:19:29.364Z - info: Starting rendering request 2 (user: null) rootId=vwvn03ae2yqkxju, id=vwvn03ae2yqkxju
+2022-02-28T22:19:29.364Z - info: Rendering template { name: ChatMessagesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=vwvn03ae2yqkxju, id=vwvn03ae2yqkxju
+2022-02-28T22:19:29.573Z - info: Rendering request 2 finished in 213 ms rootId=vwvn03ae2yqkxju, id=vwvn03ae2yqkxju
+2022-02-28T22:19:37.590Z - info: Starting rendering request 3 (user: null) rootId=xyxndjfijhzsvxu, id=xyxndjfijhzsvxu
+2022-02-28T22:19:37.590Z - info: Rendering template { name: ResourcesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=xyxndjfijhzsvxu, id=xyxndjfijhzsvxu
+2022-02-28T22:19:37.804Z - info: Rendering request 3 finished in 217 ms rootId=xyxndjfijhzsvxu, id=xyxndjfijhzsvxu
+2022-02-28T22:19:47.054Z - info: Starting rendering request 4 (user: null) rootId=vt9jbzvlp8ieckm, id=vt9jbzvlp8ieckm
+2022-02-28T22:19:47.055Z - info: Rendering template { name: RegisteredCoursesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=vt9jbzvlp8ieckm, id=vt9jbzvlp8ieckm
+2022-02-28T22:19:47.235Z - info: Rendering request 4 finished in 185 ms rootId=vt9jbzvlp8ieckm, id=vt9jbzvlp8ieckm
+2022-02-28T22:20:25.598Z - info: Starting rendering request 5 (user: null) rootId=jtophu99r7xi0e4, id=jtophu99r7xi0e4
+2022-02-28T22:20:25.598Z - info: Rendering template { name: RegisteredCoursesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=jtophu99r7xi0e4, id=jtophu99r7xi0e4
+2022-02-28T22:20:25.784Z - info: Rendering request 5 finished in 187 ms rootId=jtophu99r7xi0e4, id=jtophu99r7xi0e4
+2022-02-28T22:21:29.706Z - info: Starting rendering request 6 (user: null) rootId=wmt95a446znh3a8, id=wmt95a446znh3a8
+2022-02-28T22:21:29.706Z - info: Rendering template { name: RegisteredCoursesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=wmt95a446znh3a8, id=wmt95a446znh3a8
+2022-02-28T22:21:29.895Z - info: Rendering request 6 finished in 194 ms rootId=wmt95a446znh3a8, id=wmt95a446znh3a8
+2022-02-28T22:24:39.717Z - info: Starting rendering request 7 (user: null) rootId=zd5bhx790pvpq8y, id=zd5bhx790pvpq8y
+2022-02-28T22:24:39.718Z - info: Rendering template { name: ResourcesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=zd5bhx790pvpq8y, id=zd5bhx790pvpq8y
+2022-02-28T22:24:40.017Z - info: Rendering request 7 finished in 311 ms rootId=zd5bhx790pvpq8y, id=zd5bhx790pvpq8y
+2022-02-28T22:26:10.208Z - info: Starting rendering request 8 (user: null) rootId=ogffsn7jtzcx8eq, id=ogffsn7jtzcx8eq
+2022-02-28T22:26:10.209Z - info: Rendering template { name: ResourcesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=ogffsn7jtzcx8eq, id=ogffsn7jtzcx8eq
+2022-02-28T22:26:10.450Z - info: Rendering request 8 finished in 246 ms rootId=ogffsn7jtzcx8eq, id=ogffsn7jtzcx8eq
+2022-02-28T22:26:41.467Z - info: Starting rendering request 9 (user: null) rootId=cemtk705m4zhs4s, id=cemtk705m4zhs4s
+2022-02-28T22:26:41.467Z - info: Rendering template { name: RegisteredCoursesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=cemtk705m4zhs4s, id=cemtk705m4zhs4s
+2022-02-28T22:26:41.647Z - info: Rendering request 9 finished in 184 ms rootId=cemtk705m4zhs4s, id=cemtk705m4zhs4s
+2022-02-28T22:28:27.452Z - info: Starting rendering request 10 (user: null) rootId=y10iq1cpf3pxqwt, id=y10iq1cpf3pxqwt
+2022-02-28T22:28:27.453Z - info: Rendering template { name: ChatMessagesReport, recipe: chrome-pdf, engine: handlebars, preview: false } rootId=y10iq1cpf3pxqwt, id=y10iq1cpf3pxqwt
+2022-02-28T22:28:27.738Z - info: Rendering request 10 finished in 292 ms rootId=y10iq1cpf3pxqwt, id=y10iq1cpf3pxqwt

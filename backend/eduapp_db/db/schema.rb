@@ -151,14 +151,13 @@ ActiveRecord::Schema.define(version: 15) do
   end
 
   create_table "tuitions", force: :cascade do |t|
-    t.integer "institution_id"
-    t.integer "course_id"
-    t.integer "user_id"
-    t.string "course_name"
-    t.string "institution_name"
+    t.bigint "course_id", null: false
+    t.bigint "user_id", null: false
     t.boolean "isTeacher"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["course_id"], name: "index_tuitions_on_course_id"
+    t.index ["user_id"], name: "index_tuitions_on_user_id"
   end
 
   create_table "user_infos", force: :cascade do |t|
@@ -198,5 +197,7 @@ ActiveRecord::Schema.define(version: 15) do
   add_foreign_key "eduapp_user_sessions", "subjects"
   add_foreign_key "resources", "courses"
   add_foreign_key "subjects", "courses"
+  add_foreign_key "tuitions", "courses"
+  add_foreign_key "tuitions", "users"
   add_foreign_key "user_infos", "users"
 end
