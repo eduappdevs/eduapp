@@ -4,12 +4,12 @@
 - [About the project](#about-the-project)
 - [Backend](#backend-information)
 - [Frontend](#frontend-information)
-- [Built with](#built-with)
 - [User Requirements](#user-requirements)
 - [API Documention](#api-documention)
 - [Use Cases](#use-cases)
 - [Usability](#usability)
 - [Tech stack and comparison](#tech-stack-and-comparison)
+- [Docker Mounting](#docker-mounting)
 - [Personal opinion and comparison](#personal-opinion-and-comparison)
 
 
@@ -291,5 +291,31 @@ We are using react js as frontend framework , react provides us many advantages 
 At backend we have decide to use Ruby on rails , which provide us a Model View Controller architecture , a fast development when you know the basics of it , 
 a great number of helpful tools and libraries , also it haves many disadvantages , like the price of a mistake , you have to pay attention to all the small details ,otherwise your ruby on rails journey will becomes difficult.
 
-<h1>Personal opinion and conclusions</h1>
+<h1>Docker Mounting</h1>
+
+Mounting to docker is easy, but we need to make some adjustment to Ruby on Rails first.  
+Before mounting to docker, we need to first modify the files of ```./backend/eduapp_db/Gemfile``` and ```./backend/eduapp_db/config/database.yml```, changing the following configurations:
+
+```
+// Gemfile
+
+ruby '2.6.8' -> ruby '2.6.9'
+
+// database.yml
+
+host: localhost -> host: db
+```
+
+After changing these files, go to the root directory and run ```docker-compose up -d``` to mount and start the database, backend api and frontend interface once the mounting completes.  
+If you wish to mount only the backend or the frontend, make sure you position yourself inside frontend or backend/eduapp and run the command above, to mount only the corresponding docker-compose.  
+
+Once finished mounting, you must access the API container shell and run the following command to create and migrate the database:  
+```
+rails db:create
+rails db:migrate:reset
+``` 
+
+And you will have successfully mounted and deployed EduApp to multiple docker containers!
+
+<h1 id="personal-opinion-and-comparison">Personal opinion and conclusions</h1>
 <p>It is a pleasure to us be part of this project , as our first project working in with other people,becoming this project a challenge , we found many difficults in the journey, but we also have learned so much through it,although this it is just the beggining of the project and so much things will happen through the journey.</p>
