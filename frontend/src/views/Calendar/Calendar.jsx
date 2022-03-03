@@ -3,10 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Paper from '@material-ui/core/Paper';
-<<<<<<< HEAD
 import { FetchUserInfo } from '../../hooks/FetchUserInfo';
-=======
->>>>>>> ba2ffa3104a24bee656bdb6e8645c5cec8ada2f6
 import {
   Scheduler,
   DateNavigator,
@@ -23,10 +20,7 @@ import { CALENDAR_USER_ID, SUBJECT } from '../../config';
 import View from './eventsView/View';
 import CreateView from './eventsView/CreateView';
 import './calendar.css';
-<<<<<<< HEAD
 import { asynchronizeRequest } from '../../API';
-=======
->>>>>>> ba2ffa3104a24bee656bdb6e8645c5cec8ada2f6
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
@@ -135,12 +129,8 @@ export default function Calendar() {
   };
 
   const getSubject = async () => {
-<<<<<<< HEAD
     console.log(localStorage);
     let request = await axios.get(SUBJECT + '?user=' + localStorage.userId);
-=======
-    let request = await axios.get(SUBJECT + '?user_id=' + localStorage.user_id);
->>>>>>> ba2ffa3104a24bee656bdb6e8645c5cec8ada2f6
     let subject = [];
     request.data.map((e) => {
       let id = e.id;
