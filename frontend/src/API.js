@@ -10,6 +10,8 @@ import {
   PING,
 } from "./config";
 
+// 3010, 4010, somosbluecity.es
+
 const saveInLocalStorage = (userDetails) => {
   if (userDetails.data.message.id == null) {
     throw new Error("error");
