@@ -19,10 +19,6 @@ require "rails/test_unit/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-
-
-
-
 module EduappDb
   class Application < Rails::Application
 
@@ -45,7 +41,7 @@ module EduappDb
     config.api_only = true
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins 'http://localhost:3001'
+        origins ENV.fetch("REACT_APP_FRONTEND_ENDPOINT")
         resource '*', headers: :any, methods: [:get, :post, :options]
       end
     end

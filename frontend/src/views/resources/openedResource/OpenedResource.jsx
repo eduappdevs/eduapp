@@ -3,6 +3,7 @@ import axios from "axios";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
 import { asynchronizeRequest } from "../../../API";
+import { RESOURCES } from "../../../config";
 import "./OpenedResource.css";
 
 export default function OpenedResource(props) {
@@ -26,7 +27,7 @@ export default function OpenedResource(props) {
   const deleteResource = (id) => {
     asynchronizeRequest(function () {
       axios
-        .delete(`http://localhost:3000/resources/${id}`)
+        .delete(RESOURCES + `/${id}`)
         .then((res) => console.log, window.location.reload())
         .catch((err) => console.log);
     });

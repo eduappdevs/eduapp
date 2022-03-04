@@ -3,9 +3,8 @@ import React from "react";
 import MenuSettings from "./menu-settings/MenuSettings";
 import MenuHeader from "./menuHeader/MenuHeader";
 import API from "../../API";
+import { SUPPORT } from "../../config";
 import ProfileSettings from "./profileOptions/ProfileSettings";
-// import jsreport from "@jsreport/browser-client";
-// import axios from "axios";
 
 export default function Menu(props) {
   const openMenuSettings = () => {
@@ -59,7 +58,7 @@ export default function Menu(props) {
           <a
             onClick={(event) => {
               event.preventDefault();
-              window.location.href = "http://localhost:3003";
+              window.location.href = SUPPORT;
             }}
           >
             Help

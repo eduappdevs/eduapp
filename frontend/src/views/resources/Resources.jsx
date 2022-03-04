@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import ResourcesModal from "../../components/modals/ResourcesModal";
 import OpenedResource from "./openedResource/OpenedResource";
 import axios from "axios";
+import { RESOURCES } from "../../config";
 import Loader from "../../components/loader/Loader";
 import SubjectSelector from "../../components/subjectSelector/SubjectSelector";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import "./Resources.css";
 import { GetSubjects } from "../../hooks/GetSubjects";
+import "./Resources.css";
 
 export default function Resources() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -29,7 +30,7 @@ export default function Resources() {
   };
 
   const getResources = async (id) => {
-    const resources__url = `http://localhost:3000/resources?subject_id=${id}`;
+    const resources__url = RESOURCES + `?subject_id=${id}`;
     console.log(id);
     await axios.get(resources__url).then((res) => {
       res.data.map((x) => {

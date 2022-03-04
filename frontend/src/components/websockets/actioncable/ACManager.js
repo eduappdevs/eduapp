@@ -1,8 +1,9 @@
 import { createConsumer } from "@rails/actioncable";
+import { CHATWS } from "../../../config";
 
 export default class ACManager {
   constructor() {
-    this.consumer = createConsumer("ws://localhost:3000/chat");
+    this.consumer = createConsumer(CHATWS);
     this.connection = null;
     this.hasConnected = {};
     this.chatCode = null;
