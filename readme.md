@@ -294,22 +294,14 @@ a great number of helpful tools and libraries , also it haves many disadvantages
 <h1>Docker Mounting</h1>
 
 Mounting to docker is easy, but we need to make some adjustment to Ruby on Rails first.  
-Before mounting to docker, we need to first modify the files of ```./backend/eduapp_db/Gemfile``` and ```./backend/eduapp_db/config/database.yml```, changing the following configurations:
+To start off, you must clone the branch called "docker-config" which has been previously prepared for straight docker composing.
+Before mounting to docker, please look into each ```Dockerfile``` and modify your environment variables to your need.
 
-```
-// Gemfile
-
-ruby '2.6.8' -> ruby '2.6.9'
-
-// database.yml
-
-host: localhost -> host: db
-```
-
-After changing these files, go to the root directory and run ```docker-compose up -d``` to mount and start the database, backend api and frontend interface once the mounting completes.  
-If you wish to mount only the backend or the frontend, make sure you position yourself inside frontend or backend/eduapp and run the command above, to mount only the corresponding docker-compose.  
+Once configured environment variables, run ```docker-compose up -d``` inside the root directory to mount and start the database, backend api, frontend interface and administration panel once the mounting completes.  
+If you wish to mount only the backend, frontend, or administration panel, make sure you position yourself inside the corresponding directory and run the command above, to mount only the corresponding docker-compose.  
 
 Once finished mounting, you must access the API container shell and run the following command to create and migrate the database:  
+
 ```
 rails db:create
 rails db:migrate:reset
