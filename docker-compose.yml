@@ -1,0 +1,31 @@
+version: '3.1'
+services:
+  db:
+    image: postgres:14
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - eduapp_db_data:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+  api:
+    build:
+      context: ./backend/eduapp_db
+    image: eduapp/eduapp_db
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+  web:
+    build: 
+      context: ./frontend
+    image: eduapp/eduapp_web
+    depends_on: 
+      - api
+    ports:
+      - "3001:3001"
+volumes:
+  eduapp_db_data:

@@ -59,7 +59,12 @@ export default function CreateView(props) {
         user_id: userInfo.id,
         subject_id: subjectInt,
       };
-      axios.post(CALENDAR, newEvent).then(window.location.reload()).catch();
+      axios
+        .post(CALENDAR, newEvent)
+        .then(() => {
+          window.location.reload();
+        })
+        .catch();
     } else {
       alertCreate();
     }

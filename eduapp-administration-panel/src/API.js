@@ -5,111 +5,144 @@ const INSTITUTIONS = `${API_URL}/institutions`;
 const COURSES = `${API_URL}/courses`;
 const USERS_INFO = `${API_URL}/user_infos`;
 const TUITIONS = `${API_URL}/tuitions`;
+const PING = `${API_URL}/ping`;
+const SUBJECTS = `${API_URL}/subjects`;
+const RESOURCES = `${API_URL}/resources`;
 
 const token =
-	"Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
+  "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
 
 const saveInLocalStorage = (userDetails) => {
-	console.log(userDetails);
-	if (userDetails.data.message.id == null) {
-		throw new Error("error");
-	}
+  console.log(userDetails);
+  if (userDetails.data.message.id == null) {
+    throw new Error("error");
+  }
 
-	localStorage.setItem("userId", userDetails.data.message.id);
-	localStorage.setItem("userToken", userDetails.headers.authorization);
+  localStorage.setItem("userId", userDetails.data.message.id);
+  localStorage.setItem("userToken", userDetails.headers.authorization);
 };
 
 const apiSettings = {
-	login: async (body) => {
-		const endpoint = `${USERS}/sign_in`;
-		return await await axios.post(endpoint, body).then((res) => {
-			saveInLocalStorage(res);
-		});
-	},
+  login: async (body) => {
+    const endpoint = `${USERS}/sign_in`;
+    return await axios.post(endpoint, body).then((res) => {
+      saveInLocalStorage(res);
+    });
+  },
 
-	//User
-	createUser: async (body) => {
-		const endpoint = `${USERS}`;
-		return await await axios.post(endpoint, body);
-	},
+  fetchResources: async () => {
+    const endpoint = `${RESOURCES}`;
+    return await (await fetch(endpoint)).json();
+  },
 
-	fetchUserInfos: async () => {
-		const endpoint = `${USERS_INFO}`;
-		return await await axios.get(endpoint);
-	},
+  //User
+  createUser: async (body) => {
+    const endpoint = `${USERS}`;
+    return await axios.post(endpoint, body);
+  },
 
-	createInfo: async (body) => {
-		const endpoint = `${USERS_INFO}`;
-		return await await axios.post(endpoint, body);
-	},
+  fetchUserInfos: async () => {
+    const endpoint = `${USERS_INFO}`;
+    return await axios.get(endpoint);
+  },
 
-	deleteUser: async (body) => {
-		const endpoint = `${USERS}`;
-		return await await axios.delete(endpoint, {
-			headers: { Authorization: token },
-		});
-	},
-	editUser: async (body) => {
-		const endpoint = `${USERS}`;
-		return await await axios.put(endpoint, body);
-	},
+  createInfo: async (body) => {
+    const endpoint = `${USERS_INFO}`;
+    return await axios.post(endpoint, body);
+  },
 
-	//Institutions
-	fetchInstitutions: async () => {
-		const endpoint = `${INSTITUTIONS}`;
-		return await await axios.get(endpoint);
-	},
+  deleteUser: async (body) => {
+    const endpoint = `${USERS}`;
+    return await axios.delete(endpoint, {
+      headers: { Authorization: token },
+    });
+  },
+  editUser: async (body) => {
+    const endpoint = `${USERS}`;
+    return await axios.put(endpoint, body);
+  },
 
-	fetchInstitution: async (id) => {
-		const endpoint = `${INSTITUTIONS}/${id}`;
-		return await await axios.get(endpoint);
-	},
+  //Institutions
+  fetchInstitutions: async () => {
+    const endpoint = `${INSTITUTIONS}`;
+    return await axios.get(endpoint);
+  },
 
-	createInstitution: async (body) => {
-		const endpoint = `${INSTITUTIONS}`;
-		return await await axios.post(endpoint, body);
-	},
+  fetchInstitution: async (id) => {
+    const endpoint = `${INSTITUTIONS}/${id}`;
+    return await axios.get(endpoint);
+  },
 
-	deleteInstitution: async (id) => {
-		const endpoint = `${INSTITUTIONS}`;
-		return await await axios.delete(endpoint + `/${id}`, {
-			headers: { Authorization: token },
-		});
-	},
+  createInstitution: async (body) => {
+    const endpoint = `${INSTITUTIONS}`;
+    return await axios.post(endpoint, body);
+  },
 
-	editInstitution: async (body) => {
-		const endpoint = `${INSTITUTIONS}`;
-		return await await axios.put(endpoint, body);
-	},
+  deleteInstitution: async (id) => {
+    const endpoint = `${INSTITUTIONS}`;
+    return await axios.delete(endpoint + `/${id}`, {
+      headers: { Authorization: token },
+    });
+  },
 
-	//Courses
-	fetchCourses: async () => {
-		const endpoint = `${COURSES}`;
-		return await await axios.get(endpoint);
-	},
+  editInstitution: async (body) => {
+    const endpoint = `${INSTITUTIONS}`;
+    return await axios.put(endpoint, body);
+  },
 
-	createCourse: async (body) => {
-		const endpoint = `${COURSES}`;
-		return await await axios.post(endpoint, body);
-	},
+  //Courses
+  fetchCourses: async () => {
+    const endpoint = `${COURSES}`;
+    return await axios.get(endpoint);
+  },
 
-	deleteCourse: async (body) => {
-		const endpoint = `${COURSES}`;
-		return await await axios.delete(endpoint, {
-			headers: { Authorization: token },
-		});
-	},
+  createCourse: async (body) => {
+    const endpoint = `${COURSES}`;
+    return await axios.post(endpoint, body);
+  },
 
-	editCourse: async (body) => {
-		const endpoint = `${COURSES}`;
-		return await await axios.put(endpoint, body);
-	},
+  deleteCourse: async (body) => {
+    const endpoint = `${COURSES}`;
+    return await axios.delete(endpoint, {
+      headers: { Authorization: token },
+    });
+  },
 
-	//Users tuition
-	enrollUser: async (body) => {
-		const endpoint = `${TUITIONS}`;
-		return await await axios.post(endpoint, body);
-	},
+  editCourse: async (body) => {
+    const endpoint = `${COURSES}`;
+    return await axios.put(endpoint, body);
+  },
+
+  //Users tuition
+  enrollUser: async (body) => {
+    const endpoint = `${TUITIONS}`;
+    return await axios.post(endpoint, body);
+  },
 };
 
 export default apiSettings;
+
+export const endpoints = {
+  API_URL,
+  USERS,
+  INSTITUTIONS,
+  COURSES,
+  USERS_INFO,
+  TUITIONS,
+  PING,
+  SUBJECTS,
+};
+
+export const asynchronizeRequest = async (requestFunction) => {
+  try {
+    await axios({
+      method: "get",
+      url: PING,
+      timeout: 5000,
+    });
+
+    return requestFunction.call();
+  } catch (err) {
+    asynchronizeRequest(requestFunction);
+  }
+};

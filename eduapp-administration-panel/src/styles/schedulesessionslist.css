@@ -1,27 +1,27 @@
 table {
-    margin-left: 40px;
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-  }
-  
-  td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
-  
-  tr:nth-child(even) {
-    background-color: #dddddd;
-  }
+	margin-left: 40px;
+	font-family: arial, sans-serif;
+	border-collapse: collapse;
+	width: 100%;
+}
 
-  .add-session{
-    display: flex;
-    flex-direction: row;
-  }
+td,
+th {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+}
 
-  .actionsAndSubmit{
-    display: flex;
-    flex-direction: row;
+tr:nth-child(even) {
+	background-color: #dddddd;
+}
 
-  }
+.add-session {
+	display: flex;
+	flex-direction: row;
+}
+
+.actionsAndSubmit {
+	display: flex;
+	flex-direction: row;
+}

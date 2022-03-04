@@ -3,13 +3,13 @@ class ResourcesController < ApplicationController
 
   # GET /resources
   def index
-		if !params[:course_id]
+		if !params[:subject_id]
 			@resources = Resource.all
+      render json: @resources
 		else
-			@resources = Resource.order(created_at: :desc).where(course_id: params[:course_id])
+        @Resources = Resource.order(created_at: :desc).where(subject_id: params[:subject_id])
+      render json: @Resources
 		end
-
-    render json: @resources
   end
 
   # GET /resources/1
@@ -50,6 +50,6 @@ class ResourcesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def resource_params
-      params.permit(:name, :description, :firstfile , :secondfile , :thirdfile , :createdBy , :course_id)
+      params.permit(:name, :description, :firstfile , :secondfile , :thirdfile , :createdBy , :subject_id)
     end
 end

@@ -3,9 +3,11 @@ class UserInfosController < ApplicationController
 
   # GET /user_infos
   def index
-    @q = UserInfo.ransack(user_id_eq: params[:id]);
-
-    @user_infos = @q.result(distinct: true).all
+    if !params[:user_id]
+			@user_infos = UserInfo.all
+    else
+			@user_infos = UserInfo.where(user_id: params[:user_id])
+    end
 
     render json: @user_infos
   end
@@ -39,6 +41,26 @@ class UserInfosController < ApplicationController
   def destroy
     @user_info.destroy
   end
+
+	def destroyuser
+		user = User.find(params[:id])
+		user_i = UserInfo.find_by(user_id: params[:id])
+		user_tui = Tuition.where(user_id: params[:id])
+
+		for tui in user_tui do
+			tui.destroy
+		end
+
+		if user_i.destroy
+			if user.destroy
+				render json: { message: "Deleted user successfully." }, status: :ok
+			else
+				render json: { message: "Couldn't delete user"}, status: 500
+			end	
+		else
+			render json: { message: "Couldn't delete user info"}, status: 500
+		end
+	end
 
   private
     # Use callbacks to share common setup or constraints between actions.

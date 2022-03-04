@@ -108,6 +108,11 @@
 
 }
 
+.hidden {
+    display: none !important;
+    opacity: 0;
+}
+
 
 
 /* api calendar css */

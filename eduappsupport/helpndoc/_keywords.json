@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "id": "6062D486642D449B80D33A5E93E9D8DA",
+    "parent": "#",
+    "text": "About Eduapp",
+    "a_attr": {
+      "href": "AboutEduapp.html",
+      "data-related": "[]"
+    }
+  },
+  {
+    "id": "C2061DD6E38F49F99BCA762ED50EF684",
+    "parent": "#",
+    "text": "User Requirements",
+    "a_attr": {
+      "href": "UserRequirements.html",
+      "data-related": "[]"
+    }
+  },
+  {
+    "id": "4865B84E5DDE4D3DA4605668AF03B086",
+    "parent": "#",
+    "text": "How To Start?",
+    "a_attr": {
+      "href": "Howtostart.html",
+      "data-related": "[]"
+    }
+  },
+  {
+    "id": "92B7FC0FDFEB490D86EA3F06FF332C0E",
+    "parent": "#",
+    "text": "Admin Guide",
+    "a_attr": {
+      "href": "Userguide1.html",
+      "data-related": "[]"
+    }
+  },
+  {
+    "id": "EECBEC57D31045F1A6AF9A561A4C8A2F",
+    "parent": "#",
+    "text": "User Guide",
+    "a_attr": {
+      "href": "Userguide.html",
+      "data-related": "[]"
+    }
+  }
+]

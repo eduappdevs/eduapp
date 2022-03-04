@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import API from "../../API";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import BasicGoogleLogin from "../basicGoogleLogin/BasicGoogleLogin";
 import GoogleLoginButton from "../googleLogin/googleLoginButton";
 export default class LoginAuth extends Component {
   constructor(props) {
@@ -63,7 +64,8 @@ export default class LoginAuth extends Component {
         />
         <button data-testid="loginButton" type="submit">Login</button>
         <span style={{color:'white'}} ><br/>or</span>
-        <GoogleLoginButton useType='login'/>
+        {/* <GoogleLoginButton useType='login'/> */}
+        <BasicGoogleLogin/>
       </form>
     );
   }

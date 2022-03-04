@@ -178,6 +178,11 @@
 	opacity: 0;
 }
 
+.hidden-Title {
+	display: none !important;
+	opacity: 0;
+}
+
 .desktopSection {
 	width: 70%;
 	height: 100%;

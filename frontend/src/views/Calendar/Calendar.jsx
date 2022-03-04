@@ -1,8 +1,9 @@
-import React from 'react';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
-import Paper from '@material-ui/core/Paper';
+import React from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { styled } from "@mui/material/styles";
+import Paper from "@material-ui/core/Paper";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import {
   Scheduler,
   DateNavigator,
@@ -13,21 +14,22 @@ import {
   ViewSwitcher,
   TodayButton,
   AppointmentTooltip,
-} from '@devexpress/dx-react-scheduler-material-ui';
-import { ViewState } from '@devexpress/dx-react-scheduler';
-import { CALENDAR_USER_ID, SUBJECT } from '../../config';
-import View from './eventsView/View';
-import CreateView from './eventsView/CreateView';
-import './calendar.css';
+} from "@devexpress/dx-react-scheduler-material-ui";
+import { ViewState } from "@devexpress/dx-react-scheduler";
+import { CALENDAR_USER_ID, SUBJECT } from "../../config";
+import View from "./eventsView/View";
+import CreateView from "./eventsView/CreateView";
+import "./calendar.css";
+import { asynchronizeRequest } from "../../API";
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [activeEvent, setActiveEvent] = useState({});
   const [subject, setSubject] = useState([]);
-
   const today = new Date();
   const currentDate = today;
+  let userinfo = FetchUserInfo(localStorage.userId);
 
   const getCalendar = async () => {
     let events = [];
@@ -127,7 +129,7 @@ export default function Calendar() {
   };
 
   const getSubject = async () => {
-    let request = await axios.get(SUBJECT + '?user_id=' + localStorage.user_id);
+    let request = await axios.get(SUBJECT + "?user=" + localStorage.userId);
     let subject = [];
     request.data.map((e) => {
       let id = e.id;
@@ -151,51 +153,51 @@ export default function Calendar() {
   };
 
   const openCreate = async () => {
-    const chatBox = document.getElementById('create-box');
-    chatBox.style.display = 'flex';
+    const chatBox = document.getElementById("create-box");
+    chatBox.style.display = "flex";
     const backgroundCalendar =
-      document.getElementsByClassName('background-shadow')[0];
+      document.getElementsByClassName("background-shadow")[0];
     const calendarMainScroll = document.getElementsByClassName(
-      'calendar-main-container'
+      "calendar-main-container"
     )[0];
 
     setTimeout(() => {
-      calendarMainScroll.classList.add('disable-scroll');
-      backgroundCalendar.style.display = 'block';
+      calendarMainScroll.classList.add("disable-scroll");
+      backgroundCalendar.style.display = "block";
     }, 200);
 
     setTimeout(() => {
-      chatBox.classList.add('create-box-opened');
-      chatBox.classList.remove('calendar-view-create-hidden');
+      chatBox.classList.add("create-box-opened");
+      chatBox.classList.remove("calendar-view-create-hidden");
     }, 400);
   };
 
   const showEventView = async (data) => {
     getCalendarEvent(data);
 
-    const viewBox = document.getElementById('view-box');
-    viewBox.style.display = 'flex';
+    const viewBox = document.getElementById("view-box");
+    viewBox.style.display = "flex";
     const backgroundCalendar =
-      document.getElementsByClassName('background-shadow')[0];
+      document.getElementsByClassName("background-shadow")[0];
     const calendarMainScroll = document.getElementsByClassName(
-      'calendar-main-container'
+      "calendar-main-container"
     )[0];
 
     setTimeout(() => {
-      viewBox.classList.remove('view-box-closed');
-      viewBox.classList.add('view-box-opened');
+      viewBox.classList.remove("view-box-closed");
+      viewBox.classList.add("view-box-opened");
       document
-        .getElementsByClassName('calendar-view-main-container')[0]
-        .classList.remove('calendar-view-hidden');
+        .getElementsByClassName("calendar-view-main-container")[0]
+        .classList.remove("calendar-view-hidden");
     }, 1);
 
     setTimeout(() => {
-      calendarMainScroll.classList.add('disable-scroll');
-      backgroundCalendar.style.display = 'block';
+      calendarMainScroll.classList.add("disable-scroll");
+      backgroundCalendar.style.display = "block";
     }, 500);
   };
 
-  const StyledDiv = styled('div')(({ theme }) => ({}));
+  const StyledDiv = styled("div")(({ theme }) => ({}));
   const Appointment = ({ data, children, style, ...restProps }) => (
     <StyledDiv
       className={`event_${data.id}`}
@@ -208,7 +210,7 @@ export default function Calendar() {
         style={{
           ...style,
           backgroundColor: data.backgroundColor,
-          borderRadius: '8px',
+          borderRadius: "8px",
         }}
       >
         {children}
@@ -228,8 +230,11 @@ export default function Calendar() {
 
   useEffect(() => {
     checkMediaQueries();
-    getCalendar();
-    getSubject();
+    asynchronizeRequest(async function () {
+      getCalendar();
+      getSubject();
+    });
+    console.log(userinfo.isAdmin);
 
     if (window.innerWidth < 1100) {
       setItsMobileDevice(true);
@@ -243,8 +248,8 @@ export default function Calendar() {
       <section
         className={
           ItsMobileDevice
-            ? 'mobileSection calendar-main-section'
-            : 'desktopSection calendar-main-section'
+            ? "mobileSection calendar-main-section"
+            : "desktopSection calendar-main-section"
         }
       >
         <div className="calendar">
@@ -270,7 +275,10 @@ export default function Calendar() {
           </div>
         </div>
       </section>
-      <div className="button-calendar-option" onClick={openCreate}>
+      <div
+        className={userinfo.isAdmin ? "button-calendar-option " : "hidden"}
+        onClick={openCreate}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="white"
