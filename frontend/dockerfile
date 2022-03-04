@@ -8,7 +8,10 @@ RUN npm install
 
 COPY . .
 
-ENV PORT=3001
+ENV REACT_APP_BACKEND_ENDPOINT=http://localhost:3000 \
+	REACT_APP_WEBSOCKET_ENDPOINT=ws://localhost:3000 \
+	REACT_APP_FRONTEND_ENDPOINT=http://localhost:3001 \
+	REACT_APP_SUPPORT_ENDPOINT=http://localhost:3003 
 
 EXPOSE 3001
 

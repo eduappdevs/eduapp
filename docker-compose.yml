@@ -27,5 +27,11 @@ services:
       - api
     ports:
       - "3001:3001"
+  admin:
+    build: 
+      context: ./eduapp-administration-panel
+    image: eduapp/eduapp_web_admin
+    ports:
+      - "3002:3002"
 volumes:
   eduapp_db_data:
