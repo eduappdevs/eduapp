@@ -19,12 +19,11 @@ export default class ACManager {
     });
 
     this.connection.connected = () => {
-      console.log("CONNECTED");
+      console.log("Connected.");
       this.hasConnected.state = true;
     };
 
     this.connection.received = (data) => {
-      console.log("RECEIVED SMTH");
       this.receivedData.data = data;
       if (
         this.receivedData.data.command !== undefined &&
@@ -67,8 +66,8 @@ export default class ACManager {
       this.connection.unsubscribe();
       this.hasConnected.state = false;
       this.connection = null;
-      console.log("Unsubscribed");
-    } else console.log("No WS to close.");
+      console.log("Disconnected.");
+    }
   }
 
   sendChannelCmd(cmd, ...args) {
@@ -91,7 +90,6 @@ export default class ACManager {
       }
 
       this.connection.send(payload);
-      console.log("sent");
     }
   }
 

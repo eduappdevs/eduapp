@@ -30,6 +30,7 @@ export default function ChatMenu() {
     const loader = document.getElementById("chat-loader");
     const navbar = document.getElementsByTagName("header")[0];
     const bottombtns = document.getElementById("bottom-navigator");
+
     chatMenu.style.display = "none";
     navbar.style.display = "none";
     bottombtns.style.display = "none";
@@ -52,7 +53,6 @@ export default function ChatMenu() {
             event.target.id[event.target.id.length - 1]
         )
         .then((msgs) => {
-          console.log("a");
           setChatMessages(msgs.data);
           setTimeout(() => {
             setTimeout(() => {
@@ -84,6 +84,7 @@ export default function ChatMenu() {
     const loader = document.getElementById("chat-loader");
     const navbar = document.getElementsByTagName("header")[0];
     const bottombtns = document.getElementById("bottom-navigator");
+
     loader.style.display = "block";
     loader.style.opacity = "1";
 
@@ -120,7 +121,7 @@ export default function ChatMenu() {
         setGroupChats(tempGroups);
       })
       .catch((err) => {
-        console.log(err.message);
+        console.error(err.message);
       });
   };
 
@@ -153,8 +154,6 @@ export default function ChatMenu() {
         />
       </div>
       <div className="chat-menu-container">
-        {/* <Navbar mobile={isMobile} location={"chat"} /> */}
-
         <div className="chat-search-container">
           <form action="">
             <input type="text" />
@@ -245,8 +244,6 @@ export default function ChatMenu() {
             </svg>
           </div>
         </div>
-
-        {/* <BottomButtons mobile={isMobile} location={"chat"} /> */}
       </div>
     </>
   );

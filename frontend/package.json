@@ -36,7 +36,7 @@
   },
   "scripts": {
     "start-win": "set PORT=4010 && react-scripts start",
-    "start-unix": "HOST=172.17.0.7 PORT=4010 react-scripts start",
+    "start-unix": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
