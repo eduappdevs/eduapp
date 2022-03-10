@@ -46,8 +46,9 @@ export default function ProfileSettings() {
       newUserInfo.append("user_name", userName);
     }
 
-    API.updateInfo(localStorage.userId, newUserInfo);
-    window.location.reload();
+    API.updateInfo(localStorage.userId, newUserInfo).then(() => {
+      window.location.reload();
+    });
   };
 
   return courses !== undefined ? (
