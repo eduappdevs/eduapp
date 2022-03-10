@@ -58,6 +58,7 @@ export default function OpenedResource(props) {
       "http://localhost:3000",
       process.env.REACT_APP_BACKEND_ENDPOINT
     );
+
     if (media != null && (imageRegex.test(media) || videoRegex.test(media))) {
       if (imageRegex.test(media)) {
         return (
