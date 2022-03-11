@@ -144,7 +144,7 @@ const apiSettings = {
     await axios.get(endpoint).then((res) => {
       res.data.map((course) => {
         if (course.user_id.toString() === localStorage.userId) {
-          if (course.course_name !== "Noticias") {
+          if (course.course.name !== "Noticias") {
             return courses.push(course);
           }
         }
