@@ -1,8 +1,7 @@
-import React from "react";
+import { useState } from "react";
 import MenuHeader from "../menuHeader/MenuHeader";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { GetCourses } from "../../../hooks/GetCourses";
-import { useState } from "react/cjs/react.development";
 import API from "../../../API";
 import Loader from "../../../components/loader/Loader";
 import "./ProfileSettings.css";

@@ -59,6 +59,20 @@ export default function OpenedResource(props) {
       process.env.REACT_APP_BACKEND_ENDPOINT
     );
 
+    let replaceMedia = () => {
+      if (window.location.port === "") {
+        return media.replace(
+          process.env.REACT_APP_FRONTEND_DOMAIN,
+          process.env.BACKEND_DOMAIN
+        );
+      } else {
+        return media.replace(
+          `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_PORT}`,
+          process.env.REACT_APP_BACKEND_ENDPOINT
+        );
+      }
+    };
+
     if (media != null && (imageRegex.test(media) || videoRegex.test(media))) {
       if (imageRegex.test(media)) {
         return (
@@ -69,10 +83,7 @@ export default function OpenedResource(props) {
             <div
               className={"resource__image"}
               style={{
-                backgroundImage: `url(${media.replace(
-                  `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_PORT}`,
-                  process.env.REACT_APP_BACKEND_ENDPOINT
-                )}) `,
+                backgroundImage: `url(${replaceMedia()}) `,
               }}
             />
             <a className="fileDownload-button" name="file" href={media}>

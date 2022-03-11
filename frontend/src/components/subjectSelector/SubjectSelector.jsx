@@ -1,6 +1,5 @@
-import React from "react";
+import { useState } from "react";
 import { GetSubjects } from "../../hooks/GetSubjects";
-import { useState } from "react/cjs/react.development";
 import "./subjectSelector.css";
 
 export default function SubjectSelector(props) {
