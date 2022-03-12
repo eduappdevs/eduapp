@@ -31,7 +31,6 @@ export default function Resources() {
 
   const getResources = async (id) => {
     const resources__url = RESOURCES + `?subject_id=${id}`;
-    console.log(id);
     await axios.get(resources__url).then((res) => {
       res.data.map((x) => {
         if (x.firstfile != null) {

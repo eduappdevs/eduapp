@@ -7,6 +7,7 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import CourseSelector from "../../components/courseSelector/CourseSelector";
 import { SUBJECT } from "../../config";
 import { asynchronizeRequest } from "../../API";
+import MediaFix from "../../components/MediaFixer";
 import "./Home.css";
 
 export default function Home() {
@@ -176,6 +177,7 @@ export default function Home() {
       return true;
     });
   };
+
   const handleChangeSelector = (id) => {
     asynchronizeRequest(async function () {
       getSessions(id);
@@ -212,7 +214,7 @@ export default function Home() {
                   <img
                     src={
                       userInfo.profile_image != null
-                        ? userInfo.profile_image.url
+                        ? MediaFix(userInfo.profile_image.url)
                         : "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                     }
                     alt={(userInfo.user_name, "image")}

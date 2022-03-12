@@ -6,6 +6,7 @@ import API from "../../../API";
 import Loader from "../../../components/loader/Loader";
 import "./ProfileSettings.css";
 import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
+import MediaFix from "../../../components/MediaFixer";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -64,7 +65,7 @@ export default function ProfileSettings() {
             <img
               src={
                 userInfo.profile_image != null
-                  ? userInfo.profile_image.url
+                  ? MediaFix(userInfo.profile_image.url)
                   : "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               }
               alt={"user"}
