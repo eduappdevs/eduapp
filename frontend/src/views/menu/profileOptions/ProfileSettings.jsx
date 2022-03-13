@@ -66,7 +66,7 @@ export default function ProfileSettings() {
               src={
                 userInfo.profile_image != null
                   ? MediaFix(userInfo.profile_image.url)
-                  : "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                  : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               }
               alt={"user"}
               className="profileImage_preview"

@@ -43,7 +43,7 @@ describe("Chat Main Menu", () => {
           >
             <img
               className="chat-icon"
-              src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+              src="https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               alt="Chat User Icon"
             />
             <div className="chat-info chat-idle-state">

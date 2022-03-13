@@ -196,6 +196,10 @@ export const asynchronizeRequest = async (requestFunction) => {
 
     return requestFunction.call();
   } catch (err) {
-    asynchronizeRequest(requestFunction);
+    if (!navigator.onLine) {
+      setTimeout(() => {
+        asynchronizeRequest(requestFunction);
+      }, 5000);
+    } else asynchronizeRequest(requestFunction);
   }
 };

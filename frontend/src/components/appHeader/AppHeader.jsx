@@ -99,7 +99,7 @@ export default function AppHeader(props) {
           </div>
           <div className="ChatHeaderName">
             <img
-              src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+              src="https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               alt="Chat Icon"
             />
             <p>{props.chatName}</p>
