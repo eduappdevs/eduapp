@@ -64,15 +64,6 @@ export default function Menu(props) {
             Help
           </a>
         </li>
-        {/* <li>
-          <a
-            onClick={() => {
-              generateMessagesReport();
-            }}
-          >
-            Report
-          </a>
-        </li> */}
         <li>
           <a onClick={API.logout}>Log out</a>
         </li>

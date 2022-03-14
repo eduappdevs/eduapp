@@ -92,8 +92,12 @@ const apiSettings = {
       .delete(endpoint, {
         headers: { Authorization: localStorage.userToken },
       })
-      .then((res) => {
-        console.log("logged out");
+      .then(() => {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("isAdmin");
+
+        window.location.href = "/home";
       })
       .catch((err) => {
         console.log(err);
@@ -101,7 +105,7 @@ const apiSettings = {
         localStorage.removeItem("userToken");
         localStorage.removeItem("isAdmin");
 
-        window.location.reload();
+        window.location.href = "/home";
       });
   },
 
