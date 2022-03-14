@@ -97,7 +97,7 @@ const apiSettings = {
         localStorage.removeItem("userToken");
         localStorage.removeItem("isAdmin");
 
-        window.location.href = "/home";
+        window.location.href = "/login";
       })
       .catch((err) => {
         console.log(err);
@@ -105,7 +105,7 @@ const apiSettings = {
         localStorage.removeItem("userToken");
         localStorage.removeItem("isAdmin");
 
-        window.location.href = "/home";
+        window.location.href = "/login";
       });
   },
 

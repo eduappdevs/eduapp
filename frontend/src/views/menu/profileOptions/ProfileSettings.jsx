@@ -47,7 +47,7 @@ export default function ProfileSettings() {
     }
 
     API.updateInfo(localStorage.userId, newUserInfo).then(() => {
-      window.location.reload();
+      window.location.href = "/home";
     });
   };
 
