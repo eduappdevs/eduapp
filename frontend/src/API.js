@@ -92,16 +92,22 @@ const apiSettings = {
       .delete(endpoint, {
         headers: { Authorization: localStorage.userToken },
       })
-      .then((res) => {
-        console.log("logged out");
+      .then(() => {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("isAdmin");
+        localStorage.removeItem("offline_user");
+
+        window.location.href = "/login";
       })
       .catch((err) => {
         console.log(err);
         localStorage.removeItem("userId");
         localStorage.removeItem("userToken");
         localStorage.removeItem("isAdmin");
+        localStorage.removeItem("offline_user");
 
-        window.location.reload();
+        window.location.href = "/login";
       });
   },
 
@@ -196,6 +202,13 @@ export const asynchronizeRequest = async (requestFunction) => {
 
     return requestFunction.call();
   } catch (err) {
-    asynchronizeRequest(requestFunction);
+    if (!navigator.onLine) {
+      setTimeout(
+        () => {
+          asynchronizeRequest(requestFunction);
+        },
+        navigator.onLine ? 5000 : 20000
+      );
+    } else asynchronizeRequest(requestFunction);
   }
 };

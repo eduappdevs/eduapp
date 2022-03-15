@@ -1,25 +1,9 @@
-.accessPage-logo>img {
-	width: 60px;
-	height: 60px;
-	margin-top: 10px;
-	margin-left: 10px;
-	z-index: 1000;
-	/* animation: 3s zoomInOut infinite alternate ease; */
-}
-
-.accessPage-logo {
-	height: 84.3%;
-	width: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: flex-end;
-	pointer-events: none;
-}
-
 .accessPageSection {
 	background-color: var(--orange);
 	height: 100vh;
 	width: 100vw;
+	overflow-y: hidden;
+	position: fixed;
 }
 
 .accessPageSvg {
@@ -104,13 +88,19 @@
 	height: 23vh;
 	position: absolute;
 	bottom: 0;
-	width: 100vw;
+	width: 100%;
 	z-index: 200;
 }
 
 .registration_form>h1,
 .login_form>h1 {
 	color: white;
+}
+
+.login_form>img {
+	margin-top: 50px;
+	width: 60px;
+	height: 60px;
 }
 
 .accessPage_login {

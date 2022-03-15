@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { useState } from "react";
 import { GetCourses } from "../../hooks/GetCourses";
 import "./CourseSelector.css";
 

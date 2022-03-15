@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { useState } from "react";
 import MenuHeader from "../menuHeader/MenuHeader";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { GetCourses } from "../../../hooks/GetCourses";
@@ -6,6 +6,8 @@ import API from "../../../API";
 import Loader from "../../../components/loader/Loader";
 import "./ProfileSettings.css";
 import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
+import MediaFix from "../../../components/MediaFixer";
+import { updateUserImageOffline } from "../../../components/OfflineManager";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -21,7 +23,7 @@ export default function ProfileSettings() {
   };
 
   const changeImagePreview = (newPreview) => {
-    console.log(newPreview);
+    console.log(userInfo);
     if (newPreview.target.files && newPreview.target.files[0]) {
       document
         .getElementById("profileImage_preview")
@@ -31,6 +33,10 @@ export default function ProfileSettings() {
         );
     }
     setChangeImage(newPreview.target.files[0]);
+  };
+
+  const getPosition = (string, subString, index) => {
+    return string.split(subString, index).join(subString).length;
   };
 
   const commitChanges = (e) => {
@@ -45,8 +51,18 @@ export default function ProfileSettings() {
       newUserInfo.append("user_name", userName);
     }
 
-    API.updateInfo(localStorage.userId, newUserInfo).then(() => {
-      window.location.reload();
+    API.updateInfo(localStorage.userId, newUserInfo).then((res) => {
+      let oldimg = MediaFix(userInfo.profile_image.url);
+      let newimg = MediaFix(res.data.profile_image.url);
+
+      if (
+        oldimg.substring(getPosition(oldimg, "/", 8)) !==
+        newimg.substring(getPosition(newimg, "/", 8))
+      ) {
+        updateUserImageOffline(newimg).then(() => {
+          window.location.href = "/home";
+        });
+      } else window.location.href = "/home";
     });
   };
 
@@ -64,8 +80,8 @@ export default function ProfileSettings() {
             <img
               src={
                 userInfo.profile_image != null
-                  ? userInfo.profile_image.url
-                  : "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                  ? MediaFix(userInfo.profile_image.url)
+                  : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               }
               alt={"user"}
               className="profileImage_preview"

@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Menu from "../../views/menu/Menu";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import MediaFix from "../MediaFixer";
 import "./Navbar.css";
 
 export default function Navbar({ mobile }) {
@@ -141,8 +142,8 @@ export default function Navbar({ mobile }) {
               <img
                 src={
                   userInfo.profile_image != null
-                    ? userInfo.profile_image.url
-                    : "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                    ? MediaFix(userInfo.profile_image.url)
+                    : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                 }
                 alt="Profile"
               />

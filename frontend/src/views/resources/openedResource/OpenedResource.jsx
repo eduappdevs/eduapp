@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
+import MediaFix from "../../../components/MediaFixer";
 import { asynchronizeRequest } from "../../../API";
 import { RESOURCES } from "../../../config";
 import "./OpenedResource.css";
@@ -47,6 +48,16 @@ export default function OpenedResource(props) {
 
     setTimeout(() => {
       document.getElementsByTagName("header")[0].style.display = "flex";
+
+      document.getElementsByClassName(
+        "mobileSection"
+      )[0].childNodes[0].style.zIndex = 999;
+      document.getElementsByClassName(
+        "mobileSection"
+      )[0].childNodes[1].style.zIndex = 999;
+      document.getElementsByClassName(
+        "mobileSection"
+      )[0].childNodes[2].style.zIndex = -999;
     }, 100);
   };
 
@@ -54,10 +65,7 @@ export default function OpenedResource(props) {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
     const videoRegex = new RegExp("^.*(mp4|mov)$");
 
-    media = media.replace(
-      "http://localhost:3000",
-      process.env.REACT_APP_BACKEND_ENDPOINT
-    );
+    media = MediaFix(media);
 
     if (media != null && (imageRegex.test(media) || videoRegex.test(media))) {
       if (imageRegex.test(media)) {
@@ -69,10 +77,7 @@ export default function OpenedResource(props) {
             <div
               className={"resource__image"}
               style={{
-                backgroundImage: `url(${media.replace(
-                  `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_PORT}`,
-                  process.env.REACT_APP_BACKEND_ENDPOINT
-                )}) `,
+                backgroundImage: `url(${media}) `,
               }}
             />
             <a className="fileDownload-button" name="file" href={media}>

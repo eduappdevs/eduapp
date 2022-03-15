@@ -31,7 +31,6 @@ export default function Resources() {
 
   const getResources = async (id) => {
     const resources__url = RESOURCES + `?subject_id=${id}`;
-    console.log(id);
     await axios.get(resources__url).then((res) => {
       res.data.map((x) => {
         if (x.firstfile != null) {
@@ -54,6 +53,16 @@ export default function Resources() {
     document
       .getElementById(`resource__${e.target.id}__opened`)
       .classList.remove("openedResource__hidden");
+
+    document.getElementsByClassName(
+      "mobileSection"
+    )[0].childNodes[0].style.zIndex = -999;
+    document.getElementsByClassName(
+      "mobileSection"
+    )[0].childNodes[1].style.zIndex = -999;
+    document.getElementsByClassName(
+      "mobileSection"
+    )[0].childNodes[2].style.zIndex = 999;
 
     setTimeout(() => {
       document.getElementsByTagName("header")[0].style.display = "none";

@@ -19,8 +19,10 @@ export default function ResourcesModal(props) {
   };
 
   const getCurrentlyUser = async () => {
-    await API.fetchInfo(localStorage.userId).then((res) => {
-      setCurrentlyUser(res.user_name);
+    asynchronizeRequest(async () => {
+      await API.fetchInfo(localStorage.userId).then((res) => {
+        setCurrentlyUser(res.user_name);
+      });
     });
   };
 
