@@ -4,31 +4,26 @@
 	"description": "View your school resources everywhere.",
   "icons": [
 		{
-			"src": "assets/logo.png",
-			"sizes": "270x270",
+			"src": "assets/maskable-logo.png",
+			"sizes": "300x300",
 			"type": "image/png",
 			"purpose": "maskable"
 		},
     {
       "src": "favicon.ico",
-      "sizes": "64x64",
+      "sizes": "256x256",
       "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
+		}, 
+		{
+			"src": "assets/logo.png",
+			"sizes": "300x300",
+			"type": "image/png"
+		}
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff",
+  "theme_color": "#4B91FF",
+  "background_color": "#FF8139",
 	"id": "/",
 	"scope": "/",
 	"orientation": "portrait"
