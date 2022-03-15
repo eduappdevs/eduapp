@@ -96,6 +96,7 @@ const apiSettings = {
         localStorage.removeItem("userId");
         localStorage.removeItem("userToken");
         localStorage.removeItem("isAdmin");
+        localStorage.removeItem("offline_user");
 
         window.location.href = "/login";
       })
@@ -104,6 +105,7 @@ const apiSettings = {
         localStorage.removeItem("userId");
         localStorage.removeItem("userToken");
         localStorage.removeItem("isAdmin");
+        localStorage.removeItem("offline_user");
 
         window.location.href = "/login";
       });
@@ -201,9 +203,12 @@ export const asynchronizeRequest = async (requestFunction) => {
     return requestFunction.call();
   } catch (err) {
     if (!navigator.onLine) {
-      setTimeout(() => {
-        asynchronizeRequest(requestFunction);
-      }, 5000);
+      setTimeout(
+        () => {
+          asynchronizeRequest(requestFunction);
+        },
+        navigator.onLine ? 5000 : 20000
+      );
     } else asynchronizeRequest(requestFunction);
   }
 };

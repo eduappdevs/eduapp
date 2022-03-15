@@ -18,7 +18,6 @@ export const FetchUserInfo = (userId) => {
       } else {
         let offlineUser = await getOfflineUser();
         setUserInfo({ ...offlineUser });
-        console.log("OFFLINE USER: ", offlineUser);
       }
     };
 

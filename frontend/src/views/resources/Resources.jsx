@@ -54,6 +54,16 @@ export default function Resources() {
       .getElementById(`resource__${e.target.id}__opened`)
       .classList.remove("openedResource__hidden");
 
+    document.getElementsByClassName(
+      "mobileSection"
+    )[0].childNodes[0].style.zIndex = -999;
+    document.getElementsByClassName(
+      "mobileSection"
+    )[0].childNodes[1].style.zIndex = -999;
+    document.getElementsByClassName(
+      "mobileSection"
+    )[0].childNodes[2].style.zIndex = 999;
+
     setTimeout(() => {
       document.getElementsByTagName("header")[0].style.display = "none";
       document.getElementById("resource-list").classList.add("hide-rest-res");

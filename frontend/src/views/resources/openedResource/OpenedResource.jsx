@@ -48,6 +48,16 @@ export default function OpenedResource(props) {
 
     setTimeout(() => {
       document.getElementsByTagName("header")[0].style.display = "flex";
+
+      document.getElementsByClassName(
+        "mobileSection"
+      )[0].childNodes[0].style.zIndex = 999;
+      document.getElementsByClassName(
+        "mobileSection"
+      )[0].childNodes[1].style.zIndex = 999;
+      document.getElementsByClassName(
+        "mobileSection"
+      )[0].childNodes[2].style.zIndex = -999;
     }, 100);
   };
 
