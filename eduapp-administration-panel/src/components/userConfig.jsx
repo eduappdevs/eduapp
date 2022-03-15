@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as API from "../API";
-
+import LoadUsersCSV from "./loadUsersCSV";
 export default function UserConfig() {
   const [users, setUsers] = useState(null);
 
@@ -83,6 +83,8 @@ export default function UserConfig() {
   return (
     <>
       <div className="schedulesesionslist-main-container">
+
+        
         <table>
           <tr>
             <th>Add</th>
@@ -135,7 +137,16 @@ export default function UserConfig() {
               <th>Is Admin</th>
               <th>Has Google Linked</th>
               <th>Actions</th>
+            
             </tr>
+            <p>You will upload this users, review and confirm</p>
+            <div id="tempUsersUploading">
+              
+              
+              </div>
+
+
+
             {users
               ? users.map((u) => {
                   return (

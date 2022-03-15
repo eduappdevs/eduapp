@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/scheduletoolbar.css";
-
+import LoadUsersCSV from "./loadUsersCSV";
 export default function Toolbar(props) {
   return (
     <div className="scheduletoolbar-container">
@@ -47,7 +47,7 @@ export default function Toolbar(props) {
           <h1>Users</h1>
           <ul className="scheduletoolbar-ul users-toolbar">
             <li>
-              <p> Load </p>
+              <LoadUsersCSV buttonText='Load'/>
             </li>
             <li>
               <select name="subjects" id="subjects-select">
