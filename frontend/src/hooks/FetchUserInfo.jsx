@@ -1,17 +1,25 @@
 import { useState, useEffect } from "react";
 import API from "../API";
+import { getOfflineUser, saveUserOffline } from "../components/CacheManager";
 
 export const FetchUserInfo = (userId) => {
   const [userInfo, setUserInfo] = useState({});
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      try {
-        const userInfo = await API.fetchInfo(userId);
-        setUserInfo({ ...userInfo });
-      } catch (error) {
-        console.log(error);
-        console.log("token", localStorage.userToken);
+      if (navigator.onLine) {
+        try {
+          const userInfo = await API.fetchInfo(userId);
+          setUserInfo({ ...userInfo });
+          await saveUserOffline(userInfo);
+        } catch (error) {
+          console.log(error);
+          console.log("token", localStorage.userToken);
+        }
+      } else {
+        let offlineUser = await getOfflineUser();
+        setUserInfo({ ...offlineUser });
+        console.log("OFFLINE USER: ", offlineUser);
       }
     };
 

@@ -7,6 +7,7 @@ import Loader from "../../../components/loader/Loader";
 import "./ProfileSettings.css";
 import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
 import MediaFix from "../../../components/MediaFixer";
+import { cacheProfileImage } from "../../../components/CacheManager";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -22,7 +23,7 @@ export default function ProfileSettings() {
   };
 
   const changeImagePreview = (newPreview) => {
-    console.log(newPreview);
+    console.log(userInfo);
     if (newPreview.target.files && newPreview.target.files[0]) {
       document
         .getElementById("profileImage_preview")
@@ -32,6 +33,10 @@ export default function ProfileSettings() {
         );
     }
     setChangeImage(newPreview.target.files[0]);
+  };
+
+  const getPosition = (string, subString, index) => {
+    return string.split(subString, index).join(subString).length;
   };
 
   const commitChanges = (e) => {
@@ -46,8 +51,18 @@ export default function ProfileSettings() {
       newUserInfo.append("user_name", userName);
     }
 
-    API.updateInfo(localStorage.userId, newUserInfo).then(() => {
-      window.location.href = "/home";
+    API.updateInfo(localStorage.userId, newUserInfo).then((res) => {
+      let oldimg = MediaFix(userInfo.profile_image.url);
+      let newimg = MediaFix(res.data.profile_image.url);
+
+      if (
+        oldimg.substring(getPosition(oldimg, "/", 8)) !==
+        newimg.substring(getPosition(newimg, "/", 8))
+      ) {
+        cacheProfileImage(newimg).then(() => {
+          //window.location.href = "/home";
+        });
+      } else window.location.href = "/home";
     });
   };
 

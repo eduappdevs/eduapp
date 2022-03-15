@@ -6,6 +6,8 @@ import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { StaleWhileRevalidate } from "workbox-strategies";
 
+// SW SETUP
+
 clientsClaim();
 
 precacheAndRoute(self.__WB_MANIFEST);
@@ -29,15 +31,24 @@ registerRoute(({ request, url }) => {
 
 registerRoute(
   ({ url }) =>
-    url.origin === self.location.origin && url.pathname.endsWith(".png"),
+    url.origin === self.location.origin &&
+    (url.pathname.endsWith(".png") || url.pathname.endsWith(".svg")),
   new StaleWhileRevalidate({
-    cacheName: "images",
+    cacheName: "eduapp_images",
     plugins: [new ExpirationPlugin({ maxEntries: 50 })],
   })
 );
 
+// EVENTS
+
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
+  if (event.data) {
+    switch (event.data.type) {
+      case "SKIP_WAITING":
+        self.skipWaiting();
+        break;
+      default:
+        break;
+    }
   }
 });
