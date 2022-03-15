@@ -184,16 +184,17 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	top: 81vh;
+	top: 80%;
 	right: 0;
 	margin-right: 5%;
 	border-radius: 80%;
 	background-color: var(--orange);
+	margin-top: -5%;
 }
 
 .chat-add-button>svg {
-	width: 15vw;
-	height: 15vw;
+	width: 60px;
+	height: 60px;
 }
 
 @media screen and (max-height: 680px) {

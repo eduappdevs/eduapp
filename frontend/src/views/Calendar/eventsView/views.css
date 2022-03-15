@@ -20,7 +20,7 @@
 	box-shadow: 0 0px 5px var(--textColor);
 	opacity: 1;
 	transform: none;
-	transition: opacity 280ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 186ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	transition: opacity 180ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 186ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 	transform-origin: 145.898px 0px;
 	width: 100%;
 	margin-left: 20%;
@@ -41,13 +41,13 @@
 .calendar-view-header-close-button {
 	width: 20px;
 	height: 20px;
-	fill: currentColor;
+	fill: var(--textColor);
 }
 
 .calendar-view-header-edit-button {
 	width: 20px;
 	height: 20px;
-	fill: currentColor;
+	fill: var(--textColor);
 	margin-right: 15%;
 	padding-right: 15%;
 	border-right: 0.5px solid var(--textColor);
@@ -58,6 +58,7 @@
 	flex-direction: column;
 	margin-left: 10%;
 	margin-right: 10%;
+	color: var(--textColor);
 }
 
 .calendar-view-contents-header {
@@ -70,8 +71,8 @@
 }
 
 .calendar-view-contents-header>svg {
-	height: 3em;
-	width: 3em;
+	height: 2em;
+	width: 2em;
 }
 
 .calendar-view-contents-header>p {
@@ -120,20 +121,18 @@
 }
 
 /* edit View */
-.calendar-view-edit-hidden {
+.calendar-view-edit::-webkit-scrollbar {
 	display: none !important;
 }
 
 .calendar-view-edit-main-container {
 	position: fixed;
-	overflow-y: scroll;
 	display: flex;
 	align-items: center;
 	width: 100vw;
 	height: 100vh;
 	top: 0;
 	right: 0;
-	background-color: rgba(0, 0, 0, 0.5);
 }
 
 .calendar-view-edit {
@@ -155,7 +154,7 @@
 	-webkit-box-pack: end;
 	justify-content: flex-end;
 	align-items: flex-start;
-	padding-top: 5%;
+	padding-top: 2em;
 	padding-right: 10%;
 	margin-top: 13vh;
 }
@@ -163,13 +162,13 @@
 .calendar-view-edit-header-close-button {
 	width: 25px;
 	height: 25px;
-	fill: currentColor;
+	fill: var(--textColor);
 }
 
 .calendar-view-edit-header-delete-button {
 	width: 25px;
 	height: 25px;
-	fill: currentColor;
+	fill: var(--textColor);
 	margin-right: 15%;
 	padding-right: 15%;
 	border-right: 0.5px solid var(--textColor);
@@ -286,9 +285,6 @@
 	-webkit-appearance: none;
 	appearance: none;
 	background: url("data:image/svg+xml;utf8,<svg viewBox='0 0 140 140' width='24' height='24' xmlns='http://www.w3.org/2000/svg'><g><path d='m121.3,34.6c-1.6-1.6-4.2-1.6-5.8,0l-51,51.1-51.1-51.1c-1.6-1.6-4.2-1.6-5.8,0-1.6,1.6-1.6,4.2 0,5.8l53.9,53.9c0.8,0.8 1.8,1.2 2.9,1.2 1,0 2.1-0.4 2.9-1.2l53.9-53.9c1.7-1.6 1.7-4.2 0.1-5.8z' fill='white'/></g></svg>") no-repeat;
-
-
-
 }
 
 .calendar-view-edit-alert-delete-container {
@@ -360,13 +356,12 @@
 
 
 /* create */
-.calendar-view-create-hidden {
+.calendar-view-create-main-container ::-webkit-scrollbar {
 	display: none !important;
 }
 
 .calendar-view-create-main-container {
 	position: fixed;
-	display: flex;
 	align-items: center;
 	width: 100vw;
 	height: 100vh;
@@ -381,11 +376,14 @@
 	box-shadow: 0 0px 5px var(--textColor);
 	opacity: 1;
 	transform: none;
-	transition: opacity 280ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 186ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 	transform-origin: 145.898px 0px;
 	width: 90%;
 	height: 90%;
 	overflow-y: auto;
+}
+
+.calendar-view-create-header-close-button>svg {
+	fill: var(--textColor);
 }
 
 .calendar-view-create-header {
@@ -394,7 +392,7 @@
 	-webkit-box-pack: end;
 	justify-content: flex-end;
 	align-items: flex-start;
-	padding-top: 5%;
+	padding-top: 2em;
 	padding-right: 10%;
 	margin-top: 8vh;
 }
@@ -402,7 +400,7 @@
 .calendar-view-create-header-close-button {
 	width: 25px;
 	height: 25px;
-	fill: currentColor;
+	fill: var(--textColor);
 }
 
 .calendar-view-create-contents {

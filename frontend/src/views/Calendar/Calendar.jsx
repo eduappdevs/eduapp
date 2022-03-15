@@ -153,35 +153,40 @@ export default function Calendar() {
   };
 
   const openCreate = async () => {
-    const chatBox = document.getElementById("create-box");
-    chatBox.style.display = "flex";
+    const calendarBox = document.getElementById("create-box");
     const backgroundCalendar =
       document.getElementsByClassName("background-shadow")[0];
-    const calendarMainScroll = document.getElementsByClassName(
-      "calendar-main-container"
-    )[0];
+    backgroundCalendar.classList.add("background-shadow-animation");
+    backgroundCalendar.style.animationDirection = "normal";
 
     setTimeout(() => {
-      calendarMainScroll.classList.add("disable-scroll");
+      document.body.style.overflow = "hidden";
       backgroundCalendar.style.display = "block";
-    }, 200);
+    }, 1);
 
     setTimeout(() => {
-      chatBox.classList.add("create-box-opened");
-      chatBox.classList.remove("calendar-view-create-hidden");
-    }, 400);
+      backgroundCalendar.classList.remove("background-shadow-animation");
+      calendarBox.style.display = "flex";
+      calendarBox.style.opacity = 1;
+      calendarBox.classList.add("create-box-opened");
+      calendarBox.classList.remove("create-box-closed");
+    }, 150);
   };
 
-  const showEventView = async (data) => {
+  const showEventView = async (event, data) => {
+    let scrollElement = event.target;
+    while (!scrollElement.id.includes("event_")) {
+      scrollElement = scrollElement.parentElement;
+    }
     getCalendarEvent(data);
 
     const viewBox = document.getElementById("view-box");
     viewBox.style.display = "flex";
     const backgroundCalendar =
       document.getElementsByClassName("background-shadow")[0];
-    const calendarMainScroll = document.getElementsByClassName(
-      "calendar-main-container"
-    )[0];
+    backgroundCalendar.classList.add("background-shadow-animation");
+    backgroundCalendar.style.animationDirection = "normal";
+    backgroundCalendar.style.display = "block";
 
     setTimeout(() => {
       viewBox.classList.remove("view-box-closed");
@@ -189,20 +194,20 @@ export default function Calendar() {
       document
         .getElementsByClassName("calendar-view-main-container")[0]
         .classList.remove("calendar-view-hidden");
-    }, 1);
+    }, 150);
 
     setTimeout(() => {
-      calendarMainScroll.classList.add("disable-scroll");
-      backgroundCalendar.style.display = "block";
-    }, 500);
+      document.body.style.overflow = "hidden";
+      backgroundCalendar.classList.remove("background-shadow-animation");
+    }, 550);
   };
 
   const StyledDiv = styled("div")(({ theme }) => ({}));
   const Appointment = ({ data, children, style, ...restProps }) => (
     <StyledDiv
-      className={`event_${data.id}`}
-      onClick={() => {
-        showEventView(data);
+      id={`event_${data.id}`}
+      onClick={(e) => {
+        showEventView(e, data);
       }}
     >
       <Appointments.Appointment
@@ -234,7 +239,6 @@ export default function Calendar() {
       getCalendar();
       getSubject();
     });
-    console.log(userinfo.isAdmin);
 
     if (window.innerWidth < 1100) {
       setItsMobileDevice(true);
@@ -246,34 +250,26 @@ export default function Calendar() {
   return (
     <div className="calendar-main-container">
       <section
+        id="sectionCalendar"
         className={
           ItsMobileDevice
             ? "mobileSection calendar-main-section"
             : "desktopSection calendar-main-section"
         }
       >
-        <div className="calendar">
-          <div className="calendar-container">
-            <div className="calendar-api">
-              <Paper>
-                <Scheduler
-                  data={annotations}
-                  locale={window.navigator.language}
-                >
-                  <ViewState defaultCurrentDate={currentDate} />
-                  <WeekView startDayHour={6} endDayHour={24} />
-                  <DayView startDayHour={6} endDayHour={24} />
-                  <Toolbar />
-                  <DateNavigator />
-                  <TodayButton />
-                  <ViewSwitcher />
-                  <Appointments appointmentComponent={Appointment} />
-                  <AppointmentTooltip showCloseButton visible={false} />
-                </Scheduler>
-              </Paper>
-            </div>
-          </div>
-        </div>
+        <Paper>
+          <Scheduler data={annotations} locale={window.navigator.language}>
+            <ViewState defaultCurrentDate={currentDate} />
+            <WeekView startDayHour={6} endDayHour={24} />
+            <DayView startDayHour={6} endDayHour={24} />
+            <Toolbar />
+            <DateNavigator />
+            <TodayButton />
+            <ViewSwitcher />
+            <Appointments appointmentComponent={Appointment} />
+            <AppointmentTooltip showCloseButton visible={false} />
+          </Scheduler>
+        </Paper>
       </section>
       <div
         className={userinfo.isAdmin ? "button-calendar-option " : "hidden"}

@@ -7,19 +7,13 @@ import { asynchronizeRequest } from "../../../API";
 export default function EditView(props) {
   const closeButton = async () => {
     const editBox = document.getElementById("edit-box");
-    editBox.style.display = "flex";
-    editBox.classList.remove("edit-box-opened");
-    editBox.classList.add("edit-box-closed");
-
-    const calendarMainScroll = document.getElementsByClassName(
-      "calendar-main-container"
-    )[0];
-
-    calendarMainScroll.classList.remove("disable-scroll");
-
     setTimeout(() => {
-      editBox.classList.add("calendar-view-edit-hidden");
+      editBox.classList.remove("edit-box-opened");
+      editBox.classList.add("edit-box-closed");
     }, 150);
+    setTimeout(() => {
+      editBox.style.display = "none";
+    }, 500);
   };
 
   const updateEvent = async (e) => {
@@ -150,7 +144,8 @@ export default function EditView(props) {
   return (
     <div
       id="edit-box"
-      className="calendar-view-edit-main-container calendar-view-edit-hidden"
+      className="calendar-view-edit-main-container edit-box-closed"
+      style={{ display: "none" }}
     >
       <div className="calendar-view-edit">
         <div className="calendar-view-edit-header">

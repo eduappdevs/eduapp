@@ -1,8 +1,7 @@
-import React from "react";
+import { React, useState } from "react";
 import MenuHeader from "../menuHeader/MenuHeader";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { GetCourses } from "../../../hooks/GetCourses";
-import { useState } from "react/cjs/react.development";
 import API from "../../../API";
 import Loader from "../../../components/loader/Loader";
 import "./ProfileSettings.css";
@@ -46,8 +45,9 @@ export default function ProfileSettings() {
       newUserInfo.append("user_name", userName);
     }
 
-    API.updateInfo(localStorage.userId, newUserInfo);
-    window.location.reload();
+    API.updateInfo(localStorage.userId, newUserInfo).then(() => {
+      window.location.reload();
+    });
   };
 
   return courses !== undefined ? (

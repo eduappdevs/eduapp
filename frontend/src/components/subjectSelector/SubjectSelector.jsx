@@ -1,6 +1,5 @@
-import React from "react";
+import {React,useState} from "react";
 import { GetSubjects } from "../../hooks/GetSubjects";
-import { useState } from "react/cjs/react.development";
 import "./subjectSelector.css";
 
 export default function SubjectSelector(props) {
@@ -33,6 +32,7 @@ export default function SubjectSelector(props) {
                   id={subject.id}
                 >
                   {subject.name}
+                  hola
                 </li>
               );
             })}

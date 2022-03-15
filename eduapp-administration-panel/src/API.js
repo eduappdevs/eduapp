@@ -1,13 +1,16 @@
 import axios from "axios";
-const API_URL = "http://localhost:3000";
+const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
+const JSREPORT = process.env.REACT_APP_REPORTS_ENDPOINT;
 const USERS = `${API_URL}/users`;
 const INSTITUTIONS = `${API_URL}/institutions`;
 const COURSES = `${API_URL}/courses`;
 const USERS_INFO = `${API_URL}/user_infos`;
 const TUITIONS = `${API_URL}/tuitions`;
+const SESSIONS = `${API_URL}/eduapp_user_sessions`;
 const PING = `${API_URL}/ping`;
 const SUBJECTS = `${API_URL}/subjects`;
 const RESOURCES = `${API_URL}/resources`;
+const CHAT_MESSAGES = `${API_URL}/chat_messages`;
 
 const token =
   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
@@ -123,6 +126,7 @@ const apiSettings = {
 export default apiSettings;
 
 export const endpoints = {
+  JSREPORT,
   API_URL,
   USERS,
   INSTITUTIONS,
@@ -131,6 +135,8 @@ export const endpoints = {
   TUITIONS,
   PING,
   SUBJECTS,
+  CHAT_MESSAGES,
+  SESSIONS,
 };
 
 export const asynchronizeRequest = async (requestFunction) => {

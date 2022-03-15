@@ -3,6 +3,7 @@ import axios from "axios";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
 import { asynchronizeRequest } from "../../../API";
+import { RESOURCES } from "../../../config";
 import "./OpenedResource.css";
 
 export default function OpenedResource(props) {
@@ -26,7 +27,7 @@ export default function OpenedResource(props) {
   const deleteResource = (id) => {
     asynchronizeRequest(function () {
       axios
-        .delete(`http://localhost:3000/resources/${id}`)
+        .delete(RESOURCES + `/${id}`)
         .then((res) => console.log, window.location.reload())
         .catch((err) => console.log);
     });
@@ -51,7 +52,12 @@ export default function OpenedResource(props) {
 
   const manageMediaType = (media) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
-    const videoRegex = new RegExp("^.*(mp4)$");
+    const videoRegex = new RegExp("^.*(mp4|mov)$");
+
+    media = media.replace(
+      "http://localhost:3000",
+      process.env.REACT_APP_BACKEND_ENDPOINT
+    );
 
     if (media != null && (imageRegex.test(media) || videoRegex.test(media))) {
       if (imageRegex.test(media)) {
@@ -64,8 +70,8 @@ export default function OpenedResource(props) {
               className={"resource__image"}
               style={{
                 backgroundImage: `url(${media.replace(
-                  "localhost:3001",
-                  "localhost:3000"
+                  `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_PORT}`,
+                  process.env.REACT_APP_BACKEND_ENDPOINT
                 )}) `,
               }}
             />

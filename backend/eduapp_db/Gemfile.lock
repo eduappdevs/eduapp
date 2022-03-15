@@ -84,6 +84,10 @@ GEM
       devise (~> 4.0)
       warden-jwt_auth (~> 0.6)
     diff-lcs (1.4.4)
+    dotenv (2.7.6)
+    dotenv-rails (2.7.6)
+      dotenv (= 2.7.6)
+      railties (>= 3.2)
     dry-auto_inject (0.8.0)
       dry-container (>= 0.3.4)
     dry-configurable (0.13.0)
@@ -256,6 +260,7 @@ DEPENDENCIES
   byebug
   devise
   devise-jwt
+  dotenv-rails
   image_processing (~> 1.2)
   omniauth
   omniauth-google-oauth2
@@ -272,4 +277,4 @@ RUBY VERSION
    ruby 2.6.8p205
 
 BUNDLED WITH
-   2.3.7
+   2.3.6

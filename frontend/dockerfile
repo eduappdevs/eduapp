@@ -8,8 +8,12 @@ RUN npm install
 
 COPY . .
 
-ENV PORT=3001
+ENV REACT_APP_BACKEND_ENDPOINT=http://somosbluecity.es:3010 \
+	REACT_APP_WEBSOCKET_ENDPOINT=ws://somosbluecity.es:3010 \
+	REACT_APP_PORT=4010 \
+	REACT_APP_DOMAIN="somosbluecity.es" \
+	REACT_APP_SUPPORT_ENDPOINT=http://localhost:3003 
 
-EXPOSE 3001
+EXPOSE 4010
 
 CMD [ "npm", "run", "start-unix" ]

@@ -1,6 +1,5 @@
-import React from "react";
+import { React, useState } from "react";
 import { GetCourses } from "../../hooks/GetCourses";
-import { useState } from "react/cjs/react.development";
 import "./CourseSelector.css";
 
 export default function CourseSelector(props) {

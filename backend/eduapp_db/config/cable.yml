@@ -2,9 +2,8 @@ development:
   adapter: postgresql
 
 test:
-  adapter: test
+  adapter: postgresql
 
 production:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
+  adapter: postgresql
   channel_prefix: eduapp_db_production

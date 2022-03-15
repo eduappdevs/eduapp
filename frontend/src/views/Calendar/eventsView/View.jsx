@@ -1,136 +1,127 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import EditView from './EditView';
-import './views.css';
-import { FetchUserInfo } from '../../../hooks/FetchUserInfo';
+import React from "react";
+import { useEffect, useState } from "react";
+import EditView from "./EditView";
+import "./views.css";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 
 export default function View(props) {
   let userinfo = FetchUserInfo(localStorage.userId);
   const [editEvent, setEditEvent] = useState({});
 
   const closeButton = async () => {
-    const editBox = document.getElementById('view-box');
-
-    editBox.style.display = 'flex';
-
+    const viewBox = document.getElementById("view-box");
     const backgroundCalendar =
-      document.getElementsByClassName('background-shadow')[0];
+      document.getElementsByClassName("background-shadow")[0];
 
-    editBox.classList.remove('view-box-opened');
-    editBox.classList.add('view-box-closed');
+    viewBox.classList.remove("view-box-opened");
+    viewBox.classList.add("view-box-closed");
+    backgroundCalendar.classList.add("background-shadow-animation");
+    backgroundCalendar.style.animationDirection = "reverse";
 
     if (props.data.description !== undefined) {
       document
-        .getElementsByClassName('calendar-view-session-information')[0]
-        .classList.add('description-hidden');
+        .getElementsByClassName("calendar-view-session-information")[0]
+        .classList.add("description-hidden");
       document
-        .getElementsByClassName('calendar-view-edit-session-information')[0]
-        .classList.add('description-hidden');
+        .getElementsByClassName("calendar-view-edit-session-information")[0]
+        .classList.add("description-hidden");
       document
-        .getElementsByClassName('calendar-view-description')[0]
-        .classList.remove('description-hidden');
+        .getElementsByClassName("calendar-view-description")[0]
+        .classList.remove("description-hidden");
       document
-        .getElementsByClassName('calendar-view-edit-description')[0]
-        .classList.remove('description-hidden');
+        .getElementsByClassName("calendar-view-edit-description")[0]
+        .classList.remove("description-hidden");
     } else {
       document
-        .getElementsByClassName('calendar-view-session-information')[0]
-        .classList.remove('description-hidden');
+        .getElementsByClassName("calendar-view-session-information")[0]
+        .classList.remove("description-hidden");
       document
-        .getElementsByClassName('calendar-view-edit-session-information')[0]
-        .classList.remove('description-hidden');
+        .getElementsByClassName("calendar-view-edit-session-information")[0]
+        .classList.remove("description-hidden");
       document
-        .getElementsByClassName('calendar-view-description')[0]
-        .classList.add('description-hidden');
+        .getElementsByClassName("calendar-view-description")[0]
+        .classList.add("description-hidden");
       document
-        .getElementsByClassName('calendar-view-edit-description')[0]
-        .classList.add('description-hidden');
+        .getElementsByClassName("calendar-view-edit-description")[0]
+        .classList.add("description-hidden");
     }
 
-    document
-      .getElementsByClassName('calendar-main-container')[0]
-      .classList.remove('disable-scroll');
-
     setTimeout(() => {
-      backgroundCalendar.style.display = 'none';
-      editBox.classList.add('calendar-view-hidden');
-    }, 150);
+      document.body.style.overflow = "scroll";
+      viewBox.style.display = "none";
+      backgroundCalendar.style.display = "none";
+    }, 450);
+    setTimeout(() => {
+      backgroundCalendar.classList.remove("background-shadow-animation");
+    }, 550);
   };
 
   const openEditMenu = async () => {
     let eventEdit = props.data;
+    const editBox = document.getElementById("edit-box");
+
     setEditEvent(eventEdit);
-
-    const editBox = document.getElementById('edit-box');
-    editBox.style.display = 'flex';
-
-    const backgroundCalendar =
-      document.getElementsByClassName('background-shadow')[0];
-    const calendarMainScroll = document.getElementsByClassName(
-      'calendar-main-container'
-    )[0];
+    setTimeout(() => {
+      editBox.style.display = "flex";
+    }, 1);
 
     setTimeout(() => {
-      calendarMainScroll.classList.add('disable-scroll');
-      backgroundCalendar.style.display = 'block';
-    }, 100);
-
-    setTimeout(() => {
-      editBox.classList.add('edit-box-opened');
-      editBox.classList.remove('calendar-view-edit-hidden');
-    }, 400);
+      editBox.classList.add("edit-box-opened");
+      editBox.classList.remove("edit-box-closed");
+    }, 150);
   };
 
   const getTime = () => {
     if (props.data.startDate !== undefined) {
       let start = props.data.startDate;
       let end = props.data.endDate;
-      start = start.split('T')[1];
-      end = end.split('T')[1];
-      return start + '-' + end;
+      start = start.split("T")[1];
+      end = end.split("T")[1];
+      return start + "-" + end;
     }
   };
 
   useEffect(() => {
     if (props.data.description !== undefined) {
       document
-        .getElementsByClassName('calendar-view-session-information')[0]
-        .classList.add('description-hidden');
+        .getElementsByClassName("calendar-view-session-information")[0]
+        .classList.add("description-hidden");
       document
-        .getElementsByClassName('calendar-view-edit-session-information')[0]
-        .classList.add('description-hidden');
+        .getElementsByClassName("calendar-view-edit-session-information")[0]
+        .classList.add("description-hidden");
       document
-        .getElementsByClassName('calendar-view-description')[0]
-        .classList.remove('description-hidden');
+        .getElementsByClassName("calendar-view-description")[0]
+        .classList.remove("description-hidden");
       document
-        .getElementsByClassName('calendar-view-edit-description')[0]
-        .classList.remove('description-hidden');
+        .getElementsByClassName("calendar-view-edit-description")[0]
+        .classList.remove("description-hidden");
     } else {
       document
-        .getElementsByClassName('calendar-view-session-information')[0]
-        .classList.remove('description-hidden');
+        .getElementsByClassName("calendar-view-session-information")[0]
+        .classList.remove("description-hidden");
       document
-        .getElementsByClassName('calendar-view-edit-session-information')[0]
-        .classList.remove('description-hidden');
+        .getElementsByClassName("calendar-view-edit-session-information")[0]
+        .classList.remove("description-hidden");
       document
-        .getElementsByClassName('calendar-view-description')[0]
-        .classList.add('description-hidden');
+        .getElementsByClassName("calendar-view-description")[0]
+        .classList.add("description-hidden");
       document
-        .getElementsByClassName('calendar-view-edit-description')[0]
-        .classList.add('description-hidden');
+        .getElementsByClassName("calendar-view-edit-description")[0]
+        .classList.add("description-hidden");
     }
   });
 
   return (
     <div
       id="view-box"
-      className="calendar-view-main-container calendar-view-hidden view-box-closed"
+      className="calendar-view-main-container view-box-closed"
+      style={{ display: "none" }}
     >
       <div className="calendar-view">
         <div className="calendar-view-header">
           <div
             className={
-              userinfo.isAdmin ? 'calendar-view-header-edit-button' : 'hidden'
+              userinfo.isAdmin ? "calendar-view-header-edit-button" : "hidden"
             }
             onClick={openEditMenu}
           >

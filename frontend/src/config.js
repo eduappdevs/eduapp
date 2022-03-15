@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000";
+const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
+const CHATWS = process.env.REACT_APP_WEBSOCKET_ENDPOINT;
+const SUPPORT = process.env.REACT_APP_SUPPORT_ENDPOINT;
 const PING = `${API_URL}/ping`;
 const USERS = `${API_URL}/users`;
 const RESOURCES = `${API_URL}/resources`;
@@ -30,4 +32,6 @@ export {
   CHAT_MESSAGES,
   CHAT_PARTICIPANTS,
   GLOGIN,
+  CHATWS,
+  SUPPORT,
 };

@@ -9,9 +9,23 @@ export default function BottomButtons({ mobile }) {
   const [inCalendar, setInCalendar] = useState(false);
   const [inManagement, setInManagement] = useState(false);
   const [inChat, setInChat] = useState(false);
+  const [lastLocation, setLastLocation] = useState();
   const loc = useLocation();
 
   let userInfo = FetchUserInfo(localStorage.userId);
+
+  const getPosition = (string, subString, index) => {
+    return string.split(subString, index).join(subString).length;
+  };
+
+  const hideCalendar = () => {
+    if (
+      window.location.href.substring(
+        getPosition(window.location.href, "/", 3)
+      ) === "/calendar"
+    )
+      console.log("a");
+  };
 
   const changeLocation = () => {
     if (loc.pathname.substring(1) === "login")
@@ -20,6 +34,7 @@ export default function BottomButtons({ mobile }) {
 
     switch (loc.pathname.substring(1)) {
       case "resources":
+        setLastLocation("resources");
         setInResources(true);
         setInCalendar(false);
         setInChat(false);
@@ -69,7 +84,12 @@ export default function BottomButtons({ mobile }) {
       className={mobile ? "bottom-buttons-mobile" : "bottom-buttons-desktop"}
     >
       <ul>
-        <Link to="/">
+        <Link
+          to="/"
+          onClick={() => {
+            hideCalendar();
+          }}
+        >
           <li className={inHome ? "activeButton" : console.log()}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +103,20 @@ export default function BottomButtons({ mobile }) {
             </svg>
           </li>
         </Link>
-        <Link to="/calendar">
+        <Link
+          to="/calendar"
+          onClick={() => {
+            if (
+              !(
+                window.location.href.substring(
+                  getPosition(window.location.href, "/", 3)
+                ) === "/calendar"
+              )
+            )
+              document.getElementById("sectionCalendar").style.display = "none";
+            window.location.href = "/calendar";
+          }}
+        >
           <li className={inCalendar ? "activeButton" : console.log()}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +131,12 @@ export default function BottomButtons({ mobile }) {
           </li>
         </Link>
         {userInfo.isAdmin && (
-          <Link to="/management">
+          <Link
+            to="/management"
+            onClick={() => {
+              hideCalendar();
+            }}
+          >
             <li
               className={
                 inManagement
@@ -113,7 +151,13 @@ export default function BottomButtons({ mobile }) {
             </li>
           </Link>
         )}
-        <Link id="resources-test-button" to="/resources">
+        <Link
+          id="resources-test-button"
+          to="/resources"
+          onClick={() => {
+            hideCalendar();
+          }}
+        >
           <li className={inResources ? "activeButton" : console.log()}>
             <svg
               id="clip"
@@ -128,7 +172,12 @@ export default function BottomButtons({ mobile }) {
             </svg>
           </li>
         </Link>
-        <Link to="/chat">
+        <Link
+          to="/chat"
+          onClick={() => {
+            hideCalendar();
+          }}
+        >
           <li className={inChat ? "activeButton" : console.log()}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
