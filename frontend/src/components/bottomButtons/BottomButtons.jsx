@@ -18,15 +18,6 @@ export default function BottomButtons({ mobile }) {
     return string.split(subString, index).join(subString).length;
   };
 
-  const hideCalendar = () => {
-    if (
-      window.location.href.substring(
-        getPosition(window.location.href, "/", 3)
-      ) === "/calendar"
-    )
-      console.log("a");
-  };
-
   const changeLocation = () => {
     if (loc.pathname.substring(1) === "login")
       document.getElementById("bottom-navigator").style.display = "none";
@@ -84,12 +75,7 @@ export default function BottomButtons({ mobile }) {
       className={mobile ? "bottom-buttons-mobile" : "bottom-buttons-desktop"}
     >
       <ul>
-        <Link
-          to="/"
-          onClick={() => {
-            hideCalendar();
-          }}
-        >
+        <Link to="/">
           <li className={inHome ? "activeButton" : console.log()}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -131,12 +117,7 @@ export default function BottomButtons({ mobile }) {
           </li>
         </Link>
         {userInfo.isAdmin && (
-          <Link
-            to="/management"
-            onClick={() => {
-              hideCalendar();
-            }}
-          >
+          <Link to="/management">
             <li
               className={
                 inManagement
@@ -151,13 +132,7 @@ export default function BottomButtons({ mobile }) {
             </li>
           </Link>
         )}
-        <Link
-          id="resources-test-button"
-          to="/resources"
-          onClick={() => {
-            hideCalendar();
-          }}
-        >
+        <Link id="resources-test-button" to="/resources">
           <li className={inResources ? "activeButton" : console.log()}>
             <svg
               id="clip"
@@ -172,12 +147,7 @@ export default function BottomButtons({ mobile }) {
             </svg>
           </li>
         </Link>
-        <Link
-          to="/chat"
-          onClick={() => {
-            hideCalendar();
-          }}
-        >
+        <Link to="/chat">
           <li className={inChat ? "activeButton" : console.log()}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

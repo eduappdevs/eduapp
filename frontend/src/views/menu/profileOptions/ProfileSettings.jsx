@@ -121,7 +121,7 @@ export default function ProfileSettings() {
           <ul className="coursesList">
             {courses.map((course) => {
               return (
-                <li className="courseItem">
+                <li key={course.course.id} className="courseItem">
                   <p>{course.course.name}</p>
                   {course.isTeacher ? (
                     <img src="/assets/teacher.svg" alt="teacher" />

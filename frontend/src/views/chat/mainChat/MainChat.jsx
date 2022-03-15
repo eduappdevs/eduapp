@@ -112,7 +112,6 @@ export default function MainChat(props) {
                 );
               })
             : null}
-          {() => {}}
         </div>
 
         <div className="main-chat-input-container">

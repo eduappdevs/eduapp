@@ -101,7 +101,7 @@ export default function CreateView(props) {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="bi bi-x-lg"
+              className="bi bi-x-lg"
               viewBox="0 0 16 16"
             >
               <path
@@ -134,15 +134,18 @@ export default function CreateView(props) {
                 id="newDescription"
                 name="description"
                 type="text"
-                maxlength="150"
+                maxLength="150"
               />
             </div>
             <div className="calendar-view-create-subject">
               <h3>Subject</h3>
               <select name="subject" id="subject_name" onChange={isNotGlobal}>
-                <option selected>Choose subject</option>
+                <option defaultValue={"--"}>Choose subject</option>
                 {props.data.map((subject) => (
-                  <option value={subject.id + "_" + subject.name}>
+                  <option
+                    key={subject.id}
+                    value={subject.id + "_" + subject.name}
+                  >
                     {subject.name}
                   </option>
                 ))}

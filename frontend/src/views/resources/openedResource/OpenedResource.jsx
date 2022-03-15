@@ -29,7 +29,9 @@ export default function OpenedResource(props) {
     asynchronizeRequest(function () {
       axios
         .delete(RESOURCES + `/${id}`)
-        .then((res) => console.log, window.location.reload())
+        .then((res) => {
+          window.location.reload();
+        })
         .catch((err) => console.log);
     });
   };

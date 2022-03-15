@@ -139,7 +139,7 @@ export default function View(props) {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="bi bi-x-lg"
+              className="bi bi-x-lg"
               viewBox="0 0 16 16"
             >
               <path

@@ -143,7 +143,7 @@ export default function ResourcesModal(props) {
           </div>
           <div className="submit-action">
             <button type="submit">SUBMIT</button>
-            <div id="submit-loader" class="loader">
+            <div id="submit-loader" className="loader">
               Loading...
             </div>
           </div>

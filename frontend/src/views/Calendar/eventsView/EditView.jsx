@@ -210,7 +210,7 @@ export default function EditView(props) {
                 placeholder={props.data.description}
                 name="editDescription"
                 type="text"
-                maxlength="150"
+                maxLength="150"
               />
             </div>
             <div className="calendar-view-edit-session-information">

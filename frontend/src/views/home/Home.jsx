@@ -240,7 +240,7 @@ export default function Home() {
                     width="20"
                     height="20"
                     fill="currentColor"
-                    class="bi bi-plus-circle-fill"
+                    className="bi bi-plus-circle-fill"
                     viewBox="0 0 16 16"
                     onClick={() => {
                       openSessionAdd();
@@ -287,7 +287,7 @@ export default function Home() {
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="35"
                                     height="35"
-                                    class="bi bi-mortarboard"
+                                    className="bi bi-mortarboard"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
                                       window.location.href =
@@ -323,7 +323,7 @@ export default function Home() {
                                     width="32"
                                     height="32"
                                     fill="currentColor"
-                                    class="bi bi-chat-dots"
+                                    className="bi bi-chat-dots"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
                                       window.location.href =
@@ -344,14 +344,13 @@ export default function Home() {
                         >
                           <div id="buttonDelete">
                             <svg
-                              className="badge badge-danger mr-2"
+                              className="badge badge-danger mr-2 bi bi-trash"
                               onClick={deleteModal}
                               id={data.id}
                               xmlns="http://www.w3.org/2000/svg"
                               width="16"
                               height="16"
                               fill="currentColor"
-                              class="bi bi-trash"
                               viewBox="0 0 16 16"
                             >
                               <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />

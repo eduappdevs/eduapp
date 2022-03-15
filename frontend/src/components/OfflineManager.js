@@ -10,13 +10,20 @@ const blobToBase64 = (blob) => {
 };
 
 export const saveUserOffline = async (userInfo) => {
-  if (userInfo.profile_image.url !== undefined) {
-    let imgBlob = await axios.get(MediaFix(userInfo.profile_image.url), {
-      responseType: "blob",
-    });
-    let img64 = await blobToBase64(imgBlob.data);
+  if (
+    userInfo.profile_image.url !== undefined ||
+    userInfo.profile_image === null
+  ) {
+    try {
+      let imgBlob = await axios.get(MediaFix(userInfo.profile_image.url), {
+        responseType: "blob",
+      });
+      let img64 = await blobToBase64(imgBlob.data);
 
-    userInfo.profile_image = { url: img64 };
+      userInfo.profile_image = { url: img64 };
+    } catch (err) {
+      if (err.message.includes("404")) console.log("Image resulted in 404");
+    }
   }
 
   localStorage.setItem("offline_user", JSON.stringify(userInfo));
