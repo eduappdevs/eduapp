@@ -7,7 +7,7 @@ import Loader from "../../../components/loader/Loader";
 import "./ProfileSettings.css";
 import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
 import MediaFix from "../../../components/MediaFixer";
-import { cacheProfileImage } from "../../../components/CacheManager";
+import { updateUserImageOffline } from "../../../components/OfflineManager";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -59,8 +59,8 @@ export default function ProfileSettings() {
         oldimg.substring(getPosition(oldimg, "/", 8)) !==
         newimg.substring(getPosition(newimg, "/", 8))
       ) {
-        cacheProfileImage(newimg).then(() => {
-          //window.location.href = "/home";
+        updateUserImageOffline(newimg).then(() => {
+          window.location.href = "/home";
         });
       } else window.location.href = "/home";
     });
