@@ -66,7 +66,7 @@ export default class LoginAuth extends Component {
           or
         </span>
         <BasicGoogleLogin />
-        <img src="\assets\maskable-logo.png" alt="" />
+        <img src="\assets\logo.png" alt="" />
       </form>
     );
   }

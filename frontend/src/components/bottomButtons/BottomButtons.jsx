@@ -116,7 +116,7 @@ export default function BottomButtons({ mobile }) {
             </svg>
           </li>
         </Link>
-        {userInfo.isAdmin && (
+        {userInfo.isAdmin && navigator.onLine && (
           <Link to="/management">
             <li
               className={
