@@ -75,8 +75,8 @@ export default function View(props) {
     if (props.data.startDate !== undefined) {
       let start = props.data.startDate;
       let end = props.data.endDate;
-      start = start.split("T")[1];
-      end = end.split("T")[1];
+      start = start.split("T")[1].substr(0, start.length - 3);
+      end = end.split("T")[1].substr(0, end.length - 3);
       return start + "-" + end;
     }
   };

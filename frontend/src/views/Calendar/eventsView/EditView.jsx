@@ -1,10 +1,13 @@
 import axios from "axios";
-import React from "react";
+import { React, useEffect, useState } from "react";
 import { CALENDAR, EDUAPP_SESSIONS } from "../../../config";
 import "./views.css";
 import { asynchronizeRequest } from "../../../API";
 
 export default function EditView(props) {
+  const [editStartDate, setEditStart] = useState("");
+  const [editEndDate, setEditEnd] = useState("");
+
   const closeButton = async () => {
     const editBox = document.getElementById("edit-box");
     setTimeout(() => {
@@ -16,6 +19,11 @@ export default function EditView(props) {
     }, 500);
   };
 
+  useEffect(() => {
+    setEditStart(props.data.startDate);
+    setEditEnd(props.data.endDate);
+  }, [props.data]);
+
   const updateEvent = async (e) => {
     e.preventDefault();
     var titleValue = document.getElementById("editTitle").value;
@@ -25,14 +33,14 @@ export default function EditView(props) {
     var chatValue = document.getElementById("editChat").value;
     var resourceValue = document.getElementById("editResources").value;
     var streamValue = document.getElementById("editStream").value;
-    var editTitle;
-    var editDescription;
-    var editStartDate;
-    var editEndDate;
-    var editChat;
-    var editResources;
-    var editStream;
-    var editId;
+    var editTitle,
+      editDescription,
+      editStartDate,
+      editEndDate,
+      editChat,
+      editResources,
+      editStream,
+      editId;
 
     if (titleValue !== "" && titleValue !== props.data.title) {
       editTitle = titleValue;
@@ -199,8 +207,20 @@ export default function EditView(props) {
                   id="editStartDate"
                   name="editStartDate"
                   type="datetime-local"
+                  value={editStartDate}
+                  onChange={(e) => {
+                    setEditStart(e.target.value);
+                  }}
                 />
-                <input id="editEndDate" name="end" type="datetime-local" />
+                <input
+                  id="editEndDate"
+                  name="end"
+                  type="datetime-local"
+                  value={editEndDate}
+                  onChange={(e) => {
+                    setEditEnd(e.target.value);
+                  }}
+                />
               </div>
             </div>
             <div className="calendar-view-edit-description">
