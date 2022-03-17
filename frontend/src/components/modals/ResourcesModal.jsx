@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import API, { asynchronizeRequest } from "../../API";
 import "./ResourcesModal.css";
 let finalData = new FormData();
@@ -68,7 +68,6 @@ export default function ResourcesModal(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     document.getElementById("submit-loader").style.display = "block";
-    await getCurrentlyUser();
 
     let name = null;
     let description = null;
@@ -131,6 +130,10 @@ export default function ResourcesModal(props) {
       )[0].style.display = "none";
     }, 300);
   };
+
+  useEffect(() => {
+    getCurrentlyUser();
+  }, []);
 
   return (
     <div className="resourceModal-container">

@@ -15,11 +15,9 @@
 	position: absolute;
 	background-color: rgba(0, 0, 0, 0.356);
 	z-index: 1;
-
 }
 
 .resourceModalScale1 {
-
 	transform: translate(-50%, -50%) scale(1) !important;
 }
 
