@@ -33,4 +33,42 @@
     background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
   }
 
+.hidden{
+  display: none !important;
+}
+.modalConfirmUpload{
+  position: absolute;
+  width: 700px;
+  height: 400px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  border-radius: 20px;
+  background-color: rgba(38, 157, 255, 0.753);
+  z-index: 9999999999;
+}
 
+.modalConfirmUpload > button {
+  bottom: 10px;
+  position: absolute;
+  left: 50%;
+  border-radius: 20px;
+  transform: translateX(-50%);
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+.modalConfirmUpload > .cancelUsersUpload{
+  background-color: red;
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  top: 10px;
+  right: 10px;
+}

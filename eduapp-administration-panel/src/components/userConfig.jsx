@@ -139,14 +139,6 @@ export default function UserConfig() {
               <th>Actions</th>
             
             </tr>
-            <p>You will upload this users, review and confirm</p>
-            <div id="tempUsersUploading">
-              
-              
-              </div>
-
-
-
             {users
               ? users.map((u) => {
                   return (
