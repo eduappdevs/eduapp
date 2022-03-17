@@ -49,7 +49,7 @@ export default function GoogleLoginButton(useType) {
             {userInfo.isLoggedWithGoogle ?
                 <div className="googleAccountInfo">
                     <div onClick={unlinkGoogle} className="unlinkGoogle">
-                        <span className='unlinkGoogleButton'> <img src='https://upload.wikimedia.org/wikipedia/commons/5/53/Google_"G"_Logo.svg'/> Unlink</span>
+                        <span className='unlinkGoogleButton'> <img alt="" src='https://upload.wikimedia.org/wikipedia/commons/5/53/Google_"G"_Logo.svg'/> Unlink</span>
                     </div>
                     <span className='googleid-span'>Google id : {userInfo.googleid}</span>
 
@@ -59,8 +59,8 @@ export default function GoogleLoginButton(useType) {
                 :
                 <GoogleLogin
                     clientId="34244826007-ute01mc8d42e8hc89bgsiv73njfj9kbe.apps.googleusercontent.com"
-                    buttonText={useType.useType == 'merge' ? "Link" : "Login"}
-                    onSuccess={useType.useType == 'merge' ? linkGoogle : loginGoogle}
+                    buttonText={useType.useType === 'merge' ? "Link" : "Login"}
+                    onSuccess={useType.useType === 'merge' ? linkGoogle : loginGoogle}
                     onFailure={responseGoogle}
                     cookiePolicy={'single_host_origin'}
 

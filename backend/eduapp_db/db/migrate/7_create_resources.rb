@@ -7,7 +7,7 @@ class CreateResources < ActiveRecord::Migration[6.1]
       t.string :secondfile
       t.string :thirdfile
       t.string :createdBy
-      t.references :course, foreign_key: true
+      t.references :subject, foreign_key: true
       t.timestamps
     end
   end
