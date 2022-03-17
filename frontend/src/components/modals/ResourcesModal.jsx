@@ -6,15 +6,54 @@ let finalData = new FormData();
 export default function ResourcesModal(props) {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [currentlyUser, setCurrentlyUser] = useState("");
+  const [displayFileWarning, setWarnDisplay] = useState("none");
+  const [fileWarningText, setWarningText] = useState(
+    "Only 3 files are allowed"
+  );
+
   const FILE_LIMIT = 3;
+  const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
+  const videoRegex = new RegExp("^.*(mp4|mov)$");
+
+  const displayWarning = (text) => {
+    setWarningText(text);
+    setWarnDisplay("block");
+    setTimeout(() => {
+      setWarnDisplay("none");
+    }, 2000);
+  };
 
   const handleFileSelect = (e) => {
     e.preventDefault();
     if (e.target.files.length > FILE_LIMIT) {
-      alert(`Only ${FILE_LIMIT}  files accepted.`);
+      displayWarning("Only 3 files are allowed");
       return;
     } else {
-      setFilesToUpload(Array.from(e.target.files));
+      let files = Array.from(e.target.files);
+
+      for (let f of files) {
+        console.log("hi", f);
+        if (videoRegex.test(f.name)) {
+          if (f.size / 1000 / 1000 > 15) {
+            displayWarning("Video is larger than 15MB");
+            document.getElementById("submit-loader").style.display = "none";
+            return;
+          }
+        } else if (imageRegex.test(f.name)) {
+          if (f.size / 1000 / 1000 > 2) {
+            displayWarning("Image is larger than 2MB");
+            document.getElementById("submit-loader").style.display = "none";
+            return;
+          }
+        } else {
+          if (f.size / 1000 / 1000 > 5) {
+            displayWarning("File is larger than 3MB");
+            document.getElementById("submit-loader").style.display = "none";
+            return;
+          }
+        }
+      }
+      setFilesToUpload(files);
     }
   };
 
@@ -26,9 +65,10 @@ export default function ResourcesModal(props) {
     });
   };
 
-  getCurrentlyUser();
   const handleSubmit = async (e) => {
     e.preventDefault();
+    document.getElementById("submit-loader").style.display = "block";
+    await getCurrentlyUser();
 
     let name = null;
     let description = null;
@@ -46,20 +86,14 @@ export default function ResourcesModal(props) {
 
     if (filesToUpload != null) {
       firstfile = filesToUpload[0];
-    } else {
-      console.log("no files to upload");
     }
 
     if (filesToUpload != null) {
       secondfile = filesToUpload[1];
-    } else {
-      console.log("no files to upload");
     }
 
     if (filesToUpload != null) {
       thirdfile = filesToUpload[2];
-    } else {
-      console.log("no files to upload");
     }
 
     finalData.append("name", name);
@@ -78,8 +112,6 @@ export default function ResourcesModal(props) {
     finalData.append("createdBy", currentlyUser);
     finalData.append("subject_id", props.subject);
 
-    document.getElementById("submit-loader").style.display = "block";
-
     await API.postResource(finalData);
     document.getElementsByClassName(
       "resources__createResourceModal"
@@ -89,6 +121,7 @@ export default function ResourcesModal(props) {
   };
 
   const closeModal = () => {
+    setFilesToUpload([]);
     document
       .getElementsByClassName("resources__createResourceModal")[0]
       .classList.remove("resourceModalScale1");
@@ -127,7 +160,9 @@ export default function ResourcesModal(props) {
                 type="file"
                 id="firstfile"
                 multiple
-                onChange={handleFileSelect}
+                onChange={(e) => {
+                  handleFileSelect(e);
+                }}
               />
               <label htmlFor="firstfile">
                 <svg
@@ -140,6 +175,9 @@ export default function ResourcesModal(props) {
                 </svg>
               </label>
             </div>
+          </div>
+          <div className="file-warning" style={{ display: displayFileWarning }}>
+            <p>{fileWarningText}</p>
           </div>
           <div className="submit-action">
             <button type="submit">SUBMIT</button>
