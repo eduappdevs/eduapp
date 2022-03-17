@@ -7,7 +7,7 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import CourseSelector from "../../components/courseSelector/CourseSelector";
 import { SUBJECT } from "../../config";
 import { asynchronizeRequest } from "../../API";
-import MediaFix from "../../components/MediaFixer";
+import MediaFix from "../../utils/MediaFixer";
 import "./Home.css";
 
 export default function Home() {

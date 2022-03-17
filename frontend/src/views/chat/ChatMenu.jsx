@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import MainChat from "./mainChat/MainChat";
-import ACManager from "../../components/websockets/actioncable/ACManager";
+import ACManager from "../../utils/websockets/actioncable/ACManager";
 import Loader from "../../components/loader/Loader";
 import { CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../config";
 import "./ChatMenu.css";
@@ -180,6 +180,7 @@ export default function ChatMenu() {
                 {groupChats.map((gChats) => {
                   return (
                     <li
+                      key={gChats.chat_base.id}
                       onClick={openChat}
                       id={`group-chat-${gChats.chat_base.id}`}
                     >

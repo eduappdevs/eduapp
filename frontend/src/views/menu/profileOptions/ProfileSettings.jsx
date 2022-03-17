@@ -6,8 +6,9 @@ import API from "../../../API";
 import Loader from "../../../components/loader/Loader";
 import "./ProfileSettings.css";
 import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
-import MediaFix from "../../../components/MediaFixer";
-import { updateUserImageOffline } from "../../../components/OfflineManager";
+import MediaFix from "../../../utils/MediaFixer";
+import NameCapitalizer from "../../../utils/NameCapitalizer";
+import { updateUserImageOffline } from "../../../utils/OfflineManager";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -15,6 +16,10 @@ export default function ProfileSettings() {
 
   const [userName, setUserName] = useState(null);
   const [changeImage, setChangeImage] = useState(null);
+  const [displayImageWarning, setWarnDisplay] = useState("none");
+  const [imageWarningText, setWarningText] = useState(
+    "Image size is larger than 2MB"
+  );
 
   const closeProfileSettings = () => {
     document
@@ -23,16 +28,30 @@ export default function ProfileSettings() {
   };
 
   const changeImagePreview = (newPreview) => {
-    console.log(userInfo);
-    if (newPreview.target.files && newPreview.target.files[0]) {
-      document
-        .getElementById("profileImage_preview")
-        .setAttribute(
-          "src",
-          window.URL.createObjectURL(newPreview.target.files[0])
-        );
-    }
-    setChangeImage(newPreview.target.files[0]);
+    const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
+    if (imageRegex.test(newPreview.target.files[0].name)) {
+      setWarnDisplay("none");
+      if (newPreview.target.files && newPreview.target.files[0]) {
+        if (newPreview.target.files[0].size / 1000 / 1000 < 2) {
+          document
+            .getElementById("profileImage_preview")
+            .setAttribute(
+              "src",
+              window.URL.createObjectURL(newPreview.target.files[0])
+            );
+          setWarnDisplay("none");
+          setChangeImage(newPreview.target.files[0]);
+        } else displayWarning("Image size is larger than 2MB");
+      } else displayWarning("No provided image");
+    } else displayWarning("File is not an image");
+  };
+
+  const displayWarning = (text) => {
+    setWarningText(text);
+    setWarnDisplay("block");
+    setTimeout(() => {
+      setWarnDisplay("none");
+    }, 2000);
   };
 
   const getPosition = (string, subString, index) => {
@@ -98,14 +117,35 @@ export default function ProfileSettings() {
             />
           </div>
         )}
-        <div className="userName_input">
+        <div
+          className="userName_input"
+          style={{
+            marginBottom: displayImageWarning === "none" ? "30px" : "0",
+          }}
+        >
           <input
             type="text"
-            defaultValue={userInfo.user_name}
+            value={
+              userName === null
+                ? NameCapitalizer(
+                    userInfo.user_name === undefined ? "" : userInfo.user_name
+                  )
+                : userName
+            }
             onChange={(e) => {
-              setUserName(e.target.value);
+              setUserName(
+                e.target.value.includes(" ")
+                  ? NameCapitalizer(e.target.value)
+                  : e.target.value
+              );
             }}
           />
+        </div>
+        <div
+          className="file-size-warning"
+          style={{ display: displayImageWarning }}
+        >
+          <p>{imageWarningText}</p>
         </div>
         <div className="commitChanges" onClick={commitChanges}>
           <span>SAVE CHANGES</span>

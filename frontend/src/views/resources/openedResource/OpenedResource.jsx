@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
-import MediaFix from "../../../components/MediaFixer";
+import MediaFix from "../../../utils/MediaFixer";
 import { asynchronizeRequest } from "../../../API";
 import { RESOURCES } from "../../../config";
 import "./OpenedResource.css";

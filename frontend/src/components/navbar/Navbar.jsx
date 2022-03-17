@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Menu from "../../views/menu/Menu";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import MediaFix from "../MediaFixer";
+import MediaFix from "../../utils/MediaFixer";
 import "./Navbar.css";
 
 export default function Navbar({ mobile }) {

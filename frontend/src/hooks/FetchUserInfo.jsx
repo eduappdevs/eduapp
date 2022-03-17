@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import API from "../API";
-import { getOfflineUser, saveUserOffline } from "../components/OfflineManager";
+import { getOfflineUser, saveUserOffline } from "../utils/OfflineManager";
 
 export const FetchUserInfo = (userId) => {
   const [userInfo, setUserInfo] = useState({});
