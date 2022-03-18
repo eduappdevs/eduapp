@@ -25,3 +25,9 @@ tr:nth-child(even) {
 	display: flex;
 	flex-direction: row;
 }
+
+.subjectButton>select {
+	border: .5px solid black;
+	border-radius: 3px;
+	text-align: left;
+}

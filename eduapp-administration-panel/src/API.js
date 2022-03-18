@@ -7,6 +7,7 @@ const COURSES = `${API_URL}/courses`;
 const USERS_INFO = `${API_URL}/user_infos`;
 const TUITIONS = `${API_URL}/tuitions`;
 const SESSIONS = `${API_URL}/eduapp_user_sessions`;
+const EVENTS = `${API_URL}/calendar_annotations`
 const PING = `${API_URL}/ping`;
 const SUBJECTS = `${API_URL}/subjects`;
 const RESOURCES = `${API_URL}/resources`;
@@ -121,6 +122,34 @@ const apiSettings = {
     const endpoint = `${TUITIONS}`;
     return await axios.post(endpoint, body);
   },
+
+  //subject
+  fetchSubjects: async () => {
+    const endpoint = `${SUBJECTS}`;
+    let subjects = [];
+    await axios.get(endpoint).then((res) => {
+      res.data.map((subject) => {
+        if (subject.name !== "Noticias") {
+          return subjects.push(subject);
+        }
+        return true
+      });
+    });
+    return subjects;
+  },
+  //subjects
+  fetchSubject: async (id) => {
+    const endpoint = `${SUBJECTS}?subject_id=${id}`;
+    let subjects = [];
+    await axios.get(endpoint).then((res) => {
+      res.data.map((subject) => {
+        if (subject.name !== "Noticias") {
+          return subjects.push(subject);
+        }
+      });
+    });
+    return subjects;
+  },
 };
 
 export default apiSettings;
@@ -137,6 +166,7 @@ export const endpoints = {
   SUBJECTS,
   CHAT_MESSAGES,
   SESSIONS,
+  EVENTS
 };
 
 export const asynchronizeRequest = async (requestFunction) => {

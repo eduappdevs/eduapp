@@ -17,10 +17,16 @@ export default function Toolbar(props) {
               <p> Load </p>
             </li>
             <li>
-              <select name="subjects" id="subjects-select">
-                <option value="ALL">View all subjects</option>
-                <option value="PGV">PGV</option>
-                <option value="PRL">PRL</option>
+              <select name="subject" id="subject_id">
+                <option defaultValue={"--"}>Choose subject</option>
+                {props.subjects.map((subject) => (
+                  <option
+                    key={subject.id}
+                    value={subject.id + "_" + subject.name}
+                  >
+                    {subject.name}
+                  </option>
+                ))}
               </select>
             </li>
             <li>
