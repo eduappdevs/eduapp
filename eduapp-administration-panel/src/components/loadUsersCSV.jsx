@@ -4,7 +4,7 @@ import './componentStyles/loadUsersCSV.css'
 import PreviewUsersTable from './previewUsersTable'
 export default function LoadUsersCSV(props) {
     let tempUsers = []
-    const [modal, setModal] = useState(false)
+    const [modalActive, setModalActive] = useState(false)
 
     const previewUsersLoad = (data, fileInfo, originalFile) => {
         data.map((user) => {
@@ -14,12 +14,14 @@ export default function LoadUsersCSV(props) {
             }
 
         })
-        console.log(tempUsers, 'tt')
-        document.getElementsByClassName('modalConfirmUpload')[0].classList.remove('hidden')
-        setModal(true)
-
-
+        setModalActive(true)
     }
+
+    const closeModal = ()=>  {
+        setModalActive(false)
+        window.location.reload()
+    }
+    
 
     return (
         <>
@@ -27,15 +29,7 @@ export default function LoadUsersCSV(props) {
                 <CSVReader onFileLoaded={(data, fileInfo, originalFile) => previewUsersLoad(data, fileInfo, originalFile)} />
             </div>
 
-            <div className={'hidden modalConfirmUpload'}>
-                <div className="cancelUsersUpload">x</div>
-                {
-                    modal && <PreviewUsersTable users={tempUsers}/>
-                }
-                
-
-                <button>Confirm and subscribe the users</button>
-            </div>
+            <PreviewUsersTable users={tempUsers} show={modalActive} close={closeModal}/>
         </>
 
     )
