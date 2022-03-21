@@ -40,6 +40,9 @@ const apiSettings = {
       headers: { Authorization: localStorage.userToken },
     });
   },
+
+
+
   //User
   createUser: async (body) => {
     const endpoint = `${USERS}`;
@@ -58,6 +61,7 @@ const apiSettings = {
       console.log(res);
     });
   },
+
 
   chechToken: async (token) => {
     const endpoint = `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`;
