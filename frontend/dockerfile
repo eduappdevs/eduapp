@@ -12,7 +12,9 @@ ENV REACT_APP_BACKEND_ENDPOINT=http://somosbluecity.es:3010 \
 	REACT_APP_WEBSOCKET_ENDPOINT=ws://somosbluecity.es:3010 \
 	REACT_APP_PORT=4010 \
 	REACT_APP_DOMAIN="somosbluecity.es" \
-	REACT_APP_SUPPORT_ENDPOINT=http://localhost:3003 
+	REACT_APP_SUPPORT_ENDPOINT=http://localhost:3003 \
+	REACT_APP_BACKEND_DOMAIN=somosbluecity:3010 \
+	REACT_APP_FRONTEND_DOMAIN=somosbluecity:4010
 
 EXPOSE 4010
 
