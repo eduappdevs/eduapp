@@ -7,6 +7,7 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import CourseSelector from "../../components/courseSelector/CourseSelector";
 import { SUBJECT } from "../../config";
 import { asynchronizeRequest } from "../../API";
+import MediaFix from "../../utils/MediaFixer";
 import "./Home.css";
 
 export default function Home() {
@@ -63,7 +64,7 @@ export default function Home() {
   };
 
   const getSessions = async () => {
-    let request = await axios.get(SUBJECT + `?user_id=${localStorage.userId}`);
+    let request = await axios.get(`${SUBJECT}?user_id=${localStorage.userId}`);
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -73,6 +74,7 @@ export default function Home() {
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
       let date = startDate.split("T")[1] + " - " + endDate.split("T")[1];
+
       sessionsPreSorted.push({
         id,
         name,
@@ -87,16 +89,24 @@ export default function Home() {
       return true;
     });
 
-    sessionsSorted = sessionsPreSorted.sort(function (a, b) {
+    sessionsSorted = sessionsPreSorted.sort(function (a, b, c, d) {
       let aHour = a.startDate.split("T")[1];
+      let aMinute = a.startDate.split("T")[1].split(":")[1];
       let bHour = b.startDate.split("T")[1];
+      let bMinute = b.startDate.split("T")[1].split(":")[1];
       a = parseInt(aHour);
       b = parseInt(bHour);
+      c = parseInt(aMinute);
+      d = parseInt(bMinute);
       if (a < b) {
-        return -1;
+        if (c < d) {
+          return -1;
+        }
       }
       if (a > b) {
-        return 1;
+        if (c > d) {
+          return 1;
+        }
       }
       return 0;
     });
@@ -134,7 +144,6 @@ export default function Home() {
       "session-after" + e.target.id.substring(3)
     );
     const img = document.getElementById("button" + e.target.id.substring(3));
-    console.log(e.target.id);
     setTimeout(() => {
       try {
         // const session = document.querySelector(e.target.id);
@@ -175,6 +184,7 @@ export default function Home() {
       return true;
     });
   };
+
   const handleChangeSelector = (id) => {
     asynchronizeRequest(async function () {
       getSessions(id);
@@ -211,8 +221,8 @@ export default function Home() {
                   <img
                     src={
                       userInfo.profile_image != null
-                        ? userInfo.profile_image.url
-                        : "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                        ? MediaFix(userInfo.profile_image.url)
+                        : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                     }
                     alt={(userInfo.user_name, "image")}
                   />
@@ -238,7 +248,7 @@ export default function Home() {
                     width="20"
                     height="20"
                     fill="currentColor"
-                    class="bi bi-plus-circle-fill"
+                    className="bi bi-plus-circle-fill"
                     viewBox="0 0 16 16"
                     onClick={() => {
                       openSessionAdd();
@@ -285,7 +295,7 @@ export default function Home() {
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="35"
                                     height="35"
-                                    class="bi bi-mortarboard"
+                                    className="bi bi-mortarboard"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
                                       window.location.href =
@@ -321,7 +331,7 @@ export default function Home() {
                                     width="32"
                                     height="32"
                                     fill="currentColor"
-                                    class="bi bi-chat-dots"
+                                    className="bi bi-chat-dots"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
                                       window.location.href =
@@ -342,14 +352,13 @@ export default function Home() {
                         >
                           <div id="buttonDelete">
                             <svg
-                              className="badge badge-danger mr-2"
+                              className="badge badge-danger mr-2 bi bi-trash"
                               onClick={deleteModal}
                               id={data.id}
                               xmlns="http://www.w3.org/2000/svg"
                               width="16"
                               height="16"
                               fill="currentColor"
-                              class="bi bi-trash"
                               viewBox="0 0 16 16"
                             >
                               <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />

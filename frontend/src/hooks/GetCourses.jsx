@@ -6,12 +6,14 @@ export const GetCourses = () => {
 
   useEffect(() => {
     const getCourses = async () => {
-      try {
-        const courses = await API.getCourses();
-        setCourses([...courses]);
-      } catch (error) {
-        console.log(error);
-        console.log("token", localStorage.userToken);
+      if (navigator.onLine) {
+        try {
+          const courses = await API.getCourses();
+          setCourses([...courses]);
+        } catch (error) {
+          console.log(error);
+          console.log("token", localStorage.userToken);
+        }
       }
     };
 

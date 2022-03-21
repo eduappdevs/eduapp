@@ -5,7 +5,6 @@ import "./CourseSelector.css";
 export default function CourseSelector(props) {
   let courses = GetCourses();
   const [courseSelected, setCourseSelected] = useState();
-
   const handleChangeCourse = (e, id) => {
     if (e.target.classList.contains("inactiveCourse")) {
       props.handleChangeCourse(id);

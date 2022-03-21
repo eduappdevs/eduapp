@@ -21,19 +21,6 @@ const saveInLocalStorage = (userDetails) => {
 };
 
 const apiSettings = {
-  //Subjects
-  getSubjects: async (id) => {
-    const endpoint = `${SUBJECT}?subject_id=${id}`;
-    let subjects = [];
-    await axios.get(endpoint).then((res) => {
-      res.data.map((subject) => {
-        if (subject.name !== "Noticias") {
-          return subjects.push(subject);
-        }
-      });
-    });
-    return subjects;
-  },
   //Resources
   fetchResources: async () => {
     const endpoint = `${RESOURCES}`;
@@ -92,16 +79,22 @@ const apiSettings = {
       .delete(endpoint, {
         headers: { Authorization: localStorage.userToken },
       })
-      .then((res) => {
-        console.log("logged out");
+      .then(() => {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("isAdmin");
+        localStorage.removeItem("offline_user");
+
+        window.location.href = "/login";
       })
       .catch((err) => {
         console.log(err);
         localStorage.removeItem("userId");
         localStorage.removeItem("userToken");
         localStorage.removeItem("isAdmin");
+        localStorage.removeItem("offline_user");
 
-        window.location.reload();
+        window.location.href = "/login";
       });
   },
 
@@ -139,6 +132,7 @@ const apiSettings = {
   getCourses: async () => {
     const endpoint = `${TUITIONS}`;
     let courses = [];
+
     await axios.get(endpoint).then((res) => {
       res.data.map((course) => {
         if (course.user_id.toString() === localStorage.userId) {
@@ -154,6 +148,22 @@ const apiSettings = {
   createCourse: async (body) => {
     const endpoint = `${COURSES}`;
     return await axios.post(endpoint, body);
+  },
+  //Subjects
+  getSubjects: async (id) => {
+    let idInt = parseInt(id)
+    const endpoint = `${SUBJECT}?user=${idInt}`;
+    let subjects = [];
+
+    await axios.get(endpoint).then((res) => {
+      res.data.map((subject) => {
+        if (subject.name !== "Noticias") {
+          return subjects.push(subject)
+        }
+      })
+    });
+    return subjects
+
   },
 
   //Institutions
@@ -196,6 +206,13 @@ export const asynchronizeRequest = async (requestFunction) => {
 
     return requestFunction.call();
   } catch (err) {
-    asynchronizeRequest(requestFunction);
+    if (!navigator.onLine) {
+      setTimeout(
+        () => {
+          asynchronizeRequest(requestFunction);
+        },
+        navigator.onLine ? 5000 : 20000
+      );
+    } else asynchronizeRequest(requestFunction);
   }
 };

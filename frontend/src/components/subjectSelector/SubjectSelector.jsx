@@ -1,4 +1,4 @@
-import {React,useState} from "react";
+import { useState } from "react";
 import { GetSubjects } from "../../hooks/GetSubjects";
 import "./subjectSelector.css";
 
@@ -21,6 +21,7 @@ export default function SubjectSelector(props) {
             {subjects.map((subject) => {
               return (
                 <li
+                  key={subject.id}
                   className={
                     subjectSelected === subject.id
                       ? "activeSubject"
@@ -32,7 +33,6 @@ export default function SubjectSelector(props) {
                   id={subject.id}
                 >
                   {subject.name}
-                  hola
                 </li>
               );
             })}

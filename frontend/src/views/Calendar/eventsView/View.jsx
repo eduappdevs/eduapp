@@ -6,6 +6,7 @@ import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 
 export default function View(props) {
   let userinfo = FetchUserInfo(localStorage.userId);
+
   const [editEvent, setEditEvent] = useState({});
 
   const closeButton = async () => {
@@ -25,12 +26,21 @@ export default function View(props) {
       document
         .getElementsByClassName("calendar-view-edit-session-information")[0]
         .classList.add("description-hidden");
-      document
-        .getElementsByClassName("calendar-view-description")[0]
-        .classList.remove("description-hidden");
-      document
-        .getElementsByClassName("calendar-view-edit-description")[0]
-        .classList.remove("description-hidden");
+      if (props.data.description === "") {
+        document
+          .getElementsByClassName("calendar-view-description")[0]
+          .classList.add("description-hidden");
+        document
+          .getElementsByClassName("calendar-view-edit-description")[0]
+          .classList.add("description-hidden");
+      } else {
+        document
+          .getElementsByClassName("calendar-view-description")[0]
+          .classList.remove("description-hidden");
+        document
+          .getElementsByClassName("calendar-view-edit-description")[0]
+          .classList.remove("description-hidden");
+      }
     } else {
       document
         .getElementsByClassName("calendar-view-session-information")[0]
@@ -75,8 +85,8 @@ export default function View(props) {
     if (props.data.startDate !== undefined) {
       let start = props.data.startDate;
       let end = props.data.endDate;
-      start = start.split("T")[1];
-      end = end.split("T")[1];
+      start = start.split("T")[1].substr(0, start.length - 3);
+      end = end.split("T")[1].substr(0, end.length - 3);
       return start + "-" + end;
     }
   };
@@ -89,12 +99,21 @@ export default function View(props) {
       document
         .getElementsByClassName("calendar-view-edit-session-information")[0]
         .classList.add("description-hidden");
-      document
-        .getElementsByClassName("calendar-view-description")[0]
-        .classList.remove("description-hidden");
-      document
-        .getElementsByClassName("calendar-view-edit-description")[0]
-        .classList.remove("description-hidden");
+      if (props.data.description === "") {
+        document
+          .getElementsByClassName("calendar-view-description")[0]
+          .classList.add("description-hidden");
+        document
+          .getElementsByClassName("calendar-view-edit-description")[0]
+          .classList.add("description-hidden");
+      } else {
+        document
+          .getElementsByClassName("calendar-view-description")[0]
+          .classList.remove("description-hidden");
+        document
+          .getElementsByClassName("calendar-view-edit-description")[0]
+          .classList.remove("description-hidden");
+      }
     } else {
       document
         .getElementsByClassName("calendar-view-session-information")[0]
@@ -139,7 +158,7 @@ export default function View(props) {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="bi bi-x-lg"
+              className="bi bi-x-lg"
               viewBox="0 0 16 16"
             >
               <path
@@ -184,7 +203,8 @@ export default function View(props) {
               <h3>Description</h3>
               <p>{props.data.description}</p>
             </div>
-            <div className="calendar-view-session-information description-hidden">
+
+            <div className="calendar-view-session-information">
               <h3>Links</h3>
               <div className="calendar-view-session-information-icon">
                 <p>

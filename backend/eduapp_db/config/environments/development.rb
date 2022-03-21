@@ -66,5 +66,6 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { :host => "localhost:3001" }
 
 	# Action Cable Config (FMV)
-  config.action_cable.allowed_request_origins = [ENV.fetch("REACT_APP_FRONTEND_ENDPOINT")]
+	# config.action_cable.url = "wss://#{ENV.fetch("DOMAIN")}/chat"
+  config.action_cable.allowed_request_origins = [ENV.fetch("REACT_APP_FRONTEND_ENDPOINT"), "http://localhost:4001"]
 end
