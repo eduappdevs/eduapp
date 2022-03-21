@@ -36,7 +36,6 @@ export default function Scheduleeventslist() {
     let subject = [];
     let subject_id = [];
     let userId = localStorage.userId;
-
     if (
       !isGlobal
         ? (subject = document.getElementById("e_subjectId").value)
@@ -56,8 +55,8 @@ export default function Scheduleeventslist() {
         start_date,
         end_date,
         isGlobal,
-        parseInt(subject_id),
-        userId
+        userId,
+        parseInt(subject_id)
       );
     } else {
       console.log("error");
