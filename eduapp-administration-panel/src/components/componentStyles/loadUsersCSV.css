@@ -71,3 +71,51 @@
   background-color: rgb(230, 47, 47) !important;
   border: 10px;
 }
+
+.csvLoaderButton{
+  background-color: rgb(51, 122, 255);
+}
+
+.csvTemplate{
+  margin-top: 0 !important;
+}
+
+
+
+.image_modal{
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999999;
+}
+
+.image_modal_content{
+  width: 500px;
+  border-radius: 10px;
+}
+
+.image_modal_header{
+  padding: 10px;
+  color: red;
+}
+
+.image_modal_body{
+  padding: 10px;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.closeModal{
+  background-color: rgba(255, 255, 255, 0) !important;
+  color: rgb(255, 85, 85);
+  position: fixed;
+  transform: scale(1.5);
+  padding-top: 35px;
+  padding-right: 40px;
+}
