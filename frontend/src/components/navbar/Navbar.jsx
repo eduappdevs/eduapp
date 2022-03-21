@@ -68,9 +68,10 @@ export default function Navbar({ mobile }) {
 
   const openProfileMenu = () => {
     setProfileMenuOpened(true);
+    document.body.classList.remove("overflow-show");
+    document.body.classList.add("overflow-hide");
     if (mobile) {
       const menu = document.querySelector(".profile-menu-mobile");
-
       menu.style.display = "flex";
       menu.style.transform = "translateX(110vh)";
       setTimeout(() => {
@@ -89,6 +90,8 @@ export default function Navbar({ mobile }) {
 
   const closeProfileMenu = () => {
     setProfileMenuOpened(false);
+    document.body.classList.remove("overflow-hide");
+    document.body.classList.add("overflow-show");
     if (mobile) {
       const menu = document.querySelector(".profile-menu-mobile");
 

@@ -25,14 +25,20 @@ export default function App() {
       } else {
         setItsMobileDevice(false);
       }
-      runCloseAnimation();
     }, 500);
   };
 
   useEffect(() => {
     checkMediaQueries();
+    setTimeout(() => {
+      runCloseAnimation();
+    }, 500);
     DarkModeChanger(localStorage.getItem("darkMode"));
   }, []);
+
+  useEffect(() => {
+    checkMediaQueries();
+  }, [window.innerWidth]);
 
   return userinfo ? (
     <>

@@ -20,6 +20,16 @@ code {
 		monospace;
 }
 
+.overflow-hide {
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.overflow-show {
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
 :root {
 	--orange: #FF8139;
 	--blue: #4B91FF;

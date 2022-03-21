@@ -8,7 +8,7 @@
 }
 
 .chat-menu-container {
-	height: 100vh;
+	height: 72.1vh;
 	width: 100%;
 	font-family: Consolas;
 	margin-bottom: 0;
@@ -20,7 +20,7 @@
 }
 
 .chat-user-container {
-	margin-bottom: 10%;
+	margin-bottom: 5%;
 }
 
 .chat-group-container>h2,
@@ -115,8 +115,8 @@
 }
 
 .chat-search-container {
-	margin-top: 7vh;
-	height: 6vh;
+	margin-top: 4em;
+	height: 40px;
 	display: flex;
 	justify-content: center;
 	align-items: end;
@@ -201,9 +201,5 @@
 @media screen and (max-height: 680px) {
 	.chat-add-button {
 		top: 75%;
-	}
-
-	.chat-menu-container {
-		margin-bottom: 25%;
 	}
 }
