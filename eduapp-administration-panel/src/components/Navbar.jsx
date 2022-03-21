@@ -1,7 +1,7 @@
 import React from "react";
 import jsreport from "@jsreport/browser-client";
 import axios from "axios";
-import API from "../API";
+import API, { endpoints } from "../API";
 import "../styles/navbar.css";
 
 export default function Navbar(props) {
@@ -27,7 +27,7 @@ export default function Navbar(props) {
       },
     };
 
-    jsreport.serverUrl = "http://localhost:5488";
+    jsreport.serverUrl = endpoints.JSREPORT;
     const report = await jsreport.render({
       template: {
         name: "ResourcesReport",
@@ -39,7 +39,7 @@ export default function Navbar(props) {
   };
 
   const generateMessagesReport = async () => {
-    const data = await axios.get("http://localhost:3000/chat_messages");
+    const data = await axios.get(endpoints.CHAT_MESSAGES);
 
     let dates = [];
     let dateCounts = [];
@@ -60,7 +60,7 @@ export default function Navbar(props) {
       },
     };
 
-    jsreport.serverUrl = "http://localhost:5488";
+    jsreport.serverUrl = endpoints.JSREPORT;
     const report = await jsreport.render({
       template: {
         name: "ChatMessagesReport",
@@ -72,14 +72,14 @@ export default function Navbar(props) {
   };
 
   const generateCoursesReport = async () => {
-    const data = await axios.get("http://localhost:3000/courses");
+    const data = await axios.get(endpoints.COURSES);
 
     const payload = {
       data: data.data,
     };
     console.log(payload);
 
-    jsreport.serverUrl = "http://localhost:5488";
+    jsreport.serverUrl = endpoints.JSREPORT;
     const report = await jsreport.render({
       template: {
         name: "RegisteredCoursesReport",

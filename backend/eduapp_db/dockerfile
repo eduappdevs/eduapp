@@ -10,8 +10,14 @@ RUN bundle install
 
 COPY . .
 
-ENV RAILS-SECRET-KEY = 53ffc295c966edfd46b47f1264bfae49a7c0707744a4a444a1b166e79a0e41fb0edd30839d92984ce3943e2c7ab59adfb83e67d871b6432d4b160e8cb63a0c5f
+ENV RAILS_SECRET_KEY=53ffc295c966edfd46b47f1264bfae49a7c0707744a4a444a1b166e79a0e41fb0edd30839d92984ce3943e2c7ab59adfb83e67d871b6432d4b160e8cb63a0c5f \
+	DEV_DB_USER=postgres \
+	DEV_DB_PSWD="1234" \
+	PORT=3010 \
+	HOST=localhost \
+	REACT_APP_FRONTEND_ENDPOINT=http://somosbluecity.es:4010 \ 
+	DOMAIN="somosbluecity.es"
 
-EXPOSE 3000
+EXPOSE 3010
 
-CMD [ "rails", "s" , "-b", "0.0.0.0"]
+CMD [ "rails", "s" , "-b", "172.17.0.6" ]

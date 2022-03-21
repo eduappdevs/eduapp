@@ -1,26 +1,28 @@
 import axios from "axios";
-import React from "react";
+import { React, useEffect, useState } from "react";
 import { CALENDAR, EDUAPP_SESSIONS } from "../../../config";
 import "./views.css";
 import { asynchronizeRequest } from "../../../API";
 
 export default function EditView(props) {
+  const [editStartDate, setEditStart] = useState("");
+  const [editEndDate, setEditEnd] = useState("");
+
   const closeButton = async () => {
     const editBox = document.getElementById("edit-box");
-    editBox.style.display = "flex";
-    editBox.classList.remove("edit-box-opened");
-    editBox.classList.add("edit-box-closed");
-
-    const calendarMainScroll = document.getElementsByClassName(
-      "calendar-main-container"
-    )[0];
-
-    calendarMainScroll.classList.remove("disable-scroll");
-
     setTimeout(() => {
-      editBox.classList.add("calendar-view-edit-hidden");
+      editBox.classList.remove("edit-box-opened");
+      editBox.classList.add("edit-box-closed");
     }, 150);
+    setTimeout(() => {
+      editBox.style.display = "none";
+    }, 500);
   };
+
+  useEffect(() => {
+    setEditStart(props.data.startDate);
+    setEditEnd(props.data.endDate);
+  }, [props.data]);
 
   const updateEvent = async (e) => {
     e.preventDefault();
@@ -31,14 +33,14 @@ export default function EditView(props) {
     var chatValue = document.getElementById("editChat").value;
     var resourceValue = document.getElementById("editResources").value;
     var streamValue = document.getElementById("editStream").value;
-    var editTitle;
-    var editDescription;
-    var editStartDate;
-    var editEndDate;
-    var editChat;
-    var editResources;
-    var editStream;
-    var editId;
+    var editTitle,
+      editDescription,
+      editStartDate,
+      editEndDate,
+      editChat,
+      editResources,
+      editStream,
+      editId;
 
     if (titleValue !== "" && titleValue !== props.data.title) {
       editTitle = titleValue;
@@ -150,7 +152,8 @@ export default function EditView(props) {
   return (
     <div
       id="edit-box"
-      className="calendar-view-edit-main-container calendar-view-edit-hidden"
+      className="calendar-view-edit-main-container edit-box-closed"
+      style={{ display: "none" }}
     >
       <div className="calendar-view-edit">
         <div className="calendar-view-edit-header">
@@ -204,8 +207,20 @@ export default function EditView(props) {
                   id="editStartDate"
                   name="editStartDate"
                   type="datetime-local"
+                  value={editStartDate}
+                  onChange={(e) => {
+                    setEditStart(e.target.value);
+                  }}
                 />
-                <input id="editEndDate" name="end" type="datetime-local" />
+                <input
+                  id="editEndDate"
+                  name="end"
+                  type="datetime-local"
+                  value={editEndDate}
+                  onChange={(e) => {
+                    setEditEnd(e.target.value);
+                  }}
+                />
               </div>
             </div>
             <div className="calendar-view-edit-description">
@@ -215,7 +230,7 @@ export default function EditView(props) {
                 placeholder={props.data.description}
                 name="editDescription"
                 type="text"
-                maxlength="150"
+                maxLength="150"
               />
             </div>
             <div className="calendar-view-edit-session-information">

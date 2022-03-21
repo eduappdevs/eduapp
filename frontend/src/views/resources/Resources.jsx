@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import ResourcesModal from "../../components/modals/ResourcesModal";
 import OpenedResource from "./openedResource/OpenedResource";
 import axios from "axios";
+import { RESOURCES } from "../../config";
 import Loader from "../../components/loader/Loader";
 import SubjectSelector from "../../components/subjectSelector/SubjectSelector";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import "./Resources.css";
 import { GetSubjects } from "../../hooks/GetSubjects";
+import "./Resources.css";
 
 export default function Resources() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -29,8 +30,7 @@ export default function Resources() {
   };
 
   const getResources = async (id) => {
-    const resources__url = `http://localhost:3000/resources?subject_id=${id}`;
-    console.log(id);
+    const resources__url = RESOURCES + `?subject_id=${id}`;
     await axios.get(resources__url).then((res) => {
       res.data.map((x) => {
         if (x.firstfile != null) {
@@ -53,6 +53,16 @@ export default function Resources() {
     document
       .getElementById(`resource__${e.target.id}__opened`)
       .classList.remove("openedResource__hidden");
+
+    document.getElementsByClassName(
+      "mobileSection"
+    )[0].childNodes[0].style.zIndex = -999;
+    document.getElementsByClassName(
+      "mobileSection"
+    )[0].childNodes[1].style.zIndex = -999;
+    document.getElementsByClassName(
+      "mobileSection"
+    )[0].childNodes[2].style.zIndex = 999;
 
     setTimeout(() => {
       document.getElementsByTagName("header")[0].style.display = "none";
@@ -135,7 +145,7 @@ export default function Resources() {
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
-                  class="bi bi-plus-square-fill"
+                  className="bi bi-plus-square-fill"
                   viewBox="0 0 16 16"
                 >
                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z" />
@@ -185,7 +195,7 @@ export default function Resources() {
                                   width="16"
                                   height="16"
                                   fill="currentColor"
-                                  class="bi bi-clock-fill"
+                                  className="bi bi-clock-fill"
                                   viewBox="0 0 16 16"
                                 >
                                   <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
@@ -207,7 +217,7 @@ export default function Resources() {
                                   width="16"
                                   height="16"
                                   fill="currentColor"
-                                  class="bi bi-person-fill"
+                                  className="bi bi-person-fill"
                                   viewBox="0 0 16 16"
                                 >
                                   <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />

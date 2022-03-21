@@ -27,6 +27,8 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
+	config.hosts << ENV.fetch("DOMAIN")
+
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
@@ -64,5 +66,6 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { :host => "localhost:3001" }
 
 	# Action Cable Config (FMV)
-  config.action_cable.allowed_request_origins = ['http://localhost:3001']
+	# config.action_cable.url = "wss://#{ENV.fetch("DOMAIN")}/chat"
+  config.action_cable.allowed_request_origins = [ENV.fetch("REACT_APP_FRONTEND_ENDPOINT"), "http://localhost:4001"]
 end

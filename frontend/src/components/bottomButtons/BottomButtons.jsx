@@ -9,9 +9,14 @@ export default function BottomButtons({ mobile }) {
   const [inCalendar, setInCalendar] = useState(false);
   const [inManagement, setInManagement] = useState(false);
   const [inChat, setInChat] = useState(false);
+  const [lastLocation, setLastLocation] = useState();
   const loc = useLocation();
 
   let userInfo = FetchUserInfo(localStorage.userId);
+
+  const getPosition = (string, subString, index) => {
+    return string.split(subString, index).join(subString).length;
+  };
 
   const changeLocation = () => {
     if (loc.pathname.substring(1) === "login")
@@ -20,6 +25,7 @@ export default function BottomButtons({ mobile }) {
 
     switch (loc.pathname.substring(1)) {
       case "resources":
+        setLastLocation("resources");
         setInResources(true);
         setInCalendar(false);
         setInChat(false);
@@ -83,7 +89,20 @@ export default function BottomButtons({ mobile }) {
             </svg>
           </li>
         </Link>
-        <Link to="/calendar">
+        <Link
+          to="/calendar"
+          onClick={() => {
+            if (
+              !(
+                window.location.href.substring(
+                  getPosition(window.location.href, "/", 3)
+                ) === "/calendar"
+              )
+            )
+              document.getElementById("sectionCalendar").style.display = "none";
+            window.location.href = "/calendar";
+          }}
+        >
           <li className={inCalendar ? "activeButton" : console.log()}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +116,7 @@ export default function BottomButtons({ mobile }) {
             </svg>
           </li>
         </Link>
-        {userInfo.isAdmin && (
+        {userInfo.isAdmin && navigator.onLine && (
           <Link to="/management">
             <li
               className={

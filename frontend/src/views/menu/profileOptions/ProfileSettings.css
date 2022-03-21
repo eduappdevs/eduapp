@@ -46,7 +46,7 @@
 }
 
 .userName_input {
-	margin: 30px;
+	margin-top: 30px;
 }
 
 .userName_input>input {
@@ -63,6 +63,11 @@
 .userName_input>input:focus {
 	outline: none;
 	border: 2px solid var(--blue);
+}
+
+.file-size-warning {
+	color: rgba(228, 0, 0, 0.68);
+	text-decoration: underline;
 }
 
 .commitChanges {

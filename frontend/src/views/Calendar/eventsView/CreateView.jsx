@@ -1,54 +1,64 @@
-import React from 'react';
-import axios from 'axios';
-import { FetchUserInfo } from '../../../hooks/FetchUserInfo';
-import { CALENDAR } from '../../../config';
-import { useState } from 'react';
-import './views.css';
+import { React, useState } from "react";
+import axios from "axios";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import { CALENDAR } from "../../../config";
+import "./views.css";
 
 export default function CreateView(props) {
   let userInfo = FetchUserInfo(localStorage.userId);
   const [globalValue, setGlobalValue] = useState(true);
 
+  const getDateTimeLocal = () => {
+    let now = new Date();
+    return `${now.getFullYear()}-${
+      now.getMonth() < 10 ? "0" + (now.getMonth() + 1) : now.getMonth() + 1
+    }-${now.getDate() < 10 ? "0" + now.getDate() : now.getDate()}T${
+      now.getHours() < 10 ? "0" + now.getHours() : now.getHours()
+    }:${now.getMinutes() < 10 ? "0" + now.getMinutes() : now.getMinutes()}`;
+  };
+
+  const [startDate, setStartDate] = useState(getDateTimeLocal);
+  const [endDate, setEndDate] = useState(getDateTimeLocal);
+
   const closeButton = async () => {
-    const chatBox = document.getElementById('create-box');
-    chatBox.style.display = 'flex';
+    const calendarBox = document.getElementById("create-box");
 
     const backgroundCalendar =
-      document.getElementsByClassName('background-shadow')[0];
-
-    chatBox.classList.remove('create-box-opened');
-    chatBox.classList.add('create-box-closed');
-
-    const calendarMainScroll = document.getElementsByClassName(
-      'calendar-main-container'
-    )[0];
-
-    calendarMainScroll.classList.remove('disable-scroll');
+      document.getElementsByClassName("background-shadow")[0];
+    calendarBox.classList.remove("create-box-opened");
+    calendarBox.classList.add("create-box-closed");
+    backgroundCalendar.classList.add("background-shadow-animation");
+    backgroundCalendar.style.animationDirection = "reverse";
 
     setTimeout(() => {
-      backgroundCalendar.style.display = 'none';
-    }, 150);
+      calendarBox.style.opacity = 0;
+    }, 550);
+    setTimeout(() => {
+      document.body.style.overflow = "scroll";
+      backgroundCalendar.style.display = "none";
+      backgroundCalendar.classList.remove("background-shadow-animation");
+    }, 500);
   };
 
   const createEvent = async (e) => {
     e.preventDefault();
-    let subjectInfo = document.getElementById('subject_name').value;
-    var titleValue = document.getElementById('newTitle').value;
-    var descriptionValue = document.getElementById('newDescription').value;
-    var startValue = document.getElementById('newStartDate').value;
-    var endValue = document.getElementById('newEndDate').value;
-    var subjectValue = subjectInfo.split('_')[0];
+    let subjectInfo = document.getElementById("subject_name").value;
+    var titleValue = document.getElementById("newTitle").value;
+    var descriptionValue = document.getElementById("newDescription").value;
+    var startValue = startDate;
+    var endValue = endDate;
+    var subjectValue = subjectInfo.split("_")[0];
     var subjectInt = parseInt(subjectValue);
-    var isGlobalValue = document.getElementById('subject_name').value;
+    var isGlobalValue = document.getElementById("subject_name").value;
     // var globalCourse = document.getElementById("isGlobalCourse").checked;
     var newEvent = {};
     if (
-      titleValue !== '' &&
-      startValue !== '' &&
-      endValue !== '' &&
-      subjectValue !== '' &&
+      titleValue !== "" &&
+      startValue !== "" &&
+      endValue !== "" &&
+      subjectValue !== "" &&
       isGlobalValue !== null &&
-      isGlobalValue !== 'Choose subject'
+      isGlobalValue !== "Choose subject"
     ) {
       newEvent = {
         annotation_start_date: startValue,
@@ -72,27 +82,28 @@ export default function CreateView(props) {
 
   const isNotGlobal = (e) => {
     e.preventDefault();
-    let subjectInfo = document.getElementById('subject_name').value;
-    if (subjectInfo.split('_')[1] !== 'Noticias') {
+    let subjectInfo = document.getElementById("subject_name").value;
+    if (subjectInfo.split("_")[1] !== "Noticias") {
       setGlobalValue(false);
     }
   };
 
   const alertCreate = async () => {
     document
-      .getElementsByClassName('calendar-view-alert-create-container')[0]
-      .classList.remove('calendar-view-alert-create-hidden');
+      .getElementsByClassName("calendar-view-alert-create-container")[0]
+      .classList.remove("calendar-view-alert-create-hidden");
     setTimeout(() => {
       document
-        .getElementsByClassName('calendar-view-alert-create-container')[0]
-        .classList.add('calendar-view-alert-create-hidden');
+        .getElementsByClassName("calendar-view-alert-create-container")[0]
+        .classList.add("calendar-view-alert-create-hidden");
     }, 2000);
   };
 
   return (
     <div
       id="create-box"
-      className="calendar-view-create-main-container calendar-view-create-hidden"
+      className="calendar-view-create-main-container create-box-closed"
+      style={({ display: "flex" }, { opacity: 0 })}
     >
       <div className="calendar-view-create">
         <div className="calendar-view-create-header">
@@ -102,7 +113,7 @@ export default function CreateView(props) {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="bi bi-x-lg"
+              className="bi bi-x-lg"
               viewBox="0 0 16 16"
             >
               <path
@@ -125,8 +136,24 @@ export default function CreateView(props) {
             <div className="calendar-view-create-hour">
               <h3>Date</h3>
               <div className="calendar-view-create-hour-input">
-                <input id="newStartDate" name="start" type="datetime-local" />
-                <input id="newEndDate" name="end" type="datetime-local" />
+                <input
+                  id="newStartDate"
+                  name="start"
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                  }}
+                />
+                <input
+                  id="newEndDate"
+                  name="end"
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                  }}
+                />
               </div>
             </div>
             <div className="calendar-view-create-description">
@@ -135,15 +162,18 @@ export default function CreateView(props) {
                 id="newDescription"
                 name="description"
                 type="text"
-                maxlength="150"
+                maxLength="150"
               />
             </div>
             <div className="calendar-view-create-subject">
               <h3>Subject</h3>
               <select name="subject" id="subject_name" onChange={isNotGlobal}>
-                <option selected>Choose subject</option>
+                <option defaultValue={"--"}>Choose subject</option>
                 {props.data.map((subject) => (
-                  <option value={subject.id + '_' + subject.name}>
+                  <option
+                    key={subject.id}
+                    value={subject.id + "_" + subject.name}
+                  >
                     {subject.name}
                   </option>
                 ))}

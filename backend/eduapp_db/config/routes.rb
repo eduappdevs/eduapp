@@ -22,9 +22,6 @@ Rails.application.routes.draw do
              }
 	delete 'users/remove/:id', to: 'user_infos#destroyuser'
   get '/google-login', to: 'glogin#login'
-               
-  
-
   get '/member-data', to: 'members#show'
   get '/ping', to: 'static#home'
 end

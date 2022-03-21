@@ -6,12 +6,14 @@ export const GetSubjects = (id) => {
 
   useEffect(() => {
     const getSubjects = async () => {
-      try {
-        const subject = await API.getSubjects(id);
-        setSubject([...subject]);
-      } catch (error) {
-        console.log(error);
-        console.log("token", localStorage.userToken);
+      if (navigator.onLine) {
+        try {
+          const subject = await API.getSubjects(id);
+          setSubject([...subject]);
+        } catch (error) {
+          console.log(error);
+          console.log("token", localStorage.userToken);
+        }
       }
     };
 

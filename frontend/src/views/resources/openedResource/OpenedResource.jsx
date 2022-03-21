@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
+import MediaFix from "../../../utils/MediaFixer";
 import { asynchronizeRequest } from "../../../API";
+import { RESOURCES } from "../../../config";
 import "./OpenedResource.css";
 
 export default function OpenedResource(props) {
@@ -26,8 +28,10 @@ export default function OpenedResource(props) {
   const deleteResource = (id) => {
     asynchronizeRequest(function () {
       axios
-        .delete(`http://localhost:3000/resources/${id}`)
-        .then((res) => console.log, window.location.reload())
+        .delete(RESOURCES + `/${id}`)
+        .then((res) => {
+          window.location.reload();
+        })
         .catch((err) => console.log);
     });
   };
@@ -46,12 +50,24 @@ export default function OpenedResource(props) {
 
     setTimeout(() => {
       document.getElementsByTagName("header")[0].style.display = "flex";
+
+      document.getElementsByClassName(
+        "mobileSection"
+      )[0].childNodes[0].style.zIndex = 999;
+      document.getElementsByClassName(
+        "mobileSection"
+      )[0].childNodes[1].style.zIndex = 999;
+      document.getElementsByClassName(
+        "mobileSection"
+      )[0].childNodes[2].style.zIndex = -999;
     }, 100);
   };
 
   const manageMediaType = (media) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
-    const videoRegex = new RegExp("^.*(mp4)$");
+    const videoRegex = new RegExp("^.*(mp4|mov)$");
+
+    media = MediaFix(media);
 
     if (media != null && (imageRegex.test(media) || videoRegex.test(media))) {
       if (imageRegex.test(media)) {
@@ -63,10 +79,7 @@ export default function OpenedResource(props) {
             <div
               className={"resource__image"}
               style={{
-                backgroundImage: `url(${media.replace(
-                  "localhost:3001",
-                  "localhost:3000"
-                )}) `,
+                backgroundImage: `url(${media}) `,
               }}
             />
             <a className="fileDownload-button" name="file" href={media}>

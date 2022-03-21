@@ -1,6 +1,5 @@
-import React from "react";
+import { useState } from "react";
 import { GetCourses } from "../../hooks/GetCourses";
-import { useState } from "react/cjs/react.development";
 import "./CourseSelector.css";
 
 export default function CourseSelector(props) {
@@ -22,6 +21,7 @@ export default function CourseSelector(props) {
             {courses.map((course) => {
               return (
                 <li
+                  key={course.course.id}
                   className={
                     courseSelected === course.course_id
                       ? "activeCourse"

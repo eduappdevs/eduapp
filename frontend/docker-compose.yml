@@ -1,6 +1,8 @@
 version: '3.1'
 services:
   web:
-    image: eduapp/eduapp
+    build: 
+      context: .
+    image: eduapp/eduapp_web
     ports:
       - "3001:3001"

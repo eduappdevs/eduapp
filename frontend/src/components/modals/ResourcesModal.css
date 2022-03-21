@@ -1,4 +1,5 @@
 .resourceModal-container {
+	font-family: Consolas;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -14,11 +15,9 @@
 	position: absolute;
 	background-color: rgba(0, 0, 0, 0.356);
 	z-index: 1;
-
 }
 
 .resourceModalScale1 {
-
 	transform: translate(-50%, -50%) scale(1) !important;
 }
 
@@ -55,6 +54,8 @@
 	position: absolute;
 	top: 5%;
 	color: white;
+	font-weight: bold;
+	font-size: 2.75em;
 }
 
 .resources__createResourceModal>form {
@@ -66,6 +67,7 @@
 }
 
 .resources__createResourceModal>form>input {
+	font-family: Consolas;
 	height: 30px;
 	border: none;
 	border-radius: 5px;
@@ -127,6 +129,14 @@
 	fill: white;
 }
 
+.file-warning {
+	text-align: center;
+	color: rgb(228, 0, 0);
+	text-decoration: underline;
+	font-weight: bold;
+	font-size: 1.25em;
+}
+
 .submit-action {
 	display: flex;
 	flex-direction: row;
@@ -139,14 +149,16 @@
 
 .resources__createResourceModal>form>div>button {
 	background-color: white;
-	height: 30px;
+	height: 35px;
 	border-radius: 5px;
 	border: none;
 	width: 50%;
 	transform: translateX(50%);
-	font-weight: 900;
+	font-weight: bold;
 	color: var(--blue);
 	cursor: pointer;
+	font-family: Consolas;
+	font-size: 1em;
 }
 
 #resources__closeResourceModal {

@@ -18,14 +18,13 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: localhost
-# host: db // Only to be used when build a docker image
+  host: <%= ENV.fetch("HOST") { localhost } %>
 
 development:
   <<: *default
   database: eduapp_db_development
-  username: postgres
-  password: "1234"
+  username: <%= ENV.fetch("DEV_DB_USER") { postgres } %>
+  password: <%= ENV.fetch("DEV_DB_PSWD") { "1234" } %>
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.

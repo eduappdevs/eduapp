@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import MainChat from "./mainChat/MainChat";
-import ACManager from "../../components/websockets/actioncable/ACManager";
+import ACManager from "../../utils/websockets/actioncable/ACManager";
 import Loader from "../../components/loader/Loader";
 import { CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../config";
 import "./ChatMenu.css";
@@ -30,6 +30,7 @@ export default function ChatMenu() {
     const loader = document.getElementById("chat-loader");
     const navbar = document.getElementsByTagName("header")[0];
     const bottombtns = document.getElementById("bottom-navigator");
+
     chatMenu.style.display = "none";
     navbar.style.display = "none";
     bottombtns.style.display = "none";
@@ -52,7 +53,6 @@ export default function ChatMenu() {
             event.target.id[event.target.id.length - 1]
         )
         .then((msgs) => {
-          console.log("a");
           setChatMessages(msgs.data);
           setTimeout(() => {
             setTimeout(() => {
@@ -84,6 +84,7 @@ export default function ChatMenu() {
     const loader = document.getElementById("chat-loader");
     const navbar = document.getElementsByTagName("header")[0];
     const bottombtns = document.getElementById("bottom-navigator");
+
     loader.style.display = "block";
     loader.style.opacity = "1";
 
@@ -120,7 +121,7 @@ export default function ChatMenu() {
         setGroupChats(tempGroups);
       })
       .catch((err) => {
-        console.log(err.message);
+        console.error(err.message);
       });
   };
 
@@ -153,8 +154,6 @@ export default function ChatMenu() {
         />
       </div>
       <div className="chat-menu-container">
-        {/* <Navbar mobile={isMobile} location={"chat"} /> */}
-
         <div className="chat-search-container">
           <form action="">
             <input type="text" />
@@ -181,12 +180,13 @@ export default function ChatMenu() {
                 {groupChats.map((gChats) => {
                   return (
                     <li
+                      key={gChats.chat_base.id}
                       onClick={openChat}
                       id={`group-chat-${gChats.chat_base.id}`}
                     >
                       <img
                         className="chat-icon"
-                        src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                        src="https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                         alt="Chat User Icon"
                       />
                       <div className="chat-info chat-idle-state">
@@ -216,7 +216,7 @@ export default function ChatMenu() {
                     >
                       <img
                         className="chat-icon"
-                        src="http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                        src="https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                         alt="Chat User Icon"
                       />
                       <div className="chat-info chat-idle-state">
@@ -245,8 +245,6 @@ export default function ChatMenu() {
             </svg>
           </div>
         </div>
-
-        {/* <BottomButtons mobile={isMobile} location={"chat"} /> */}
       </div>
     </>
   );

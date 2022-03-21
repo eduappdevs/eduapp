@@ -178,12 +178,12 @@ export default function ManagementPanel() {
 
   const checkMediaQueries = () => {
     setInterval(() => {
-      if (window.matchMedia("(max-width: 1100px)").matches) {
+      if (window.innerWidth < 1100) {
         setIsMobile(true);
       } else {
         setIsMobile(false);
       }
-    }, 4000);
+    }, 1000);
   };
 
   const openThisItem = (input) => {
@@ -215,7 +215,7 @@ export default function ManagementPanel() {
     checkMediaQueries();
 
     //First check
-    if (window.matchMedia("(max-width: 1100px)").matches) {
+    if (window.innerWidth < 1100) {
       setIsMobile(true);
     } else {
       setIsMobile(false);
@@ -301,7 +301,11 @@ export default function ManagementPanel() {
                 <form action="submit" onSubmit={deleteInstitution}>
                   <select name="institutions" id="institutions_delete">
                     {institutions.map((i) => {
-                      return <option value={i.id}>{i.name}</option>;
+                      return (
+                        <option key={i.id} value={i.id}>
+                          {i.name}
+                        </option>
+                      );
                     })}
                   </select>
                   <button type="submit">DELETE</button>
@@ -327,7 +331,11 @@ export default function ManagementPanel() {
                   <input type="text" name="name" />
                   <select name="institution_id" id="institution_id">
                     {institutions.map((i) => {
-                      return <option value={i.id}>{i.name}</option>;
+                      return (
+                        <option key={i.id} value={i.id}>
+                          {i.name}
+                        </option>
+                      );
                     })}
                   </select>
                   <button type="submit">SUBMIT</button>
@@ -338,7 +346,11 @@ export default function ManagementPanel() {
                 <form action="submit" onSubmit={deleteCourse}>
                   <select name="courses" id="courses_delete">
                     {courses.map((i) => {
-                      return <option value={i.id}>{i.name}</option>;
+                      return (
+                        <option key={i.id} value={i.id}>
+                          {i.name}
+                        </option>
+                      );
                     })}
                   </select>
                   <button type="submit">DELETE</button>
@@ -400,6 +412,7 @@ export default function ManagementPanel() {
                   {courses.map((i) => {
                     return (
                       <option
+                        key={i.id}
                         value={i.name + ":" + i.id + "/" + i.institution_id}
                       >
                         {i.name} of {getInstitution(i.institution_id)}
@@ -412,7 +425,7 @@ export default function ManagementPanel() {
                 <select name="tuition_user" id="tuition_user">
                   {users.map((i) => {
                     return (
-                      <option value={i.id}>
+                      <option key={i.id} value={i.id}>
                         {i.user_name},{i.id}
                       </option>
                     );
@@ -442,13 +455,9 @@ export default function ManagementPanel() {
           />
           <div
             className="managementpanel__item__header"
-            style={{ height: "95vh" }}
+            style={{ height: "80vh", overflow: "hidden" }}
           >
-            <div
-              id="cp-sessions"
-              className="sessions"
-              style={{ marginBottom: "9vh" }}
-            >
+            <div id="cp-sessions" className="sessions">
               <div className="sessions__post management__form-container">
                 <form action="submit" onSubmit={postSession}>
                   <label htmlFor="institution_name">Subject:</label>
@@ -484,7 +493,11 @@ export default function ManagementPanel() {
                   <label htmlFor="course_id">Course:</label>
                   <select name="course_id" id="course_id" required>
                     {courses.map((i) => {
-                      return <option value={i.id}>{i.name}</option>;
+                      return (
+                        <option key={i.id} value={i.id}>
+                          {i.name}
+                        </option>
+                      );
                     })}
                   </select>
                   <button type="submit">SUBMIT</button>

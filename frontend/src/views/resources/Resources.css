@@ -34,7 +34,7 @@
 	margin-block-start: 0;
 	margin-block-end: 0;
 	padding-inline-start: 0;
-	width: 70%;
+	width: 80%;
 }
 
 .resources {
@@ -267,6 +267,7 @@
 	transform: translateX(-50%);
 }
 
+
 .mobileSection>.resources-container>ul {
 	width: 95%;
 }
@@ -295,7 +296,6 @@
 }
 
 @media (min-width: 900px) {
-
 	.resourceitem {
 		width: 70%;
 	}

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import "../styles/schedulesessionslist.css";
 import axios from "axios";
+import { endpoints } from "../API";
+import "../styles/schedulesessionslist.css";
+
 export default function Schedulesessionslist() {
   const [sessions, setSessions] = useState([]);
 
   const getSessions = async () => {
     console.log("getting sessions");
     let payload = [];
-    let request = await axios.get(`http://localhost:3000/eduapp_user_sessions`);
+    let request = await axios.get(endpoints.SESSIONS);
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -61,7 +63,7 @@ export default function Schedulesessionslist() {
       SessionJson[context[i]] = json[i];
     }
     axios
-      .post("http://localhost:3000/eduapp_user_sessions", SessionJson)
+      .post(endpoints.SESSIONS, SessionJson)
       .then((res) => {
         console.log(res);
         window.location.reload();
