@@ -185,7 +185,7 @@ export default function View(props) {
               <p>{props.data.description}</p>
             </div>
             <div className="calendar-view-session-information description-hidden">
-              <h3>Description</h3>
+              <h3>Links</h3>
               <div className="calendar-view-session-information-icon">
                 <p>
                   <svg

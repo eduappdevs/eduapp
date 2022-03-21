@@ -83,8 +83,8 @@ export default function Schedulesessionslist() {
         name,
         start_date,
         end_date,
-        resources,
         streaming,
+        resources,
         chat,
         subject_id
       );
