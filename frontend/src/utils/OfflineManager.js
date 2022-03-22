@@ -10,7 +10,7 @@ const blobToBase64 = (blob) => {
 };
 
 export const saveUserOffline = async (userInfo) => {
-  if (userInfo.profile_image === null) {
+  if (userInfo.profile_image !== null) {
     try {
       let imgBlob = await axios.get(MediaFix(userInfo.profile_image.url), {
         responseType: "blob",
