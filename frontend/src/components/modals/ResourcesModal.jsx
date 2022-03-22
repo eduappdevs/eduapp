@@ -32,7 +32,6 @@ export default function ResourcesModal(props) {
       let files = Array.from(e.target.files);
 
       for (let f of files) {
-        console.log("hi", f);
         if (videoRegex.test(f.name)) {
           if (f.size / 1000 / 1000 > 15) {
             displayWarning("Video is larger than 15MB");
@@ -129,10 +128,21 @@ export default function ResourcesModal(props) {
         "resourceModal-container"
       )[0].style.display = "none";
     }, 300);
+    document.body.classList.remove("overflow-hide");
+    document.body.classList.add("overflow-show");
+    document.getElementById("resource-list").classList.remove("hide-rest-res");
   };
 
   useEffect(() => {
     getCurrentlyUser();
+
+    let nua = navigator.userAgent;
+    if (nua.indexOf("Macintosh") === -1)
+      document.querySelector(".loader").style.transform =
+        "translateZ(0) scale(0.9)";
+    else
+      document.querySelector(".loader").style.transform =
+        "translateZ(0) scale(0.5)";
   }, []);
 
   return (

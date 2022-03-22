@@ -83,6 +83,9 @@ export default function Resources() {
       document
         .getElementsByClassName("resources__createResourceModal")[0]
         .classList.add("resourceModalScale1");
+      document.body.classList.remove("overflow-show");
+      document.body.classList.add("overflow-hide");
+      document.getElementById("resource-list").classList.add("hide-rest-res");
     }, 1);
   };
 

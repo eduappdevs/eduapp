@@ -90,6 +90,8 @@ export default function ProfileSettings() {
       <MenuHeader
         backTo={() => {
           closeProfileSettings();
+          document.body.classList.remove("overflow-show");
+          document.body.classList.add("overflow-hide");
         }}
         location={"PROFILE"}
       />

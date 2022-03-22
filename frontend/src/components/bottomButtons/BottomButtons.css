@@ -3,7 +3,7 @@
 	bottom: 0;
 	background-color: var(--backgroundColor);
 	box-shadow: 0 3px 6px var(--shadowColor);
-	z-index: 9999999;
+	z-index: 999999;
 	position: fixed;
 	border-top: 3px solid rgba(189, 189, 189, 0.671);
 	padding-bottom: 15px;

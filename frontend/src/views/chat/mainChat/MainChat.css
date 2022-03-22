@@ -1,7 +1,7 @@
 .main-chat-container {
 	width: 100vw;
-	height: 100vh;
-	font-family: "Consolas";
+	bottom: 0;
+	font-family: Consolas;
 	margin: 0;
 	overflow-y: scroll;
 }
@@ -15,7 +15,7 @@ svg {
 }
 
 .main-chat-messages-container {
-	margin-top: 12.5vh;
+	margin-top: 13.2vh;
 	height: 77.1vh;
 	max-height: 78vh;
 	overflow-y: scroll;
@@ -39,14 +39,14 @@ svg {
 
 .main-chat-input-container {
 	width: 100%;
+	min-height: 4em;
 	height: 10vh;
-	z-index: 999999;
 	position: fixed;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	top: 0;
-	margin-top: 90vh;
+	bottom: 0;
+	z-index: 99999;
 	background-color: rgb(79, 79, 79);
 }
 
@@ -59,16 +59,17 @@ svg {
 
 .main-chat-input-container>.main-chat-input-text>textarea {
 	width: 70%;
-	height: 5vh;
+	min-height: 2em;
+	height: 6vh;
 	font-size: 20px;
-	font-family: "Consolas";
+	font-family: Consolas;
 	border-radius: 10px;
 	color: var(--textColor);
 	background: var(--backgroundColor) !important;
 	box-shadow: none;
 	border: none !important;
 	resize: none !important;
-	margin-right: 7.5px;
+	margin-right: 10px;
 	padding: 5px 5px 5px 5px;
 }
 
@@ -96,12 +97,11 @@ svg {
 	fill: white;
 	z-index: 500;
 	/* Chrome */
-	transform: scale(270%) rotate(45deg);
+	transform: scale(260%) rotate(45deg) translate(-15%, -15%);
 	/* Firefox, Safari */
-	-webkit-transform: scale(2.7) rotate(45deg);
+	-webkit-transform: scale(2.6) rotate(45deg) translate(-15%, -15%);
 	background-color: var(--blue);
 	border-radius: 60%;
 	left: 90%;
-	bottom: 4vh;
 	position: absolute;
 }

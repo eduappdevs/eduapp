@@ -68,9 +68,10 @@ export default function Navbar({ mobile }) {
 
   const openProfileMenu = () => {
     setProfileMenuOpened(true);
+    document.body.classList.remove("overflow-show");
+    document.body.classList.add("overflow-hide");
     if (mobile) {
       const menu = document.querySelector(".profile-menu-mobile");
-
       menu.style.display = "flex";
       menu.style.transform = "translateX(110vh)";
       setTimeout(() => {
@@ -92,6 +93,8 @@ export default function Navbar({ mobile }) {
 
   const closeProfileMenu = () => {
     setProfileMenuOpened(false);
+    document.body.classList.remove("overflow-hide");
+    document.body.classList.add("overflow-show");
     if (mobile) {
       const menu = document.querySelector(".profile-menu-mobile");
 
@@ -152,6 +155,7 @@ export default function Navbar({ mobile }) {
             </li>
           </ul>
         </div>
+        <p id="wip">EduApp W.I.P</p>
         <div
           className="profile-button"
           onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}

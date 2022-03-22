@@ -9,7 +9,6 @@ export const GetSubjects = (id) => {
       if (navigator.onLine) {
         try {
           const subject = await API.getSubjects(id);
-          console.log(subject);
           setSubject([...subject]);
         } catch (error) {
           console.log(error);
