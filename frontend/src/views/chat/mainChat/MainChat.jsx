@@ -20,13 +20,19 @@ export default function MainChat(props) {
 
   const sendMessage = () => {
     let inputMsg = document.getElementById("message-area");
-    acInstance.sendChannelCmd(
-      "message",
-      inputMsg.value,
-      localStorage.userId,
-      new Date().toISOString()
-    );
-    inputMsg.value = "";
+    if (
+      inputMsg.value !== "" &&
+      inputMsg.value !== " " &&
+      inputMsg.value.length > 0
+    ) {
+      acInstance.sendChannelCmd(
+        "message",
+        inputMsg.value,
+        localStorage.userId,
+        new Date().toISOString()
+      );
+      inputMsg.value = "";
+    }
   };
 
   const manageIncomingMsg = (newMsg) => {
