@@ -95,6 +95,7 @@ export default function Resources() {
 
   const handleChangeSelector = (id) => {
     setSubjectSelected(id);
+    setResources([]);
     getResources(id);
   };
 
