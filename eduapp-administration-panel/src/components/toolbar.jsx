@@ -53,9 +53,9 @@ export default function Toolbar(props) {
           <h1>Users</h1>
           <ul className="scheduletoolbar-ul users-toolbar">
             <li>
-              <LoadUsersCSV buttonText='Load'/>
+              <LoadUsersCSV buttonText="Load" />
             </li>
-            
+
             <li>
               <select name="subjects" id="subjects-select">
                 <option value="ALL">View all roles</option>
@@ -87,6 +87,18 @@ export default function Toolbar(props) {
       ) : props.location === "enroll" ? (
         <>
           <h1>Enroll a user</h1>
+        </>
+      ) : props.location === "chatMessage" ? (
+        <>
+          <h1>Message</h1>
+        </>
+      ) : props.location === "chatParticipant" ? (
+        <>
+          <h1>Participant</h1>
+        </>
+      ) : props.location === "chatConfig" ? (
+        <>
+          <h1>Chat</h1>
         </>
       ) : (
         <h1>Communication configuration</h1>

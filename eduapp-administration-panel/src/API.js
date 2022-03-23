@@ -12,7 +12,8 @@ const PING = `${API_URL}/ping`;
 const SUBJECTS = `${API_URL}/subjects`;
 const RESOURCES = `${API_URL}/resources`;
 const CHAT_MESSAGES = `${API_URL}/chat_messages`;
-
+const CHAT = `${API_URL}/chat_bases`;
+const CHAT_PARTICIPANT = `${API_URL}/chat_participants`
 const token =
   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
 
@@ -150,6 +151,70 @@ const apiSettings = {
     });
     return subjects;
   },
+  //chat
+  fetchChat: async () => {
+    const endpoint = `${CHAT}`
+    let chats = []
+    await axios.get(endpoint).then((res) => {
+      res.data.map((chat) => {
+        return chats.push(chat)
+      })
+    })
+    return chats
+  },
+  deleteChat: async (id) => {
+    const endpoint = `${CHAT}/${id}`;
+    return await axios.delete(endpoint, {
+      headers: { Authorization: token },
+    });
+  },
+  createChat: async (data) => {
+    const endpoint = `${CHAT}`
+    await axios.post(endpoint, data)
+  },
+  //chat Participant
+  fetchChatParticipant: async () => {
+    let participant = []
+    const endpoint = `${CHAT_PARTICIPANT}`
+    await axios.get(endpoint).then((res) => {
+      res.data.map((chat) => {
+        return participant.push(chat)
+      })
+    })
+    return participant
+  },
+  deleteParticipant: async (id) => {
+    const endpoint = `${CHAT_PARTICIPANT}/${id}`;
+    return await axios.delete(endpoint, {
+      headers: { Authorization: token },
+    });
+  },
+  createParticipant: async (data) => {
+    const endpoint = `${CHAT_PARTICIPANT}`
+    await axios.post(endpoint, data)
+  },
+  //Message 
+  fetchMessage: async () => {
+    let message = []
+    const endpoint = `${CHAT_MESSAGES}`
+    await axios.get(endpoint).then((res) => {
+      res.data.map((sms) => {
+        return message.push(sms)
+      })
+    })
+    return message
+  },
+  deleteMessage: async (id) => {
+    const endpoint = `${CHAT_MESSAGES}/${id}`;
+    return await axios.delete(endpoint, {
+      headers: { Authorization: token },
+    });
+  },
+  createMessage: async (data) => {
+    const endpoint = `${CHAT_MESSAGES}`
+    await axios.post(endpoint, data)
+  },
+
 };
 
 export default apiSettings;
@@ -165,6 +230,7 @@ export const endpoints = {
   PING,
   SUBJECTS,
   CHAT_MESSAGES,
+  CHAT,
   SESSIONS,
   EVENTS
 };

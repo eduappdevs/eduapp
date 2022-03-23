@@ -5,6 +5,7 @@ import API, { endpoints } from "../API";
 import "../styles/navbar.css";
 
 export default function Navbar(props) {
+  const DISPLAY = false;
   const generateResourcesReport = async () => {
     const data = await API.fetchResources();
 
@@ -176,6 +177,41 @@ export default function Navbar(props) {
           >
             <p>Subjects</p>
           </li>
+        </ul>
+      </div>
+      <div className="chat-button-container button-container">
+        <span>
+          <p>Chat Settings</p>
+        </span>
+        <ul className="button-suboptions">
+          <li
+            className="button-suboptions"
+            onClick={() => {
+              props.toolbarLocation("chatConfig");
+            }}
+          >
+            <p>Chat</p>
+          </li>
+          <li
+            className="button-suboptions"
+            onClick={() => {
+              props.toolbarLocation("chatParticipant");
+            }}
+          >
+            <p>Participants</p>
+          </li>
+          {DISPLAY ? (
+            <li
+              className="button-suboptions"
+              onClick={() => {
+                props.toolbarLocation("chatMessage");
+              }}
+            >
+              <p>Message</p>
+            </li>
+          ) : (
+            console.log()
+          )}
         </ul>
       </div>
       <div className="reports-button-container button-container">

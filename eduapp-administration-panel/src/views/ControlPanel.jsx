@@ -9,6 +9,10 @@ import CourseConfig from "../components/courseConfig";
 import SubjectsConfig from "../components/subjectsConfig";
 import UserConfig from "../components/userConfig";
 import EnrollConfig from "../components/enrollConfig";
+import ChatConfig from "../components/ChatConfig";
+import ChatMessageConfig from "../components/ChatMessageConfig";
+import ChatParticipantConfig from "../components/ChatParticipantConfig";
+
 import axios from "axios";
 import * as API from "../API";
 
@@ -51,6 +55,18 @@ export default function ControlPanel() {
             <UserConfig />
           ) : location === "enroll" ? (
             <EnrollConfig />
+          ) : location === "chatConfig" ? (
+            <>
+              <ChatConfig />
+            </>
+          ) : location === "chatMessage" ? (
+            <>
+              <ChatMessageConfig />
+            </>
+          ) : location === "chatParticipant" ? (
+            <>
+              <ChatParticipantConfig />
+            </>
           ) : (
             <></>
           )}
