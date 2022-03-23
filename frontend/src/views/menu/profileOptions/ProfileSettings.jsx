@@ -1,14 +1,24 @@
 import { useState } from "react";
+import {
+  uploadBytes,
+  deleteObject,
+  list,
+  getDownloadURL,
+} from "firebase/storage";
 import MenuHeader from "../menuHeader/MenuHeader";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { GetCourses } from "../../../hooks/GetCourses";
-import API from "../../../API";
 import Loader from "../../../components/loader/Loader";
-import "./ProfileSettings.css";
 import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
 import MediaFix from "../../../utils/MediaFixer";
 import NameCapitalizer from "../../../utils/NameCapitalizer";
-import { updateUserImageOffline } from "../../../utils/OfflineManager";
+import {
+  getOfflineUser,
+  updateUserImageOffline,
+} from "../../../utils/OfflineManager";
+import FirebaseStorage from "../../../utils/FirebaseStorage";
+import API from "../../../API";
+import "./ProfileSettings.css";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -54,35 +64,54 @@ export default function ProfileSettings() {
     }, 2000);
   };
 
-  const getPosition = (string, subString, index) => {
-    return string.split(subString, index).join(subString).length;
+  const uploadImg = (imgRef, newImg, userFormData) => {
+    uploadBytes(imgRef, newImg).then((snap) => {
+      getDownloadURL(snap.ref).then((url) => {
+        userFormData.append("profile_image", url);
+        API.updateInfo(localStorage.userId, userFormData).then(() => {
+          updateUserImageOffline(url).then(() => {
+            window.location.href = "/home";
+          });
+        });
+      });
+    });
   };
 
   const commitChanges = (e) => {
     e.preventDefault();
 
     const newUserInfo = new FormData();
-    if (changeImage != null) {
-      newUserInfo.append("profile_image", changeImage);
-    }
-
     if (userName != null) {
       newUserInfo.append("user_name", userName);
     }
 
-    API.updateInfo(localStorage.userId, newUserInfo).then((res) => {
-      let oldimg = MediaFix(userInfo.profile_image.url);
-      let newimg = MediaFix(res.data.profile_image.url);
+    let newImg = null;
+    if (changeImage != null) {
+      newImg = FirebaseStorage.getRef(
+        "user_profiles/" +
+          JSON.parse(localStorage.offline_user).user_id +
+          "/" +
+          changeImage.name
+      );
+    }
 
-      if (
-        oldimg.substring(getPosition(oldimg, "/", 8)) !==
-        newimg.substring(getPosition(newimg, "/", 8))
-      ) {
-        updateUserImageOffline(newimg).then(() => {
-          window.location.href = "/home";
-        });
-      } else window.location.href = "/home";
-    });
+    if (newImg) {
+      list(
+        FirebaseStorage.getRef(
+          "user_profiles/" + JSON.parse(localStorage.offline_user).user_id
+        )
+      ).then((snap) => {
+        if (snap.items.length !== 0) {
+          deleteObject(snap.items[0]).then(() => {
+            uploadImg(newImg, changeImage, newUserInfo);
+          });
+        } else uploadImg(newImg, changeImage, newUserInfo);
+      });
+    } else {
+      API.updateInfo(localStorage.userId, newUserInfo).then((res) => {
+        window.location.href = "/home";
+      });
+    }
   };
 
   return courses !== undefined ? (
@@ -100,8 +129,8 @@ export default function ProfileSettings() {
           <div className="userProfileImg">
             <img
               src={
-                userInfo.profile_image != null
-                  ? MediaFix(userInfo.profile_image.url)
+                getOfflineUser().profile_image != null
+                  ? getOfflineUser().profile_image
                   : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               }
               alt={"user"}

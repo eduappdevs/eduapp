@@ -10,10 +10,13 @@ export const FetchUserInfo = (userId) => {
       if (navigator.onLine) {
         try {
           const userInfo = await API.fetchInfo(userId);
+          delete userInfo.googleid;
           setUserInfo({ ...userInfo });
           await saveUserOffline(userInfo);
         } catch (error) {
-          console.log(error);
+          if (error.message.includes("(reading 'protocol')"))
+            console.warn("No user logged in.");
+          else console.error(error);
         }
       } else {
         let offlineUser = await getOfflineUser();

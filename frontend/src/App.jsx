@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import Resources from "./views/resources/Resources";
 import Login from "./views/login/Login";
 import Home from "./views/home/Home";
-import React, { useState } from "react";
 import requireAuth from "./components/auth/RequireAuth";
 import ManagementPanel from "./views/ManagementPanel/ManagementPanel";
 import { FetchUserInfo } from "./hooks/FetchUserInfo";
@@ -11,10 +11,11 @@ import Calendar from "./views/Calendar/Calendar";
 import ChatMenu from "./views/chat/ChatMenu";
 import BottomButtons from "./components/bottomButtons/BottomButtons";
 import Navbar from "./components/navbar/Navbar";
-import { useEffect } from "react";
 import DarkModeChanger from "./components/DarkModeChanger";
+import FirebaseStorage from "./utils/FirebaseStorage";
 
 export default function App() {
+  const [isLogin, setIsLogin] = useState(false);
   let userinfo = FetchUserInfo(localStorage.userId);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
 
@@ -29,11 +30,17 @@ export default function App() {
   };
 
   useEffect(() => {
+    setIsLogin(!window.location.href.includes("/login"));
     checkMediaQueries();
     setTimeout(() => {
       runCloseAnimation();
     }, 500);
-    DarkModeChanger(localStorage.getItem("darkMode"));
+    try {
+      DarkModeChanger(localStorage.getItem("darkMode"));
+    } catch (err) {
+    } finally {
+      FirebaseStorage.init();
+    }
   }, []);
 
   useEffect(() => {
@@ -46,9 +53,11 @@ export default function App() {
         <React.Fragment>
           <Loader />
         </React.Fragment>
-        <React.Fragment>
-          <Navbar mobile={ItsMobileDevice} />
-        </React.Fragment>
+        {isLogin && (
+          <React.Fragment>
+            <Navbar mobile={ItsMobileDevice} />
+          </React.Fragment>
+        )}
         {requireAuth() ? (
           <Routes>
             <Route exact path="/home" element={<Home />} />
@@ -66,9 +75,11 @@ export default function App() {
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}
-        <React.Fragment>
-          <BottomButtons mobile={ItsMobileDevice} />
-        </React.Fragment>
+        {isLogin && (
+          <React.Fragment>
+            <BottomButtons mobile={ItsMobileDevice} />
+          </React.Fragment>
+        )}
       </BrowserRouter>
     </>
   ) : (

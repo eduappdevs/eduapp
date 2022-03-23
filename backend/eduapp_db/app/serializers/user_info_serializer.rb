@@ -3,11 +3,4 @@ class UserInfoSerializer < ActiveModel::Serializer
 
   attributes :id, :user_name , :user_id , :profile_image , :isAdmin , :googleid ,:isLoggedWithGoogle
 	has_one :user
-  def profile_image
-    if object.profile_image.attached?
-      {
-        url: rails_blob_url(object.profile_image)
-      }
-    end
-  end
 end
