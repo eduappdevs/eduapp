@@ -12,17 +12,29 @@ import EnrollConfig from "../components/enrollConfig";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
+  const [search, setSearch] = useState('');
+  const [userRole, setUserRole] = useState(null);
 
   const changeToolbarLocation = (incoming) => {
     console.log("click", incoming);
     setLocation(incoming);
   };
 
+  const searchFilter = (search)=>{
+    setSearch(search);
+  }
+  const userRoleFilter = (role) =>{
+    console.log(role)
+    console.log(role === 'ADMIN' ? 1 : role ==='STUDENT' ?  0 : null)
+    setUserRole(role === 'ADMIN' ? 1 : role ==='STUDENT' ?  0 : null);
+
+  }
+
   return (
     <div className="users-main-container">
       <Navbar toolbarLocation={changeToolbarLocation} />
       <div>
-        <Toolbar location={location} />
+        <Toolbar location={location} search={searchFilter} userRole={userRoleFilter}/>
         <div className="controlPanel-content-container">
           {location === "sessions" ? (
             <Schedulesessionslist />
@@ -35,7 +47,7 @@ export default function ControlPanel() {
           ) : location === "subjects" ? (
             <SubjectsConfig />
           ) : location === "users" ? (
-            <UserConfig />
+            <UserConfig search={search} userRole={userRole}/>
           ) : location === "enroll" ? (
             <EnrollConfig />
           ) : (
