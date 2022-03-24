@@ -10,11 +10,11 @@ services:
     volumes:
       - eduapp_db_data:/var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "5433:5432"
   api:
     build:
       context: ./backend/eduapp_db
-    image: eduapp/eduapp_db
+    image: eduapp_dev/eduapp_api
     depends_on:
       - db
     ports:
@@ -22,15 +22,15 @@ services:
   web:
     build: 
       context: ./frontend
-    image: eduapp/eduapp_web
+    image: eduapp_dev/eduapp_web
     depends_on: 
       - api
     ports:
       - "3001:3001"
-  web_admin:
+  admin:
     build: 
       context: ./eduapp-administration-panel
-    image: eduapp/eduapp_web_admin
+    image: eduapp_dev/eduapp_admin
     depends_on:
       - api
     ports:

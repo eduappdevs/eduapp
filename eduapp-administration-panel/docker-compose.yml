@@ -3,6 +3,6 @@ services:
   web:
     build: 
       context: .
-    image: eduapp/eduapp_web_admin
+    image: eduapp/eduapp_admin
     ports:
       - "3002:3002"
