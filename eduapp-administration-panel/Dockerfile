@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-ENV REACT_APP_BACKEND_ENDPOINT=http://localhost:3000 \
+ENV REACT_APP_BACKEND_ENDPOINT=https://eduapp-online-api.herokuapp.com \
 	REACT_APP_REPORTS_ENDPOINT=http://localhost:5488
 
 EXPOSE 3002
