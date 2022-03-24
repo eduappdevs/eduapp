@@ -21,19 +21,6 @@ const saveInLocalStorage = (userDetails) => {
 };
 
 const apiSettings = {
-  //Subjects
-  getSubjects: async (id) => {
-    const endpoint = `${SUBJECT}?subject_id=${id}`;
-    let subjects = [];
-    await axios.get(endpoint).then((res) => {
-      res.data.map((subject) => {
-        if (subject.name !== "Noticias") {
-          return subjects.push(subject);
-        }
-      });
-    });
-    return subjects;
-  },
   //Resources
   fetchResources: async () => {
     const endpoint = `${RESOURCES}`;
@@ -53,6 +40,9 @@ const apiSettings = {
       headers: { Authorization: localStorage.userToken },
     });
   },
+
+
+
   //User
   createUser: async (body) => {
     const endpoint = `${USERS}`;
@@ -71,6 +61,7 @@ const apiSettings = {
       console.log(res);
     });
   },
+
 
   chechToken: async (token) => {
     const endpoint = `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`;
@@ -145,6 +136,7 @@ const apiSettings = {
   getCourses: async () => {
     const endpoint = `${TUITIONS}`;
     let courses = [];
+
     await axios.get(endpoint).then((res) => {
       res.data.map((course) => {
         if (course.user_id.toString() === localStorage.userId) {
@@ -160,6 +152,22 @@ const apiSettings = {
   createCourse: async (body) => {
     const endpoint = `${COURSES}`;
     return await axios.post(endpoint, body);
+  },
+  //Subjects
+  getSubjects: async (id) => {
+    let idInt = parseInt(id)
+    const endpoint = `${SUBJECT}?user=${idInt}`;
+    let subjects = [];
+
+    await axios.get(endpoint).then((res) => {
+      res.data.map((subject) => {
+        if (subject.name !== "Noticias") {
+          return subjects.push(subject)
+        }
+      })
+    });
+    return subjects
+
   },
 
   //Institutions

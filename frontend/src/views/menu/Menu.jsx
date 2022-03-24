@@ -3,7 +3,6 @@ import React from "react";
 import MenuSettings from "./menu-settings/MenuSettings";
 import MenuHeader from "./menuHeader/MenuHeader";
 import API from "../../API";
-import { SUPPORT } from "../../config";
 import ProfileSettings from "./profileOptions/ProfileSettings";
 
 export default function Menu(props) {
@@ -17,15 +16,18 @@ export default function Menu(props) {
     document
       .getElementsByClassName("profileSettings_container")[0]
       .classList.remove("profileSettings__hidden");
+    document.body.classList.remove("overflow-hide");
+    document.body.classList.add("overflow-show");
   };
 
   return (
     <div
       className={
-        window.matchMedia("(max-width:1100px)").matches
+        window.innerWidth < 1000
           ? "profile-menu-mobile"
           : "profile-menu-desktop"
       }
+      style={{ zIndex: 9999999 }}
     >
       <MenuHeader
         backTo={() => {
@@ -33,7 +35,7 @@ export default function Menu(props) {
         }}
         location={"MENU"}
       />
-      <ul style={{ height: "80%" }}>
+      <ul>
         <li>
           <a
             onClick={() => {
@@ -54,7 +56,7 @@ export default function Menu(props) {
           </a>
           <MenuSettings />
         </li>
-        <li>
+        {/* <li>
           <a
             onClick={(event) => {
               event.preventDefault();
@@ -63,7 +65,7 @@ export default function Menu(props) {
           >
             Help
           </a>
-        </li>
+        </li> */}
         <li>
           <a onClick={API.logout}>Log out</a>
         </li>

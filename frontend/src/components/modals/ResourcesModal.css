@@ -215,7 +215,9 @@
 .loader {
 	color: #ffffff;
 	font-size: 5px;
-	margin: 5px 0 5px 100px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-left: 25vw;
 	width: 1em;
 	height: 1em;
 	border-radius: 50%;
@@ -223,9 +225,20 @@
 	text-indent: -9999em;
 	-webkit-animation: load4 1.3s infinite linear;
 	animation: load4 1.3s infinite linear;
-	-webkit-transform: translateZ(0);
-	-ms-transform: translateZ(0);
-	transform: translateZ(0);
+	-webkit-transform: translateZ(0) scale(0.4);
+	transform: translateZ(0) scale(0.7);
+}
+
+@media screen and (min-width: 750px) {
+	.loader {
+		margin-left: 12vw;
+	}
+}
+
+@media screen and (min-width: 1200px) {
+	.loader {
+		margin-left: 7vw;
+	}
 }
 
 @-webkit-keyframes load4 {

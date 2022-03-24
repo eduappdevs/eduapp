@@ -261,10 +261,10 @@ export default function EditView(props) {
         </div>
         <div className="calendar-view-edit-alert-delete-container calendar-view-alert-delete-hidden">
           <div className="calendar-view-edit-alert-delete">
-            <h3>¿Deseas eliminar el evento?</h3>
+            <h3>Do you want to delete?</h3>
             <div className="buttonsDeleteCalendar">
               <div className="buttonDeleteCalendar" onClick={deleteEvent}>
-                Si
+                Yes
               </div>
               <div onClick={closeDeleteWindow}>No</div>
             </div>

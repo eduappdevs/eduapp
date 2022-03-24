@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { React, useState } from "react";
 import { GetCourses } from "../../hooks/GetCourses";
 import "./CourseSelector.css";
 
 export default function CourseSelector(props) {
   let courses = GetCourses();
   const [courseSelected, setCourseSelected] = useState();
-
   const handleChangeCourse = (e, id) => {
     if (e.target.classList.contains("inactiveCourse")) {
       props.handleChangeCourse(id);
@@ -21,7 +20,6 @@ export default function CourseSelector(props) {
             {courses.map((course) => {
               return (
                 <li
-                  key={course.course.id}
                   className={
                     courseSelected === course.course_id
                       ? "activeCourse"

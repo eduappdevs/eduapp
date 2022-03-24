@@ -64,7 +64,7 @@ export default function Home() {
   };
 
   const getSessions = async () => {
-    let request = await axios.get(SUBJECT + `?user_id=${localStorage.userId}`);
+    let request = await axios.get(`${SUBJECT}?user_id=${localStorage.userId}`);
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -74,6 +74,7 @@ export default function Home() {
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
       let date = startDate.split("T")[1] + " - " + endDate.split("T")[1];
+
       sessionsPreSorted.push({
         id,
         name,
@@ -88,16 +89,24 @@ export default function Home() {
       return true;
     });
 
-    sessionsSorted = sessionsPreSorted.sort(function (a, b) {
+    sessionsSorted = sessionsPreSorted.sort(function (a, b, c, d) {
       let aHour = a.startDate.split("T")[1];
+      let aMinute = a.startDate.split("T")[1].split(":")[1];
       let bHour = b.startDate.split("T")[1];
+      let bMinute = b.startDate.split("T")[1].split(":")[1];
       a = parseInt(aHour);
       b = parseInt(bHour);
+      c = parseInt(aMinute);
+      d = parseInt(bMinute);
       if (a < b) {
-        return -1;
+        if (c < d) {
+          return -1;
+        }
       }
       if (a > b) {
-        return 1;
+        if (c > d) {
+          return 1;
+        }
       }
       return 0;
     });
@@ -135,7 +144,6 @@ export default function Home() {
       "session-after" + e.target.id.substring(3)
     );
     const img = document.getElementById("button" + e.target.id.substring(3));
-    console.log(e.target.id);
     setTimeout(() => {
       try {
         // const session = document.querySelector(e.target.id);

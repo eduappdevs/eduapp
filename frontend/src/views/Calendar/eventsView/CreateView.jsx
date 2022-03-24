@@ -193,7 +193,7 @@ export default function CreateView(props) {
       </div>
       <div className="calendar-view-alert-create-container calendar-view-alert-create-hidden">
         <div className="calendar-view-alert-create">
-          <h3>No has introducido los valores correactamente.</h3>
+          <h3>You have not entered the values ​​correctly.</h3>
         </div>
       </div>
     </div>

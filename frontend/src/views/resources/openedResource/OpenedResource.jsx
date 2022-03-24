@@ -150,6 +150,7 @@ export default function OpenedResource(props) {
         </div>
         <div className="resourceOpened__files">
           <h1>Files</h1>
+          <p id="wip">EduApp W.I.P</p>
           <ul>
             {files.length > 0 ? (
               files.map((file) => {
@@ -168,9 +169,9 @@ export default function OpenedResource(props) {
             )}
           </ul>
         </div>
-        <div className="resourceOpened__date">
+        {/* <div className="resourceOpened__date">
           <p>*insert code date*</p>
-        </div>
+        </div> */}
       </div>
     )
   );

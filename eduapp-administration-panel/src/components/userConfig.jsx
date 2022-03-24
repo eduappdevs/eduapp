@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as API from "../API";
-
-export default function UserConfig() {
+export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
+  const [search,setSearch] = useState('')
+  const [userRole, setUserRole] = useState(null)
 
   const fetchUsers = () => {
     API.asynchronizeRequest(function () {
@@ -76,6 +77,43 @@ export default function UserConfig() {
     }
   };
 
+  const filterUsersWithRole = (role,user) => {
+    switch(role){
+      case null:
+        if(user.isAdmin || !user.isAdmin){
+          return true
+        }
+        break
+      case 0:
+        if(user.isAdmin){
+          return false
+          
+        }
+        else{
+          return true
+          
+        }
+        
+      case 1:
+          if(!user.isAdmin){
+            return false
+          }
+          else{
+            return true
+          }
+
+
+
+    }
+  }
+
+  useEffect(()=>{
+    setSearch(props.search)
+  },[props.search])
+  useEffect(()=>{
+    console.log(props.userRole, 'ya desde userconfig')
+    setUserRole(props.userRole)
+  },[props.userRole])
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -83,6 +121,8 @@ export default function UserConfig() {
   return (
     <>
       <div className="schedulesesionslist-main-container">
+
+        
         <table>
           <tr>
             <th>Add</th>
@@ -135,60 +175,346 @@ export default function UserConfig() {
               <th>Is Admin</th>
               <th>Has Google Linked</th>
               <th>Actions</th>
+            
             </tr>
             {users
               ? users.map((u) => {
-                  return (
-                    <tr>
-                      <td>
-                        <input type="text" disabled value={u.user_id} />
-                      </td>
-                      <td>
-                        <input type="text" disabled value={u.user_name} />
-                      </td>
-                      <td>
-                        <input type="text" disabled value={u.user.email} />
-                      </td>
-                      <td style={{ textAlign: "center" }}>
-                        {u.isAdmin ? (
-                          <input type="checkbox" disabled checked />
-                        ) : (
-                          <input type="checkbox" disabled />
-                        )}
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          disabled
-                          placeholder="=> Link in App"
-                        />
-                      </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <button
-                          onClick={() => {
-                            deleteUser(u.id);
+
+                  if(search.length > 0){
+                    if((u.user_name.includes(search) || u.user.email.includes(search)) & filterUsersWithRole(userRole,u)){
+                      return (
+                        <tr>
+                          <td>
+                            <input type="text" disabled value={u.user_id} />
+                          </td>
+                          <td>
+                            <input type="text" disabled value={u.user_name} />
+                          </td>
+                          <td>
+                            <input type="text" disabled value={u.user.email} />
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            {u.isAdmin ? (
+                              <input type="checkbox" disabled checked />
+                            ) : (
+                              <input type="checkbox" disabled />
+                            )}
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              placeholder="=> Link in App"
+                            />
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <button
+                              onClick={() => {
+                                deleteUser(u.id);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+  
+                    }
+                    
+                  }
+                  else if(filterUsersWithRole(userRole,u)){
+                    return (
+                      <tr>
+                        <td>
+                          <input type="text" disabled value={u.user_id} />
+                        </td>
+                        <td>
+                          <input type="text" disabled value={u.user_name} />
+                        </td>
+                        <td>
+                          <input type="text" disabled value={u.user.email} />
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          {u.isAdmin ? (
+                            <input type="checkbox" disabled checked />
+                          ) : (
+                            <input type="checkbox" disabled />
+                          )}
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            disabled
+                            placeholder="=> Link in App"
+                          />
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
+                          <button
+                            onClick={() => {
+                              deleteUser(u.id);
+                            }}
                           >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                    
+                  }
+                
+                  if(search.length > 0){
+                    if((u.user_name.includes(search) || u.user.email.includes(search)) & filterUsersWithRole(userRole,u)){
+                      return (
+                        <tr>
+                          <td>
+                            <input type="text" disabled value={u.user_id} />
+                          </td>
+                          <td>
+                            <input type="text" disabled value={u.user_name} />
+                          </td>
+                          <td>
+                            <input type="text" disabled value={u.user.email} />
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            {u.isAdmin ? (
+                              <input type="checkbox" disabled checked />
+                            ) : (
+                              <input type="checkbox" disabled />
+                            )}
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              placeholder="=> Link in App"
+                            />
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <button
+                              onClick={() => {
+                                deleteUser(u.id);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+  
+                    }
+                    
+                  }
+                  else if (filterUsersWithRole(userRole,u)){
+                    return (
+                      <tr>
+                        <td>
+                          <input type="text" disabled value={u.user_id} />
+                        </td>
+                        <td>
+                          <input type="text" disabled value={u.user_name} />
+                        </td>
+                        <td>
+                          <input type="text" disabled value={u.user.email} />
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          {u.isAdmin ? (
+                            <input type="checkbox" disabled checked />
+                          ) : (
+                            <input type="checkbox" disabled />
+                          )}
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            disabled
+                            placeholder="=> Link in App"
+                          />
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              deleteUser(u.id);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                    
+                  }
+                
+                  if(search.length > 0){
+                    if((u.user_name.includes(search) || u.user.email.includes(search)) & filterUsersWithRole(userRole,u)){
+                      return (
+                        <tr>
+                          <td>
+                            <input type="text" disabled value={u.user_id} />
+                          </td>
+                          <td>
+                            <input type="text" disabled value={u.user_name} />
+                          </td>
+                          <td>
+                            <input type="text" disabled value={u.user.email} />
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            {u.isAdmin ? (
+                              <input type="checkbox" disabled checked />
+                            ) : (
+                              <input type="checkbox" disabled />
+                            )}
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              placeholder="=> Link in App"
+                            />
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <button
+                              onClick={() => {
+                                deleteUser(u.id);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+  
+                    }
+                    
+                  }
+                  else if(filterUsersWithRole(userRole,u)){
+                    return (
+                      <tr>
+                        <td>
+                          <input type="text" disabled value={u.user_id} />
+                        </td>
+                        <td>
+                          <input type="text" disabled value={u.user_name} />
+                        </td>
+                        <td>
+                          <input type="text" disabled value={u.user.email} />
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          {u.isAdmin ? (
+                            <input type="checkbox" disabled checked />
+                          ) : (
+                            <input type="checkbox" disabled />
+                          )}
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            disabled
+                            placeholder="=> Link in App"
+                          />
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              deleteUser(u.id);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                    
+                  }                  
                 })
               : null}
           </table>

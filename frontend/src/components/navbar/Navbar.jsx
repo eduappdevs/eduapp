@@ -68,9 +68,10 @@ export default function Navbar({ mobile }) {
 
   const openProfileMenu = () => {
     setProfileMenuOpened(true);
+    document.body.classList.remove("overflow-show");
+    document.body.classList.add("overflow-hide");
     if (mobile) {
       const menu = document.querySelector(".profile-menu-mobile");
-
       menu.style.display = "flex";
       menu.style.transform = "translateX(110vh)";
       setTimeout(() => {
@@ -86,9 +87,14 @@ export default function Navbar({ mobile }) {
       }, 300);
     }
   };
+  const getPosition = (string, subString, index) => {
+    return string.split(subString, index).join(subString).length;
+  };
 
   const closeProfileMenu = () => {
     setProfileMenuOpened(false);
+    document.body.classList.remove("overflow-hide");
+    document.body.classList.add("overflow-show");
     if (mobile) {
       const menu = document.querySelector(".profile-menu-mobile");
 
@@ -120,7 +126,23 @@ export default function Navbar({ mobile }) {
               <Link to="/home"> Home</Link>
             </li>
             <li className={inCalendar ? "activeLocation" : console.log()}>
-              <Link to="/calendar"> Calendar</Link>
+              <Link
+                to="/calendar"
+                onClick={() => {
+                  if (
+                    !(
+                      window.location.href.substring(
+                        getPosition(window.location.href, "/", 3)
+                      ) === "/calendar"
+                    )
+                  )
+                    document.getElementById("sectionCalendar").style.display =
+                      "none";
+                  window.location.href = "/calendar";
+                }}
+              >
+                Calendar
+              </Link>
             </li>
             <li className={inManagement ? "activeLocation" : console.log()}>
               <Link to="/management"> Management</Link>
@@ -133,6 +155,7 @@ export default function Navbar({ mobile }) {
             </li>
           </ul>
         </div>
+        <p id="wip">EduApp W.I.P</p>
         <div
           className="profile-button"
           onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}

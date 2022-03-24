@@ -9,6 +9,7 @@
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@jsreport/browser-client": "^3.1.0",
+    "@mui/base": "^5.0.0-alpha.72",
     "@mui/icons-material": "^5.0.4",
     "@mui/lab": "^5.0.0-alpha.51",
     "@mui/material": "^5.0.4",

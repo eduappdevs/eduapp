@@ -129,7 +129,7 @@ export default function ChatMenu() {
     acManager.closeConnection();
     checkMediaQueries();
 
-    getUserChats().then(() => {});
+    getUserChats();
 
     if (window.innerWidth < 1000) {
       setIsMobile(true);
