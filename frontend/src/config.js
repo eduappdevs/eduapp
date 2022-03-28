@@ -16,8 +16,18 @@ const CALENDAR = `${API_URL}/calendar_annotations`;
 const CALENDAR_USER_ID = `${API_URL}/calendar_annotations?user_id=`;
 const SUBJECT = `${API_URL}/subjects`;
 
+const FIREBASE_CFG = {
+  apiKey: process.env.REACT_APP_FB_API_KEY,
+  authDomain: process.env.REACT_APP_FB_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FB_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FB_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FB_SENDER_ID,
+  appId: process.env.REACT_APP_FB_ID,
+};
+
 export {
   API_URL,
+  FIREBASE_CFG,
   PING,
   RESOURCES,
   EDUAPP_SESSIONS,

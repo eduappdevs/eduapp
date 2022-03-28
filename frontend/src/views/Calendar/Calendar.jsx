@@ -14,6 +14,7 @@ import {
   ViewSwitcher,
   TodayButton,
   AppointmentTooltip,
+  CurrentTimeIndicator,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import { CALENDAR_USER_ID, SUBJECT } from "../../config";
@@ -21,6 +22,7 @@ import View from "./eventsView/View";
 import CreateView from "./eventsView/CreateView";
 import "./calendar.css";
 import { asynchronizeRequest } from "../../API";
+import { shouldForwardProp } from "@mui/material/node_modules/@mui/system";
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
@@ -223,6 +225,36 @@ export default function Calendar() {
     </StyledDiv>
   );
 
+  const IndicatorDiv = styled("div", {
+    shouldForwardProp: (prop) => prop !== "top",
+  })(({ theme, top }) => ({
+    [`& .styled-line`]: {
+      height: "2px",
+      borderTop: `2px solid #FF8139`,
+      width: "100%",
+      transform: "translate(0, -1px)",
+    },
+    [`& .styled-circle`]: {
+      width: theme.spacing(1.5),
+      height: theme.spacing(1.5),
+      borderRadius: "50%",
+      transform: "translate(-50%, -50%)",
+      background: "#FF8139",
+    },
+    [`& .styled-now`]: {
+      position: "absolute",
+      zIndex: 1,
+      left: 0,
+      top,
+    },
+  }));
+  const TimeIndicator = ({ top, ...restProps }) => (
+    <IndicatorDiv top={top} {...restProps}>
+      <div className={"styled-now styled-circle"} />
+      <div className={"styled-now styled-line"} />
+    </IndicatorDiv>
+  );
+
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.innerWidth < 1100) {
@@ -268,6 +300,12 @@ export default function Calendar() {
             <ViewSwitcher />
             <Appointments appointmentComponent={Appointment} />
             <AppointmentTooltip showCloseButton visible={false} />
+            <CurrentTimeIndicator
+              indicatorComponent={TimeIndicator}
+              shadePreviousAppointments
+              shadePreviousCells
+              updateInterval={60}
+            />
           </Scheduler>
         </Paper>
       </section>

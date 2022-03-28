@@ -20,6 +20,7 @@ export default function CourseSelector(props) {
             {courses.map((course) => {
               return (
                 <li
+                  key={course.course_id}
                   className={
                     courseSelected === course.course_id
                       ? "activeCourse"
