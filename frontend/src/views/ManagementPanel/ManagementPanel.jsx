@@ -3,13 +3,14 @@ import "./ManagementPanel.css";
 import API from "../../API";
 import AppHeader from "../../components/appHeader/AppHeader";
 
-let institutions, courses, users, sessions;
+var institutions, courses, users;
 
 export default function ManagementPanel() {
   const [isMobile, setIsMobile] = useState(false);
   const [institutionsLoading, setInstitutionsLoading] = useState(true);
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(true);
+  const [allowNewInstitution, setAllowInstitution] = useState(true);
 
   const postSession = (e) => {
     e.preventDefault();
@@ -43,9 +44,9 @@ export default function ManagementPanel() {
     window.location.reload();
   };
 
-  const deleteSession = (id) => {
-    API.deleteSession(id);
-  };
+  // const deleteSession = (id) => {
+  //   API.deleteSession(id);
+  // };
 
   const fetchSessions = async () => {
     try {
@@ -58,11 +59,12 @@ export default function ManagementPanel() {
     }
   };
 
-  const fetchInstitutions = async () => {
+  const fetchInstitutions = () => {
     try {
-      await API.fetchInstitutions().then((res) => {
+      API.fetchInstitutions().then((res) => {
         institutions = res.data;
         setInstitutionsLoading(false);
+        if (res.data.length > 0) setAllowInstitution(false);
       });
     } catch (error) {
       console.log(error);
@@ -72,9 +74,8 @@ export default function ManagementPanel() {
   const getInstitution = (id) => {
     let res;
     institutions.map((i) => {
-      if (i.id === id) {
-        res = i.name;
-      }
+      if (i.id === id) res = i.name;
+      return 0;
     });
     return res;
   };
@@ -173,6 +174,7 @@ export default function ManagementPanel() {
 
     API.enrollUser(payload).then((res) => {
       console.log("User tuition has been completed successfully!");
+      window.location.reload();
     });
   };
 
@@ -192,6 +194,7 @@ export default function ManagementPanel() {
     Array.from(document.getElementsByClassName("buttonManagementPanel")).map(
       (button) => {
         button.classList.add("hidden");
+        return true;
       }
     );
     document.getElementsByTagName("header")[0].style.display = "none";
@@ -203,6 +206,7 @@ export default function ManagementPanel() {
     Array.from(document.getElementsByClassName("buttonManagementPanel")).map(
       (button) => {
         button.classList.remove("hidden");
+        return true;
       }
     );
     document.getElementsByTagName("header")[0].style.display = "flex";
@@ -293,7 +297,21 @@ export default function ManagementPanel() {
                     name="institution_name"
                     required
                   />
-                  <button type="submit">SUBMIT</button>
+                  <p
+                    style={{
+                      color: "red",
+                      display: allowNewInstitution ? "none" : "block",
+                    }}
+                  >
+                    No more than 1 institution is allowed
+                  </p>
+                  {allowNewInstitution ? (
+                    <button type="submit">SUBMIT</button>
+                  ) : (
+                    <button type="submit" disabled>
+                      SUBMIT
+                    </button>
+                  )}
                 </form>
               </div>
               <div className="institutions__delete management__form-container">
