@@ -246,7 +246,7 @@ export default function Resources() {
             )}
           </div>
         </section>
-        <ResourcesModal subject={subjectSelected} />
+        <ResourcesModal subject={subjectSelected} userInfo={userInfo} />
       </div>
     </>
   ) : (

@@ -5,7 +5,6 @@ let finalData = new FormData();
 
 export default function ResourcesModal(props) {
   const [filesToUpload, setFilesToUpload] = useState([]);
-  const [currentlyUser, setCurrentlyUser] = useState("");
   const [displayFileWarning, setWarnDisplay] = useState("none");
   const [fileWarningText, setWarningText] = useState(
     "Only 3 files are allowed"
@@ -56,14 +55,6 @@ export default function ResourcesModal(props) {
     }
   };
 
-  const getCurrentlyUser = async () => {
-    asynchronizeRequest(async () => {
-      await API.fetchInfo(localStorage.userId).then((res) => {
-        setCurrentlyUser(res.user_name);
-      });
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     document.getElementById("submit-loader").style.display = "block";
@@ -107,8 +98,11 @@ export default function ResourcesModal(props) {
     if (thirdfile !== null && thirdfile !== undefined) {
       finalData.append("thirdfile", thirdfile);
     }
-    finalData.append("createdBy", currentlyUser);
+    finalData.append("createdBy", props.userInfo.user_name);
     finalData.append("subject_id", props.subject);
+
+    console.log(props.userInfo.user_name);
+    console.log(JSON.stringify(Object.fromEntries(finalData)));
 
     await API.postResource(finalData);
     document.getElementsByClassName(
@@ -134,8 +128,6 @@ export default function ResourcesModal(props) {
   };
 
   useEffect(() => {
-    getCurrentlyUser();
-
     let nua = navigator.userAgent;
     if (nua.indexOf("Macintosh") === -1)
       document.querySelector(".loader").style.transform =
