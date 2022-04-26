@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
+// props you should use : show , imageRoute
 export default function ImageModal(props) {
 
     const [show, setShow] = useState(false)
