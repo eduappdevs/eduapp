@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import API, { asynchronizeRequest } from "../../API";
+import API from "../../API";
 import "./ResourcesModal.css";
 let finalData = new FormData();
 
