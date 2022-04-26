@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import * as CHATSERVICE from "../Service/chat.service";
+import * as USERSERVICE from "../Service/user.service";
 import * as API from "../API";
 
 export default function ChatParticipantConfig() {
@@ -7,8 +9,33 @@ export default function ChatParticipantConfig() {
   const [user, setUser] = useState([]);
   const [chat, setChat] = useState([]);
 
+  const fetchParticipants = async () => {
+    API.asynchronizeRequest(function () {
+      CHATSERVICE.fetchChatParticipants().then((res) => {
+        setParticipant(res);
+      });
+    });
+  };
+
+  const fetchChat = async () => {
+    API.asynchronizeRequest(function () {
+      CHATSERVICE.fetchChat().then((res) => {
+        setChat(res);
+      });
+    });
+  };
+
+  const fetchUser = async () => {
+    API.asynchronizeRequest(function () {
+      USERSERVICE.fetchUserInfos().then((res) => {
+        setUser(res);
+      });
+    });
+  };
+
   const addParticipant = async (e) => {
     e.preventDefault();
+    swapIcons(true);
     const context = ["chat_base_id", "user_id", "isChatAdmin"];
     let json = [];
     let chatBaseId = document.getElementById("chP_chat").value;
@@ -26,54 +53,57 @@ export default function ChatParticipantConfig() {
       eventJson[context[i]] = json[i];
     }
     API.asynchronizeRequest(function () {
-      API.default.createParticipant(eventJson).then(() => {
-        fetchParticipant();
-      });
+      CHATSERVICE.createParticipant(eventJson);
+    }).then(() => {
+      fetchParticipants();
+      swapIcons(false);
     });
   };
-  const fetchParticipant = async () => {
-    let payload = [];
-    await API.default.fetchChatParticipant().then((res) => {
-      res.map((participant) => {
-        payload.push(participant);
-        return true;
-      });
-    });
-    console.log(payload);
-    setParticipant(payload);
-  };
-  const fetchChat = async () => {
-    let payload = [];
-    await API.default.fetchChat().then((res) => {
-      res.map((group) => {
-        payload.push(group);
-        return true;
-      });
-    });
-    setChat(payload);
-  };
-  const fetchUser = async () => {
-    let payload = [];
-    await API.default.fetchUserInfos().then((res) => {
-      res.data.map((user) => {
-        payload.push(user);
-        return true;
-      });
-    });
-    setUser(payload);
-  };
+
   const deleteParticipant = async (id) => {
     API.asynchronizeRequest(function () {
-      API.default.deleteParticipant(id).then(() => {
-        fetchParticipant();
+      CHATSERVICE.deleteParticipant(id).then(() => {
+        fetchParticipants();
       });
     });
   };
+
+  const swapIcons = (state) => {
+    if (state) {
+      document.getElementById("submit-loader").style.display = "block";
+      document.getElementById("ins-add-icon").style.display = "none";
+    } else {
+      document.getElementById("submit-loader").style.display = "none";
+      document.getElementById("ins-add-icon").style.display = "block";
+    }
+  };
+  const swapIconsDelete = (state, button, id) => {
+    let deleteIcon = button.childNodes[0];
+    let deleteLoader = button.childNodes[1];
+
+    if (state) {
+      if (button.tagName === "button") {
+        deleteLoader.style.display = "block";
+        deleteIcon.style.display = "none";
+      } else {
+        let buttonDelete = document.getElementById(id);
+        let deleteIcon = buttonDelete.childNodes[0];
+        let deleteLoader = buttonDelete.childNodes[1];
+        deleteLoader.style.display = "block";
+        deleteIcon.style.display = "none";
+      }
+    } else {
+      deleteLoader.style.display = "none";
+      deleteIcon.style.display = "block";
+    }
+  };
+
   useEffect(() => {
-    fetchParticipant();
+    fetchParticipants();
     fetchUser();
     fetchChat();
   }, []);
+
   return (
     <>
       <div className="chatParticipant-main-container">
@@ -91,15 +121,19 @@ export default function ChatParticipantConfig() {
               <td>
                 <button onClick={addParticipant}>
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns="http://www.w3.org/2000/ svg"
                     width="16"
                     height="16"
                     fill="currentColor"
                     className="bi bi-plus-circle-fill"
                     viewBox="0 0 16 16"
+                    id="ins-add-icon"
                   >
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                   </svg>
+                  <div id="submit-loader" className="loader">
+                    Loading...
+                  </div>
                 </button>
               </td>
               <td>
@@ -149,7 +183,7 @@ export default function ChatParticipantConfig() {
                     <td>{e.chat_base.chat_name}</td>
                     <td style={{ textAlign: "center" }}>
                       {e.isChatAdmin ? (
-                        <input type="checkbox" checked />
+                        <input type="checkbox" defaultChecked disabled />
                       ) : (
                         <input type="checkbox" disabled />
                       )}

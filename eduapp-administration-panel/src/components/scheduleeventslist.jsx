@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as API from "../API";
+import * as SUBJECTSERVICE from "../Service/subject.service";
+import * as SCHEDULESERVICE from "../Service/schedule.service";
+
 import "../styles/scheduleeventslist.css";
 
 export default function Scheduleeventslist() {
@@ -9,7 +12,7 @@ export default function Scheduleeventslist() {
   const [isGlobal, setIsGlobal] = useState(false);
   const FetchSubjects = () => {
     API.asynchronizeRequest(function () {
-      axios.get(API.endpoints.SUBJECTS).then((res) => {
+      axios.get(SUBJECTSERVICE.SUBJECTS).then((res) => {
         res.data.shift();
         setSubject(res.data);
       });
@@ -67,7 +70,7 @@ export default function Scheduleeventslist() {
       eventJson[context[i]] = json[i];
     }
     axios
-      .post(API.endpoints.EVENTS, eventJson)
+      .post(SCHEDULESERVICE.EVENTS, eventJson)
       .then(() => {
         FetchEvents();
       })
@@ -76,38 +79,10 @@ export default function Scheduleeventslist() {
       });
   };
   const FetchEvents = async () => {
-    let payload = [];
-    let request = await axios.get(API.endpoints.EVENTS);
-    request.data.map((e) => {
-      let id = e.id;
-      let title = e.annotation_title;
-      let description = e.annotation_description;
-      let start = e.annotation_start_date;
-      let end = e.annotation_end_date;
-      let isGlobal = e.isGlobal;
-      let subject = e.subject_id;
-      let subject_name = e.subject.name;
-      let user = localStorage.userId;
-      let dayStart = start.split("T")[0];
-      let hourStart = start.split("T")[1];
-      let dayEnd = end.split("T")[0];
-      let hourEnd = end.split("T")[1];
-      payload.push({
-        id,
-        title,
-        description,
-        dayStart,
-        hourStart,
-        dayEnd,
-        hourEnd,
-        isGlobal,
-        subject,
-        subject_name,
-        user,
-      });
-      return true;
+    API.asynchronizeRequest(function () {
+      let sheduleEvent = SCHEDULESERVICE.fetchSchedules;
+      console.log(sheduleEvent);
     });
-    setEvents(payload);
   };
   const isGlobalEvent = () => {
     let checkbox = document.getElementById("e_isGlobal").checked;
@@ -116,7 +91,7 @@ export default function Scheduleeventslist() {
   const deleteEvent = (id) => {
     API.asynchronizeRequest(function () {
       axios
-        .delete(`${API.endpoints.EVENTS}/${id}`)
+        .delete(`${SCHEDULESERVICE.EVENTS}/${id}`)
         .then(() => {
           FetchEvents();
         })

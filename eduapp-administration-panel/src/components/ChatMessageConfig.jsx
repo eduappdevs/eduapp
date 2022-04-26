@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import * as CHATSERVICE from "../Service/chat.service";
+import * as USERSERVICE from "../Service/user.service";
+
 import * as API from "../API";
 
 export default function ChatMessageConfig() {
@@ -9,6 +11,8 @@ export default function ChatMessageConfig() {
   const DISPLAY = false;
 
   const addMessage = async (e) => {
+    swapIcons(true);
+
     e.preventDefault();
     const context = ["chat_base_id", "user_id", "message", "send_date"];
     let json = [];
@@ -35,54 +39,81 @@ export default function ChatMessageConfig() {
       eventJson[context[i]] = json[i];
     }
     API.asynchronizeRequest(function () {
-      API.default.createMessage(eventJson).then(() => {
+      CHATSERVICE.createMessage(eventJson).then(() => {
         fetchMessage();
+        swapIcons(false);
       });
     });
   };
+
   const fetchMessage = async () => {
-    let payload = [];
-    await API.default.fetchMessage().then((res) => {
-      res.map((message) => {
-        payload.push(message);
-        return true;
+    API.asynchronizeRequest(function () {
+      CHATSERVICE.fetchMessage().then((res) => {
+        setMessage(res);
       });
     });
-    console.log(payload);
-    setMessage(payload);
   };
+
   const fetchChat = async () => {
-    let payload = [];
-    await API.default.fetchChat().then((res) => {
-      res.map((group) => {
-        payload.push(group);
-        return true;
+    API.asynchronizeRequest(function () {
+      CHATSERVICE.fetchChat().then((res) => {
+        setChat(res);
       });
     });
-    setChat(payload);
   };
+
   const fetchUser = async () => {
-    let payload = [];
-    await API.default.fetchUserInfos().then((res) => {
-      res.data.map((user) => {
-        payload.push(user);
-        return true;
+    API.asynchronizeRequest(function () {
+      USERSERVICE.fetchUserInfos().then((res) => {
+        setUser(res);
       });
     });
-    setUser(payload);
   };
+
   const deleteMessage = async (id) => {
     API.asynchronizeRequest(function () {
-      API.default.deleteMessage(id).then(() => {
+      CHATSERVICE.deleteMessage(id).then(() => {
         fetchMessage();
       });
     });
   };
+
+  const swapIcons = (state) => {
+    if (state) {
+      document.getElementById("submit-loader").style.display = "block";
+      document.getElementById("ins-add-icon").style.display = "none";
+    } else {
+      document.getElementById("submit-loader").style.display = "none";
+      document.getElementById("ins-add-icon").style.display = "block";
+    }
+  };
+  const swapIconsDelete = (state, button, id) => {
+    let deleteIcon = button.childNodes[0];
+    let deleteLoader = button.childNodes[1];
+
+    if (state) {
+      if (button.tagName === "button") {
+        deleteLoader.style.display = "block";
+        deleteIcon.style.display = "none";
+      } else {
+        let buttonDelete = document.getElementById(id);
+        let deleteIcon = buttonDelete.childNodes[0];
+        let deleteLoader = buttonDelete.childNodes[1];
+        deleteLoader.style.display = "block";
+        deleteIcon.style.display = "none";
+      }
+    } else {
+      deleteLoader.style.display = "none";
+      deleteIcon.style.display = "block";
+    }
+  };
+
   useEffect(() => {
     fetchMessage();
     fetchUser();
     fetchChat();
   }, []);
+
   return (
     DISPLAY && (
       <>
@@ -101,15 +132,19 @@ export default function ChatMessageConfig() {
                 <td>
                   <button onClick={addMessage}>
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns="http://www.w3.org/2000/ svg"
                       width="16"
                       height="16"
                       fill="currentColor"
                       className="bi bi-plus-circle-fill"
                       viewBox="0 0 16 16"
+                      id="ins-add-icon"
                     >
                       <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                     </svg>
+                    <div id="submit-loader" class="loader">
+                      Loading...
+                    </div>
                   </button>
                 </td>
                 <td>

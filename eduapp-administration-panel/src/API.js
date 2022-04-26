@@ -1,21 +1,18 @@
 import axios from "axios";
-const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
+export const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
 const JSREPORT = process.env.REACT_APP_REPORTS_ENDPOINT;
 const USERS = `${API_URL}/users`;
-const INSTITUTIONS = `${API_URL}/institutions`;
 const COURSES = `${API_URL}/courses`;
 const USERS_INFO = `${API_URL}/user_infos`;
 const TUITIONS = `${API_URL}/tuitions`;
 const SESSIONS = `${API_URL}/eduapp_user_sessions`;
-const EVENTS = `${API_URL}/calendar_annotations`
 const PING = `${API_URL}/ping`;
 const SUBJECTS = `${API_URL}/subjects`;
+const INSTITUTIONS = `${API_URL}/institutions`;
+
 const RESOURCES = `${API_URL}/resources`;
-const CHAT_MESSAGES = `${API_URL}/chat_messages`;
-const CHAT = `${API_URL}/chat_bases`;
-const CHAT_PARTICIPANT = `${API_URL}/chat_participants`
-const token =
-  "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
+
+export const token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
 
 const saveInLocalStorage = (userDetails) => {
   console.log(userDetails);
@@ -124,97 +121,6 @@ const apiSettings = {
     return await axios.post(endpoint, body);
   },
 
-  //subject
-  fetchSubjects: async () => {
-    const endpoint = `${SUBJECTS}`;
-    let subjects = [];
-    await axios.get(endpoint).then((res) => {
-      res.data.map((subject) => {
-        if (subject.name !== "Noticias") {
-          return subjects.push(subject);
-        }
-        return true
-      });
-    });
-    return subjects;
-  },
-  //subjects
-  fetchSubject: async (id) => {
-    const endpoint = `${SUBJECTS}?subject_id=${id}`;
-    let subjects = [];
-    await axios.get(endpoint).then((res) => {
-      res.data.map((subject) => {
-        if (subject.name !== "Noticias") {
-          return subjects.push(subject);
-        }
-      });
-    });
-    return subjects;
-  },
-  //chat
-  fetchChat: async () => {
-    const endpoint = `${CHAT}`
-    let chats = []
-    await axios.get(endpoint).then((res) => {
-      res.data.map((chat) => {
-        return chats.push(chat)
-      })
-    })
-    return chats
-  },
-  deleteChat: async (id) => {
-    const endpoint = `${CHAT}/${id}`;
-    return await axios.delete(endpoint, {
-      headers: { Authorization: token },
-    });
-  },
-  createChat: async (data) => {
-    const endpoint = `${CHAT}`
-    await axios.post(endpoint, data)
-  },
-  //chat Participant
-  fetchChatParticipant: async () => {
-    let participant = []
-    const endpoint = `${CHAT_PARTICIPANT}`
-    await axios.get(endpoint).then((res) => {
-      res.data.map((chat) => {
-        return participant.push(chat)
-      })
-    })
-    return participant
-  },
-  deleteParticipant: async (id) => {
-    const endpoint = `${CHAT_PARTICIPANT}/${id}`;
-    return await axios.delete(endpoint, {
-      headers: { Authorization: token },
-    });
-  },
-  createParticipant: async (data) => {
-    const endpoint = `${CHAT_PARTICIPANT}`
-    await axios.post(endpoint, data)
-  },
-  //Message 
-  fetchMessage: async () => {
-    let message = []
-    const endpoint = `${CHAT_MESSAGES}`
-    await axios.get(endpoint).then((res) => {
-      res.data.map((sms) => {
-        return message.push(sms)
-      })
-    })
-    return message
-  },
-  deleteMessage: async (id) => {
-    const endpoint = `${CHAT_MESSAGES}/${id}`;
-    return await axios.delete(endpoint, {
-      headers: { Authorization: token },
-    });
-  },
-  createMessage: async (data) => {
-    const endpoint = `${CHAT_MESSAGES}`
-    await axios.post(endpoint, data)
-  },
-
 };
 
 export default apiSettings;
@@ -229,10 +135,7 @@ export const endpoints = {
   TUITIONS,
   PING,
   SUBJECTS,
-  CHAT_MESSAGES,
-  CHAT,
   SESSIONS,
-  EVENTS
 };
 
 export const asynchronizeRequest = async (requestFunction) => {
