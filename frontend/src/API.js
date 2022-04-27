@@ -197,22 +197,25 @@ const apiSettings = {
 export default apiSettings;
 
 export const asynchronizeRequest = async (requestFunction) => {
-  try {
-    await axios({
-      method: "get",
-      url: PING,
-      timeout: 5000,
-    });
+  let tries = 0;
+  const maxTries = 5;
 
-    return requestFunction.call();
-  } catch (err) {
-    if (!navigator.onLine) {
-      setTimeout(
-        () => {
-          asynchronizeRequest(requestFunction);
-        },
-        navigator.onLine ? 5000 : 20000
-      );
-    } else asynchronizeRequest(requestFunction);
+  while (tries < maxTries) {
+    try {
+      await axios({
+        method: "get",
+        url: PING,
+        timeout: 5000,
+      });
+
+      tries++;
+      return requestFunction.call();
+    } catch (err) {
+      tries++;
+      continue;
+    }
   }
+
+  if (tries < maxTries) return requestFunction.call();
+  else throw new Error("Request failed after 5 tries");
 };
