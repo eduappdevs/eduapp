@@ -208,8 +208,7 @@ export const asynchronizeRequest = async (requestFunction) => {
         timeout: 5000,
       });
 
-      tries++;
-      return requestFunction.call();
+      break;
     } catch (err) {
       tries++;
       continue;

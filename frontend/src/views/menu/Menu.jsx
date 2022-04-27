@@ -56,16 +56,6 @@ export default function Menu(props) {
           </a>
           <MenuSettings />
         </li>
-        {/* <li>
-          <a
-            onClick={(event) => {
-              event.preventDefault();
-              window.location.href = SUPPORT;
-            }}
-          >
-            Help
-          </a>
-        </li> */}
         <li>
           <a onClick={API.logout}>Log out</a>
         </li>

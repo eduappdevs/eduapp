@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import ResourcesModal from "../../components/modals/ResourcesModal";
-import OpenedResource from "./openedResource/OpenedResource";
 import axios from "axios";
 import { RESOURCES } from "../../config";
 import Loader from "../../components/loader/Loader";
@@ -46,28 +45,6 @@ export default function Resources() {
       });
       setResources(res.data);
     });
-  };
-
-  const openResource = (e) => {
-    e.preventDefault();
-    document
-      .getElementById(`resource__${e.target.id}__opened`)
-      .classList.remove("openedResource__hidden");
-
-    document.getElementsByClassName(
-      "mobileSection"
-    )[0].childNodes[0].style.zIndex = -999;
-    document.getElementsByClassName(
-      "mobileSection"
-    )[0].childNodes[1].style.zIndex = -999;
-    document.getElementsByClassName(
-      "mobileSection"
-    )[0].childNodes[2].style.zIndex = 999;
-
-    setTimeout(() => {
-      document.getElementsByTagName("header")[0].style.display = "none";
-      document.getElementById("resource-list").classList.add("hide-rest-res");
-    }, 100);
   };
 
   const createResource = () => {
@@ -171,14 +148,12 @@ export default function Resources() {
                   ) {
                     return (
                       <>
-                        <OpenedResource
-                          data={data}
-                          courseSelected={subjectSelected}
-                        />
                         <li
                           id={"res" + data.name + subjectSelected}
                           className="resources resourceitem"
-                          onClick={openResource}
+                          onClick={() => {
+                            window.location.href = "/resource/" + data.id;
+                          }}
                         >
                           <div
                             id={"res" + data.name + subjectSelected}
@@ -241,7 +216,7 @@ export default function Resources() {
               </ul>
             ) : (
               <div id="courseNotSelectedeAdvisor">
-                <h3>You must select a course</h3>
+                <h3>You must select a subject</h3>
               </div>
             )}
           </div>

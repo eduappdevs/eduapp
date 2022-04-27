@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
@@ -7,23 +7,11 @@ import { asynchronizeRequest } from "../../../API";
 import { RESOURCES } from "../../../config";
 import "./OpenedResource.css";
 
-export default function OpenedResource(props) {
-  const [id, setId] = useState(props.data.id);
-  const [name, setName] = useState(props.data.name);
-  const [description, setDescription] = useState(props.data.description);
-  const files = [];
-
-  if (props.data.firstfile !== null) {
-    files.push(props.data.firstfile);
-  }
-
-  if (props.data.secondfile !== null) {
-    files.push(props.data.secondfile);
-  }
-
-  if (props.data.thirdfile !== null) {
-    files.push(props.data.thirdfile);
-  }
+export default function OpenedResource() {
+  const [name, setName] = useState("None");
+  const [description, setDescription] = useState("None");
+  const [subjectOrigin, setSubjectOrigin] = useState("None");
+  const [files, setFiles] = useState([]);
 
   const deleteResource = (id) => {
     asynchronizeRequest(function () {
@@ -41,33 +29,16 @@ export default function OpenedResource(props) {
   };
 
   const closeResource = () => {
-    document
-      .getElementById(
-        "resource__res" + props.data.name + props.courseSelected + "__opened"
-      )
-      .classList.add("openedResource__hidden");
-    document.getElementById("resource-list").classList.remove("hide-rest-res");
-
-    setTimeout(() => {
-      document.getElementsByTagName("header")[0].style.display = "flex";
-
-      document.getElementsByClassName(
-        "mobileSection"
-      )[0].childNodes[0].style.zIndex = 999;
-      document.getElementsByClassName(
-        "mobileSection"
-      )[0].childNodes[1].style.zIndex = 999;
-      document.getElementsByClassName(
-        "mobileSection"
-      )[0].childNodes[2].style.zIndex = -999;
-    }, 100);
+    window.history.back();
   };
 
   const manageMediaType = (media) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
     const videoRegex = new RegExp("^.*(mp4|mov)$");
 
-    media = MediaFix(media);
+    media = process.env.REACT_APP_BACKEND_ENDPOINT.includes("localhost")
+      ? media
+      : MediaFix(media);
 
     if (media != null && (imageRegex.test(media) || videoRegex.test(media))) {
       if (imageRegex.test(media)) {
@@ -123,56 +94,90 @@ export default function OpenedResource(props) {
     }
   };
 
+  const getResourceId = () => {
+    return window.location.href.split("/")[
+      window.location.href.split("/").length - 1
+    ];
+  };
+
+  useEffect(() => {
+    asynchronizeRequest(async function () {
+      let response = "";
+      try {
+        response = await axios.get(RESOURCES + "/" + getResourceId());
+      } catch (err) {
+        window.location.href = "/resources";
+      }
+
+      setName(response.data.name);
+      setDescription(response.data.description);
+
+      let tempfiles = [];
+      if (response.data.firstfile !== null) {
+        tempfiles.push(response.data.firstfile.url);
+      }
+
+      if (response.data.secondfile !== null) {
+        tempfiles.push(response.data.secondfile.url);
+      }
+
+      if (response.data.thirdfile !== null) {
+        tempfiles.push(response.data.thirdfile.url);
+      }
+
+      setFiles(tempfiles);
+      setSubjectOrigin(response.data.subject_id);
+
+      window.dispatchEvent(new Event("canLoadResource"));
+    });
+  }, []);
+
   return (
-    files && (
-      <div
-        id={
-          "resource__res" + props.data.name + props.courseSelected + "__opened"
-        }
-        className={"openedResource__main-container openedResource__hidden"}
-      >
-        <AppHeader
-          type={"resource"}
-          closeHandler={() => {
-            closeResource();
-          }}
-          resourceName={name}
-          editResource={() => {
-            editResource(id);
-          }}
-          deleteResource={() => {
-            deleteResource(id);
-          }}
-        />
-        <div className="resourceOpened__info">
-          <h1>{name}</h1>
-          <p>{description}</p>
-        </div>
-        <div className="resourceOpened__files">
-          <h1>Files</h1>
-          <p id="wip">EduApp W.I.P</p>
-          <ul>
-            {files.length > 0 ? (
-              files.map((file) => {
-                return (
-                  <>
-                    <li className={file != null ? "file-media" : ""}>
-                      {manageMediaType(file)}
-                    </li>
-                  </>
-                );
-              })
-            ) : (
-              <div className="resources__NO_FILES">
-                <h1>No files attached.</h1>
-              </div>
-            )}
-          </ul>
-        </div>
-        {/* <div className="resourceOpened__date">
-          <p>*insert code date*</p>
-        </div> */}
+    <div
+      id={"resource__res" + name + subjectOrigin + "__opened"}
+      className={"openedResource__main-container"}
+    >
+      <AppHeader
+        type={"resource"}
+        closeHandler={() => {
+          closeResource();
+        }}
+        resourceName={name}
+        editResource={() => {
+          editResource(getResourceId());
+        }}
+        deleteResource={() => {
+          deleteResource(getResourceId());
+        }}
+      />
+      <div className="resourceOpened__info">
+        <h1>{name}</h1>
+        <p>{description}</p>
       </div>
-    )
+      <div className="resourceOpened__files">
+        <h1>Files</h1>
+        <p id="wip">EduApp W.I.P</p>
+        <ul>
+          {files.length > 0 ? (
+            files.map((file) => {
+              return (
+                <>
+                  <li className={file != null ? "file-media" : ""}>
+                    {manageMediaType(file)}
+                  </li>
+                </>
+              );
+            })
+          ) : (
+            <div className="resources__NO_FILES">
+              <h1>No files attached.</h1>
+            </div>
+          )}
+        </ul>
+      </div>
+      {/* <div className="resourceOpened__date">
+				<p>*insert code date*</p>
+			</div> */}
+    </div>
   );
 }

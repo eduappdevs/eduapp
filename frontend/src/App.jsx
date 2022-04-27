@@ -13,11 +13,12 @@ import BottomButtons from "./components/bottomButtons/BottomButtons";
 import Navbar from "./components/navbar/Navbar";
 import DarkModeChanger from "./components/DarkModeChanger";
 import FirebaseStorage from "./utils/FirebaseStorage";
+import OpenedResource from "./views/resources/openedResource/OpenedResource";
 
 export default function App() {
-  const [isLogin, setIsLogin] = useState(false);
-  let userinfo = FetchUserInfo(localStorage.userId);
+  const [needsExtras, setNeedsExtras] = useState(false);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
+  let userinfo = FetchUserInfo(localStorage.userId);
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -30,11 +31,22 @@ export default function App() {
   };
 
   useEffect(() => {
-    setIsLogin(!window.location.href.includes("/login"));
-    checkMediaQueries();
-    setTimeout(() => {
-      runCloseAnimation();
-    }, 500);
+    setNeedsExtras(
+      !new RegExp("/(login|menu|resource/[0-9]+)$").test(window.location.href)
+    );
+
+    if (new RegExp("/(resource/[0-9]+)$").test(window.location.href)) {
+      window.addEventListener("canLoadResource", () => {
+        setTimeout(() => {
+          runCloseAnimation();
+        }, 300);
+      });
+    } else {
+      setTimeout(() => {
+        runCloseAnimation();
+      }, 500);
+    }
+
     try {
       DarkModeChanger(localStorage.getItem("darkMode"));
     } catch (err) {
@@ -53,7 +65,7 @@ export default function App() {
         <React.Fragment>
           <Loader />
         </React.Fragment>
-        {isLogin && (
+        {needsExtras && (
           <React.Fragment>
             <Navbar mobile={ItsMobileDevice} />
           </React.Fragment>
@@ -62,6 +74,7 @@ export default function App() {
           <Routes>
             <Route exact path="/home" element={<Home />} />
             <Route exact path="/resources" element={<Resources />} />
+            <Route path="/resource/:resourceId" element={<OpenedResource />} />
             <Route exact path="/calendar" element={<Calendar />} />
             <Route exact path="/chat" element={<ChatMenu />} />
             {userinfo.isAdmin && (
@@ -75,7 +88,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}
-        {isLogin && (
+        {needsExtras && (
           <React.Fragment>
             <BottomButtons mobile={ItsMobileDevice} />
           </React.Fragment>
