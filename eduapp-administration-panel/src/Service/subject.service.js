@@ -32,7 +32,17 @@ export const fetchSubject = async (id) => {
     return subjects;
 }
 
+export const NoticiasSubject = async () => {
+    const endpoint = `${SUBJECTS}/?name=Noticias`
+    return await axios.get(endpoint)
+}
+
 export const createSubject = async (body) => {
     const endpoint = `${SUBJECTS}`;
     return await axios.post(endpoint, body)
+}
+
+export const deleteSubject = async (id) => {
+    const endpoint = `${SUBJECTS}`
+    return await axios.delete(`${endpoint}/${id}`)
 }

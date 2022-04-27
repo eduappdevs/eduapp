@@ -16,8 +16,8 @@ export const createCourse = async (body) => {
     return await axios.post(endpoint, body, { headers: requestHeader });
 }
 
-export const deleteCourse = async (body) => {
-    const endpoint = `${COURSES}`;
+export const deleteCourse = async (id) => {
+    const endpoint = `${COURSES}/${id}`;
     return await axios.delete(endpoint, {
         headers: requestHeader,
     });
@@ -25,5 +25,5 @@ export const deleteCourse = async (body) => {
 
 export const editCourse = async (body) => {
     const endpoint = `${COURSES}`;
-    return await axios.put(endpoint, body, { headers: requestHeader });
+    return await axios.put(`${endpoint}/${body.id}`, body, { headers: requestHeader });
 }

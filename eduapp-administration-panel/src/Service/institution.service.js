@@ -6,12 +6,7 @@ const requestHeader = { Authorization: token }
 //Institutions
 export const fetchInstitutions = async () => {
     const endpoint = `${INSTITUTIONS}`;
-    let institutions = []
-    await axios.get(endpoint).then((res) => {
-        res.data.map((institution) => {
-            return institutions.push(institution)
-        })
-    }, { headers: requestHeader });
+    return await axios.get(endpoint).then({ headers: requestHeader });
 }
 
 export const fetchInstitution = async (id) => {

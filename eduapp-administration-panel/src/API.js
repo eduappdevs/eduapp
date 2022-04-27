@@ -12,7 +12,7 @@ const INSTITUTIONS = `${API_URL}/institutions`;
 
 const RESOURCES = `${API_URL}/resources`;
 
-export const token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
+export const token = process.env.REACT_APP_TOKEN
 
 const saveInLocalStorage = (userDetails) => {
   console.log(userDetails);
@@ -139,15 +139,26 @@ export const endpoints = {
 };
 
 export const asynchronizeRequest = async (requestFunction) => {
-  try {
-    await axios({
-      method: "get",
-      url: PING,
-      timeout: 5000,
-    });
+  let tries = 0;
+  const maxTries = 5;
 
-    return requestFunction.call();
-  } catch (err) {
-    asynchronizeRequest(requestFunction);
+  while (tries < maxTries) {
+    try {
+      await axios({
+        method: "get",
+        url: PING,
+        timeout: 5000,
+      });
+
+      tries++;
+      return requestFunction.call();
+    } catch (err) {
+      tries++;
+      continue;
+    }
   }
+
+  if (tries < maxTries) return requestFunction.call();
+  else throw new Error("Request failed after 5 tries");
+
 };
