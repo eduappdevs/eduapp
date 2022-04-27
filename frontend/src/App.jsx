@@ -14,6 +14,7 @@ import Navbar from "./components/navbar/Navbar";
 import DarkModeChanger from "./components/DarkModeChanger";
 import FirebaseStorage from "./utils/FirebaseStorage";
 import OpenedResource from "./views/resources/openedResource/OpenedResource";
+import MainChat from "./views/chat/mainChat/MainChat";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -32,11 +33,21 @@ export default function App() {
 
   useEffect(() => {
     setNeedsExtras(
-      !new RegExp("/(login|menu|resource/[0-9]+)$").test(window.location.href)
+      !new RegExp(
+        "/(login|menu|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*))$"
+      ).test(window.location.href)
     );
 
     if (new RegExp("/(resource/[0-9]+)$").test(window.location.href)) {
       window.addEventListener("canLoadResource", () => {
+        setTimeout(() => {
+          runCloseAnimation();
+        }, 300);
+      });
+    } else if (
+      new RegExp("/(chat/([a-z]|[A-Z]|[0-9])(.*))$").test(window.location.href)
+    ) {
+      window.addEventListener("canLoadChat", () => {
         setTimeout(() => {
           runCloseAnimation();
         }, 300);
@@ -77,6 +88,7 @@ export default function App() {
             <Route path="/resource/:resourceId" element={<OpenedResource />} />
             <Route exact path="/calendar" element={<Calendar />} />
             <Route exact path="/chat" element={<ChatMenu />} />
+            <Route path="/chat/:chatId" element={<MainChat />} />
             {userinfo.isAdmin && (
               <Route exact path="/management" element={<ManagementPanel />} />
             )}

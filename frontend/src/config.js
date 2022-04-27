@@ -10,6 +10,7 @@ const TUITIONS = `${API_URL}/tuitions`;
 const INSTITUTIONS = `${API_URL}/institutions`;
 const COURSES = `${API_URL}/courses`;
 const GLOGIN = `${API_URL}/users/auth/google_oauth2/callback`;
+const CHAT_BASE = `${API_URL}/chat_bases`;
 const CHAT_MESSAGES = `${API_URL}/chat_messages`;
 const CHAT_PARTICIPANTS = `${API_URL}/chat_participants`;
 const CALENDAR = `${API_URL}/calendar_annotations`;
@@ -39,6 +40,7 @@ export {
   CALENDAR,
   CALENDAR_USER_ID,
   SUBJECT,
+  CHAT_BASE,
   CHAT_MESSAGES,
   CHAT_PARTICIPANTS,
   GLOGIN,

@@ -4,15 +4,15 @@ class ChatParticipantsController < ApplicationController
   # GET /chat_participants
   def index
 
-		if !params[:user_id]
-			@has_user_id = ChatParticipant.all
-		else 
-			@has_user_id = ChatParticipant.where(user_id: params[:user_id])
+		if params[:user_id]
+			@participants = ChatParticipant.where(user_id: params[:user_id])
+		elsif params[:chat_id]
+			@participants = ChatParticipant.where(chat_base_id: params[:chat_id])
+		else
+			@participants = ChatParticipant.all
 		end
 
-    @chat_participants = @has_user_id
-
-    render json: @chat_participants
+    render json: @participants
   end
 
   # GET /chat_participants/1
