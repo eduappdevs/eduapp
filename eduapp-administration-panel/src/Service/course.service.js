@@ -7,23 +7,19 @@ const COURSES = `${API_URL}/courses`;
 
 //Courses
 export const fetchCourses = async () => {
-    const endpoint = `${COURSES}`;
-    return await axios.get(endpoint, { headers: requestHeader });
+    return await axios.get(`${COURSES}`, { headers: requestHeader });
 }
 
 export const createCourse = async (body) => {
-    const endpoint = `${COURSES}`;
-    return await axios.post(endpoint, body, { headers: requestHeader });
+    return await axios.post(`${COURSES}`, body, { headers: requestHeader });
 }
 
 export const deleteCourse = async (id) => {
-    const endpoint = `${COURSES}/${id}`;
-    return await axios.delete(endpoint, {
+    return await axios.delete(`${COURSES}/${id}`, {
         headers: requestHeader,
     });
 }
 
 export const editCourse = async (body) => {
-    const endpoint = `${COURSES}`;
-    return await axios.put(`${endpoint}/${body.id}`, body, { headers: requestHeader });
+    return await axios.put(`${`${COURSES}`}/${body.id}`, body, { headers: requestHeader });
 }

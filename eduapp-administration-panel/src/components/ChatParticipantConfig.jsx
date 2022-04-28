@@ -8,6 +8,7 @@ export default function ChatParticipantConfig() {
   const [participant, setParticipant] = useState([]);
   const [user, setUser] = useState([]);
   const [chat, setChat] = useState([]);
+  const [participantId, setParticipantId] = useState();
 
   const fetchParticipants = async () => {
     API.asynchronizeRequest(function () {
@@ -61,6 +62,7 @@ export default function ChatParticipantConfig() {
   };
 
   const deleteParticipant = async (id) => {
+    document.getElementById("alert_delete").style.display = "none";
     API.asynchronizeRequest(function () {
       CHATSERVICE.deleteParticipant(id).then(() => {
         fetchParticipants();
@@ -96,6 +98,15 @@ export default function ChatParticipantConfig() {
       deleteLoader.style.display = "none";
       deleteIcon.style.display = "block";
     }
+  };
+
+  const closeAlertDelete = () => {
+    document.getElementById("alert_delete").style.display = "none";
+  };
+
+  const showAlertDelete = (id) => {
+    document.getElementById("alert_delete").style.display = "block";
+    setParticipantId(id);
   };
 
   useEffect(() => {
@@ -169,8 +180,8 @@ export default function ChatParticipantConfig() {
           <table className="eventList" style={{ marginTop: "50px" }}>
             <thead>
               <tr>
-                <th>Name Group</th>
-                <th>Group</th>
+                <th>Name Participant</th>
+                <th>Name Chat</th>
                 <th>Admin</th>
                 <th>Actions</th>
               </tr>
@@ -197,7 +208,7 @@ export default function ChatParticipantConfig() {
                     >
                       <button
                         onClick={() => {
-                          deleteParticipant(e.id);
+                          showAlertDelete(e.id);
                         }}
                       >
                         <svg
@@ -218,6 +229,27 @@ export default function ChatParticipantConfig() {
             </tbody>
           </table>
         ) : null}
+      </div>
+      <div className="alert-delete" id="alert_delete">
+        <div className="contianer-alert-delete">
+          <div className="header-container-alert-delete"></div>
+          <div className="contents-continer-alert-delete">
+            <h2>Are you sure delete this chat?</h2>
+            <div className="contents-continer-button-alert-delete">
+              <p
+                id="delete_contents"
+                onClick={(event) => {
+                  deleteParticipant(participantId, event);
+                }}
+              >
+                Yes
+              </p>
+              <p id="close_alert" onClick={closeAlertDelete}>
+                No
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

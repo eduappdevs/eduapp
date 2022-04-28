@@ -8,9 +8,8 @@ const requestHeader = { Authorization: token }
 
 //chat
 export const fetchChat = async () => {
-    const endpoint = `${CHAT}`
     let chats = []
-    await axios.get(endpoint, { headers: requestHeader }).then((res) => {
+    await axios.get(`${CHAT}`, { headers: requestHeader }).then((res) => {
         res.data.map((chat) => {
             return chats.push(chat)
         })
@@ -18,21 +17,22 @@ export const fetchChat = async () => {
     return chats;
 }
 export const deleteChat = async (id) => {
-    const endpoint = `${CHAT}/${id}`;
-    return await axios.delete(endpoint, {
+    return await axios.delete(`${CHAT}/${id}`, {
         headers: requestHeader,
     });
 }
 export const createChat = async (data) => {
-    const endpoint = `${CHAT}`
-    await axios.post(endpoint, data, { headers: requestHeader })
+    return await axios.post(`${CHAT}`, data, { headers: requestHeader })
+}
+
+export const editChat = async (data) => {
+    return await axios.put(`${CHAT}/${data.id}`, data, { headers: requestHeader })
 }
 
 //chat Participant
 export const fetchChatParticipants = async () => {
     let participant = []
-    const endpoint = `${CHAT_PARTICIPANT}`
-    await axios.get(endpoint, { headers: requestHeader }).then((res) => {
+    await axios.get(`${CHAT_PARTICIPANT}`, { headers: requestHeader }).then((res) => {
         res.data.map((chat) => {
             return participant.push(chat)
         })
@@ -41,20 +41,17 @@ export const fetchChatParticipants = async () => {
 }
 
 export const deleteParticipant = async (id) => {
-    const endpoint = `${CHAT_PARTICIPANT}/${id}`;
-    return await axios.delete(endpoint, { headers: requestHeader });
+    return await axios.delete(`${CHAT_PARTICIPANT}/${id}`, { headers: requestHeader });
 }
 
 export const createParticipant = async (data) => {
-    const endpoint = `${CHAT_PARTICIPANT}`
-    return await axios.post(endpoint, data, { headers: requestHeader })
+    return await axios.post(`${CHAT_PARTICIPANT}`, data, { headers: requestHeader })
 }
 
 //Message 
 export const fetchMessage = async () => {
     let message = []
-    const endpoint = `${CHAT_MESSAGES}`
-    await axios.get(endpoint, { headers: requestHeader }).then((res) => {
+    await axios.get(`${CHAT_MESSAGES}`, { headers: requestHeader }).then((res) => {
         res.data.map((sms) => {
             return message.push(sms)
         })
@@ -63,12 +60,10 @@ export const fetchMessage = async () => {
 }
 
 export const deleteMessage = async (id) => {
-    const endpoint = `${CHAT_MESSAGES}/${id}`;
-    return await axios.delete(endpoint, { headers: requestHeader });
+    return await axios.delete(`${CHAT_MESSAGES}/${id}`, { headers: requestHeader });
 }
 
 export const createMessage = async (data) => {
-    const endpoint = `${CHAT_MESSAGES}`
-    return await axios.post(endpoint, data, { headers: requestHeader })
+    return await axios.post(`${CHAT_MESSAGES}`, data, { headers: requestHeader })
 }
 

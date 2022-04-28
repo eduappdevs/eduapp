@@ -1,9 +1,228 @@
 import React, { useEffect, useState } from "react";
 import * as CHATSERVICE from "../Service/chat.service";
 import * as API from "../API";
+import "../styles/chatConfig.css";
 
 export default function ChatConfig() {
   const [chat, setChat] = useState([]);
+  const [chatId, setChatId] = useState();
+
+  const showEditOptionChat = async (e, id) => {
+    if (e.target.tagName === "svg") {
+      let name =
+        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
+      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+      buttonDelete.style.display = "none";
+      let button = e.target.parentNode;
+      button.style.display = "none";
+      let checkButton = e.target.parentNode.parentNode.childNodes[2];
+      checkButton.style.display = "block";
+      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+      cancelButton.style.display = "block";
+      name.disabled = false;
+    } else {
+      if (e.target.tagName === "path") {
+        let name =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
+            .childNodes[0];
+        let buttonDelete =
+          e.target.parentNode.parentNode.parentNode.childNodes[0];
+        buttonDelete.style.display = "none";
+
+        let button = e.target.parentNode.parentNode;
+        button.style.display = "none";
+        let checkButton =
+          e.target.parentNode.parentNode.parentNode.childNodes[2];
+        checkButton.style.display = "block";
+        let cancelButton =
+          e.target.parentNode.parentNode.parentNode.childNodes[3];
+        cancelButton.style.display = "block";
+
+        name.disabled = false;
+      } else {
+        let name = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
+        let buttonDelete = e.target.parentNode.childNodes[0];
+        buttonDelete.style.display = "none";
+        let button = e.target.parentNode.childNodes[1];
+        button.style.display = "none";
+        let checkButton = e.target.parentNode.childNodes[2];
+        checkButton.style.display = "block";
+        let cancelButton = e.target.parentNode.childNodes[3];
+        cancelButton.style.display = "block";
+        name.disabled = false;
+      }
+    }
+  };
+
+  const closeEditChat = async (e) => {
+    if (e.target.tagName === "svg") {
+      let name =
+        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
+      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+      buttonDelete.style.display = "block";
+      let button = e.target.parentNode.parentNode.childNodes[1];
+      button.style.display = "block";
+      let checkButton = e.target.parentNode.parentNode.childNodes[2];
+      checkButton.style.display = "none";
+      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+      cancelButton.style.display = "none";
+      name.disabled = true;
+    } else {
+      if (e.target.tagName === "path") {
+        let name =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
+            .childNodes[0];
+        let buttonDelete =
+          e.target.parentNode.parentNode.parentNode.childNodes[0];
+        buttonDelete.style.display = "block";
+        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
+        button.style.display = "block";
+        let checkButton =
+          e.target.parentNode.parentNode.parentNode.childNodes[2];
+        checkButton.style.display = "none";
+        let cancelButton =
+          e.target.parentNode.parentNode.parentNode.childNodes[3];
+        cancelButton.style.display = "none";
+        name.disabled = true;
+      } else {
+        let name =
+          e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0]
+            .childNodes[0];
+        let buttonDelete = e.target.parentNode.childNodes[0];
+        buttonDelete.style.display = "block";
+        let button = e.target.parentNode.childNodes[1];
+        button.style.display = "block";
+        let checkButton = e.target.parentNode.childNodes[2];
+        checkButton.style.display = "none";
+        let cancelButton = e.target.parentNode.childNodes[3];
+        cancelButton.style.display = "none";
+        name.disabled = true;
+      }
+    }
+  };
+
+  const editChat = async (e, data) => {
+    if (e.target.tagName === "svg") {
+      let name =
+        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
+      let value = document.getElementById("inputName_" + data.id);
+      if (value.value !== "") {
+        CHATSERVICE.editChat({
+          id: data.id,
+          chat_name: value.value,
+          isGroup: data.isGroup,
+        })
+          .then(() => {
+            fetchChat();
+            let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+            buttonDelete.style.display = "block";
+            let button = e.target.parentNode.parentNode.childNodes[1];
+            button.style.display = "block";
+            let checkButton = e.target.parentNode.parentNode.childNodes[2];
+            checkButton.style.display = "none";
+            let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+            cancelButton.style.display = "none";
+            name.disabled = true;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+        buttonDelete.style.display = "block";
+        let button = e.target.parentNode.parentNode.childNodes[1];
+        button.style.display = "block";
+        let checkButton = e.target.parentNode.parentNode.childNodes[2];
+        checkButton.style.display = "none";
+        let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+        cancelButton.style.display = "none";
+        name.disabled = true;
+      }
+    } else {
+      if (e.target.tagName === "path") {
+        let name =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
+            .childNodes[0];
+        let value = document.getElementById("inputName_" + data.id);
+        if (value.value !== "") {
+          CHATSERVICE.editChat({
+            id: data.id,
+            chat_name: value.value,
+            isGroup: data.isGroup,
+          })
+            .then(() => {
+              fetchChat();
+              let buttonDelete =
+                e.target.parentNode.parentNode.parentNode.childNodes[0];
+              buttonDelete.style.display = "block";
+              let button =
+                e.target.parentNode.parentNode.parentNode.childNodes[1];
+              button.style.display = "block";
+              let checkButton =
+                e.target.parentNode.parentNode.parentNode.childNodes[2];
+              checkButton.style.display = "none";
+              let cancelButton =
+                e.target.parentNode.parentNode.parentNode.childNodes[3];
+              cancelButton.style.display = "none";
+              name.disabled = true;
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          let buttonDelete =
+            e.target.parentNode.parentNode.parentNode.childNodes[0];
+          buttonDelete.style.display = "block";
+          let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
+          button.style.display = "block";
+          let checkButton =
+            e.target.parentNode.parentNode.parentNode.childNodes[2];
+          checkButton.style.display = "none";
+          let cancelButton =
+            e.target.parentNode.parentNode.parentNode.childNodes[3];
+          cancelButton.style.display = "none";
+          name.disabled = true;
+        }
+      } else {
+        let name = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
+        let value = document.getElementById("inputName_" + data.id);
+        if (value.value !== "") {
+          CHATSERVICE.editChat({
+            id: data.id,
+            chat_name: value.value,
+            isGroup: data.isGroup,
+          })
+            .then(() => {
+              let buttonDelete = e.target.parentNode.childNodes[0];
+              buttonDelete.style.display = "block";
+              let button = e.target.parentNode.childNodes[1];
+              button.style.display = "block";
+              let checkButton = e.target.parentNode.childNodes[2];
+              checkButton.style.display = "none";
+              let cancelButton = e.target.parentNode.childNodes[3];
+              cancelButton.style.display = "none";
+              name.disabled = true;
+
+              fetchChat();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          let buttonDelete = e.target.parentNode.childNodes[0];
+          buttonDelete.style.display = "block";
+          let button = e.target.parentNode.childNodes[1];
+          button.style.display = "block";
+          let checkButton = e.target.parentNode.childNodes[2];
+          checkButton.style.display = "none";
+          let cancelButton = e.target.parentNode.childNodes[3];
+          cancelButton.style.display = "none";
+          name.disabled = true;
+          console.log(name);
+        }
+      }
+    }
+  };
 
   const fetchChat = async () => {
     API.asynchronizeRequest(function () {
@@ -39,6 +258,7 @@ export default function ChatConfig() {
   };
 
   const deleteChat = async (id, event) => {
+    document.getElementById("alert_delete").style.display = "block";
     swapIconsDelete(true, event.target, id);
     API.asynchronizeRequest(function () {
       CHATSERVICE.deleteChat(id).then(() => {
@@ -78,6 +298,19 @@ export default function ChatConfig() {
     }
   };
 
+  const handleChange = (id) => {
+    var content = document.getElementById("inputName_" + id);
+    return content.value;
+  };
+
+  const closeAlertDelete = () => {
+    document.getElementById("alert_delete").style.display = "none";
+  };
+
+  const showAlertDelete = (id) => {
+    document.getElementById("alert_delete").style.display = "block";
+    setChatId(id);
+  };
   useEffect(() => {
     fetchChat();
   }, []);
@@ -138,7 +371,17 @@ export default function ChatConfig() {
             {chat.map((e) => {
               return (
                 <tr key={e.id}>
-                  <td>{e.chat_name}</td>
+                  <td>
+                    <input
+                      id={"inputName_" + e.id}
+                      disabled
+                      type="text"
+                      placeholder={e.chat_name}
+                      onChange={() => {
+                        handleChange(e.id);
+                      }}
+                    />
+                  </td>
                   <td style={{ textAlign: "center" }}>
                     {e.isGroup ? (
                       <input type="checkbox" disabled checked />
@@ -154,9 +397,10 @@ export default function ChatConfig() {
                     }}
                   >
                     <button
+                      style={{ marginRight: "5px" }}
                       id={e.id}
-                      onClick={(event) => {
-                        deleteChat(e.id, event);
+                      onClick={() => {
+                        showAlertDelete(e.id);
                       }}
                     >
                       <svg
@@ -174,12 +418,95 @@ export default function ChatConfig() {
                         Loading...
                       </div>
                     </button>
+                    <button
+                      style={{ marginRight: "5px" }}
+                      onClick={(event) => {
+                        showEditOptionChat(event);
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-pencil-square"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                        <path
+                          fillRule="evenodd"
+                          d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      style={{ marginRight: "5px", display: "none" }}
+                      onClick={(event) => {
+                        editChat(event, e);
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-check2"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                      </svg>
+                    </button>
+                    <button
+                      style={{ display: "none" }}
+                      onClick={(e) => {
+                        closeEditChat(e);
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        className="bi bi-x-lg"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                        />
+                        <path
+                          fillRule="evenodd"
+                          d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                        />
+                      </svg>
+                    </button>
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+      </div>
+      <div className="alert-delete" id="alert_delete">
+        <div className="contianer-alert-delete">
+          <div className="header-container-alert-delete"></div>
+          <div className="contents-continer-alert-delete">
+            <h2>Are you sure delete this chat?</h2>
+            <div className="contents-continer-button-alert-delete">
+              <p
+                id="delete_contents"
+                onClick={(event) => {
+                  deleteChat(chatId, event);
+                }}
+              >
+                Yes
+              </p>
+              <p id="close_alert" onClick={closeAlertDelete}>
+                No
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

@@ -226,6 +226,7 @@ export default function ChatMessageConfig() {
             </table>
           ) : null}
         </div>
+        
       </>
     )
   );
