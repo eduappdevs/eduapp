@@ -8,9 +8,7 @@ import {
 import MenuHeader from "../menuHeader/MenuHeader";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { GetCourses } from "../../../hooks/GetCourses";
-import Loader from "../../../components/loader/Loader";
 import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
-import MediaFix from "../../../utils/MediaFixer";
 import NameCapitalizer from "../../../utils/NameCapitalizer";
 import {
   getOfflineUser,
@@ -30,12 +28,6 @@ export default function ProfileSettings() {
   const [imageWarningText, setWarningText] = useState(
     "Image size is larger than 2MB"
   );
-
-  const closeProfileSettings = () => {
-    document
-      .getElementsByClassName("profileSettings_container")[0]
-      .classList.add("profileSettings__hidden");
-  };
 
   const changeImagePreview = (newPreview) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
@@ -114,13 +106,11 @@ export default function ProfileSettings() {
     }
   };
 
-  return courses !== undefined ? (
-    <div className="profileSettings_container profileSettings__hidden">
+  return (
+    <div className="profileSettings_container">
       <MenuHeader
         backTo={() => {
-          closeProfileSettings();
-          document.body.classList.remove("overflow-show");
-          document.body.classList.add("overflow-hide");
+          window.location.href = "/menu";
         }}
         location={"PROFILE"}
       />
@@ -206,7 +196,5 @@ export default function ProfileSettings() {
         </div>
       </div>
     </div>
-  ) : (
-    <Loader />
   );
 }

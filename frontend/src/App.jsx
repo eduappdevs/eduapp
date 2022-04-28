@@ -15,6 +15,9 @@ import DarkModeChanger from "./components/DarkModeChanger";
 import FirebaseStorage from "./utils/FirebaseStorage";
 import OpenedResource from "./views/resources/openedResource/OpenedResource";
 import MainChat from "./views/chat/mainChat/MainChat";
+import Menu from "./views/menu/Menu";
+import ProfileSettings from "./views/menu/profileOptions/ProfileSettings";
+import MenuSettings from "./views/menu/menu-settings/MenuSettings";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -34,7 +37,7 @@ export default function App() {
   useEffect(() => {
     setNeedsExtras(
       !new RegExp(
-        "/(login|menu|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*))$"
+        "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*))$"
       ).test(window.location.href)
     );
 
@@ -83,15 +86,25 @@ export default function App() {
         )}
         {requireAuth() ? (
           <Routes>
+            {/* Main Pages */}
             <Route exact path="/home" element={<Home />} />
             <Route exact path="/resources" element={<Resources />} />
-            <Route path="/resource/:resourceId" element={<OpenedResource />} />
             <Route exact path="/calendar" element={<Calendar />} />
             <Route exact path="/chat" element={<ChatMenu />} />
-            <Route path="/chat/:chatId" element={<MainChat />} />
             {userinfo.isAdmin && (
               <Route exact path="/management" element={<ManagementPanel />} />
             )}
+
+            {/* Pages Subroutes */}
+            <Route path="/resource/:resourceId" element={<OpenedResource />} />
+            <Route path="/chat/:chatId" element={<MainChat />} />
+
+            {/* Menu */}
+            <Route path="/menu" element={<Menu />} />
+            <Route path="/menu/profile" element={<ProfileSettings />} />
+            <Route path="/menu/settings" element={<MenuSettings />} />
+
+            {/* Unknown URL Reroute */}
             <Route path="*" element={<Navigate to="/home" />} />
           </Routes>
         ) : (

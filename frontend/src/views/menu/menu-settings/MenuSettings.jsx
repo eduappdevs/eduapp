@@ -4,17 +4,11 @@ import DarkModeChanger from "../../../components/DarkModeChanger";
 import "./MenuSettings.css";
 
 export default function MenuSettings() {
-  const closeMenuSettings = () => {
-    document
-      .getElementsByClassName("MenuSettings__main-container")[0]
-      .classList.add("MenuSettings__hidden");
-  };
-
   return (
-    <div className={"MenuSettings__main-container MenuSettings__hidden"}>
+    <div className={"MenuSettings__main-container"}>
       <MenuHeader
         backTo={() => {
-          closeMenuSettings();
+          window.location.href = "/menu";
         }}
         location={"SETTINGS"}
       />

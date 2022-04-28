@@ -168,7 +168,12 @@ export default function Navbar({ mobile }) {
         <p id="wip">EduApp W.I.P</p>
         <div
           className="profile-button"
-          onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}
+          onClick={() => {
+            localStorage.previousMenuPage = window.location.href.substring(
+              getPosition(window.location.href, "/", 3)
+            );
+            window.location.href = "/menu";
+          }}
         >
           <div className="profile-button-box">
             <div className="profile-pic">
@@ -184,12 +189,6 @@ export default function Navbar({ mobile }) {
           </div>
         </div>
       </nav>
-      <Menu
-        location={loc.pathname.substring(1)}
-        handleCloseMenu={() => {
-          closeProfileMenu();
-        }}
-      />
     </header>
   );
 }
