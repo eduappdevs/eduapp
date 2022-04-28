@@ -190,15 +190,6 @@ export default function Home() {
     asynchronizeRequest(async function () {
       getSessions(id);
     });
-    if (
-      !document
-        .getElementById("courseNotSelectedeAdvisor")
-        .classList.contains("hidden")
-    ) {
-      document
-        .getElementById("courseNotSelectedeAdvisor")
-        .classList.add("hidden");
-    }
   };
 
   useEffect(() => {
@@ -428,7 +419,12 @@ export default function Home() {
                   })}
                 </div>
               ) : (
-                <h1 id="courseNotSelectedeAdvisor">You must select a course</h1>
+                <div
+                  className="select-course"
+                  style={{ display: sessionLength !== "" ? "none" : "flex" }}
+                >
+                  <h1>You must select a course</h1>
+                </div>
               )}
             </div>
           </div>

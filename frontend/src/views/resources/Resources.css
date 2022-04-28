@@ -280,16 +280,12 @@
 
 }
 
-#courseNotSelectedeAdvisor {
+.select-subject {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	color: gray;
 	flex-direction: column;
-}
-
-#courseNotSelectedeAdvisor>p {
-	cursor: pointer;
 }
 
 @media (min-width: 900px) {

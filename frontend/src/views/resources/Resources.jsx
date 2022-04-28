@@ -149,6 +149,7 @@ export default function Resources() {
                     return (
                       <>
                         <li
+                          key={"res" + data.name + subjectSelected}
                           id={"res" + data.name + subjectSelected}
                           className="resources resourceitem"
                           onClick={() => {
@@ -215,10 +216,14 @@ export default function Resources() {
                 })}
               </ul>
             ) : (
-              <div id="courseNotSelectedeAdvisor">
-                <h3>You must select a subject</h3>
-              </div>
+              ""
             )}
+            <div
+              className="select-subject"
+              style={{ display: subjectSelected !== "" ? "none" : "block" }}
+            >
+              <h3>You must select a subject</h3>
+            </div>
           </div>
         </section>
         <ResourcesModal subject={subjectSelected} userInfo={userInfo} />
