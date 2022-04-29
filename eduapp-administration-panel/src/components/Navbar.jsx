@@ -1,10 +1,11 @@
-import React from "react";
+import React,{useEffect, useState} from "react";
 import jsreport from "@jsreport/browser-client";
 import axios from "axios";
 import API, { endpoints } from "../API";
 import "../styles/navbar.css";
 
 export default function Navbar(props) {
+  const [activeSection, setActiveSection] = useState("");
   const generateResourcesReport = async () => {
     const data = await API.fetchResources();
 
@@ -89,7 +90,9 @@ export default function Navbar(props) {
 
     report.openInWindow({ title: "Registered Courses Report" });
   };
-
+  useEffect(() => {
+    setActiveSection(props.location);
+  }, [props.location]);
   return (
     <div className="navbar-container">
       <div className="logo">
@@ -103,12 +106,12 @@ export default function Navbar(props) {
         <span>
           <p>Schedule</p>
         </span>
-        <ul className="button-suboptions">
+        <ul className={'suboptions'}>
           <li
             onClick={() => {
               props.toolbarLocation("sessions");
             }}
-            className="button-suboptions"
+            className={activeSection === 'sessions' ? 'active button-suboption' : 'button-suboptions'}
           >
             <p>Sessions</p>
           </li>
@@ -116,7 +119,7 @@ export default function Navbar(props) {
             onClick={() => {
               props.toolbarLocation("events");
             }}
-            className="button-suboptions"
+            className={activeSection === 'events' ? 'active button-suboption' : 'button-suboptions'}
           >
             <p>Events</p>
           </li>
@@ -126,12 +129,12 @@ export default function Navbar(props) {
         <span>
           <p>Users</p>
         </span>
-        <ul className="button-suboptions">
+        <ul className={'suboptions'}>
           <li
             onClick={() => {
               props.toolbarLocation("users");
             }}
-            className="button-suboptions"
+            className={activeSection === 'users' ? 'active button-suboption' : 'button-suboptions'}
           >
             <p>Users</p>
           </li>
@@ -139,7 +142,7 @@ export default function Navbar(props) {
             onClick={() => {
               props.toolbarLocation("enroll");
             }}
-            className="button-suboptions"
+            className={activeSection === 'enroll' ? 'active button-suboption' : 'button-suboptions'}
           >
             <p>Enrollment</p>
           </li>
@@ -149,8 +152,8 @@ export default function Navbar(props) {
         <span>
           <p> Settings</p>
         </span>
-        <ul className="button-suboptions">
-          <li className="button-suboptions">
+        <ul className={'suboptions'}>
+          <li className={activeSection === 'institutions' ? 'active button-suboption' : 'button-suboptions'}>
             <p
               onClick={() => {
                 props.toolbarLocation("institutions");
@@ -159,7 +162,7 @@ export default function Navbar(props) {
               Institution
             </p>
           </li>
-          <li className="button-suboptions">
+          <li className={activeSection === 'courses' ? 'active button-suboptions' : 'button-suboptions'}>
             <p
               onClick={() => {
                 props.toolbarLocation("courses");
@@ -172,7 +175,7 @@ export default function Navbar(props) {
             onClick={() => {
               props.toolbarLocation("subjects");
             }}
-            className="button-suboptions"
+            className={activeSection === 'subjects' ? 'active button-suboptions' : 'button-suboptions'}
           >
             <p>Subjects</p>
           </li>
@@ -182,8 +185,8 @@ export default function Navbar(props) {
         <span>
           <p> Reports</p>
         </span>
-        <ul className="button-suboptions">
-          <li className="button-suboptions">
+        <ul className={'suboptions'}>
+          <li className={'reports_options active'}>
             <p
               onClick={async () => {
                 await generateResourcesReport();
@@ -192,7 +195,7 @@ export default function Navbar(props) {
               Resources
             </p>
           </li>
-          <li className="button-suboptions">
+          <li className={'reports_options active'}>
             <p
               onClick={async () => {
                 await generateMessagesReport();
@@ -201,7 +204,7 @@ export default function Navbar(props) {
               Chat Messages
             </p>
           </li>
-          <li className="button-suboptions">
+          <li className={'reports_options active'}>
             <p
               onClick={async () => {
                 await generateCoursesReport();

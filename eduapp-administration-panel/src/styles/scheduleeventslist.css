@@ -1,12 +1,12 @@
 table {
-    margin-left: 40px;
     font-family: arial, sans-serif;
     border-collapse: collapse;
     width: 100%;
+
   }
   
   td, th {
-    border: 1px solid #dddddd;
+    border: 1px solid #dddddd76;
     text-align: left;
     padding: 8px;
   }

@@ -32,8 +32,8 @@ export default function ControlPanel() {
 
   return (
     <div className="users-main-container">
-      <Navbar toolbarLocation={changeToolbarLocation} />
-      <div>
+      <Navbar toolbarLocation={changeToolbarLocation} location={location} />
+      <div className="main-section">
         <Toolbar location={location} search={searchFilter} userRole={userRoleFilter}/>
         <div className="controlPanel-content-container">
           {location === "sessions" ? (

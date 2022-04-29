@@ -150,19 +150,19 @@ export default function UserConfig(props) {
                 >
                   <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                 </svg>
-                <div id="submit-loader" class="loader">
+                <div id="submit-loader" className="loader">
                   Loading...
                 </div>
               </button>
             </td>
             <td>
-              <input id="u_email" type="email" placeholder="Email" />
+              <input id="u_email" type="email" placeholder="Email" autoComplete="off" />
             </td>
             <td>
-              <input id="u_pass" type="password" placeholder="Password" />
+              <input id="u_pass" type="password" placeholder="Password"  autoComplete="off"/>
             </td>
             <td style={{ textAlign: "center" }}>
-              <input id="u_admin" type="checkbox" placeholder="Name" />
+              <input id="u_admin" type="checkbox" placeholder="Name" autoComplete="off" />
             </td>
           </tr>
         </table>

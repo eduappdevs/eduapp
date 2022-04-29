@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
+export const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
 const JSREPORT = process.env.REACT_APP_REPORTS_ENDPOINT;
 const USERS = `${API_URL}/users`;
 const INSTITUTIONS = `${API_URL}/institutions`;
@@ -12,8 +12,8 @@ const SUBJECTS = `${API_URL}/subjects`;
 const RESOURCES = `${API_URL}/resources`;
 const CHAT_MESSAGES = `${API_URL}/chat_messages`;
 
-const token =
-  "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjM5NTQyMTg4LCJleHAiOjE2NDA3NTE3ODgsImp0aSI6IjBiNDdlODc1LTA2YjQtNDhhMi05YjgxLTdkMTViMzAwYmM0OCJ9.XkhI1q6rJPuoqpdFcgC_c8U9UXtF1-ujhy0LBM4SnYg";
+export const token = process.env.REACT_APP_TOKEN
+  
 
 const saveInLocalStorage = (userDetails) => {
   console.log(userDetails);

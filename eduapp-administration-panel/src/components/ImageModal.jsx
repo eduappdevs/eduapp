@@ -10,9 +10,6 @@ export default function ImageModal(props) {
         setShow(props.show)
 
     },[props.show])
-    useEffect(()=>{
-        console.log(props.imageRoute)
-    },[])
 
 
   return show && (

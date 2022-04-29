@@ -2,7 +2,6 @@
 	width: 100vw;
 	height: 100vh;
 	position: absolute;
-	top: 0;
 	left: 0;
 	z-index: 1;
 }
@@ -14,6 +13,7 @@
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
+	
 }
 
 .cp-container>div>div>form {
@@ -22,7 +22,16 @@
 	align-items: center;
 	flex-direction: column;
 }
-
+.controlPanel-content-container{
+	background-color: rgb(241, 241, 241);
+	box-shadow: 0px 0px 10px rgba(117, 117, 117, 0.329);
+	border: 1px solid rgba(117, 117, 117, 0.199);
+	border-radius: 10px;
+	overflow-x: auto;
+	margin-top: 20vh;
+	transform: scale(0.98);
+	padding: 5px;
+}
 button {
 	border: none;
 	background-color: orange;
@@ -31,12 +40,30 @@ button {
 	font-weight: 700;
 	font-family: "Consolas";
 	margin-top: 10px;
+	border-radius: 10px;
 }
 
 button:hover {
 	cursor: pointer;
 }
+input{
+	border: none;
+	background: rgba(208, 206, 206, 0.355) !important;
+	border-radius: 5px;
 
+}
+input:focus{
+	outline: none;
+}
+input[type="file"]{
+	border: none !important;
+}
+input[type='text'],input[type='password'],input[type='email']{ 	
+	padding: 8px;
+}
 .hidden {
 	display: none !important;
 }
+
+
+
