@@ -26,6 +26,18 @@ export const deleteUser = async (id) => {
     headers: { Authorization: token },
   });
 };
+
+export const addTeachingSubject = async (uId, subject_id) => {
+  return await axios.post(`${USERS_INFO}/add_subject/${uId}/${subject_id}`, {
+    headers: requestHeader,
+  });
+};
+export const removeTeachingSubject = async (uId, subject_id) => {
+  return await axios.post(`${USERS_INFO}/remove_subject/${uId}/${subject_id}`, {
+    headers: requestHeader,
+  });
+};
+
 export const editUser = async (body) => {
   return await axios.put(`${USERS}/${body.id}`, body, {
     headers: requestHeader,

@@ -25,12 +25,11 @@ export default function SubjectsConfig() {
 
   const createSubject = () => {
     let name = document.getElementById("sj_name").value;
-    let teacher = document.getElementById("sj_teacher").value;
     let desc = document.getElementById("sj_desc").value;
     let color = document.getElementById("sj_color").value;
     let sel_course = document.getElementById("course_chooser").value;
 
-    let info = [name, teacher, desc, color, sel_course];
+    let info = [name, desc, color, sel_course];
 
     let valid = true;
     for (let i of info) {
@@ -46,7 +45,6 @@ export default function SubjectsConfig() {
       API.asynchronizeRequest(function () {
         SUBJECTSERVICE.createSubject({
           name: name,
-          teacherInCharge: teacher,
           description: desc,
           color: color,
           course_id: parseInt(sel_course),
@@ -93,7 +91,6 @@ export default function SubjectsConfig() {
             <tr>
               <th>Actions</th>
               <th>Name</th>
-              <th>Teacher in Charge</th>
               <th>Description</th>
               <th>Color</th>
               <th>Linked Course</th>
@@ -130,9 +127,6 @@ export default function SubjectsConfig() {
                 <input id="sj_name" type="text" placeholder="Name" />
               </td>
               <td>
-                <input id="sj_teacher" type="text" placeholder="Teacher" />
-              </td>
-              <td>
                 <input id="sj_desc" type="text" placeholder="Description" />
               </td>
               <td>
@@ -160,7 +154,6 @@ export default function SubjectsConfig() {
             <tr>
               <th>Code</th>
               <th>Name</th>
-              <th>Teacher in Charge</th>
               <th>Description</th>
               <th>Color</th>
               <th>Linked Course</th>
@@ -177,13 +170,6 @@ export default function SubjectsConfig() {
                       </td>
                       <td>
                         <input disabled type="text" value={sj.name} />
-                      </td>
-                      <td>
-                        <input
-                          disabled
-                          type="text"
-                          value={sj.teacherInCharge}
-                        />
                       </td>
                       <td>
                         <input disabled type="text" value={sj.description} />

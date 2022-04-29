@@ -141,7 +141,6 @@ ActiveRecord::Schema.define(version: 15) do
 
   create_table "subjects", force: :cascade do |t|
     t.string "name"
-    t.string "teacherInCharge"
     t.string "description"
     t.string "color"
     t.bigint "course_id", null: false

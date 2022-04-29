@@ -28,6 +28,20 @@ class UserInfosController < ApplicationController
     end
   end
 
+	def add_subject
+		@user_info = UserInfo.find(params[:user_id])
+		@user_info.teaching_list << Subject.find(params[:subject_id]).id
+		@user_info.save
+		render json: @user_info
+	end
+
+	def remove_subject
+		@user_info = UserInfo.find(params[:user_id])
+		@user_info.teaching_list.delete(Subject.find(params[:subject_id]).id)
+		@user_info.save
+		render json: @user_info
+	end
+
   # PATCH/PUT /user_infos/1
   def update
     if @user_info.update(user_info_params)

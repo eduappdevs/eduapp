@@ -10,6 +10,7 @@ import CourseConfig from "../components/courseConfig";
 import SubjectsConfig from "../components/subjectsConfig";
 import UserConfig from "../components/userConfig";
 import EnrollConfig from "../components/enrollConfig";
+import TeacherConfig from "../components/teacherConfig";
 import ChatConfig from "../components/ChatConfig";
 import ChatMessageConfig from "../components/ChatMessageConfig";
 import ChatParticipantConfig from "../components/ChatParticipantConfig";
@@ -72,18 +73,14 @@ export default function ControlPanel() {
             <UserConfig search={search} userRole={userRole} />
           ) : location === "enroll" ? (
             <EnrollConfig />
+          ) : location === "teachers" ? (
+            <TeacherConfig />
           ) : location === "chatConfig" ? (
-            <>
-              <ChatConfig />
-            </>
+            <ChatConfig />
           ) : location === "chatMessage" ? (
-            <>
-              <ChatMessageConfig />
-            </>
+            <ChatMessageConfig />
           ) : location === "chatParticipant" ? (
-            <>
-              <ChatParticipantConfig />
-            </>
+            <ChatParticipantConfig />
           ) : (
             <></>
           )}

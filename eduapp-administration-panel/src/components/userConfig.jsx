@@ -166,10 +166,12 @@ export default function UserConfig(props) {
         <table style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>Add</th>
+              <th>User ID</th>
+              <th>Name</th>
               <th>Email</th>
-              <th>Password</th>
               <th>Is Admin</th>
+              <th>Has Google Linked</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
