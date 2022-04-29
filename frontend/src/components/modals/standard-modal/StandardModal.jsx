@@ -9,12 +9,12 @@ export default function StandardModal({
   isQuestion,
   onYesAction,
   onNoAction,
-  closeAction,
+  onCloseAction,
   hasTransition,
   hasIconAnimation,
   showLoader,
 }) {
-  iconFill = iconFill || false;
+  iconFill = localStorage.darkMode === "1" ? true : iconFill || false;
   // TYPES = ['success', 'error', 'warning', 'info']
   return (
     <div
@@ -144,7 +144,7 @@ export default function StandardModal({
             </div>
           </div>
         ) : !isQuestion && !showLoader ? (
-          <div className="standard-modal-btn" onClick={closeAction}>
+          <div className="standard-modal-btn" onClick={onCloseAction}>
             Okay
           </div>
         ) : null}
