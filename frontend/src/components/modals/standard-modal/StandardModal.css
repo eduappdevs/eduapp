@@ -71,7 +71,7 @@
 	border-radius: 15px;
 }
 
-.standard-modal>div>svg {
+.standard-modal-icon>svg {
 	width: 40px;
 	height: 40px;
 	margin-top: 1.5em;
@@ -142,4 +142,29 @@
 
 .standard-modal-btn:first-child {
 	margin-right: 15px;
+}
+
+.loader-format {
+	-webkit-animation: spin 1.5s linear infinite;
+	animation: spin 1.5s linear infinite;
+}
+
+@-webkit-keyframes spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@keyframes spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
 }

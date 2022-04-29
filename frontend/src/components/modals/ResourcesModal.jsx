@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import API from "../../API";
+import API, { asynchronizeRequest } from "../../API";
 import "./ResourcesModal.css";
+import StandardModal from "./standard-modal/StandardModal";
 let finalData = new FormData();
 
 export default function ResourcesModal(props) {
@@ -9,6 +10,7 @@ export default function ResourcesModal(props) {
   const [fileWarningText, setWarningText] = useState(
     "Only 3 files are allowed"
   );
+  const [showPopup, setPopup] = useState(false);
 
   const FILE_LIMIT = 3;
   const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
@@ -101,15 +103,19 @@ export default function ResourcesModal(props) {
     finalData.append("createdBy", props.userInfo.user_name);
     finalData.append("subject_id", props.subject);
 
-    console.log(props.userInfo.user_name);
-    console.log(JSON.stringify(Object.fromEntries(finalData)));
-
-    await API.postResource(finalData);
-    document.getElementsByClassName(
-      "resources__createResourceModal"
-    )[0].style.display = "none";
-    document.getElementById("submit-loader").style.display = "none";
-    window.location.reload();
+    asynchronizeRequest(async function () {
+      await API.postResource(finalData);
+      document.getElementsByClassName(
+        "resources__createResourceModal"
+      )[0].style.display = "none";
+      document.getElementById("submit-loader").style.display = "none";
+      window.location.reload();
+    }).then((error) => {
+      if (error) {
+        document.getElementById("submit-loader").style.display = "none";
+        setPopup(true);
+      }
+    });
   };
 
   const closeModal = () => {
@@ -140,6 +146,17 @@ export default function ResourcesModal(props) {
   return (
     <div className="resourceModal-container">
       <div className="resources__createResourceModal">
+        <StandardModal
+          show={showPopup}
+          type={"error"}
+          text={"The resource could not be published."}
+          hasTransition
+          hasIconAnimation
+          closeAction={() => {
+            setPopup(false);
+            closeModal();
+          }}
+        />
         <div className="resources__logoModal">
           <img src="\assets\logo.png" alt="logo" />
         </div>
