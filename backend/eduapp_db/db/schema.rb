@@ -153,7 +153,6 @@ ActiveRecord::Schema.define(version: 15) do
   create_table "tuitions", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.bigint "user_id", null: false
-    t.boolean "isTeacher"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["course_id"], name: "index_tuitions_on_course_id"
@@ -163,6 +162,7 @@ ActiveRecord::Schema.define(version: 15) do
   create_table "user_infos", force: :cascade do |t|
     t.string "user_name"
     t.string "profile_image"
+    t.integer "teaching_list", default: [], array: true
     t.bigint "user_id"
     t.boolean "isAdmin"
     t.string "googleid"
