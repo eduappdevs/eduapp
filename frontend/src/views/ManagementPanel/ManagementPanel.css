@@ -5,6 +5,7 @@
 	width: 100vw;
 	height: 80vh;
 	flex-direction: column;
+	font-family: Consolas;
 }
 
 .managementpanel__container {
@@ -110,7 +111,7 @@
 }
 
 .management__form-container>form>input {
-	border: 1px solid var(--orange );
+	border: 1px solid var(--orange);
 	color: var(--blue);
 	font-weight: 900;
 

@@ -7,7 +7,7 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import CourseSelector from "../../components/courseSelector/CourseSelector";
 import { SUBJECT } from "../../config";
 import { asynchronizeRequest } from "../../API";
-import MediaFix from "../../utils/MediaFixer";
+import { getOfflineUser } from "../../utils/OfflineManager";
 import "./Home.css";
 
 export default function Home() {
@@ -16,6 +16,7 @@ export default function Home() {
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
   const [sessionLength, setSessionLength] = useState("");
+  const [userImage, setUserImage] = useState(null);
   const sessionsPreSorted = [];
   let userInfo = FetchUserInfo(localStorage.userId);
   let sessionsSorted;
@@ -189,15 +190,6 @@ export default function Home() {
     asynchronizeRequest(async function () {
       getSessions(id);
     });
-    if (
-      !document
-        .getElementById("courseNotSelectedeAdvisor")
-        .classList.contains("hidden")
-    ) {
-      document
-        .getElementById("courseNotSelectedeAdvisor")
-        .classList.add("hidden");
-    }
   };
 
   useEffect(() => {
@@ -210,6 +202,14 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!localStorage.offline_user) {
+      setUserImage(userInfo.profile_image);
+    } else {
+      setUserImage(getOfflineUser().profile_image);
+    }
+  }, [userInfo]);
+
   return (
     <>
       <div className="home-main-container">
@@ -220,8 +220,8 @@ export default function Home() {
                 <div className="profile-picture">
                   <img
                     src={
-                      userInfo.profile_image != null
-                        ? MediaFix(userInfo.profile_image.url)
+                      userImage !== null
+                        ? userImage
                         : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                     }
                     alt={(userInfo.user_name, "image")}
@@ -419,7 +419,12 @@ export default function Home() {
                   })}
                 </div>
               ) : (
-                <h1 id="courseNotSelectedeAdvisor">You must select a course</h1>
+                <div
+                  className="select-course"
+                  style={{ display: sessionLength !== "" ? "none" : "flex" }}
+                >
+                  <h1>You must select a course</h1>
+                </div>
               )}
             </div>
           </div>

@@ -41,8 +41,6 @@ const apiSettings = {
     });
   },
 
-
-
   //User
   createUser: async (body) => {
     const endpoint = `${USERS}`;
@@ -62,7 +60,6 @@ const apiSettings = {
     });
   },
 
-
   chechToken: async (token) => {
     const endpoint = `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`;
     return await (await fetch(endpoint)).json();
@@ -70,7 +67,7 @@ const apiSettings = {
 
   // User Info
   fetchInfo: async (userId) => {
-    const endpoint = `${USERS_INFO}/${userId}`;
+    const endpoint = `${USERS_INFO}?user_id=${userId}`;
     return (await fetch(endpoint)).json();
   },
   createInfo: async (body) => {
@@ -155,19 +152,18 @@ const apiSettings = {
   },
   //Subjects
   getSubjects: async (id) => {
-    let idInt = parseInt(id)
+    let idInt = parseInt(id);
     const endpoint = `${SUBJECT}?user=${idInt}`;
     let subjects = [];
 
     await axios.get(endpoint).then((res) => {
       res.data.map((subject) => {
         if (subject.name !== "Noticias") {
-          return subjects.push(subject)
+          return subjects.push(subject);
         }
-      })
+      });
     });
-    return subjects
-
+    return subjects;
   },
 
   //Institutions
@@ -201,22 +197,25 @@ const apiSettings = {
 export default apiSettings;
 
 export const asynchronizeRequest = async (requestFunction) => {
-  try {
-    await axios({
-      method: "get",
-      url: PING,
-      timeout: 5000,
-    });
+  let tries = 0;
+  const maxTries = 5;
 
-    return requestFunction.call();
-  } catch (err) {
-    if (!navigator.onLine) {
-      setTimeout(
-        () => {
-          asynchronizeRequest(requestFunction);
-        },
-        navigator.onLine ? 5000 : 20000
-      );
-    } else asynchronizeRequest(requestFunction);
+  while (tries < maxTries) {
+    try {
+      await axios({
+        method: "get",
+        url: PING,
+        timeout: 5000,
+      });
+
+      return requestFunction.call();
+    } catch (err) {
+      if (err.toString().includes("Network Error"))
+        await new Promise((res) => setTimeout(res, 2000));
+      tries++;
+      continue;
+    }
   }
+
+  return true;
 };

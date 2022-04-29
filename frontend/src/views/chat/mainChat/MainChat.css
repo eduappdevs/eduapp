@@ -37,6 +37,12 @@ svg {
 	padding-bottom: 0.8em;
 }
 
+@media all and (display-mode: browser) and (max-width: 1000px) {
+	.main-chat-messages-container>div:last-child {
+		padding-bottom: 2em;
+	}
+}
+
 .main-chat-input-container {
 	width: 100%;
 	min-height: 4em;

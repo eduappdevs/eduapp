@@ -1,14 +1,23 @@
 import { useState } from "react";
+import {
+  uploadBytes,
+  deleteObject,
+  list,
+  getDownloadURL,
+} from "firebase/storage";
 import MenuHeader from "../menuHeader/MenuHeader";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { GetCourses } from "../../../hooks/GetCourses";
-import API from "../../../API";
-import Loader from "../../../components/loader/Loader";
-import "./ProfileSettings.css";
 import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
-import MediaFix from "../../../utils/MediaFixer";
 import NameCapitalizer from "../../../utils/NameCapitalizer";
-import { updateUserImageOffline } from "../../../utils/OfflineManager";
+import {
+  getOfflineUser,
+  updateUserImageOffline,
+} from "../../../utils/OfflineManager";
+import FirebaseStorage from "../../../utils/FirebaseStorage";
+import API, { asynchronizeRequest } from "../../../API";
+import "./ProfileSettings.css";
+import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -20,12 +29,8 @@ export default function ProfileSettings() {
   const [imageWarningText, setWarningText] = useState(
     "Image size is larger than 2MB"
   );
-
-  const closeProfileSettings = () => {
-    document
-      .getElementsByClassName("profileSettings_container")[0]
-      .classList.add("profileSettings__hidden");
-  };
+  const [saveText, setSaveText] = useState("SAVE CHANGES");
+  const [showPopup, setPopup] = useState(false);
 
   const changeImagePreview = (newPreview) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
@@ -54,54 +59,106 @@ export default function ProfileSettings() {
     }, 2000);
   };
 
-  const getPosition = (string, subString, index) => {
-    return string.split(subString, index).join(subString).length;
+  const uploadImg = (imgRef, newImg, userFormData) => {
+    uploadBytes(imgRef, newImg).then((snap) => {
+      getDownloadURL(snap.ref).then((url) => {
+        userFormData.append("profile_image", url);
+        asynchronizeRequest(function () {
+          API.updateInfo(localStorage.userId, userFormData).then(() => {
+            updateUserImageOffline(url).then(() => {
+              window.location.href = "/home";
+            });
+          });
+        });
+      });
+    });
+  };
+
+  const switchSaveState = (state) => {
+    if (state) {
+      setSaveText("SAVING...");
+      document
+        .getElementById("commit-loader")
+        .classList.remove("commit-loader-hide");
+    } else {
+      setSaveText("SAVE CHANGES");
+      document
+        .getElementById("commit-loader")
+        .classList.add("commit-loader-hide");
+    }
   };
 
   const commitChanges = (e) => {
     e.preventDefault();
+    switchSaveState(true);
 
     const newUserInfo = new FormData();
-    if (changeImage != null) {
-      newUserInfo.append("profile_image", changeImage);
-    }
-
     if (userName != null) {
       newUserInfo.append("user_name", userName);
     }
 
-    API.updateInfo(localStorage.userId, newUserInfo).then((res) => {
-      let oldimg = MediaFix(userInfo.profile_image.url);
-      let newimg = MediaFix(res.data.profile_image.url);
+    let newImg = null;
+    if (changeImage != null) {
+      newImg = FirebaseStorage.getRef(
+        "user_profiles/" +
+          JSON.parse(localStorage.offline_user).user_id +
+          "/" +
+          changeImage.name
+      );
+    }
 
-      if (
-        oldimg.substring(getPosition(oldimg, "/", 8)) !==
-        newimg.substring(getPosition(newimg, "/", 8))
-      ) {
-        updateUserImageOffline(newimg).then(() => {
+    if (newImg) {
+      list(
+        FirebaseStorage.getRef(
+          "user_profiles/" + JSON.parse(localStorage.offline_user).user_id
+        )
+      ).then((snap) => {
+        if (snap.items.length !== 0) {
+          deleteObject(snap.items[0]).then(() => {
+            uploadImg(newImg, changeImage, newUserInfo);
+          });
+        } else uploadImg(newImg, changeImage, newUserInfo);
+      });
+    } else {
+      asynchronizeRequest(async function () {
+        API.updateInfo(localStorage.userId, newUserInfo).then(() => {
           window.location.href = "/home";
         });
-      } else window.location.href = "/home";
-    });
+      }).then((error) => {
+        if (error) {
+          switchSaveState(false);
+          setPopup(true);
+        }
+      });
+    }
   };
 
-  return courses !== undefined ? (
-    <div className="profileSettings_container profileSettings__hidden">
+  return (
+    <div className="profileSettings_container">
       <MenuHeader
         backTo={() => {
-          closeProfileSettings();
-          document.body.classList.remove("overflow-show");
-          document.body.classList.add("overflow-hide");
+          window.location.href = "/menu";
         }}
         location={"PROFILE"}
       />
       <div className="profileSettings_wrapper">
+        <StandardModal
+          show={showPopup}
+          iconFill
+          hasTransition
+          hasIconAnimation
+          type={"error"}
+          text={"The profile information could not be saved."}
+          onCloseAction={() => {
+            setPopup(false);
+          }}
+        />
         {userInfo && (
           <div className="userProfileImg">
             <img
               src={
-                userInfo.profile_image != null
-                  ? MediaFix(userInfo.profile_image.url)
+                getOfflineUser().profile_image != null
+                  ? getOfflineUser().profile_image
                   : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               }
               alt={"user"}
@@ -150,7 +207,22 @@ export default function ProfileSettings() {
           <p>{imageWarningText}</p>
         </div>
         <div className="commitChanges" onClick={commitChanges}>
-          <span>SAVE CHANGES</span>
+          <span>{saveText}</span>
+          <svg
+            id="commit-loader"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className="bi bi-arrow-repeat commit-loader-hide loader-spin"
+            viewBox="0 0 16 16"
+          >
+            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
+            <path
+              fillRule="evenodd"
+              d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+            />
+          </svg>
         </div>
         <GoogleLoginButton useType={"merge"} />
         {userInfo.isAdmin && (
@@ -177,7 +249,5 @@ export default function ProfileSettings() {
         </div>
       </div>
     </div>
-  ) : (
-    <Loader />
   );
 }

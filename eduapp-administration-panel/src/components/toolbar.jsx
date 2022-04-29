@@ -10,6 +10,16 @@ export default function Toolbar(props) {
       })
     );
   };
+
+  const usersSearchFilter = (event) => {
+    let value = event.target.value;
+    props.search(value);
+  };
+
+  const userRoleFilter = (event) => {
+    let value = event.target.value;
+    props.userRole(value);
+  };
   return (
     <div className="scheduletoolbar-container">
       {props.location === "sessions" ? (
@@ -71,14 +81,22 @@ export default function Toolbar(props) {
             </li>
 
             <li>
-              <select name="subjects" id="subjects-select">
+              <select
+                onChange={userRoleFilter}
+                name="subjects"
+                id="subjects-select"
+              >
                 <option value="ALL">View all roles</option>
                 <option value="ADMIN">Admin</option>
                 <option value="STUDENT">Student</option>
               </select>
             </li>
             <li>
-              <input type="text" placeholder="Search..." />
+              <input
+                onChange={usersSearchFilter}
+                type="text"
+                placeholder="Search..."
+              />
             </li>
           </ul>
         </>

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import API, { asynchronizeRequest } from "../../API";
 import "./ResourcesModal.css";
+import StandardModal from "./standard-modal/StandardModal";
 let finalData = new FormData();
 
 export default function ResourcesModal(props) {
   const [filesToUpload, setFilesToUpload] = useState([]);
-  const [currentlyUser, setCurrentlyUser] = useState("");
   const [displayFileWarning, setWarnDisplay] = useState("none");
   const [fileWarningText, setWarningText] = useState(
     "Only 3 files are allowed"
   );
+  const [showPopup, setPopup] = useState(false);
 
   const FILE_LIMIT = 3;
   const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
@@ -56,14 +57,6 @@ export default function ResourcesModal(props) {
     }
   };
 
-  const getCurrentlyUser = async () => {
-    asynchronizeRequest(async () => {
-      await API.fetchInfo(localStorage.userId).then((res) => {
-        setCurrentlyUser(res.user_name);
-      });
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     document.getElementById("submit-loader").style.display = "block";
@@ -107,15 +100,22 @@ export default function ResourcesModal(props) {
     if (thirdfile !== null && thirdfile !== undefined) {
       finalData.append("thirdfile", thirdfile);
     }
-    finalData.append("createdBy", currentlyUser);
+    finalData.append("createdBy", props.userInfo.user_name);
     finalData.append("subject_id", props.subject);
 
-    await API.postResource(finalData);
-    document.getElementsByClassName(
-      "resources__createResourceModal"
-    )[0].style.display = "none";
-    document.getElementById("submit-loader").style.display = "none";
-    window.location.reload();
+    asynchronizeRequest(async function () {
+      await API.postResource(finalData);
+      document.getElementsByClassName(
+        "resources__createResourceModal"
+      )[0].style.display = "none";
+      document.getElementById("submit-loader").style.display = "none";
+      window.location.reload();
+    }).then((error) => {
+      if (error) {
+        document.getElementById("submit-loader").style.display = "none";
+        setPopup(true);
+      }
+    });
   };
 
   const closeModal = () => {
@@ -134,8 +134,6 @@ export default function ResourcesModal(props) {
   };
 
   useEffect(() => {
-    getCurrentlyUser();
-
     let nua = navigator.userAgent;
     if (nua.indexOf("Macintosh") === -1)
       document.querySelector(".loader").style.transform =
@@ -148,6 +146,17 @@ export default function ResourcesModal(props) {
   return (
     <div className="resourceModal-container">
       <div className="resources__createResourceModal">
+        <StandardModal
+          show={showPopup}
+          type={"error"}
+          text={"The resource could not be published."}
+          hasTransition
+          hasIconAnimation
+          onCloseAction={() => {
+            setPopup(false);
+            closeModal();
+          }}
+        />
         <div className="resources__logoModal">
           <img src="\assets\logo.png" alt="logo" />
         </div>
