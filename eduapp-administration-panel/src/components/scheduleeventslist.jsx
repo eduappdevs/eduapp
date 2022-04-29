@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import * as API from "../API";
+import * as SUBJECTSERVICE from "../Service/subject.service";
+import * as SCHEDULESERVICE from "../Service/schedule.service";
+
 import "../styles/scheduleeventslist.css";
 
 export default function Scheduleeventslist() {
   const [subject, setSubject] = useState([]);
   const [events, setEvents] = useState([]);
   const [isGlobal, setIsGlobal] = useState(false);
+
   const FetchSubjects = () => {
     API.asynchronizeRequest(function () {
-      axios.get(API.endpoints.SUBJECTS).then((res) => {
+      SUBJECTSERVICE.fetchSubject().then((res) => {
         res.data.shift();
         setSubject(res.data);
       });
     });
   };
+
   const AddNewEvent = async (e) => {
     e.preventDefault();
 
@@ -41,8 +45,7 @@ export default function Scheduleeventslist() {
         ? (subject = document.getElementById("e_subjectId").value)
         : console.log()
     )
-      console.log(subject);
-    if (!isGlobal ? (subject_id = subject.split("_")[0]) : (subject_id = 1));
+      if (!isGlobal ? (subject_id = subject.split("_")[0]) : (subject_id = 1));
     if (
       name !== "" &&
       start_date !== "" &&
@@ -66,57 +69,81 @@ export default function Scheduleeventslist() {
     for (let i = 0; i <= context.length - 1; i++) {
       eventJson[context[i]] = json[i];
     }
-    axios
-      .post(API.endpoints.EVENTS, eventJson)
-      .then(() => {
-        FetchEvents();
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
-  const FetchEvents = async () => {
-    let payload = [];
-    let request = await axios.get(API.endpoints.EVENTS);
-    request.data.map((e) => {
-      let id = e.id;
-      let title = e.annotation_title;
-      let description = e.annotation_description;
-      let start = e.annotation_start_date;
-      let end = e.annotation_end_date;
-      let isGlobal = e.isGlobal;
-      let subject = e.subject_id;
-      let subject_name = e.subject.name;
-      let user = localStorage.userId;
-      let dayStart = start.split("T")[0];
-      let hourStart = start.split("T")[1];
-      let dayEnd = end.split("T")[0];
-      let hourEnd = end.split("T")[1];
-      payload.push({
-        id,
-        title,
-        description,
-        dayStart,
-        hourStart,
-        dayEnd,
-        hourEnd,
-        isGlobal,
-        subject,
-        subject_name,
-        user,
-      });
-      return true;
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.createEvent(eventJson)
+        .then(() => {
+          FetchEvents();
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     });
-    setEvents(payload);
   };
+
+  const FetchEvents = async () => {
+    let eventValue = [];
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.fetchEvents().then((event) => {
+        event.data.map((e) => {
+          if (e.isGlobal) {
+            let id = e.id;
+            let startDate = e.annotation_start_date;
+            let endDate = e.annotation_end_date;
+            let title = e.annotation_title;
+            let description = e.annotation_description;
+            let subject = e.subject_id;
+            let user = e.user_id;
+            let isGlobal = e.isGlobal;
+            let subject_name = e.subject.name;
+
+            eventValue.push({
+              id: id,
+              startDate: startDate,
+              endDate: endDate,
+              title: title,
+              description: description,
+              subject: subject_name,
+              subject_id: subject,
+              user: user,
+              isGlobal: isGlobal,
+            });
+          } else {
+            let id = e.id;
+            let startDate = e.annotation_start_date;
+            let endDate = e.annotation_end_date;
+            let title = e.annotation_title;
+            let description = e.annotation_description;
+            let subject = e.subject_id;
+            let subject_name = e.subject.name;
+            let user = e.user_id;
+            let isGlobal = e.isGlobal;
+            eventValue.push({
+              id: id,
+              startDate: startDate,
+              endDate: endDate,
+              title: title,
+              description: description,
+              subject: subject_name,
+              subject_id: subject,
+              user: user,
+              isGlobal: isGlobal,
+            });
+          }
+          return true;
+        });
+        setEvents(eventValue);
+      });
+    });
+  };
+
   const isGlobalEvent = () => {
     let checkbox = document.getElementById("e_isGlobal").checked;
     setIsGlobal(checkbox);
   };
+
   const deleteEvent = (id) => {
     API.asynchronizeRequest(function () {
-      axios
-        .delete(`${API.endpoints.EVENTS}/${id}`)
+      SCHEDULESERVICE.deleteSession(id)
         .then(() => {
           FetchEvents();
         })
@@ -223,9 +250,7 @@ export default function Scheduleeventslist() {
               <th>Title</th>
               <th>Description</th>
               <th>Start date</th>
-              <th>Start time</th>
               <th>Ending date</th>
-              <th>Ending Time</th>
               <th>Is Global</th>
               <th>Subject</th>
               <th>Actions</th>
@@ -238,10 +263,8 @@ export default function Scheduleeventslist() {
                   <td>{e.id}</td>
                   <td>{e.title}</td>
                   <td>{e.description}</td>
-                  <td>{e.dayStart}</td>
-                  <td>{e.hourStart}</td>
-                  <td>{e.dayEnd}</td>
-                  <td>{e.hourEnd}</td>
+                  <td>{e.startDate}</td>
+                  <td>{e.endDate}</td>
                   <td style={{ textAlign: "center" }}>
                     {e.isGlobal ? (
                       <input type="checkbox" disabled checked />
@@ -249,7 +272,7 @@ export default function Scheduleeventslist() {
                       <input type="checkbox" disabled />
                     )}
                   </td>
-                  <td>{e.subject_name}</td>
+                  <td>{e.subject}</td>
                   <td
                     style={{
                       display: "flex",
