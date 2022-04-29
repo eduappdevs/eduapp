@@ -29,7 +29,6 @@ export default function UserConfig(props) {
       API.asynchronizeRequest(function () {
         USERSERVICE.createUser(payload).then((res) => {
           const payload = new FormData();
-          USERSERVICE.createInfo(payload);
           payload.delete("user[email]");
           payload.delete("user[password]");
           payload.append("user_id", res.data.message.id);
@@ -53,7 +52,6 @@ export default function UserConfig(props) {
     const payload = new FormData();
     payload.append("course_id", 1);
     payload.append("user_id", uId);
-    payload.append("isTeacher", false);
 
     API.asynchronizeRequest(function () {
       ENROLLSERVICE.createTuition(payload).then(() => {
@@ -100,6 +98,8 @@ export default function UserConfig(props) {
         } else {
           return true;
         }
+      default:
+        break;
     }
   };
 
