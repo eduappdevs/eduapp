@@ -27,11 +27,14 @@ a {
 	height: 30%;
 	padding-top: 20px;
 	flex-direction: column;
+	background-color: rgb(255, 255, 255);
+	border-radius: 10px;
+	margin-top: 10px;
 }
 
 .button-container>span {
 	background-color: rgb(51, 122, 255);
-	width: 100%;
+	width: 90%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -109,5 +112,5 @@ a {
 .active{
 	background-color: orange !important;
 	color: white;
-	margin-left: 10px;
+	transform: scale(0.9);
 }

@@ -9,7 +9,7 @@ import CourseConfig from "../components/courseConfig";
 import SubjectsConfig from "../components/subjectsConfig";
 import UserConfig from "../components/userConfig";
 import EnrollConfig from "../components/enrollConfig";
-
+import "../styles/controlPanel.css";
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
   const [search, setSearch] = useState('');
