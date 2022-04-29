@@ -81,6 +81,9 @@
 
 .commitChanges>svg {
 	margin-left: 10px;
+}
+
+.loader-spin {
 	-webkit-transform: scale(1.25);
 	transform: scale(1.25);
 	-webkit-animation: spin 1.5s linear infinite;

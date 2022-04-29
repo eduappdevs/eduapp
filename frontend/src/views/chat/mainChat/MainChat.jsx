@@ -6,6 +6,7 @@ import { asynchronizeRequest } from "../../../API";
 import axios from "axios";
 import { CHAT_BASE, CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../../config";
 import "./MainChat.css";
+import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 
 const acInstance = new ACManager();
 export default function MainChat() {
@@ -13,6 +14,8 @@ export default function MainChat() {
   const [chat, setChat] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessages, setNewMessages] = useState([]);
+
+  const [showPopup, setPopup] = useState(false);
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -121,8 +124,23 @@ export default function MainChat() {
           type="main-chat"
           chatName={chat.chatInfo ? chat.chatInfo.chat_name : ""}
           closeHandler={() => {
-						acInstance.closeConnection();
+            acInstance.closeConnection();
             window.location.href = "/chat";
+          }}
+          extrasHandler={() => {
+            setPopup(true);
+          }}
+        />
+
+        <StandardModal
+          show={showPopup}
+          type={"warning"}
+          text={"Option under development."}
+          iconFill
+          hasIconAnimation
+          hasTransition
+          onCloseAction={() => {
+            setPopup(false);
           }}
         />
 
@@ -169,7 +187,7 @@ export default function MainChat() {
               className="bi bi-paperclip"
               viewBox="0 0 16 16"
               onClick={() => {
-                alert("This option is under development.");
+                setPopup(true);
               }}
             >
               <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0V3z" />

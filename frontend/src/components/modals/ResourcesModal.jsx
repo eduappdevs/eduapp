@@ -152,7 +152,7 @@ export default function ResourcesModal(props) {
           text={"The resource could not be published."}
           hasTransition
           hasIconAnimation
-          closeAction={() => {
+          onCloseAction={() => {
             setPopup(false);
             closeModal();
           }}

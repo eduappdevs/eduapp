@@ -17,6 +17,7 @@ import {
 import FirebaseStorage from "../../../utils/FirebaseStorage";
 import API, { asynchronizeRequest } from "../../../API";
 import "./ProfileSettings.css";
+import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -29,6 +30,7 @@ export default function ProfileSettings() {
     "Image size is larger than 2MB"
   );
   const [saveText, setSaveText] = useState("SAVE CHANGES");
+  const [showPopup, setPopup] = useState(false);
 
   const changeImagePreview = (newPreview) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
@@ -72,12 +74,23 @@ export default function ProfileSettings() {
     });
   };
 
+  const switchSaveState = (state) => {
+    if (state) {
+      setSaveText("SAVING...");
+      document
+        .getElementById("commit-loader")
+        .classList.remove("commit-loader-hide");
+    } else {
+      setSaveText("SAVE CHANGES");
+      document
+        .getElementById("commit-loader")
+        .classList.add("commit-loader-hide");
+    }
+  };
+
   const commitChanges = (e) => {
     e.preventDefault();
-    setSaveText("SAVING...");
-    document
-      .getElementById("commit-loader")
-      .classList.remove("commit-loader-hide");
+    switchSaveState(true);
 
     const newUserInfo = new FormData();
     if (userName != null) {
@@ -111,6 +124,11 @@ export default function ProfileSettings() {
         API.updateInfo(localStorage.userId, newUserInfo).then(() => {
           window.location.href = "/home";
         });
+      }).then((error) => {
+        if (error) {
+          switchSaveState(false);
+          setPopup(true);
+        }
       });
     }
   };
@@ -124,6 +142,17 @@ export default function ProfileSettings() {
         location={"PROFILE"}
       />
       <div className="profileSettings_wrapper">
+        <StandardModal
+          show={showPopup}
+          iconFill
+          hasTransition
+          hasIconAnimation
+          type={"error"}
+          text={"The profile information could not be saved."}
+          onCloseAction={() => {
+            setPopup(false);
+          }}
+        />
         {userInfo && (
           <div className="userProfileImg">
             <img
@@ -185,7 +214,7 @@ export default function ProfileSettings() {
             width="16"
             height="16"
             fill="currentColor"
-            className="bi bi-arrow-repeat commit-loader-hide"
+            className="bi bi-arrow-repeat commit-loader-hide loader-spin"
             viewBox="0 0 16 16"
           >
             <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
