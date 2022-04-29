@@ -6,14 +6,14 @@ import * as API from "../API";
 
 export default function ChatParticipantConfig() {
   const [participant, setParticipant] = useState([]);
-  const [user, setUser] = useState([]);
+  const [users, setUsers] = useState([]);
   const [chat, setChat] = useState([]);
   const [participantId, setParticipantId] = useState();
 
   const fetchParticipants = async () => {
     API.asynchronizeRequest(function () {
       CHATSERVICE.fetchChatParticipants().then((res) => {
-        setParticipant(res);
+        setParticipant(res.data);
       });
     });
   };
@@ -21,7 +21,7 @@ export default function ChatParticipantConfig() {
   const fetchChat = async () => {
     API.asynchronizeRequest(function () {
       CHATSERVICE.fetchChat().then((res) => {
-        setChat(res);
+        setChat(res.data);
       });
     });
   };
@@ -29,7 +29,7 @@ export default function ChatParticipantConfig() {
   const fetchUser = async () => {
     API.asynchronizeRequest(function () {
       USERSERVICE.fetchUserInfos().then((res) => {
-        setUser(res);
+        setUsers(res.data);
       });
     });
   };
@@ -150,7 +150,7 @@ export default function ChatParticipantConfig() {
               <td>
                 <select name="chP_user" id="chP_user">
                   <option defaultValue="Choose user">Choose user</option>
-                  {user.map((s) => (
+                  {users.map((s) => (
                     <option
                       key={s.user_id}
                       value={s.user_id + "_" + s.user_name}

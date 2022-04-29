@@ -227,7 +227,7 @@ export default function ChatConfig() {
   const fetchChat = async () => {
     API.asynchronizeRequest(function () {
       CHATSERVICE.fetchChat().then((res) => {
-        setChat(res);
+        setChat(res.data);
       });
     });
   };
@@ -491,7 +491,7 @@ export default function ChatConfig() {
         <div className="contianer-alert-delete">
           <div className="header-container-alert-delete"></div>
           <div className="contents-continer-alert-delete">
-            <h2>Are you sure delete this chat?</h2>
+            <h2>Are you sure want to delete this chat?</h2>
             <div className="contents-continer-button-alert-delete">
               <p
                 id="delete_contents"

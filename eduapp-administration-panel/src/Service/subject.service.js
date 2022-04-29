@@ -5,44 +5,25 @@ const requestHeader = { Authorization: token }
 
 //subject
 export const fetchSubjects = async () => {
-    const endpoint = `${SUBJECTS}`;
-    let subjects = [];
-    await axios.get(endpoint, { headers: requestHeader }).then((res) => {
-        res.data.map((subject) => {
-            if (subject.name !== "Noticias") {
-                return subjects.push(subject);
-            }
-            return true
-        });
-    });
-    return subjects;
+    return await axios.get(`${SUBJECTS}`, { headers: requestHeader });
 }
 
 export const fetchSubject = async (id) => {
-    const endpoint = `${SUBJECTS}?subject_id=${id}`;
-    let subjects = [];
-    await axios.get(endpoint, { headers: requestHeader }).then((res) => {
-        res.data.map((subject) => {
-            if (subject.name !== "Noticias") {
-                return subjects.push(subject);
-            }
-            return true
-        });
-    });
-    return subjects;
+    return await axios.get(`${SUBJECTS}?subject_id=${id}`, { headers: requestHeader })
 }
 
 export const NoticiasSubject = async () => {
-    const endpoint = `${SUBJECTS}/?name=Noticias`
-    return await axios.get(endpoint)
+    return await axios.get(`${SUBJECTS}/?name=Noticias`, { headers: requestHeader })
 }
 
 export const createSubject = async (body) => {
-    const endpoint = `${SUBJECTS}`;
-    return await axios.post(endpoint, body)
+    return await axios.post(`${SUBJECTS}`, body, { headers: requestHeader })
 }
 
 export const deleteSubject = async (id) => {
-    const endpoint = `${SUBJECTS}`
-    return await axios.delete(`${endpoint}/${id}`)
+    return await axios.delete(`${SUBJECTS}/${id}`, { headers: requestHeader })
+}
+
+export const editSubject = async (body) => {
+    return await axios.put(`${SUBJECTS}/${body.id}`, body, { headers: requestHeader })
 }

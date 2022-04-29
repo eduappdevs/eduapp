@@ -8,13 +8,7 @@ const requestHeader = { Authorization: token }
 
 //chat
 export const fetchChat = async () => {
-    let chats = []
-    await axios.get(`${CHAT}`, { headers: requestHeader }).then((res) => {
-        res.data.map((chat) => {
-            return chats.push(chat)
-        })
-    })
-    return chats;
+    return await axios.get(`${CHAT}`, { headers: requestHeader })
 }
 export const deleteChat = async (id) => {
     return await axios.delete(`${CHAT}/${id}`, {
@@ -31,13 +25,7 @@ export const editChat = async (data) => {
 
 //chat Participant
 export const fetchChatParticipants = async () => {
-    let participant = []
-    await axios.get(`${CHAT_PARTICIPANT}`, { headers: requestHeader }).then((res) => {
-        res.data.map((chat) => {
-            return participant.push(chat)
-        })
-    })
-    return participant
+    return await axios.get(`${CHAT_PARTICIPANT}`, { headers: requestHeader })
 }
 
 export const deleteParticipant = async (id) => {
@@ -50,13 +38,7 @@ export const createParticipant = async (data) => {
 
 //Message 
 export const fetchMessage = async () => {
-    let message = []
-    await axios.get(`${CHAT_MESSAGES}`, { headers: requestHeader }).then((res) => {
-        res.data.map((sms) => {
-            return message.push(sms)
-        })
-    })
-    return message
+    return await axios.get(`${CHAT_MESSAGES}`, { headers: requestHeader })
 }
 
 export const deleteMessage = async (id) => {

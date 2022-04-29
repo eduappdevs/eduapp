@@ -1,7 +1,15 @@
 import React from "react";
 import "../styles/scheduletoolbar.css";
 import LoadUsersCSV from "./loadUsersCSV";
+
 export default function Toolbar(props) {
+  const handleChangeFilterSession = (event) => {
+    document.dispatchEvent(
+      new CustomEvent("filter_subject", {
+        detail: event.target.value,
+      })
+    );
+  };
   return (
     <div className="scheduletoolbar-container">
       {props.location === "sessions" ? (
@@ -17,7 +25,13 @@ export default function Toolbar(props) {
               <p> Load </p>
             </li>
             <li>
-              <select name="subject" id="subject_id">
+              <select
+                onChange={(e) => {
+                  handleChangeFilterSession(e);
+                }}
+                name="subject"
+                id="subject_id"
+              >
                 <option defaultValue={"--"}>Choose subject</option>
                 {props.subjects.map((subject) => (
                   <option
