@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
-import * as SUBJECTSERVICE from "../Service/subject.service";
-import * as SCHEDULESERVICE from "../Service/schedule.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
+import * as SCHEDULESERVICE from "../services/schedule.service";
 
 import "../styles/scheduleeventslist.css";
 

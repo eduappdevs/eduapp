@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import * as USERSERVICE from "../Service/user.service";
-import * as ENROLLSERVICE from "../Service/enrollConfig.service";
+import * as USERSERVICE from "../services/user.service";
+import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as API from "../API";
 export default function UserConfig(props) {
   const [users, setUsers] = useState(null);

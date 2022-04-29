@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as API from "../API";
-import * as INSTITUTIONSERVICES from "../Service/institution.service";
-import * as COURSESERVICE from "../Service/course.service";
-import * as SUBJECTSERVICE from "../Service/subject.service";
+import * as INSTITUTIONSERVICES from "../services/institution.service";
+import * as COURSESERVICE from "../services/course.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
 
 export default function CourseConfig() {
   const [courses, setCourses] = useState(null);

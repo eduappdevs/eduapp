@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
-import * as TUITIONSSERVICE from "../Service/enrollConfig.service";
-import * as USERSSERVICE from "../Service/user.service";
-import * as COURSESERVICE from "../Service/course.service";
+import * as TUITIONSSERVICE from "../services/enrollConfig.service";
+import * as USERSSERVICE from "../services/user.service";
+import * as COURSESERVICE from "../services/course.service";
 
 export default function EnrollConfig() {
   const [tuitions, setTuitions] = useState(null);

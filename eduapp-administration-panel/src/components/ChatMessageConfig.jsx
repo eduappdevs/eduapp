@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import * as CHATSERVICE from "../Service/chat.service";
-import * as USERSERVICE from "../Service/user.service";
+import * as CHATSERVICE from "../services/chat.service";
+import * as USERSERVICE from "../services/user.service";
 
 import * as API from "../API";
 
@@ -226,7 +226,6 @@ export default function ChatMessageConfig() {
             </table>
           ) : null}
         </div>
-        
       </>
     )
   );

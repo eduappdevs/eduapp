@@ -1,9 +1,9 @@
 import React from "react";
 import jsreport from "@jsreport/browser-client";
 import API, { endpoints } from "../API";
-import { fetchMessage } from "../Service/chat.service";
-import { fetchCourses } from "../Service/course.service";
-import { fetchResourcesJson } from "../Service/resource.service";
+import { fetchMessage } from "../services/chat.service";
+import { fetchCourses } from "../services/course.service";
+import { fetchResourcesJson } from "../services/resource.service";
 import "../styles/navbar.css";
 
 export default function Navbar(props) {
@@ -82,7 +82,6 @@ export default function Navbar(props) {
   };
 
   const generateCoursesReport = async () => {
-  
     API.asynchronizeRequest(function () {
       fetchCourses().then((e) => {
         e.data.map((course) => {

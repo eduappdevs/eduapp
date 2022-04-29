@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
-import * as SUBJECTSERVICE from "../Service/subject.service";
-import * as COURSESERVICE from "../Service/course.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
+import * as COURSESERVICE from "../services/course.service";
 
 export default function SubjectsConfig() {
   const [subjects, setSubjects] = useState(null);
