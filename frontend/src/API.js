@@ -208,13 +208,14 @@ export const asynchronizeRequest = async (requestFunction) => {
         timeout: 5000,
       });
 
-      break;
+      return requestFunction.call();
     } catch (err) {
+      if (err.toString().includes("Network Error"))
+        await new Promise((res) => setTimeout(res, 2000));
       tries++;
       continue;
     }
   }
 
-  if (tries < maxTries) return requestFunction.call();
-  else throw new Error("Request failed after 5 tries");
+  return true;
 };
