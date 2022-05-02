@@ -1,6 +1,5 @@
 import axios from "axios";
 import { API_URL, token } from "../API";
-import { SUBJECTS } from "./subject.service";
 export const EVENTS = `${API_URL}/calendar_annotations`;
 export const SESSIONS = `${API_URL}/eduapp_user_sessions`;
 
@@ -28,4 +27,9 @@ export const createSession = async (body) => {
 
 export const deleteSession = async (id) => {
   return axios.delete(`${SESSIONS}/${id}`, { headers: requestHeader });
+};
+
+export const editSession = async (body) => {
+  console.log(body);
+  return axios.put(`${SESSIONS}/${body.id}`, body, { headers: requestHeader });
 };
