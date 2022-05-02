@@ -60,7 +60,7 @@ export default function Toolbar(props) {
                             </span>
 
 
-                            <input type="text" placeholder="Search..." className="searchbar_toolbar" autoComplete="off"/>
+                            <input type="text" placeholder={props.language.search} className="searchbar_toolbar" autoComplete="off"/>
                         </li>
                     </ul>
                 </>
@@ -68,7 +68,7 @@ export default function Toolbar(props) {
                 <>
                     <ul className="scheduletoolbar-ul events-toolbar">
                         <li>
-                            <Batcher type='events'/>
+                            <Batcher type='events' language={props.language}/>
                         </li>
                         <li onChange={SearchFilter} className="searchbar-container">
                             <span className="searchicon">
@@ -78,7 +78,7 @@ export default function Toolbar(props) {
                             </span>
 
 
-                            <input type="text" placeholder="Search..." className="searchbar_toolbar" autoComplete="off"/>
+                            <input type="text" placeholder={props.language.search} className="searchbar_toolbar" autoComplete="off"/>
                         </li>
 
                     </ul>
@@ -87,16 +87,16 @@ export default function Toolbar(props) {
                 <>
                     <ul className="scheduletoolbar-ul users-toolbar">
                         <li>
-                            <Batcher type='users'/>
+                            <Batcher type='users' language={props.language}/>
                         </li>
 
                         <li>
                             <select onChange={userRoleFilter}
                                 name="subjects"
                                 id="subjects-select">
-                                <option value="ALL">View all roles</option>
-                                <option value="ADMIN">Admin</option>
-                                <option value="STUDENT">Student</option>
+                                <option value="ALL">{props.language.viewAllRoles}</option>
+                                <option value="ADMIN">{props.language.admin}</option>
+                                <option value="STUDENT">{props.language.student}</option>
                             </select>
                         </li>
                         <li onChange={SearchFilter} className="searchbar-container">
@@ -107,7 +107,7 @@ export default function Toolbar(props) {
                             </span>
 
 
-                            <input type="text" placeholder="Search..." className="searchbar_toolbar" autoComplete="off"/>
+                            <input type="text" placeholder={props.language.search} className="searchbar_toolbar" autoComplete="off"/>
                         </li>
                         
                     </ul>
@@ -123,7 +123,7 @@ export default function Toolbar(props) {
                             </span>
 
 
-                            <input type="text" placeholder="Search..." className="searchbar_toolbar" autoComplete="off"/>
+                            <input type="text" placeholder={props.language.search} className="searchbar_toolbar" autoComplete="off"/>
                         </li>
                         
                     </ul></>
@@ -187,9 +187,15 @@ export default function Toolbar(props) {
                         </li>
                         
                     </ul></>
-            ) : (
-                <></>
-            )
+            ) :
+             props.location === "teachers" ? (
+                <>
+                  <h1>Teacher Configuration</h1>
+                </>
+              ) : (
+                <h1>Communication configuration</h1>
+              )
+        
         } </div>
     );
 }

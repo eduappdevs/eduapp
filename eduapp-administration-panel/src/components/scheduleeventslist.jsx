@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
-import * as SUBJECTSERVICE from "../Service/subject.service";
-import * as SCHEDULESERVICE from "../Service/schedule.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
+import * as SCHEDULESERVICE from "../services/schedule.service";
+import * as USER_SERVICE from "../services/user.service";
 
 import "../styles/scheduleeventslist.css";
 
 export default function Scheduleeventslist(props) {
   const [subject, setSubject] = useState([]);
   const [events, setEvents] = useState([]);
+  const [users, setUsers] = useState([]);
   const [isGlobal, setIsGlobal] = useState(false);
   const [search,setSearch] = useState('')
 
@@ -20,6 +22,15 @@ export default function Scheduleeventslist(props) {
       });
     });
   };
+
+  const FetchUsers = () => {
+    API.asynchronizeRequest(function () {
+      USER_SERVICE.fetchUserInfos().then((res) => {
+        setUsers(res.data);
+      });
+    });
+  };
+
   const AddNewEvent = async (e) => {
     e.preventDefault();
 
@@ -35,20 +46,23 @@ export default function Scheduleeventslist(props) {
 
     let json = [];
     let name = document.getElementById("e_title").value;
+    let author = document.getElementById("e_author").value;
     let description = document.getElementById("e_description").value;
     let start_date = document.getElementById("e_start_date").value;
     let end_date = document.getElementById("e_end_date").value;
     let subject = [];
     let subject_id = [];
-    let userId = localStorage.userId;
+
     if (
       !isGlobal
         ? (subject = document.getElementById("e_subjectId").value)
         : console.log()
     )
       if (!isGlobal ? (subject_id = subject.split("_")[0]) : (subject_id = 1));
+
     if (
       name !== "" &&
+      author !== "" &&
       start_date !== "" &&
       end_date !== "" &&
       subject_id !== "Choose subject"
@@ -59,7 +73,7 @@ export default function Scheduleeventslist(props) {
         start_date,
         end_date,
         isGlobal,
-        userId,
+        author.split("_")[0],
         parseInt(subject_id)
       );
     } else {
@@ -70,6 +84,7 @@ export default function Scheduleeventslist(props) {
     for (let i = 0; i <= context.length - 1; i++) {
       eventJson[context[i]] = json[i];
     }
+
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.createEvent(eventJson)
         .then(() => {
@@ -144,22 +159,26 @@ export default function Scheduleeventslist(props) {
 
   const deleteEvent = (id) => {
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.deleteSession(id)
+      SCHEDULESERVICE.deleteEvent(id)
         .then(() => {
           FetchEvents();
         })
         .catch((e) => console.log(e));
     });
   };
+
   useEffect(() => {
     FetchSubjects();
     FetchEvents();
     setSearch("")
+    FetchUsers();
   }, []);
 
   useEffect(()=>{
     setSearch(props.search)
   },[props.search])
+    
+
   return (
     <>
       <div className="scheduleeventslist-main-container">
@@ -168,6 +187,7 @@ export default function Scheduleeventslist(props) {
             <tr>
               <th></th>
               <th>Title</th>
+              <th>Author</th>
               <th>Description</th>
               <th>Start date</th>
               <th>End date</th>
@@ -199,6 +219,16 @@ export default function Scheduleeventslist(props) {
                   placeholder="Title"
                   autoComplete="off"
                 />
+              </td>
+              <td>
+                <select id="e_author">
+                  <option defaultValue="--">Choose Author</option>
+                  {users.map((u) => (
+                    <option key={u.id} value={u.id + "_" + u.user_name}>
+                      {u.user.email}
+                    </option>
+                  ))}
+                </select>
               </td>
               <td>
                 <input

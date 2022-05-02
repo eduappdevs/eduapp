@@ -195,14 +195,20 @@ export default function CreateView(props) {
               <h3>Subject</h3>
               <select name="subject" id="subject_name" onChange={isNotGlobal}>
                 <option defaultValue={"--"}>Choose subject</option>
-                {props.data.map((subject) => (
-                  <option
-                    key={subject.id}
-                    value={subject.id + "_" + subject.name}
-                  >
-                    {subject.name}
-                  </option>
-                ))}
+                {props.data.map((subject) => {
+                  if (userInfo.teaching_list !== undefined) {
+                    if (userInfo.teaching_list.includes(subject.id)) {
+                      return (
+                        <option
+                          key={subject.id}
+                          value={`${subject.id}_${subject.name}`}
+                        >
+                          {subject.name}
+                        </option>
+                      );
+                    }
+                  }
+                })}
               </select>
             </div>
             {/* future all course <div className="calendar-view-create-isGlobal">

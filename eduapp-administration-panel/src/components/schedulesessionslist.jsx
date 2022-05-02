@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
-import * as SCHEDULESERVICE from "../Service/schedule.service";
-import * as SUBJECTSERVICE from "../Service/subject.service";
+import * as SCHEDULESERVICE from "../services/schedule.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
 import "../styles/schedulesessionslist.css";
 
 export default function Schedulesessionslist(props) {
@@ -10,22 +10,25 @@ export default function Schedulesessionslist(props) {
   const [sessionsBackup, setSBackup] = useState(null);
   const [subject, setSubject] = useState([]);
   const [subjectEdit, setSubjectEdit] = useState([]);
-  const [editStartDate, setEditStart] = useState("");
-  const [editEndDate, setEditEnd] = useState("");
+  const [editStart, setEditStart] = useState();
+  const [editEnd, setEditEnd] = useState();
+  const [newStartDate] = useState();
+  const [newEndDate] = useState();
+  const [changeEndDate, setChangeEndDate] = useState(false);
+  const [changeStartDate, setChangeStartDate] = useState(false);
 
   let sessions_filter = {};
 
-  const FetchSessions = async () => {
+  const fetchSessions = async () => {
     await API.asynchronizeRequest(function () {
       SCHEDULESERVICE.fetchSessions().then((e) => {
         setSessions(e.data);
-        setSBackup(e.data);
         sessions_filter.sessions = e.data;
       });
     });
   };
 
-  const FetchSubjects = async () => {
+  const fetchSubjects = async () => {
     await API.asynchronizeRequest(function () {
       SUBJECTSERVICE.fetchSubjects().then((res) => {
         res.data.shift();
@@ -86,7 +89,7 @@ export default function Schedulesessionslist(props) {
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.createSession(SessionJson)
         .then(() => {
-          FetchSessions();
+          fetchSessions();
         })
         .catch((e) => {
           console.log(e);
@@ -97,13 +100,13 @@ export default function Schedulesessionslist(props) {
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.deleteSession(id)
         .then(() => {
-          FetchSessions();
+          fetchSessions();
         })
         .catch((e) => console.log(e));
     });
   };
 
-  const fetchSession = (sessionList) => {
+  const sessionFilter = (sessionList) => {
     let filterSessions = [];
     sessionList.map((s) => {
       if (
@@ -118,11 +121,368 @@ export default function Schedulesessionslist(props) {
     setSessions(filterSessions);
   };
 
-  const editSession = () => {};
+  const editSession = (e, s) => {
+    if (e.target.tagName === "svg") {
+      let name =
+        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
+      let inputName = document.getElementById("inputName_" + s.id).value;
+      let inputStartDate = document.getElementById(
+        "inputStartDate_" + s.id
+      ).value;
+      let inputEndDate = document.getElementById("inputEndDate_" + s.id).value;
+      let inputStreamPlatform = document.getElementById(
+        "inputStreamPlatform_" + s.id
+      ).value;
+      let inputResourcePlatform = document.getElementById(
+        "inputResourcePlatform_" + s.id
+      ).value;
+      let inputSessionChat = document.getElementById(
+        "inputSessionChat_" + s.id
+      ).value;
+      let inputSubject = document.getElementById(
+        "inputSubjectID_" + s.id
+      ).value;
+      let editTitle,
+        editStartDate,
+        editEndDate,
+        editChat,
+        editResources,
+        editStream,
+        editSubject;
+
+      if (inputName !== "" && inputName !== s.session_name) {
+        editTitle = inputName;
+      } else {
+        editTitle = s.session_name;
+      }
+
+      if (inputStartDate !== "" && inputStartDate !== s.session_start_date) {
+        editStartDate = inputStartDate;
+      } else {
+        editStartDate = s.session_start_date;
+      }
+
+      if (inputEndDate !== "" && inputEndDate !== s.session_end_date) {
+        editEndDate = inputEndDate;
+      } else {
+        editEndDate = s.session_end_date;
+      }
+
+      if (inputSessionChat !== "" && inputSessionChat !== s.session_chat_id) {
+        editChat = inputSessionChat;
+      } else {
+        editChat = s.session_chat_id;
+      }
+
+      if (
+        inputResourcePlatform !== "" &&
+        inputResourcePlatform !== s.resources_platform
+      ) {
+        editResources = inputResourcePlatform;
+      } else {
+        editResources = s.resources_platform;
+      }
+
+      if (
+        inputStreamPlatform !== "" &&
+        inputStreamPlatform !== s.streaming_platform
+      ) {
+        editStream = inputStreamPlatform;
+      } else {
+        editStream = s.streaming_platform;
+      }
+
+      if (inputSubject !== "" && inputSubject !== s.subject_id) {
+        editSubject = inputSubject;
+      } else {
+        editSubject = s.subject_id;
+      }
+
+      API.asynchronizeRequest(function () {
+        SCHEDULESERVICE.editSession({
+          id: s.id,
+          session_name: editTitle,
+          session_start_date: editStartDate,
+          session_end_date: editEndDate,
+          streaming_platform: editStream,
+          resources_platform: editResources,
+          session_chat_id: editChat,
+          subject_id: editSubject,
+        })
+          .then(() => {
+            fetchSessions();
+            fetchSubjects();
+
+            let buttonDelete =
+              e.target.parentNode.parentNode.parentNode.childNodes[0];
+            buttonDelete.style.display = "block";
+            let button =
+              e.target.parentNode.parentNode.parentNode.childNodes[1];
+            button.style.display = "block";
+            let checkButton =
+              e.target.parentNode.parentNode.parentNode.childNodes[2];
+            checkButton.style.display = "none";
+            let cancelButton =
+              e.target.parentNode.parentNode.parentNode.childNodes[3];
+            cancelButton.style.display = "none";
+            name.disabled = true;
+            console.log();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    } else {
+      if (e.target.tagName === "path") {
+        let name =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
+            .childNodes[0];
+        let inputName = document.getElementById("inputName_" + s.id).value;
+        let inputStartDate = document.getElementById(
+          "inputStartDate_" + s.id
+        ).value;
+        let inputEndDate = document.getElementById(
+          "inputEndDate_" + s.id
+        ).value;
+        let inputStreamPlatform = document.getElementById(
+          "inputStreamPlatform_" + s.id
+        ).value;
+        let inputResourcePlatform = document.getElementById(
+          "inputResourcePlatform_" + s.id
+        ).value;
+        let inputSessionChat = document.getElementById(
+          "inputSessionChat_" + s.id
+        ).value;
+        let inputSubject = document.getElementById(
+          "inputSubjectID_" + s.id
+        ).value;
+        let editTitle,
+          editStartDate,
+          editEndDate,
+          editChat,
+          editResources,
+          editStream,
+          editSubject;
+
+        if (inputName !== "" && inputName !== s.session_name) {
+          editTitle = inputName;
+        } else {
+          editTitle = s.session_name;
+        }
+
+        if (inputStartDate !== "" && inputStartDate !== s.session_start_date) {
+          editStartDate = inputStartDate;
+        } else {
+          editStartDate = s.session_start_date;
+        }
+
+        if (inputEndDate !== "" && inputEndDate !== s.session_end_date) {
+          editEndDate = inputEndDate;
+        } else {
+          editEndDate = s.session_end_date;
+        }
+
+        if (inputSessionChat !== "" && inputSessionChat !== s.session_chat_id) {
+          editChat = inputSessionChat;
+        } else {
+          editChat = s.session_chat_id;
+        }
+
+        if (
+          inputResourcePlatform !== "" &&
+          inputResourcePlatform !== s.resources_platform
+        ) {
+          editResources = inputResourcePlatform;
+        } else {
+          editResources = s.resources_platform;
+        }
+
+        if (
+          inputStreamPlatform !== "" &&
+          inputStreamPlatform !== s.streaming_platform
+        ) {
+          editStream = inputStreamPlatform;
+        } else {
+          editStream = s.streaming_platform;
+        }
+
+        if (inputSubject !== "" && inputSubject !== s.subject_id) {
+          editSubject = inputSubject;
+        } else {
+          editSubject = s.subject_id;
+        }
+
+        API.asynchronizeRequest(function () {
+          SCHEDULESERVICE.editSession({
+            id: s.id,
+            session_name: editTitle,
+            session_start_date: editStartDate,
+            session_end_date: editEndDate,
+            streaming_platform: editStream,
+            resources_platform: editResources,
+            session_chat_id: editChat,
+            subject_id: editSubject,
+          })
+            .then(() => {
+              fetchSessions();
+              fetchSubjects();
+
+              let buttonDelete =
+                e.target.parentNode.parentNode.parentNode.childNodes[0];
+              buttonDelete.style.display = "block";
+              let button =
+                e.target.parentNode.parentNode.parentNode.childNodes[1];
+              button.style.display = "block";
+              let checkButton =
+                e.target.parentNode.parentNode.parentNode.childNodes[2];
+              checkButton.style.display = "none";
+              let cancelButton =
+                e.target.parentNode.parentNode.parentNode.childNodes[3];
+              cancelButton.style.display = "none";
+              name.disabled = true;
+              console.log();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
+      } else {
+        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let inputName = document.getElementById("inputName_" + s.id).value;
+        let inputStartDate = document.getElementById(
+          "inputStartDate_" + s.id
+        ).value;
+        let inputEndDate = document.getElementById(
+          "inputEndDate_" + s.id
+        ).value;
+        let inputStreamPlatform = document.getElementById(
+          "inputStreamPlatform_" + s.id
+        ).value;
+        let inputResourcePlatform = document.getElementById(
+          "inputResourcePlatform_" + s.id
+        ).value;
+        let inputSessionChat = document.getElementById(
+          "inputSessionChat_" + s.id
+        ).value;
+        let inputSubject = document.getElementById(
+          "inputSubjectID_" + s.id
+        ).value;
+        console.log(inputSubject);
+        let editTitle,
+          editStartDate,
+          editEndDate,
+          editChat,
+          editResources,
+          editStream,
+          editSubject;
+
+        if (inputName !== "" && inputName !== s.session_name) {
+          editTitle = inputName;
+        } else {
+          editTitle = s.session_name;
+        }
+
+        if (inputStartDate !== "" && inputStartDate !== s.session_start_date) {
+          editStartDate = inputStartDate;
+        } else {
+          editStartDate = s.session_start_date;
+        }
+
+        if (inputEndDate !== "" && inputEndDate !== s.session_end_date) {
+          editEndDate = inputEndDate;
+        } else {
+          editEndDate = s.session_end_date;
+        }
+
+        if (inputSessionChat !== "" && inputSessionChat !== s.session_chat_id) {
+          editChat = inputSessionChat;
+        } else {
+          editChat = s.session_chat_id;
+        }
+
+        if (
+          inputResourcePlatform !== "" &&
+          inputResourcePlatform !== s.resources_platform
+        ) {
+          editResources = inputResourcePlatform;
+        } else {
+          editResources = s.resources_platform;
+        }
+
+        if (
+          inputStreamPlatform !== "" &&
+          inputStreamPlatform !== s.streaming_platform
+        ) {
+          editStream = inputStreamPlatform;
+        } else {
+          editStream = s.streaming_platform;
+        }
+
+        if (inputSubject !== "" && inputSubject !== s.subject_id) {
+          editSubject = inputSubject;
+        } else {
+          editSubject = s.subject_id;
+        }
+
+        API.asynchronizeRequest(function () {
+          SCHEDULESERVICE.editSession({
+            id: s.id,
+            session_name: editTitle,
+            session_start_date: editStartDate,
+            session_end_date: editEndDate,
+            streaming_platform: editStream,
+            resources_platform: editResources,
+            session_chat_id: editChat,
+            subject_id: editSubject,
+          })
+            .then(() => {
+              fetchSessions();
+              fetchSubjects();
+
+              let buttonDelete =
+                e.target.parentNode.parentNode.parentNode.childNodes[0];
+              buttonDelete.style.display = "block";
+              let button =
+                e.target.parentNode.parentNode.parentNode.childNodes[1];
+              button.style.display = "block";
+              let checkButton =
+                e.target.parentNode.parentNode.parentNode.childNodes[2];
+              checkButton.style.display = "none";
+              let cancelButton =
+                e.target.parentNode.parentNode.parentNode.childNodes[3];
+              cancelButton.style.display = "none";
+              name.disabled = true;
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
+      }
+    }
+  };
   const closeEditSession = (e) => {
     if (e.target.tagName === "svg") {
       let name =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
+      let startDate =
+        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
+      let endDate =
+        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+      let streaming =
+        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
+      let resources =
+        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
+      let chat =
+        e.target.parentNode.parentNode.parentNode.childNodes[6].childNodes[0];
+      let subject =
+        e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
+      name.disabled = true;
+      startDate.disabled = true;
+      endDate.disabled = true;
+      streaming.disabled = true;
+      resources.disabled = true;
+      chat.disabled = true;
+      subject.disabled = true;
       let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
       buttonDelete.style.display = "block";
       let button = e.target.parentNode.parentNode.childNodes[1];
@@ -131,12 +491,36 @@ export default function Schedulesessionslist(props) {
       checkButton.style.display = "none";
       let cancelButton = e.target.parentNode.parentNode.childNodes[3];
       cancelButton.style.display = "none";
-      name.disabled = true;
     } else {
       if (e.target.tagName === "path") {
         let name =
           e.target.parentNode.parentNode.parentNode.parentNode.parentNode
             .childNodes[0].childNodes[1].childNodes[0];
+        let startDate =
+          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            .childNodes[0].childNodes[2].childNodes[0];
+        let endDate =
+          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            .childNodes[0].childNodes[3].childNodes[0];
+        let streaming =
+          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            .childNodes[0].childNodes[4].childNodes[0];
+        let resources =
+          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            .childNodes[0].childNodes[5].childNodes[0];
+        let chat =
+          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            .childNodes[0].childNodes[6].childNodes[0];
+        let subject =
+          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            .childNodes[0].childNodes[7].childNodes[0];
+        name.disabled = true;
+        startDate.disabled = true;
+        endDate.disabled = true;
+        streaming.disabled = true;
+        resources.disabled = true;
+        chat.disabled = true;
+        subject.disabled = true;
         let buttonDelete =
           e.target.parentNode.parentNode.parentNode.childNodes[0];
         buttonDelete.style.display = "block";
@@ -151,6 +535,24 @@ export default function Schedulesessionslist(props) {
         name.disabled = true;
       } else {
         let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let startDate =
+          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
+        let endDate =
+          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
+        let streaming =
+          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
+        let resources =
+          e.target.parentNode.parentNode.childNodes[5].childNodes[0];
+        let chat = e.target.parentNode.parentNode.childNodes[6].childNodes[0];
+        let subject =
+          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
+        name.disabled = true;
+        startDate.disabled = true;
+        endDate.disabled = true;
+        streaming.disabled = true;
+        resources.disabled = true;
+        chat.disabled = true;
+        subject.disabled = true;
         let buttonDelete = e.target.parentNode.childNodes[0];
         buttonDelete.style.display = "block";
         let button = e.target.parentNode.childNodes[1];
@@ -164,9 +566,29 @@ export default function Schedulesessionslist(props) {
     }
   };
 
-  const showEditOptionSession = (e, id) => {
+  const showEditOptionSession = (e, S) => {
     if (e.target.tagName === "svg") {
-      let name = e.target.parentNode.parentNode.parentNode.childNodes[1];
+      let name =
+        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
+      let startDate =
+        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
+      let endDate =
+        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+      let streaming =
+        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
+      let resources =
+        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
+      let chat =
+        e.target.parentNode.parentNode.parentNode.childNodes[6].childNodes[0];
+      let subject =
+        e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
+      name.disabled = false;
+      startDate.disabled = false;
+      endDate.disabled = false;
+      streaming.disabled = false;
+      resources.disabled = false;
+      chat.disabled = false;
+      subject.disabled = false;
       let buttonDelete = e.target.parentNode.parentNode.childNodes[1];
       buttonDelete.style.display = "none";
       let button = e.target.parentNode.parentNode.childNodes[0];
@@ -175,14 +597,41 @@ export default function Schedulesessionslist(props) {
       checkButton.style.display = "block";
       let cancelButton = e.target.parentNode.parentNode.childNodes[3];
       cancelButton.style.display = "block";
-      name.disabled = false;
+      listSubject(subject.value);
     } else {
       if (e.target.tagName === "path") {
         let name =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
             .childNodes[0];
+        let startDate =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
+            .childNodes[0];
+        let endDate =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
+            .childNodes[0];
+        let streaming =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
+            .childNodes[0];
+        let resources =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[5]
+            .childNodes[0];
+        let chat =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[6]
+            .childNodes[0];
+        let subject =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[7]
+            .childNodes[0];
+        name.disabled = false;
+        startDate.disabled = false;
+        endDate.disabled = false;
+        streaming.disabled = false;
+        resources.disabled = false;
+        chat.disabled = false;
+        subject.disabled = false;
+
         let buttonDelete =
           e.target.parentNode.parentNode.parentNode.childNodes[0];
+
         buttonDelete.style.display = "none";
         let button = e.target.parentNode.parentNode;
         button.style.display = "none";
@@ -192,9 +641,27 @@ export default function Schedulesessionslist(props) {
         let cancelButton =
           e.target.parentNode.parentNode.parentNode.childNodes[3];
         cancelButton.style.display = "block";
-        name.disabled = false;
+        listSubject(subject.value);
       } else {
         let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let startDate =
+          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
+        let endDate =
+          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
+        let streaming =
+          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
+        let resources =
+          e.target.parentNode.parentNode.childNodes[5].childNodes[0];
+        let chat = e.target.parentNode.parentNode.childNodes[6].childNodes[0];
+        let subject =
+          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
+        name.disabled = false;
+        startDate.disabled = false;
+        endDate.disabled = false;
+        streaming.disabled = false;
+        resources.disabled = false;
+        chat.disabled = false;
+        subject.disabled = false;
         let buttonDelete = e.target.parentNode.childNodes[0];
         buttonDelete.style.display = "none";
         let button = e.target.parentNode.childNodes[1];
@@ -203,20 +670,63 @@ export default function Schedulesessionslist(props) {
         checkButton.style.display = "block";
         let cancelButton = e.target.parentNode.childNodes[3];
         cancelButton.style.display = "block";
-        name.disabled = false;
+        listSubject(subject.value);
       }
     }
   };
 
+  const listSubject = (sub) => {
+    let list_subject = [];
+    subject.map((s) => {
+      if (s.name !== sub) {
+        list_subject.push(s);
+      }
+      return true;
+    });
+    setSubjectEdit(list_subject);
+  };
+
+  const handleChangeEndDate = (id) => {
+    let content = document.getElementById("inputEndDate_" + id);
+    setChangeEndDate(true);
+    return content.value;
+  };
+
+  const handleChangeStartDate = (id) => {
+    let content = document.getElementById("inputStartDate_" + id);
+    setChangeStartDate(true);
+    return content.value;
+  };
+
+  const handleChangeName = (id) => {
+    var content = document.getElementById("inputName_" + id);
+    return content.value;
+  };
+
+  const handleChangeStreamPlatform = (id) => {
+    var content = document.getElementById(`inputStreamPlatform_${id}`);
+    return content.value;
+  };
+
+  const handleChangeResourcesPlatform = (id) => {
+    var content = document.getElementById(`inputResourcesPlatform_${id}`);
+    return content.value;
+  };
+
+  const handleChangeSessionChat = (id) => {
+    var content = document.getElementById(`inputSessionChat_${id}`);
+    return content.value;
+  };
+
   useEffect(() => {
-    FetchSessions();
-    FetchSubjects();
+    fetchSessions();
+    fetchSubjects();
 
     document.addEventListener("filter_subject", (e) => {
       e.stopImmediatePropagation();
       sessions_filter.filter =
         e.detail === "Choose subject" ? -1 : e.detail.split("_")[0];
-      fetchSession(sessions_filter.sessions);
+      sessionFilter(sessions_filter.sessions);
     });
   }, []);
 
@@ -224,6 +734,10 @@ export default function Schedulesessionslist(props) {
   useEffect(()=>{
     setSearch(props.search)
   },[props.search])
+
+  useEffect(()=>{
+    console.log(props.language)
+  },[props.language])
 
 
   return (
@@ -318,46 +832,96 @@ export default function Schedulesessionslist(props) {
                 <tr key={s.id}>
                   <td>{s.id}</td>
                   <td>
-                    <input type="text" disabled value={s.session_name} />
-                  </td>
-                  <td>
                     <input
-                      id="s_start_date"
-                      type="datetime-local"
-                      value={s.session_start_date}
+                      id={`inputName_${s.id}`}
+                      type="text"
                       disabled
+                      placeholder={s.session_name}
                       onChange={(e) => {
-                        setEditStart(e.target.value);
+                        handleChangeName(e.target.value);
                       }}
                     />
                   </td>
                   <td>
                     <input
-                      id="s_end_date"
+                      id={`inputStartDate_${s.id}`}
                       type="datetime-local"
-                      value={s.session_end_date}
+                      value={
+                        changeStartDate === false
+                          ? s.session_start_date
+                          : newStartDate
+                      }
                       disabled
                       onChange={(e) => {
-                        setEditEnd(e.target.value);
+                        handleChangeStartDate(e, s.id);
                       }}
                     />
                   </td>
                   <td>
-                    <input type="text" disabled value={s.streaming_platform} />
+                    <input
+                      id={`inputEndDate_${s.id}`}
+                      type="datetime-local"
+                      value={
+                        changeEndDate === false
+                          ? s.session_end_date
+                          : newEndDate
+                      }
+                      disabled
+                      onChange={(e) => {
+                        handleChangeEndDate(e, s.id);
+                      }}
+                    />
                   </td>
                   <td>
-                    <input type="text" disabled value={s.resources_platform} />
+                    <input
+                      id={`inputStreamPlatform_${s.id}`}
+                      type="text"
+                      disabled
+                      placeholder={
+                        s.streaming_platform === null
+                          ? ""
+                          : s.streaming_platform
+                      }
+                      onChange={() => {
+                        handleChangeStreamPlatform(s.id);
+                      }}
+                    />
                   </td>
                   <td>
-                    <input type="text" disabled value={s.session_chat_id} />
+                    <input
+                      id={`inputResourcePlatform_${s.id}`}
+                      type="text"
+                      disabled
+                      placeholder={
+                        s.resources_platform === null
+                          ? ""
+                          : s.resources_platform
+                      }
+                      onChange={() => {
+                        handleChangeResourcesPlatform(s.id);
+                      }}
+                    />
                   </td>
                   <td>
-                    <select id="s_subjectId">
-                      <option defaultValue={s.subject.name}>
+                    <input
+                      id={`inputSessionChat_${s.id}`}
+                      type="text"
+                      disabled
+                      placeholder={
+                        s.session_chat_id === null ? "" : s.session_chat_id
+                      }
+                      onChange={() => {
+                        handleChangeSessionChat(s.id);
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <select disabled id={`inputSubjectID_${s.id}`}>
+                      <option defaultValue={s.subject_id}>
                         {s.subject.name}
                       </option>
                       {subjectEdit.map((s) => (
-                        <option key={s.id} value={s.id + "_" + s.name}>
+                        <option key={s.id} value={s.subject_id}>
                           {s.name}
                         </option>
                       ))}
@@ -390,7 +954,7 @@ export default function Schedulesessionslist(props) {
                     <button
                       style={{ marginRight: "5px" }}
                       onClick={(e) => {
-                        showEditOptionSession(e, s.id);
+                        showEditOptionSession(e, s);
                       }}
                     >
                       <svg

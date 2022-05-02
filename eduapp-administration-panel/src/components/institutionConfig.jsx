@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
-import * as INSTITUTIONSERVICE from "../Service/institution.service";
-import * as COURSESERVICE from "../Service/course.service";
-import * as SUBJECTSERVICE from "../Service/subject.service";
+import * as INSTITUTIONSERVICE from "../services/institution.service";
+import * as COURSESERVICE from "../services/course.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
 import "../styles/institutionConfig.css";
 
 export default function InstitutionConfig() {

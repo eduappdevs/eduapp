@@ -28,6 +28,20 @@ class UserInfosController < ApplicationController
     end
   end
 
+	def add_subject
+		@user_info = UserInfo.find(params[:user_id])
+		@user_info.teaching_list << Subject.find(params[:subject_id]).id
+		@user_info.save
+		render json: @user_info
+	end
+
+	def remove_subject
+		@user_info = UserInfo.find(params[:user_id])
+		@user_info.teaching_list.delete(Subject.find(params[:subject_id]).id)
+		@user_info.save
+		render json: @user_info
+	end
+
   # PATCH/PUT /user_infos/1
   def update
     if @user_info.update(user_info_params)
@@ -70,6 +84,6 @@ class UserInfosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_info_params
-      params.permit(:user_name, :user_id, :profile_image , :isAdmin , :googleid , :isLoggedWithGoogle)
+      params.permit(:user_name, :user_id, :profile_image, :teaching_list, :isAdmin , :googleid , :isLoggedWithGoogle)
     end
 end

@@ -14,14 +14,16 @@ import "../styles/controlPanel.css";
 import ChatConfig from "../components/ChatConfig";
 import ChatMessageConfig from "../components/ChatMessageConfig";
 import ChatParticipantConfig from "../components/ChatParticipantConfig";
-import * as SUBJECTSERVICE from "../Service/subject.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
+import TeacherConfig from "../components/teacherConfig";
 import * as API from "../API";
+import LANGUAGES from "../constants/languages";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
-
+  const [language, setLanguage] = useState("en");
   const changeToolbarLocation = (incoming) => {
     console.log("click", incoming);
     setLocation(incoming);
@@ -38,48 +40,59 @@ export default function ControlPanel() {
     fetchSubject();
   }, []);
 
-  const searchFilter = (search)=>{
+  const searchFilter = (search) => {
     setSearch(search);
-  }
-  const userRoleFilter = (role) =>{
-    console.log(role)
-    console.log(role === 'ADMIN' ? 1 : role ==='STUDENT' ?  0 : null)
-    setUserRole(role === 'ADMIN' ? 1 : role ==='STUDENT' ?  0 : null);
+  };
+  const userRoleFilter = (role) => {
+    console.log(role);
+    console.log(role === "ADMIN" ? 1 : role === "STUDENT" ? 0 : null);
+    setUserRole(role === "ADMIN" ? 1 : role === "STUDENT" ? 0 : null);
+  };
 
-  }
+  const switchLanguage = (language) => {
+    switch (language) {
+      case "es":
+        setLanguage(LANGUAGES.es);
+        break;
+      case "en":
+        setLanguage(LANGUAGES.en);
+        break;
+      case "pt":
+        setLanguage(LANGUAGES.pt);
+        break;
+      default:
+        setLanguage(LANGUAGES.en);
+    }
+  };
 
   return (
     <div className="users-main-container">
-      <Navbar toolbarLocation={changeToolbarLocation} location={location} />
+      <Navbar toolbarLocation={changeToolbarLocation} switchLanguage={switchLanguage} location={location} />
       <div className="main-section">
-        <Toolbar location={location} search={searchFilter} userRole={userRoleFilter} subjects={subjects}/>
+        <Toolbar location={location} search={searchFilter} userRole={userRoleFilter} subjects={subjects} language={language}/>
         <div className="controlPanel-content-container">
           {location === "sessions" ? (
-            <Schedulesessionslist search={search} />
+            <Schedulesessionslist search={search} language={LANGUAGES.es}/>
           ) : location === "events" ? (
-            <Scheduleeventslist search={search}/>
+            <Scheduleeventslist search={search}language={language}/>
           ) : location === "institutions" ? (
-            <InstitutionConfig search={search}/>
+            <InstitutionConfig search={search}language={language}/>
           ) : location === "courses" ? (
-            <CourseConfig search={search}/>
+            <CourseConfig search={search}language={language}/>
           ) : location === "subjects" ? (
-            <SubjectsConfig search={search}/>
+            <SubjectsConfig search={search}language={language}/>
           ) : location === "users" ? (
-            <UserConfig search={search} userRole={userRole}/>
+            <UserConfig search={search} userRole={userRole} language={language}/>
           ) : location === "enroll" ? (
-            <EnrollConfig search={search}/>
+            <EnrollConfig language={language}/>
+          ) : location === "teachers" ? (
+            <TeacherConfig language={language}/>
           ) : location === "chatConfig" ? (
-            <>
-              <ChatConfig />
-            </>
+            <ChatConfig language={language}/>
           ) : location === "chatMessage" ? (
-            <>
-              <ChatMessageConfig />
-            </>
+            <ChatMessageConfig language={language}/>
           ) : location === "chatParticipant" ? (
-            <>
-              <ChatParticipantConfig />
-            </>
+            <ChatParticipantConfig language={language}/>
           ) : (
             <></>
           )}

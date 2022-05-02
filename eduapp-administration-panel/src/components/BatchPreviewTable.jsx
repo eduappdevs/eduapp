@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
-import * as SCHEDULESERVICE from "../Service/schedule.service";
+import * as SCHEDULESERVICE from '../services/schedule.service';
 import * as API from "../API";
 export default function BatchPreviewTable(props) {
 

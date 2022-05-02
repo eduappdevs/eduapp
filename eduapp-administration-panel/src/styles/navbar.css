@@ -14,7 +14,11 @@
 	width: 16%;
 	background-color: rgb(237, 237, 237);
 }
+.navbar-header{
+	display: flex;
+	flex-direction: column;
 
+}
 a {
 	color: rgb(58, 58, 58);
 	text-decoration: none;
@@ -85,26 +89,22 @@ a {
 	margin-top: 10px;
 	padding: 3px;
 	cursor: default;
-	width: 130px;
-	height: 50px;
 	background-color: transparent;
 	pointer-events: none;
 	display: flex;
+	justify-content: center;
+	align-items: center;
 	flex-direction: row;
 	color: rgb(58, 58, 58);
 	z-index: 9999;
+	transform: scale(0.7);
+	cursor: pointer;
 }
 
 .logo>img {
 	width: 40%;
 	height: 100%;
-}
-
-.logo>p {
-	margin-top: 22px;
-	font-size: large;
-	font-weight: bold;
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	cursor: pointer;
 }
 
 .logo:hover {

@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from "react";
 import jsreport from "@jsreport/browser-client";
-import API, {endpoints} from "../API";
-import {fetchMessage} from "../Service/chat.service";
-import {fetchCourses} from "../Service/course.service";
-import {fetchResourcesJson} from "../Service/resource.service";
 import logogeduapp from '../assets/eduappadmin.png';
+import API, {endpoints} from "../API";
+import {fetchMessage} from "../services/chat.service";
+import {fetchCourses} from "../services/course.service";
+import {fetchResourcesJson} from "../services/resource.service";
+import LanguageSwitcher from "./LanguageSwitcher";
+import './componentStyles/languageSwitcher.css'
 import "../styles/navbar.css";
 
 export default function Navbar(props) {
@@ -104,22 +106,30 @@ export default function Navbar(props) {
             });
         });
     };
-    const displayClock = () =>{
+    const displayClock = () => {
         const display = new Date().toLocaleTimeString();
         document.getElementById('liveClock').innerHTML = display;
         setTimeout(displayClock, 1000);
+    }
+    const switchLanguage =(lang) => {
+        props.switchLanguage(lang);
     }
     useEffect(() => {
         setActiveSection(props.location);
     }, [props.location]);
 
-    useEffect(()=>{
-      displayClock();
-    },[])
+    useEffect(() => {
+        displayClock();
+    }, [])
     return (
         <div className="navbar-container">
-            <div className="logo">
-                <img src={logogeduapp} alt="eduapplogo"/> 
+            <div className="navbar-header">
+                <div className="logo">
+                    <img src={logogeduapp}
+                        alt="eduapplogo"/>
+
+                </div>
+                <LanguageSwitcher switchLanguage={switchLanguage}/>
                 <div id="liveClock"></div>
             </div>
             <div className="schedule-button-container button-container">
@@ -247,7 +257,7 @@ export default function Navbar(props) {
                         }>
                             <p>Message</p>
                         </li>
-                    ) : (console.log())
+                    ) : (<></>)
                 } </ul>
             </div>
             <div className="reports-button-container button-container">
