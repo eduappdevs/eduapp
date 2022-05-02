@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { asynchronizeRequest } from "../API";
 import * as SUBJECT_SERVICE from "../services/subject.service";
 import * as USER_SERVICE from "../services/user.service";
+import * as ENROLL_SERVICE from "../services/enrollConfig.service";
 
 export default function TeacherConfig() {
   const [users, setUsers] = useState(null);
@@ -45,11 +46,19 @@ export default function TeacherConfig() {
     setTeachers(allTeachers);
   };
 
-  const createTeacher = async () => {};
+  const createTeacher = async () => {
+    const user = document.getElementById("user_select").value;
+    const subject = document.getElementById("subject_select").value;
 
-  const deleteTeacher = async (id) => {};
+    asynchronizeRequest(async () => {
+      await USER_SERVICE.enroll_teacher(user, subject);
+      refreshTeachers();
+    }).then((err) => {
+      if (err) console.log("There was an error creating.");
+    });
+  };
 
-  useEffect(() => {
+  const refreshTeachers = () => {
     fetchUsers().then((users) => {
       fetchSubjects().then((subjects) => {
         formatTeachers(users, subjects);
@@ -57,6 +66,19 @@ export default function TeacherConfig() {
         setSubjects(subjects);
       });
     });
+  };
+
+  const deleteTeacher = async (uId, sId) => {
+    asynchronizeRequest(async () => {
+      await USER_SERVICE.delist_teacher(uId, sId);
+      refreshTeachers();
+    }).then((err) => {
+      if (err) console.log("There was an error deleting.");
+    });
+  };
+
+  useEffect(() => {
+    refreshTeachers();
   }, []);
 
   return (
@@ -110,7 +132,7 @@ export default function TeacherConfig() {
               </select>
             </td>
             <td>
-              <select defaultValue={"-"} id="course_select">
+              <select defaultValue={"-"} id="subject_select">
                 <option value="-">Choose Subject</option>
                 {subjects
                   ? subjects.map((s) => {
@@ -130,8 +152,8 @@ export default function TeacherConfig() {
         <table style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>User</th>
-              <th>Course</th>
+              <th>Teacher</th>
+              <th>Subject</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -155,7 +177,7 @@ export default function TeacherConfig() {
                       >
                         <button
                           onClick={() => {
-                            deleteTeacher(t.id);
+                            deleteTeacher(t.user.id, t.subject.id);
                           }}
                         >
                           <svg
