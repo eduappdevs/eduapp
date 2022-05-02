@@ -79,6 +79,7 @@ export default function UserConfig(props) {
   };
 
   const filterUsersWithRole = (role, user) => {
+    // eslint-disable-next-line default-case
     switch (role) {
       case null:
         if (user.isAdmin || !user.isAdmin) {

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import * as API from "../API";
 import * as INSTITUTIONSERVICES from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
