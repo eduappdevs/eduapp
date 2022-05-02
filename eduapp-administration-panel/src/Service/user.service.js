@@ -13,6 +13,12 @@ export const createInfo = async (body) => {
     return await axios.post(`${USERS_INFO}`, body, { headers: requestHeader });
 }
 
+export const deleteUser = async (id) => {
+    return await axios.delete(`${USERS_INFO}/${id}`, {
+        headers: { Authorization: token },
+    });
+}
+
 export const fetchUser = async () => {
     return await axios.get(`${USERS}`, { headers: requestHeader })
 }
@@ -21,11 +27,6 @@ export const createUser = async (body) => {
     return await axios.post(`${USERS}`, body, { headers: requestHeader });
 }
 
-export const deleteUser = async (body) => {
-    return await axios.delete(`${USERS}/${body.id}`, body, {
-        headers: { Authorization: token },
-    });
-}
 export const editUser = async (body) => {
     return await axios.put(`${USERS}/${body.id}`, body, { headers: requestHeader });
 }

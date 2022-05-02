@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import * as USERSERVICE from "../Service/user.service";
-import * as ENROLLSERVICE from "../Service/enrollConfig.service";
+import * as USERSERVICE from "../service/user.service";
+import * as ENROLLSERVICE from "../service/enrollConfig.service";
 import * as API from "../API";
 export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
@@ -81,6 +81,7 @@ export default function UserConfig(props) {
   };
 
   const filterUsersWithRole = (role, user) => {
+    // eslint-disable-next-line default-case
     switch (role) {
       case null:
         if (user.isAdmin || !user.isAdmin) {
