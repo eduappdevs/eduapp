@@ -174,7 +174,6 @@ export default function UserConfig(props) {
           <tbody>
             {users
               ? users.map((u) => {
-                console.log('esto es un usuario',u)
                   if (search.length > 0) {
                     if (
                       (u.user_name.includes(search) ||

@@ -52,11 +52,15 @@ export default function BatchPreviewTable(props) {
         for (let i = 0; i <= context.length - 1; i++) {
             SessionJson[context[i]] = json[i];
         }
-        axios.post(API.endpoints.SESSIONS, SessionJson).then(() => {
-            window.location.reload();
-        }).catch((e) => {
-            console.log(e);
-        });
+        API.asynchronizeRequest(function () {
+            SCHEDULESERVICE.createSession(SessionJson)
+              .then(() => {
+                
+              })
+              .catch((e) => {
+                console.log(e);
+              });
+          });
     };
     const createUser = (user) => {
         let email = user[0]

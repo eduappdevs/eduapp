@@ -55,19 +55,19 @@ export default function ControlPanel() {
         <Toolbar location={location} search={searchFilter} userRole={userRoleFilter} subjects={subjects}/>
         <div className="controlPanel-content-container">
           {location === "sessions" ? (
-            <Schedulesessionslist />
+            <Schedulesessionslist search={search} />
           ) : location === "events" ? (
-            <Scheduleeventslist />
+            <Scheduleeventslist search={search}/>
           ) : location === "institutions" ? (
-            <InstitutionConfig />
+            <InstitutionConfig search={search}/>
           ) : location === "courses" ? (
-            <CourseConfig />
+            <CourseConfig search={search}/>
           ) : location === "subjects" ? (
-            <SubjectsConfig />
+            <SubjectsConfig search={search}/>
           ) : location === "users" ? (
             <UserConfig search={search} userRole={userRole}/>
           ) : location === "enroll" ? (
-            <EnrollConfig />
+            <EnrollConfig search={search}/>
           ) : location === "chatConfig" ? (
             <>
               <ChatConfig />

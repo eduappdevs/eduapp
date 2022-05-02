@@ -10,9 +10,10 @@ export default function Toolbar(props) {
     );
   };
 
-    const usersSearchFilter = (event) => {
-        let value = event.target.value;
-        props.search(value)
+    const SearchFilter = (event) => {
+        props.search(event.target.value);
+        console.log(event.target.value);
+
     }
 
     const userRoleFilter = (event) => {
@@ -51,7 +52,7 @@ export default function Toolbar(props) {
                 ))}
               </select>
             </li>
-                        <li className="searchbar-container">
+                        <li onChange={SearchFilter}  className="searchbar-container">
                             <span className="searchicon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -69,7 +70,7 @@ export default function Toolbar(props) {
                         <li>
                             <Batcher type='events'/>
                         </li>
-                        <li onChange={usersSearchFilter} className="searchbar-container">
+                        <li onChange={SearchFilter} className="searchbar-container">
                             <span className="searchicon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -98,7 +99,7 @@ export default function Toolbar(props) {
                                 <option value="STUDENT">Student</option>
                             </select>
                         </li>
-                        <li onChange={usersSearchFilter} className="searchbar-container">
+                        <li onChange={SearchFilter} className="searchbar-container">
                             <span className="searchicon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -114,7 +115,7 @@ export default function Toolbar(props) {
             ) : props.location === "resources" ? (
                 <>
                 <ul className="scheduletoolbar-ul resources-toolbar">
-                        <li onChange={usersSearchFilter} className="searchbar-container">
+                        <li onChange={SearchFilter} className="searchbar-container">
                             <span className="searchicon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -129,7 +130,7 @@ export default function Toolbar(props) {
             ) : props.location === "institutions" ? (
                 <>
                 <ul className="scheduletoolbar-ul institutions-toolbar">
-                        <li onChange={usersSearchFilter} className="searchbar-container">
+                        <li onChange={SearchFilter} className="searchbar-container">
                             <span className="searchicon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -144,7 +145,7 @@ export default function Toolbar(props) {
             ) : props.location === "courses" ? (
                 <>
                 <ul className="scheduletoolbar-ul courses-toolbar">
-                        <li onChange={usersSearchFilter} className="searchbar-container">
+                        <li onChange={SearchFilter} className="searchbar-container">
                             <span className="searchicon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -159,7 +160,7 @@ export default function Toolbar(props) {
             ) : props.location === "subjects" ? (
                 <>
                 <ul className="scheduletoolbar-ul subjects-toolbar">
-                        <li onChange={usersSearchFilter} className="searchbar-container">
+                        <li onChange={SearchFilter} className="searchbar-container">
                             <span className="searchicon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -174,7 +175,7 @@ export default function Toolbar(props) {
             ) : props.location === "enroll" ? (
                 <>
                 <ul className="scheduletoolbar-ul enroll-toolbar">
-                        <li onChange={usersSearchFilter} className="searchbar-container">
+                        <li onChange={SearchFilter} className="searchbar-container">
                             <span className="searchicon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
                                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
