@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
-import * as USERSERVICE from "../service/user.service";
-import * as ENROLLSERVICE from "../service/enrollConfig.service";
+import * as USERSERVICE from "../services/user.service";
+import * as ENROLLSERVICE from "../services/enrollConfig.service";
 
 export default function PreviewUsersTable(props) {
   const [users, setUsers] = useState(null);

@@ -132,6 +132,10 @@ export default function Toolbar(props) {
         <>
           <h1>Chat</h1>
         </>
+      ) : props.location === "teachers" ? (
+        <>
+          <h1>Teacher Configuration</h1>
+        </>
       ) : (
         <h1>Communication configuration</h1>
       )}

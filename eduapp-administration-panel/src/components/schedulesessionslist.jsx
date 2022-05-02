@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
-import * as SCHEDULESERVICE from "../service/schedule.service";
-import * as SUBJECTSERVICE from "../service/subject.service";
+import * as SCHEDULESERVICE from "../services/schedule.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
 import "../styles/schedulesessionslist.css";
 
 export default function Schedulesessionslist() {
   const [sessions, setSessions] = useState(null);
-  const [sessionsBackup, setSBackup] = useState(null);
   const [subject, setSubject] = useState([]);
   const [subjectEdit, setSubjectEdit] = useState([]);
   const [newEndDate] = useState();
@@ -20,9 +19,7 @@ export default function Schedulesessionslist() {
     await API.asynchronizeRequest(function () {
       SCHEDULESERVICE.fetchSessions().then((e) => {
         setSessions(e.data);
-        setSBackup(e.data);
         sessions_filter.sessions = e.data;
-        console.log(e.data);
       });
     });
   };
@@ -901,7 +898,7 @@ export default function Schedulesessionslist() {
                   </td>
                   <td>
                     <select disabled id={`inputSubjectID_${s.id}`}>
-                      <option  defaultValue={s.subject_id}>
+                      <option defaultValue={s.subject_id}>
                         {s.subject.name}
                       </option>
                       {subjectEdit.map((s) => (

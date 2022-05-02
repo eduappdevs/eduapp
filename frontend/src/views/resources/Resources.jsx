@@ -14,6 +14,7 @@ export default function Resources() {
   const [resourcesFilter, setResourcesFilter] = useState("");
   const [resources, setResources] = useState([]);
   const [subjectSelected, setSubjectSelected] = useState("");
+  const [isTeacher, setIsTeacher] = useState(false);
 
   let userInfo = FetchUserInfo(localStorage.userId);
   let subjects = GetSubjects(localStorage.userId);
@@ -71,6 +72,7 @@ export default function Resources() {
   };
 
   const handleChangeSelector = (id) => {
+    setIsTeacher(userInfo.teaching_list.includes(id));
     setSubjectSelected(id);
     setResources([]);
     getResources(id);
@@ -115,10 +117,7 @@ export default function Resources() {
                 </div>
               </form>
             </div>
-            {subjectSelected &&
-            (subjects.filter((subject) => subject.id === subjectSelected)[0]
-              .isTeacher ||
-              userInfo.isAdmin) ? (
+            {subjectSelected && (isTeacher || userInfo.isAdmin) ? (
               <div
                 className="resources__addNewResource"
                 onClick={createResource}

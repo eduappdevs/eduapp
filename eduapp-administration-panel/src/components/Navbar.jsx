@@ -1,9 +1,9 @@
 import React from "react";
 import jsreport from "@jsreport/browser-client";
 import API, { endpoints } from "../API";
-import { fetchMessage } from "../service/chat.service";
-import { fetchCourses } from "../service/course.service";
-import { fetchResourcesJson } from "../service/resource.service";
+import { fetchMessage } from "../services/chat.service";
+import { fetchCourses } from "../services/course.service";
+import { fetchResourcesJson } from "../services/resource.service";
 import "../styles/navbar.css";
 
 export default function Navbar(props) {
@@ -154,6 +154,14 @@ export default function Navbar(props) {
             className="button-suboptions"
           >
             <p>Enrollment</p>
+          </li>
+          <li
+            onClick={() => {
+              props.toolbarLocation("teachers");
+            }}
+            className="button-suboptions"
+          >
+            <p>Teachers</p>
           </li>
         </ul>
       </div>
