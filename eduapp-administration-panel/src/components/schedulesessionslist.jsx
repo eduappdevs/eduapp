@@ -22,7 +22,6 @@ export default function Schedulesessionslist() {
         setSessions(e.data);
         setSBackup(e.data);
         sessions_filter.sessions = e.data;
-        console.log(e.data);
       });
     });
   };
@@ -124,6 +123,18 @@ export default function Schedulesessionslist() {
     if (e.target.tagName === "svg") {
       let name =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
+      let startDate =
+        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
+      let endDate =
+        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+      let streaming =
+        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
+      let resources =
+        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
+      let chat =
+        e.target.parentNode.parentNode.parentNode.childNodes[6].childNodes[0];
+      let subject =
+        e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
       let inputName = document.getElementById("inputName_" + s.id).value;
       let inputStartDate = document.getElementById(
         "inputStartDate_" + s.id
@@ -225,7 +236,12 @@ export default function Schedulesessionslist() {
               e.target.parentNode.parentNode.parentNode.childNodes[3];
             cancelButton.style.display = "none";
             name.disabled = true;
-            console.log();
+            startDate.disabled = true;
+            endDate.disabled = true;
+            streaming.disabled = true;
+            resources.disabled = true;
+            chat.disabled = true;
+            subject.disabled = true;
           })
           .catch((error) => {
             console.log(error);
@@ -236,6 +252,25 @@ export default function Schedulesessionslist() {
         let name =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
             .childNodes[0];
+        let startDate =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
+            .childNodes[0];
+        let endDate =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
+            .childNodes[0];
+        let streaming =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
+            .childNodes[0];
+        let resources =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[5]
+            .childNodes[0];
+        let chat =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[6]
+            .childNodes[0];
+        let subject =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[7]
+            .childNodes[0];
+
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputStartDate = document.getElementById(
           "inputStartDate_" + s.id
@@ -339,7 +374,12 @@ export default function Schedulesessionslist() {
                 e.target.parentNode.parentNode.parentNode.childNodes[3];
               cancelButton.style.display = "none";
               name.disabled = true;
-              console.log();
+              startDate.disabled = true;
+              endDate.disabled = true;
+              streaming.disabled = true;
+              resources.disabled = true;
+              chat.disabled = true;
+              subject.disabled = true;
             })
             .catch((error) => {
               console.log(error);
@@ -347,6 +387,19 @@ export default function Schedulesessionslist() {
         });
       } else {
         let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let startDate =
+          e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
+        let endDate =
+          e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+        let streaming =
+          e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
+        let resources =
+          e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
+        let chat =
+          e.target.parentNode.parentNode.parentNode.childNodes[6].childNodes[0];
+        let subject =
+          e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
+
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputStartDate = document.getElementById(
           "inputStartDate_" + s.id
@@ -366,7 +419,6 @@ export default function Schedulesessionslist() {
         let inputSubject = document.getElementById(
           "inputSubjectID_" + s.id
         ).value;
-        console.log(inputSubject);
         let editTitle,
           editStartDate,
           editEndDate,
@@ -438,19 +490,21 @@ export default function Schedulesessionslist() {
               fetchSessions();
               fetchSubjects();
 
-              let buttonDelete =
-                e.target.parentNode.parentNode.parentNode.childNodes[0];
+              let buttonDelete = e.target.parentNode.childNodes[0];
               buttonDelete.style.display = "block";
-              let button =
-                e.target.parentNode.parentNode.parentNode.childNodes[1];
+              let button = e.target.parentNode.childNodes[1];
               button.style.display = "block";
-              let checkButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[2];
+              let checkButton = e.target.parentNode.childNodes[2];
               checkButton.style.display = "none";
-              let cancelButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[3];
+              let cancelButton = e.target.parentNode.childNodes[3];
               cancelButton.style.display = "none";
               name.disabled = true;
+              startDate.disabled = true;
+              endDate.disabled = true;
+              streaming.disabled = true;
+              resources.disabled = true;
+              chat.disabled = true;
+              subject.disabled = true;
             })
             .catch((error) => {
               console.log(error);
@@ -901,11 +955,11 @@ export default function Schedulesessionslist() {
                   </td>
                   <td>
                     <select disabled id={`inputSubjectID_${s.id}`}>
-                      <option  defaultValue={s.subject_id}>
+                      <option defaultValue={s.subject_id} value={s.subject_id}>
                         {s.subject.name}
                       </option>
                       {subjectEdit.map((s) => (
-                        <option key={s.id} value={s.subject_id}>
+                        <option key={s.id} value={s.id}>
                           {s.name}
                         </option>
                       ))}
