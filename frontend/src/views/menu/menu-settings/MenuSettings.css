@@ -31,10 +31,6 @@
 	font-size: 200%;
 }
 
-.MenuSettings__hidden {
-	transform: translateX(200vw);
-}
-
 #darkModes {
 	height: 20%;
 	border: 0px solid var(--blue);

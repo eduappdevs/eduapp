@@ -6,7 +6,8 @@
 	left: 0;
 	top: 0;
 	position: absolute;
-	background-color: rgb(238, 238, 238);
+	background-color: rgb(237, 237, 237);
+	
 }
 .main-section{
 	overflow-x: auto;

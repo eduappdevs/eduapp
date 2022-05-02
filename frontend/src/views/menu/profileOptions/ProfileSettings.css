@@ -20,10 +20,6 @@
 	margin-top: 20px;
 }
 
-.profileSettings__hidden {
-	transform: translateX(150vw);
-}
-
 .profileImage_preview {
 	width: 120px;
 	height: 120px;
@@ -77,6 +73,41 @@
 	color: white;
 	border-radius: 10px;
 	cursor: pointer;
+}
+
+.commit-loader-hide {
+	display: none;
+}
+
+.commitChanges>svg {
+	margin-left: 10px;
+}
+
+.loader-spin {
+	-webkit-transform: scale(1.25);
+	transform: scale(1.25);
+	-webkit-animation: spin 1.5s linear infinite;
+	animation: spin 1.5s linear infinite;
+}
+
+@-webkit-keyframes spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@keyframes spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 .coursesList {
@@ -145,7 +176,6 @@
 	position: absolute;
 	top: 15vh;
 	right: 10px;
-	width: 25%;
 	display: flex;
 	flex-direction: row;
 	color: var(--textColor);
@@ -156,6 +186,7 @@
 .youareadmin>p {
 	flex: 0.8;
 	font-size: 14px;
+	padding-left: 10px;
 }
 
 .youareadmin>img {

@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import MainChat from "./mainChat/MainChat";
 import ACManager from "../../utils/websockets/actioncable/ACManager";
 import Loader from "../../components/loader/Loader";
-import { CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../config";
+import { CHAT_PARTICIPANTS } from "../../config";
 import "./ChatMenu.css";
 
 let acManager = new ACManager();
 export default function ChatMenu() {
   const [isMobile, setIsMobile] = useState(false);
-  const [chatTitle, setChatTitle] = useState(true);
   const [privateChats, setPrivateChats] = useState([]);
   const [groupChats, setGroupChats] = useState([]);
-  const [chatMessages, setChatMessages] = useState([]);
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -22,84 +19,6 @@ export default function ChatMenu() {
         setIsMobile(false);
       }
     }, 4000);
-  };
-
-  const openChat = (event) => {
-    const chatBox = document.getElementById("chat-box");
-    const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
-    const loader = document.getElementById("chat-loader");
-    const navbar = document.getElementsByTagName("header")[0];
-    const bottombtns = document.getElementById("bottom-navigator");
-
-    chatMenu.style.display = "none";
-    navbar.style.display = "none";
-    bottombtns.style.display = "none";
-    loader.style.display = "block";
-    loader.style.opacity = "1";
-
-    if (event.target.nodeName.toLowerCase() !== "li") {
-      let temp = event.target;
-      while (temp.nodeName.toLowerCase() !== "li") temp = temp.parentElement;
-      event.target = temp;
-    }
-
-    setChatTitle(event.target.childNodes[1].childNodes[0].innerHTML);
-    acManager.chatCode = event.target.id;
-    acManager.generateChannelConnection(acManager.chatCode).then(() => {
-      axios
-        .get(
-          CHAT_MESSAGES +
-            "?chat_base_id=" +
-            event.target.id[event.target.id.length - 1]
-        )
-        .then((msgs) => {
-          setChatMessages(msgs.data);
-          setTimeout(() => {
-            setTimeout(() => {
-              let messageBox = document.getElementsByClassName(
-                "main-chat-messages-container"
-              )[0];
-              if (messageBox.childNodes.length !== 0) {
-                messageBox.childNodes[
-                  messageBox.childNodes.length - 1
-                ].scrollIntoView(true);
-              }
-              setTimeout(() => {
-                loader.style.opacity = "0";
-                setTimeout(() => {
-                  chatBox.style.display = "block";
-                  loader.style.display = "none";
-                }, 200);
-              }, 300);
-            }, 200);
-          }, 100);
-        });
-    });
-  };
-
-  const closeChat = () => {
-    acManager.closeConnection();
-    const chatBox = document.getElementById("chat-box");
-    const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
-    const loader = document.getElementById("chat-loader");
-    const navbar = document.getElementsByTagName("header")[0];
-    const bottombtns = document.getElementById("bottom-navigator");
-
-    loader.style.display = "block";
-    loader.style.opacity = "1";
-
-    setTimeout(() => {
-      setTimeout(() => {
-        chatBox.style.display = "none";
-        loader.style.opacity = "0";
-        setTimeout(() => {
-          loader.style.display = "none";
-          navbar.style.display = "block";
-          bottombtns.style.display = "block";
-          chatMenu.style.display = "block";
-        }, 300);
-      }, 200);
-    }, 200);
   };
 
   const getUserChats = async () => {
@@ -129,7 +48,7 @@ export default function ChatMenu() {
     acManager.closeConnection();
     checkMediaQueries();
 
-    getUserChats().then(() => {});
+    getUserChats();
 
     if (window.innerWidth < 1000) {
       setIsMobile(true);
@@ -142,16 +61,6 @@ export default function ChatMenu() {
     <>
       <div id="chat-loader">
         <Loader />
-      </div>
-      <div id="chat-box">
-        <MainChat
-          chatName={chatTitle}
-          closeHandler={() => {
-            closeChat();
-          }}
-          ActionCableManager={acManager}
-          messages={chatMessages}
-        />
       </div>
       <div className="chat-menu-container">
         <div className="chat-search-container">
@@ -181,8 +90,10 @@ export default function ChatMenu() {
                   return (
                     <li
                       key={gChats.chat_base.id}
-                      onClick={openChat}
-                      id={`group-chat-${gChats.chat_base.id}`}
+                      onClick={() => {
+                        window.location.href = `/chat/g${gChats.chat_base.id}`;
+                      }}
+                      id={`g${gChats.chat_base.id}`}
                     >
                       <img
                         className="chat-icon"
@@ -211,8 +122,10 @@ export default function ChatMenu() {
                 {privateChats.map((pChats) => {
                   return (
                     <li
-                      onClick={openChat}
-                      id={`private-chat-${pChats.chat_base.id}`}
+                      onClick={() => {
+                        window.location.href = `/chat/p${pChats.chat_base.id}`;
+                      }}
+                      id={`p${pChats.chat_base.id}`}
                     >
                       <img
                         className="chat-icon"

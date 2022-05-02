@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import API, { asynchronizeRequest } from "../../API";
 import "./ResourcesModal.css";
+import StandardModal from "./standard-modal/StandardModal";
 let finalData = new FormData();
 
 export default function ResourcesModal(props) {
   const [filesToUpload, setFilesToUpload] = useState([]);
-  const [currentlyUser, setCurrentlyUser] = useState("");
   const [displayFileWarning, setWarnDisplay] = useState("none");
   const [fileWarningText, setWarningText] = useState(
     "Only 3 files are allowed"
   );
+  const [showPopup, setPopup] = useState(false);
 
   const FILE_LIMIT = 3;
   const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
@@ -32,7 +33,6 @@ export default function ResourcesModal(props) {
       let files = Array.from(e.target.files);
 
       for (let f of files) {
-        console.log("hi", f);
         if (videoRegex.test(f.name)) {
           if (f.size / 1000 / 1000 > 15) {
             displayWarning("Video is larger than 15MB");
@@ -55,14 +55,6 @@ export default function ResourcesModal(props) {
       }
       setFilesToUpload(files);
     }
-  };
-
-  const getCurrentlyUser = async () => {
-    asynchronizeRequest(async () => {
-      await API.fetchInfo(localStorage.userId).then((res) => {
-        setCurrentlyUser(res.user_name);
-      });
-    });
   };
 
   const handleSubmit = async (e) => {
@@ -108,15 +100,22 @@ export default function ResourcesModal(props) {
     if (thirdfile !== null && thirdfile !== undefined) {
       finalData.append("thirdfile", thirdfile);
     }
-    finalData.append("createdBy", currentlyUser);
+    finalData.append("createdBy", props.userInfo.user_name);
     finalData.append("subject_id", props.subject);
 
-    await API.postResource(finalData);
-    document.getElementsByClassName(
-      "resources__createResourceModal"
-    )[0].style.display = "none";
-    document.getElementById("submit-loader").style.display = "none";
-    window.location.reload();
+    asynchronizeRequest(async function () {
+      await API.postResource(finalData);
+      document.getElementsByClassName(
+        "resources__createResourceModal"
+      )[0].style.display = "none";
+      document.getElementById("submit-loader").style.display = "none";
+      window.location.reload();
+    }).then((error) => {
+      if (error) {
+        document.getElementById("submit-loader").style.display = "none";
+        setPopup(true);
+      }
+    });
   };
 
   const closeModal = () => {
@@ -129,15 +128,35 @@ export default function ResourcesModal(props) {
         "resourceModal-container"
       )[0].style.display = "none";
     }, 300);
+    document.body.classList.remove("overflow-hide");
+    document.body.classList.add("overflow-show");
+    document.getElementById("resource-list").classList.remove("hide-rest-res");
   };
 
   useEffect(() => {
-    getCurrentlyUser();
+    let nua = navigator.userAgent;
+    if (nua.indexOf("Macintosh") === -1)
+      document.querySelector(".loader").style.transform =
+        "translateZ(0) scale(0.9)";
+    else
+      document.querySelector(".loader").style.transform =
+        "translateZ(0) scale(0.5)";
   }, []);
 
   return (
     <div className="resourceModal-container">
       <div className="resources__createResourceModal">
+        <StandardModal
+          show={showPopup}
+          type={"error"}
+          text={"The resource could not be published."}
+          hasTransition
+          hasIconAnimation
+          onCloseAction={() => {
+            setPopup(false);
+            closeModal();
+          }}
+        />
         <div className="resources__logoModal">
           <img src="\assets\logo.png" alt="logo" />
         </div>

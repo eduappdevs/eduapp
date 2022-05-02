@@ -3,10 +3,18 @@ import axios from "axios";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { CALENDAR } from "../../../config";
 import "./views.css";
+import { asynchronizeRequest } from "../../../API";
+import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 
 export default function CreateView(props) {
   let userInfo = FetchUserInfo(localStorage.userId);
   const [globalValue, setGlobalValue] = useState(true);
+
+  const [saveText, setSaveText] = useState("Save");
+
+  const [showPopup, setPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
+  const [popupIcon, setPopupIcon] = useState("");
 
   const getDateTimeLocal = () => {
     let now = new Date();
@@ -40,8 +48,24 @@ export default function CreateView(props) {
     }, 500);
   };
 
+  const switchSaveState = (state) => {
+    if (state) {
+      setSaveText("");
+      document
+        .getElementById("commit-loader-2")
+        .classList.remove("commit-loader-hide");
+    } else {
+      setSaveText("Save");
+      document
+        .getElementById("commit-loader-2")
+        .classList.add("commit-loader-hide");
+    }
+  };
+
   const createEvent = async (e) => {
     e.preventDefault();
+    switchSaveState(true);
+
     let subjectInfo = document.getElementById("subject_name").value;
     var titleValue = document.getElementById("newTitle").value;
     var descriptionValue = document.getElementById("newDescription").value;
@@ -69,14 +93,21 @@ export default function CreateView(props) {
         user_id: userInfo.id,
         subject_id: subjectInt,
       };
-      axios
-        .post(CALENDAR, newEvent)
-        .then(() => {
+      asynchronizeRequest(() => {
+        axios.post(CALENDAR, newEvent).then(() => {
           window.location.reload();
-        })
-        .catch();
+        });
+      }).then((err) => {
+        if (err) {
+          setPopup(true);
+          setPopupText("The calendar event could not be published.");
+          setPopupIcon("error");
+          switchSaveState(false);
+        }
+      });
     } else {
       alertCreate();
+      switchSaveState(false);
     }
   };
 
@@ -89,14 +120,9 @@ export default function CreateView(props) {
   };
 
   const alertCreate = async () => {
-    document
-      .getElementsByClassName("calendar-view-alert-create-container")[0]
-      .classList.remove("calendar-view-alert-create-hidden");
-    setTimeout(() => {
-      document
-        .getElementsByClassName("calendar-view-alert-create-container")[0]
-        .classList.add("calendar-view-alert-create-hidden");
-    }, 2000);
+    setPopupText("Required information is missing.");
+    setPopupIcon("warning");
+    setPopup(true);
   };
 
   return (
@@ -187,15 +213,37 @@ export default function CreateView(props) {
                 type="checkbox"
               />
             </div> */}
-            <button type="submit">Save</button>
+            <button type="submit">
+              {saveText}
+              <svg
+                id="commit-loader-2"
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                className="bi bi-arrow-repeat commit-loader-hide loader-spin"
+                viewBox="0 0 16 16"
+              >
+                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
+                <path
+                  fillRule="evenodd"
+                  d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+                />
+              </svg>
+            </button>
           </form>
         </div>
       </div>
-      <div className="calendar-view-alert-create-container calendar-view-alert-create-hidden">
-        <div className="calendar-view-alert-create">
-          <h3>No has introducido los valores correactamente.</h3>
-        </div>
-      </div>
+      <StandardModal
+        show={showPopup}
+        type={popupIcon}
+        text={popupText}
+        onCloseAction={() => {
+          setPopup(false);
+        }}
+        hasTransition
+        hasIconAnimation
+      />
     </div>
   );
 }

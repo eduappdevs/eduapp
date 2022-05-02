@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Toolbar from "../components/toolbar";
 import Navbar from "../components/Navbar";
 import "../styles/users.css";
+import "../styles/controlPanel.css";
 import Schedulesessionslist from "../components/schedulesessionslist";
 import Scheduleeventslist from "../components/scheduleeventslist";
 import InstitutionConfig from "../components/institutionConfig";
@@ -10,6 +11,12 @@ import SubjectsConfig from "../components/subjectsConfig";
 import UserConfig from "../components/userConfig";
 import EnrollConfig from "../components/enrollConfig";
 import "../styles/controlPanel.css";
+import ChatConfig from "../components/ChatConfig";
+import ChatMessageConfig from "../components/ChatMessageConfig";
+import ChatParticipantConfig from "../components/ChatParticipantConfig";
+import * as SUBJECTSERVICE from "../Service/subject.service";
+import * as API from "../API";
+
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
   const [search, setSearch] = useState('');
@@ -19,6 +26,17 @@ export default function ControlPanel() {
     console.log("click", incoming);
     setLocation(incoming);
   };
+  const [subjects, setSubjects] = useState([]);
+  const fetchSubject = () => {
+    API.asynchronizeRequest(function () {
+      SUBJECTSERVICE.fetchSubjects().then((i) => {
+        setSubjects(i.data);
+      });
+    });
+  };
+  useEffect(() => {
+    fetchSubject();
+  }, []);
 
   const searchFilter = (search)=>{
     setSearch(search);
@@ -34,7 +52,7 @@ export default function ControlPanel() {
     <div className="users-main-container">
       <Navbar toolbarLocation={changeToolbarLocation} location={location} />
       <div className="main-section">
-        <Toolbar location={location} search={searchFilter} userRole={userRoleFilter}/>
+        <Toolbar location={location} search={searchFilter} userRole={userRoleFilter} subjects={subjects}/>
         <div className="controlPanel-content-container">
           {location === "sessions" ? (
             <Schedulesessionslist />
@@ -50,6 +68,18 @@ export default function ControlPanel() {
             <UserConfig search={search} userRole={userRole}/>
           ) : location === "enroll" ? (
             <EnrollConfig />
+          ) : location === "chatConfig" ? (
+            <>
+              <ChatConfig />
+            </>
+          ) : location === "chatMessage" ? (
+            <>
+              <ChatMessageConfig />
+            </>
+          ) : location === "chatParticipant" ? (
+            <>
+              <ChatParticipantConfig />
+            </>
           ) : (
             <></>
           )}

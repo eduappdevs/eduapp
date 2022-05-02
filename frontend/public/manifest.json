@@ -26,5 +26,5 @@
   "background_color": "#FF8139",
 	"id": "/",
 	"scope": "/",
-	"orientation": "portrait"
+	"orientation": "portrait-primary"
 }

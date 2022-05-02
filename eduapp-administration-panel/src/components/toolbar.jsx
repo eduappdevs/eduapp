@@ -1,7 +1,14 @@
-import React, {useEffect} from "react";
+import React from "react";
 import "../styles/scheduletoolbar.css";
 import Batcher from "./Batcher";
 export default function Toolbar(props) {
+  const handleChangeFilterSession = (event) => {
+    document.dispatchEvent(
+      new CustomEvent("filter_subject", {
+        detail: event.target.value,
+      })
+    );
+  };
 
     const usersSearchFilter = (event) => {
         let value = event.target.value;
@@ -26,12 +33,24 @@ export default function Toolbar(props) {
                             <Batcher type='sessions'/>
                         </li>
                         <li>
-                            <select name="subjects" id="subjects-select">
-                                <option value="ALL">View all subjects</option>
-                                <option value="PGV">PGV</option>
-                                <option value="PRL">PRL</option>
-                            </select>
-                        </li>
+              <select
+                onChange={(e) => {
+                  handleChangeFilterSession(e);
+                }}
+                name="subject"
+                id="subject_id"
+              >
+                <option defaultValue={"--"}>Choose subject</option>
+                {props.subjects.map((subject) => (
+                  <option
+                    key={subject.id}
+                    value={subject.id + "_" + subject.name}
+                  >
+                    {subject.name}
+                  </option>
+                ))}
+              </select>
+            </li>
                         <li className="searchbar-container">
                             <span className="searchicon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">

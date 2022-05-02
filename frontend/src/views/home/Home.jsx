@@ -7,7 +7,7 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import CourseSelector from "../../components/courseSelector/CourseSelector";
 import { SUBJECT } from "../../config";
 import { asynchronizeRequest } from "../../API";
-import MediaFix from "../../utils/MediaFixer";
+import { getOfflineUser } from "../../utils/OfflineManager";
 import "./Home.css";
 
 export default function Home() {
@@ -16,6 +16,7 @@ export default function Home() {
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
   const [sessionLength, setSessionLength] = useState("");
+  const [userImage, setUserImage] = useState(null);
   const sessionsPreSorted = [];
   let userInfo = FetchUserInfo(localStorage.userId);
   let sessionsSorted;
@@ -64,7 +65,7 @@ export default function Home() {
   };
 
   const getSessions = async () => {
-    let request = await axios.get(SUBJECT + `?user_id=${localStorage.userId}`);
+    let request = await axios.get(`${SUBJECT}?user_id=${localStorage.userId}`);
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -74,6 +75,7 @@ export default function Home() {
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
       let date = startDate.split("T")[1] + " - " + endDate.split("T")[1];
+
       sessionsPreSorted.push({
         id,
         name,
@@ -88,16 +90,24 @@ export default function Home() {
       return true;
     });
 
-    sessionsSorted = sessionsPreSorted.sort(function (a, b) {
+    sessionsSorted = sessionsPreSorted.sort(function (a, b, c, d) {
       let aHour = a.startDate.split("T")[1];
+      let aMinute = a.startDate.split("T")[1].split(":")[1];
       let bHour = b.startDate.split("T")[1];
+      let bMinute = b.startDate.split("T")[1].split(":")[1];
       a = parseInt(aHour);
       b = parseInt(bHour);
+      c = parseInt(aMinute);
+      d = parseInt(bMinute);
       if (a < b) {
-        return -1;
+        if (c < d) {
+          return -1;
+        }
       }
       if (a > b) {
-        return 1;
+        if (c > d) {
+          return 1;
+        }
       }
       return 0;
     });
@@ -135,7 +145,6 @@ export default function Home() {
       "session-after" + e.target.id.substring(3)
     );
     const img = document.getElementById("button" + e.target.id.substring(3));
-    console.log(e.target.id);
     setTimeout(() => {
       try {
         // const session = document.querySelector(e.target.id);
@@ -181,15 +190,6 @@ export default function Home() {
     asynchronizeRequest(async function () {
       getSessions(id);
     });
-    if (
-      !document
-        .getElementById("courseNotSelectedeAdvisor")
-        .classList.contains("hidden")
-    ) {
-      document
-        .getElementById("courseNotSelectedeAdvisor")
-        .classList.add("hidden");
-    }
   };
 
   useEffect(() => {
@@ -202,6 +202,14 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!localStorage.offline_user) {
+      setUserImage(userInfo.profile_image);
+    } else {
+      setUserImage(getOfflineUser().profile_image);
+    }
+  }, [userInfo]);
+
   return (
     <>
       <div className="home-main-container">
@@ -212,8 +220,8 @@ export default function Home() {
                 <div className="profile-picture">
                   <img
                     src={
-                      userInfo.profile_image != null
-                        ? MediaFix(userInfo.profile_image.url)
+                      userImage !== null
+                        ? userImage
                         : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                     }
                     alt={(userInfo.user_name, "image")}
@@ -411,7 +419,12 @@ export default function Home() {
                   })}
                 </div>
               ) : (
-                <h1 id="courseNotSelectedeAdvisor">You must select a course</h1>
+                <div
+                  className="select-course"
+                  style={{ display: sessionLength !== "" ? "none" : "flex" }}
+                >
+                  <h1>You must select a course</h1>
+                </div>
               )}
             </div>
           </div>

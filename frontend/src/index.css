@@ -20,6 +20,24 @@ code {
 		monospace;
 }
 
+.overflow-hide {
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.overflow-show {
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+#wip {
+	font-weight: bold;
+	color: var(--textColor);
+	opacity: 0.25;
+	font-style: italic;
+	text-align: center;
+}
+
 :root {
 	--orange: #FF8139;
 	--blue: #4B91FF;

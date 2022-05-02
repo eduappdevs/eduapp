@@ -7,11 +7,7 @@ export default function ChatBubble(props) {
   const [marginType, setMarginType] = useState({});
 
   useEffect(() => {
-    setMsgMargin(
-      (props.isMsgRecent ? window.innerWidth : window.innerWidth / 2) -
-        50 -
-        ref.current.offsetWidth
-    );
+    setMsgMargin(window.innerWidth - 50 - ref.current.offsetWidth);
     setMarginType(
       props.foreign
         ? {

@@ -406,3 +406,11 @@
 	text-align: center;
 	width: 100%;
 }
+
+.select-course {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: gray;
+	flex-direction: column;
+}

@@ -31,6 +31,7 @@
 	margin-top: 20vh;
 	transform: scale(0.98);
 	padding: 8px;
+	height: 72vh;
 }
 button {
 	border: none;
@@ -65,5 +66,14 @@ input[type='text'],input[type='password'],input[type='email']{
 	display: none !important;
 }
 
+#liveClock{
+	font-size: 16px;
+	font-weight: 700;
+	font-family: "Consolas";
+	text-shadow: 0px 0px 10px rgba(117, 117, 117, 0.329);
+	position: absolute;
+	top: 1vh;
+	right: 5px;
+}
 
 

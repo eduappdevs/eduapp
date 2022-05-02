@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Menu from "../../views/menu/Menu";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import MediaFix from "../../utils/MediaFixer";
+import { getOfflineUser } from "../../utils/OfflineManager";
 import "./Navbar.css";
 
 export default function Navbar({ mobile }) {
@@ -15,6 +15,7 @@ export default function Navbar({ mobile }) {
   const loc = useLocation();
 
   let userInfo = FetchUserInfo(localStorage.userId);
+  const [userImage, setUserImage] = useState(null);
 
   const changeLocation = () => {
     if (loc.pathname.substring(1) === "login")
@@ -62,15 +63,12 @@ export default function Navbar({ mobile }) {
     }
   };
 
-  useEffect(() => {
-    changeLocation();
-  });
-
   const openProfileMenu = () => {
     setProfileMenuOpened(true);
+    document.body.classList.remove("overflow-show");
+    document.body.classList.add("overflow-hide");
     if (mobile) {
       const menu = document.querySelector(".profile-menu-mobile");
-
       menu.style.display = "flex";
       menu.style.transform = "translateX(110vh)";
       setTimeout(() => {
@@ -85,10 +83,16 @@ export default function Navbar({ mobile }) {
         menu.style.transform = "translateX(0)";
       }, 300);
     }
+  };
+
+  const getPosition = (string, subString, index) => {
+    return string.split(subString, index).join(subString).length;
   };
 
   const closeProfileMenu = () => {
     setProfileMenuOpened(false);
+    document.body.classList.remove("overflow-hide");
+    document.body.classList.add("overflow-show");
     if (mobile) {
       const menu = document.querySelector(".profile-menu-mobile");
 
@@ -105,6 +109,18 @@ export default function Navbar({ mobile }) {
       }, 300);
     }
   };
+
+  useEffect(() => {
+    changeLocation();
+  });
+
+  useEffect(() => {
+    if (!localStorage.offline_user) {
+      setUserImage(userInfo.profile_image);
+    } else {
+      setUserImage(getOfflineUser().profile_image);
+    }
+  }, [userInfo]);
 
   return (
     <header>
@@ -120,7 +136,23 @@ export default function Navbar({ mobile }) {
               <Link to="/home"> Home</Link>
             </li>
             <li className={inCalendar ? "activeLocation" : console.log()}>
-              <Link to="/calendar"> Calendar</Link>
+              <Link
+                to="/calendar"
+                onClick={() => {
+                  if (
+                    !(
+                      window.location.href.substring(
+                        getPosition(window.location.href, "/", 3)
+                      ) === "/calendar"
+                    )
+                  )
+                    document.getElementById("sectionCalendar").style.display =
+                      "none";
+                  window.location.href = "/calendar";
+                }}
+              >
+                Calendar
+              </Link>
             </li>
             <li className={inManagement ? "activeLocation" : console.log()}>
               <Link to="/management"> Management</Link>
@@ -133,16 +165,22 @@ export default function Navbar({ mobile }) {
             </li>
           </ul>
         </div>
+        <p id="wip">EduApp W.I.P</p>
         <div
           className="profile-button"
-          onClick={ProfileMenuOpened ? closeProfileMenu : openProfileMenu}
+          onClick={() => {
+            localStorage.previousMenuPage = window.location.href.substring(
+              getPosition(window.location.href, "/", 3)
+            );
+            window.location.href = "/menu";
+          }}
         >
           <div className="profile-button-box">
             <div className="profile-pic">
               <img
                 src={
-                  userInfo.profile_image != null
-                    ? MediaFix(userInfo.profile_image.url)
+                  userImage !== null
+                    ? userImage
                     : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                 }
                 alt="Profile"
@@ -151,12 +189,6 @@ export default function Navbar({ mobile }) {
           </div>
         </div>
       </nav>
-      <Menu
-        location={loc.pathname.substring(1)}
-        handleCloseMenu={() => {
-          closeProfileMenu();
-        }}
-      />
     </header>
   );
 }

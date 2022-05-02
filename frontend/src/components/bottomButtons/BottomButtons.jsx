@@ -9,7 +9,6 @@ export default function BottomButtons({ mobile }) {
   const [inCalendar, setInCalendar] = useState(false);
   const [inManagement, setInManagement] = useState(false);
   const [inChat, setInChat] = useState(false);
-  const [lastLocation, setLastLocation] = useState();
   const loc = useLocation();
 
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -25,7 +24,6 @@ export default function BottomButtons({ mobile }) {
 
     switch (loc.pathname.substring(1)) {
       case "resources":
-        setLastLocation("resources");
         setInResources(true);
         setInCalendar(false);
         setInChat(false);

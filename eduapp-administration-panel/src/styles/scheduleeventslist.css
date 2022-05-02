@@ -14,3 +14,13 @@ table {
   tr:nth-child(even) {
     background-color: #dddddd;
   }
+.eventList {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 75vw;
+  overflow-y: scroll;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}

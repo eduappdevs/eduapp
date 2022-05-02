@@ -15,7 +15,10 @@ precacheAndRoute(self.__WB_MANIFEST);
 registerRoute(
   ({ url }) =>
     url.origin === self.location.origin &&
-    (url.pathname.endsWith(".png") || url.pathname.endsWith(".svg")),
+    (url.pathname.endsWith(".png") ||
+      url.pathname.endsWith(".svg") ||
+      url.pathname.endsWith(".jpg") ||
+      url.pathname.endsWith(".jpeg")),
   new CacheFirst({
     cacheName: "eduapp_images",
     plugins: [new ExpirationPlugin({ maxEntries: 50 })],

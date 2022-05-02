@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import ChatBubble from "./chatBubbles/ChatBubble";
 import AppHeader from "../../../components/appHeader/AppHeader";
+import ACManager from "../../../utils/websockets/actioncable/ACManager";
+import { asynchronizeRequest } from "../../../API";
+import axios from "axios";
+import { CHAT_BASE, CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../../config";
 import "./MainChat.css";
+import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 
-export default function MainChat(props) {
+const acInstance = new ACManager();
+export default function MainChat() {
   const [isMobile, setIsMobile] = useState(false);
+  const [chat, setChat] = useState({});
+  const [messages, setMessages] = useState([]);
   const [newMessages, setNewMessages] = useState([]);
-  const acInstance = props.ActionCableManager;
+
+  const [showPopup, setPopup] = useState(false);
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -20,13 +29,19 @@ export default function MainChat(props) {
 
   const sendMessage = () => {
     let inputMsg = document.getElementById("message-area");
-    acInstance.sendChannelCmd(
-      "message",
-      inputMsg.value,
-      localStorage.userId,
-      new Date().toISOString()
-    );
-    inputMsg.value = "";
+    if (
+      inputMsg.value !== "" &&
+      inputMsg.value !== " " &&
+      inputMsg.value.length > 0
+    ) {
+      acInstance.sendChannelCmd(
+        "message",
+        inputMsg.value,
+        localStorage.userId,
+        new Date().toISOString()
+      );
+      inputMsg.value = "";
+    }
   };
 
   const manageIncomingMsg = (newMsg) => {
@@ -47,8 +62,41 @@ export default function MainChat(props) {
   };
 
   useEffect(() => {
-    checkMediaQueries();
+    acInstance.chatCode = window.location.pathname.split("/")[2];
+    let chatId = acInstance.chatCode.substring(1);
 
+    asynchronizeRequest(async function () {
+      let cInfo = await axios.get(CHAT_BASE + "/" + chatId);
+
+      let cPeople = await axios.get(CHAT_PARTICIPANTS + "?chat_id=" + chatId);
+
+      chat.chatInfo = cInfo.data;
+      chat.chatParticipants = cPeople.data;
+    }).then(() => {
+      acInstance.generateChannelConnection(acInstance.chatCode).then(() => {
+        axios.get(CHAT_MESSAGES + "?chat_base_id=" + chatId).then((msgs) => {
+          setMessages(msgs.data);
+          setTimeout(() => {
+            let messageBox = document.getElementsByClassName(
+              "main-chat-messages-container"
+            )[0];
+            if (messageBox.childNodes.length !== 0) {
+              messageBox.childNodes[
+                messageBox.childNodes.length - 1
+              ].scrollIntoView(true);
+            }
+            window.dispatchEvent(new Event("canLoadChat"));
+          }, 100);
+        });
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    checkMediaQueries();
+  }, [window.innerWidth]);
+
+  useEffect(() => {
     document.addEventListener("new_msg", (e) => {
       e.stopImmediatePropagation();
       manageIncomingMsg(e.detail);
@@ -74,16 +122,31 @@ export default function MainChat(props) {
       <div className="main-chat-container">
         <AppHeader
           type="main-chat"
-          chatName={props.chatName}
+          chatName={chat.chatInfo ? chat.chatInfo.chat_name : ""}
           closeHandler={() => {
-            props.closeHandler();
-            setTimeout(setNewMessages([]), 100);
+            acInstance.closeConnection();
+            window.location.href = "/chat";
+          }}
+          extrasHandler={() => {
+            setPopup(true);
+          }}
+        />
+
+        <StandardModal
+          show={showPopup}
+          type={"warning"}
+          text={"Option under development."}
+          iconFill
+          hasIconAnimation
+          hasTransition
+          onCloseAction={() => {
+            setPopup(false);
           }}
         />
 
         <div className="main-chat-messages-container">
-          {props.messages.length !== 0
-            ? props.messages.map((msg) => {
+          {messages.length !== 0
+            ? messages.map((msg) => {
                 return (
                   <ChatBubble
                     key={msg.user.id + "-" + msg.id}
@@ -123,12 +186,15 @@ export default function MainChat(props) {
               fill="grey"
               className="bi bi-paperclip"
               viewBox="0 0 16 16"
+              onClick={() => {
+                setPopup(true);
+              }}
             >
               <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0V3z" />
             </svg>
           </div>
           <div className="main-chat-input-text">
-            <textarea id="message-area" />
+            <textarea id="message-area" placeholder="EduApp W.I.P" />
           </div>
           <div className="main-chat-send-button">
             <svg
