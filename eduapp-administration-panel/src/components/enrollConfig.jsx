@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
-import * as TUITIONSSERVICE from "../service/enrollConfig.service";
-import * as USERSSERVICE from "../service/user.service";
-import * as COURSESERVICE from "../service/course.service";
+import * as TUITIONSSERVICE from "../services/enrollConfig.service";
+import * as USERSSERVICE from "../services/user.service";
+import * as COURSESERVICE from "../services/course.service";
 
 export default function EnrollConfig() {
   const [tuitions, setTuitions] = useState(null);
@@ -42,7 +42,6 @@ export default function EnrollConfig() {
   const createTuition = () => {
     let user = document.getElementById("user_select").value;
     let course = document.getElementById("course_select").value;
-    let teacher = document.getElementById("t_teacher").checked;
 
     let valid = true;
     if (user === "-" && course === "-") valid = false;
@@ -52,7 +51,6 @@ export default function EnrollConfig() {
         const payload = new FormData();
         payload.append("course_id", parseInt(course));
         payload.append("user_id", parseInt(user));
-        payload.append("isTeacher", teacher);
 
         TUITIONSSERVICE.createTuition(payload).then(() => {
           fetchAll();
@@ -82,7 +80,6 @@ export default function EnrollConfig() {
               <th>Add</th>
               <th>User</th>
               <th>Course</th>
-              <th>Is Teacher</th>
             </tr>
           </thead>
           <tbody>
@@ -139,9 +136,6 @@ export default function EnrollConfig() {
                     : null}
                 </select>
               </td>
-              <td style={{ textAlign: "center" }}>
-                <input id="t_teacher" type="checkbox" />
-              </td>
             </tr>
           </tbody>
         </table>
@@ -151,7 +145,6 @@ export default function EnrollConfig() {
               <tr>
                 <th>User</th>
                 <th>Course</th>
-                <th>Is Teacher</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -165,13 +158,6 @@ export default function EnrollConfig() {
                         </td>
                         <td>
                           <input type="text" disabled value={t.course.name} />
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          {t.isTeacher ? (
-                            <input type="checkbox" disabled checked />
-                          ) : (
-                            <input type="checkbox" disabled />
-                          )}
                         </td>
                         <td
                           style={{

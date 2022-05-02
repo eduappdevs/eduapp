@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import * as USERSERVICE from "../service/user.service";
-import * as ENROLLSERVICE from "../service/enrollConfig.service";
+import * as USERSERVICE from "../services/user.service";
+import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as API from "../API";
 export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
@@ -29,7 +29,6 @@ export default function UserConfig(props) {
       API.asynchronizeRequest(function () {
         USERSERVICE.createUser(payload).then((res) => {
           const payload = new FormData();
-          USERSERVICE.createInfo(payload);
           payload.delete("user[email]");
           payload.delete("user[password]");
           payload.append("user_id", res.data.message.id);
@@ -53,7 +52,6 @@ export default function UserConfig(props) {
     const payload = new FormData();
     payload.append("course_id", 1);
     payload.append("user_id", uId);
-    payload.append("isTeacher", false);
 
     API.asynchronizeRequest(function () {
       ENROLLSERVICE.createTuition(payload).then(() => {
@@ -101,6 +99,8 @@ export default function UserConfig(props) {
         } else {
           return true;
         }
+      default:
+        break;
     }
   };
 
@@ -167,10 +167,12 @@ export default function UserConfig(props) {
         <table style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>Add</th>
+              <th>User ID</th>
+              <th>Name</th>
               <th>Email</th>
-              <th>Password</th>
               <th>Is Admin</th>
+              <th>Has Google Linked</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>

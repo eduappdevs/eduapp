@@ -22,13 +22,13 @@ import View from "./eventsView/View";
 import CreateView from "./eventsView/CreateView";
 import "./calendar.css";
 import { asynchronizeRequest } from "../../API";
-import { shouldForwardProp } from "@mui/material/node_modules/@mui/system";
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [activeEvent, setActiveEvent] = useState({});
   const [subject, setSubject] = useState([]);
+  const [isTeacher, setIsTeacher] = useState(false);
   const today = new Date();
   const currentDate = today;
   let userinfo = FetchUserInfo(localStorage.userId);
@@ -248,6 +248,7 @@ export default function Calendar() {
       top,
     },
   }));
+
   const TimeIndicator = ({ top, ...restProps }) => (
     <IndicatorDiv top={top} {...restProps}>
       <div className={"styled-now styled-circle"} />
@@ -278,6 +279,11 @@ export default function Calendar() {
       setItsMobileDevice(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (userinfo.teaching_list !== undefined)
+      setIsTeacher(userinfo.teaching_list.length > 0);
+  }, [userinfo]);
 
   return (
     <div className="calendar-main-container">
@@ -310,7 +316,9 @@ export default function Calendar() {
         </Paper>
       </section>
       <div
-        className={userinfo.isAdmin ? "button-calendar-option " : "hidden"}
+        className={
+          userinfo.isAdmin || isTeacher ? "button-calendar-option " : "hidden"
+        }
         onClick={openCreate}
       >
         <svg
