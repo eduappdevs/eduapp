@@ -3,6 +3,7 @@ import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as USER_SERVICE from "../services/user.service";
+import Input from "./Input";
 
 import "../styles/scheduleeventslist.css";
 
@@ -186,12 +187,12 @@ export default function Scheduleeventslist(props) {
           <thead>
             <tr>
               <th></th>
-              <th>Title</th>
-              <th>Author</th>
-              <th>Description</th>
-              <th>Start date</th>
-              <th>End date</th>
-              <th>Is Global</th>
+              <th>{props.language.title}</th>
+              <th>{props.language.author}</th>
+              <th>{props.language.description}</th>
+              <th>{props.language.startDate}</th>
+              <th>{props.language.endDate}</th>
+              <th>{props.language.isGlobal}</th>
               {isGlobal ? console.log() : <th>Subject</th>}
             </tr>
           </thead>
@@ -212,17 +213,11 @@ export default function Scheduleeventslist(props) {
                 </button>
               </td>
               <td>
-                <input
-                  type="text"
-                  name="e_title"
-                  id="e_title"
-                  placeholder="Title"
-                  autoComplete="off"
-                />
+                <Input id="e_title" type="text" placeholder="Title" className={'e_title'}/>
               </td>
               <td>
                 <select id="e_author">
-                  <option defaultValue="--">Choose Author</option>
+                  <option defaultValue="--">{props.language.chooseAuthor}</option>
                   {users.map((u) => (
                     <option key={u.id} value={u.id + "_" + u.user_name}>
                       {u.user.email}
@@ -231,29 +226,13 @@ export default function Scheduleeventslist(props) {
                 </select>
               </td>
               <td>
-                <input
-                  type="text"
-                  name="e_description"
-                  id="e_description"
-                  placeholder="Description"
-                  autoComplete="off"
-                />
+                <Input id="e_description" type="text" placeholder="Description" className={'e_description'}/>
               </td>
               <td>
-                <input
-                  id="e_start_date"
-                  type="datetime-local"
-                  placeholder="Date"
-                  autoComplete="off"
-                />
+                <Input id="e_startDate" type="datetime-local" placeholder="Start date" className={'e_startDate'}/>
               </td>
               <td>
-                <input
-                  id="e_end_date"
-                  type="datetime-local"
-                  placeholder="Date"
-                  autoComplete="off"
-                />
+                <Input id="e_endDate" type="datetime-local" placeholder="End date" className={'e_endDate'}/>
               </td>
               <td style={{ textAlign: "center" }}>
                 <input
@@ -268,7 +247,7 @@ export default function Scheduleeventslist(props) {
                 <td className="subjecButton">
                   <select id="e_subjectId">
                     <option defaultValue="Choose subject">
-                      Choose subject
+                      {props.language.chooseSubject}
                     </option>
                     {subject.map((s) => (
                       <option key={s.id} value={s.id + "_" + s.name}>
@@ -287,13 +266,12 @@ export default function Scheduleeventslist(props) {
           <thead>
             <tr>
               <th></th>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Start date</th>
-              <th>Ending date</th>
-              <th>Is Global</th>
-              <th>Subject</th>
-              <th>Actions</th>
+              <th>{props.language.title}</th>
+              <th>{props.language.description}</th>
+              <th>{props.language.startDate}</th>
+              <th>{props.language.endDate}</th>
+              <th>{props.language.isGlobal}</th>
+              <th>{props.language.actions}</th>
             </tr>
           </thead>
           <tbody>

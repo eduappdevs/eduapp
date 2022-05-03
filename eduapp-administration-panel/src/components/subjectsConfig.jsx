@@ -3,7 +3,7 @@ import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as COURSESERVICE from "../services/course.service";
 
-export default function SubjectsConfig() {
+export default function SubjectsConfig(props) {
   const [subjects, setSubjects] = useState(null);
   const [courses, setCourses] = useState([]);
 
@@ -90,10 +90,10 @@ export default function SubjectsConfig() {
           <thead>
             <tr>
               <th></th>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Color</th>
-              <th>Linked Course</th>
+              <th>{props.language.name}</th>
+              <th>{props.language.description}</th>
+              <th>{props.language.color}</th>
+              <th>{props.language.linkedCourse}</th>
             </tr>
           </thead>
 
@@ -119,7 +119,7 @@ export default function SubjectsConfig() {
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    Loading...
+                    {props.language.loading} ...
                   </div>
                 </button>
               </td>
@@ -134,7 +134,7 @@ export default function SubjectsConfig() {
               </td>
               <td>
                 <select defaultValue={"-"} id="course_chooser">
-                  <option value="-">Choose Course</option>
+                  <option value="-">{props.language.chooseCourse}</option>
                   {courses
                     ? courses.map((c) => {
                         return (
@@ -152,12 +152,12 @@ export default function SubjectsConfig() {
         <table className="eventList" style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Color</th>
-              <th>Linked Course</th>
-              <th>Actions</th>
+              <th>{props.language.code}</th>
+              <th>{props.language.name}</th>
+              <th>{props.language.description}</th>
+              <th>{props.language.color}</th>
+              <th>{props.language.linkedCourse}</th>
+              <th>{props.language.actions}</th>
             </tr>
           </thead>
           <tbody>

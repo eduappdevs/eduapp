@@ -159,7 +159,7 @@ export default function BatchPreviewTable(props) {
                     data.map((x) => {
                         return (
                             <ul>
-                                <li> {x} </li>
+                                <li> {x.map((i)=>{return <span>{" "+i+" "}</span>})} </li>
                             </ul>
                         )
                     })

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
+import Input from "./Input";
 import "../styles/schedulesessionslist.css";
 
 export default function Schedulesessionslist(props) {
@@ -746,13 +747,13 @@ export default function Schedulesessionslist(props) {
         <thead>
           <tr>
             <th></th>
-            <th>Name</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Streaming</th>
-            <th>Resources</th>
-            <th>Chat Link</th>
-            <th>Subject</th>
+            <th>{props.language.name}</th>
+            <th>{props.language.startDate}</th>
+            <th>{props.language.endDate}</th>
+            <th>{props.language.streaming}</th>
+            <th>{props.language.resources}</th>
+            <th>{props.language.chatLink}</th>
+            <th>{props.language.subjects}</th>
           </tr>
         </thead>
         <tbody>
@@ -772,30 +773,26 @@ export default function Schedulesessionslist(props) {
               </button>
             </th>
             <th>
-              <input id="s_name" type="text" placeholder="Name" autoComplete="off" />
+              <Input id="s_name" type="text" placeholder={props.language.name} autoComplete="off" />
             </th>
             <th>
-              <input
-                id="s_start_date"
-                type="datetime-local"
-                placeholder="Date"
-              />
+              <Input id="s_startDate" type="datetime-local" placeholder={props.language.startDate} />
             </th>
             <th>
-              <input id="s_end_date" type="datetime-local" placeholder="Date" />
+              <Input id="s_end_date" type="datetime-local" placeholder={props.language.endDate} />
             </th>
             <th>
-              <input id="s_streaming" type="text" placeholder="Streaming"  autoComplete="off"/>
+              <Input id="s_streaming" type="text" placeholder="Streaming" />
             </th>
             <th>
-              <input id="s_resources" type="text" placeholder="Resources"  autoComplete="off"/>
+              <Input id="s_resources" type="text" placeholder={props.language.resources} autoComplete="off"/>
             </th>
             <th>
-              <input id="s_courseId" type="text" placeholder="Chat Group"  autoComplete="off"/>
+              <Input id="s_chatGroup" type="text" placeholder={props.language.chatGroup} />
             </th>
             <th className="subjecButton">
               <select id="s_subjectId">
-                <option defaultValue="Choose subject">Choose subject</option>
+                <option defaultValue={props.language.chooseSubject}>{props.language.chooseSubject}</option>
                 {subject.map((s) => (
                   <option key={s.id} value={s.id + "_" + s.name}>
                     {s.name}
@@ -810,15 +807,15 @@ export default function Schedulesessionslist(props) {
         <table style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Streaming</th>
-              <th>Resources</th>
-              <th>Chat Link</th>
-              <th>Subject Name</th>
-              <th>Actions</th>
+              <th>{props.language.code}</th>
+              <th>{props.language.name}</th>
+              <th>{props.language.startDate}</th>
+              <th>{props.language.endDate}</th>
+              <th>{props.language.streaming}</th>
+              <th>{props.language.resources}</th>
+              <th>{props.language.resources}</th>
+              <th>{props.language.chatLink}</th>
+              <th>{props.language.actions}</th>
             </tr>
           </thead>
           <tbody>

@@ -134,7 +134,7 @@ export default function Navbar(props) {
             </div>
             <div className="schedule-button-container button-container">
                 <span>
-                    <p>Schedule</p>
+                    <p>{props.language.schedule}</p>
                 </span>
                 <ul className={'suboptions'}>
                     <li onClick={
@@ -145,7 +145,7 @@ export default function Navbar(props) {
                         className={
                             activeSection === 'sessions' ? 'active button-suboption' : 'button-suboptions'
                     }>
-                        <p>Sessions</p>
+                        <p>{props.language.sessions}</p>
                     </li>
                     <li onClick={
                             () => {
@@ -155,7 +155,7 @@ export default function Navbar(props) {
                         className={
                             activeSection === 'events' ? 'active button-suboption' : 'button-suboptions'
                     }>
-                        <p>Events</p>
+                        <p>{props.language.events}</p>
                     </li>
                 </ul>
             </div>
@@ -172,7 +172,7 @@ export default function Navbar(props) {
                         className={
                             activeSection === 'users' ? 'active button-suboption' : 'button-suboptions'
                     }>
-                        <p>Users</p>
+                        <p>{props.language.users}</p>
                     </li>
                     <li onClick={
                             () => {
@@ -182,14 +182,14 @@ export default function Navbar(props) {
                         className={
                             activeSection === 'enroll' ? 'active button-suboption' : 'button-suboptions'
                     }>
-                        <p>Enrollment</p>
+                        <p>{props.language.enrollment}</p>
                     </li>
                 </ul>
             </div>
             <div className="settings-button-container button-container">
                 <span>
                     <p>
-                        Settings</p>
+                        {props.language.settings}</p>
                 </span>
                 <ul className={'suboptions'}>
                     <li className={
@@ -200,7 +200,7 @@ export default function Navbar(props) {
                                 props.toolbarLocation("institutions");
                             }
                         }>
-                            Institution
+                            {props.language.institution}
                         </p>
                     </li>
                     <li className={
@@ -211,7 +211,7 @@ export default function Navbar(props) {
                                 props.toolbarLocation("courses");
                             }
                         }>
-                            Courses
+                            {props.language.courses}
                         </p>
                     </li>
                     <li onClick={
@@ -222,13 +222,13 @@ export default function Navbar(props) {
                         className={
                             activeSection === 'subjects' ? 'active button-suboptions' : 'button-suboptions'
                     }>
-                        <p>Subjects</p>
+                        <p>{props.language.subjects}</p>
                     </li>
                 </ul>
             </div>
             <div className="chat-button-container button-container">
                 <span>
-                    <p>Chat Settings</p>
+                    <p>{props.language.chatSettings}</p>
                 </span>
                 <ul className="suboptions">
                     <li className="button-suboptions"
@@ -237,7 +237,7 @@ export default function Navbar(props) {
                                 props.toolbarLocation("chatConfig");
                             }
                     }>
-                        <p>Chat</p>
+                        <p>{props.language.chat}</p>
                     </li>
                     <li className="button-suboptions"
                         onClick={
@@ -245,7 +245,7 @@ export default function Navbar(props) {
                                 props.toolbarLocation("chatParticipant");
                             }
                     }>
-                        <p>Participants</p>
+                        <p>{props.language.participants}</p>
                     </li>
                     {
                     DISPLAY ? (
@@ -255,7 +255,7 @@ export default function Navbar(props) {
                                     props.toolbarLocation("chatMessage");
                                 }
                         }>
-                            <p>Message</p>
+                            <p>{props.language.message}</p>
                         </li>
                     ) : (<></>)
                 } </ul>
@@ -263,7 +263,7 @@ export default function Navbar(props) {
             <div className="reports-button-container button-container">
                 <span>
                     <p>
-                        Reports</p>
+                        {props.language.reports}</p>
                 </span>
                 <ul className={'suboptions'}>
                     <li className={'reports_options active'}>
@@ -272,7 +272,7 @@ export default function Navbar(props) {
                                 await generateResourcesReport();
                             }
                         }>
-                            Resources
+                            {props.language.resources}
                         </p>
                     </li>
                     <li className={'reports_options active'}>
@@ -281,7 +281,7 @@ export default function Navbar(props) {
                                 await generateMessagesReport();
                             }
                         }>
-                            Chat Messages
+                            {props.language.chatMessages}
                         </p>
                     </li>
                     <li className={'reports_options active'}>
@@ -290,7 +290,7 @@ export default function Navbar(props) {
                                 await generateCoursesReport();
                             }
                         }>
-                            Courses
+                            {props.language.courses}
                         </p>
                     </li>
                 </ul>

@@ -67,12 +67,12 @@ export default function ControlPanel() {
 
   return (
     <div className="users-main-container">
-      <Navbar toolbarLocation={changeToolbarLocation} switchLanguage={switchLanguage} location={location} />
+      <Navbar toolbarLocation={changeToolbarLocation} switchLanguage={switchLanguage} location={location} language={language}/>
       <div className="main-section">
         <Toolbar location={location} search={searchFilter} userRole={userRoleFilter} subjects={subjects} language={language}/>
         <div className="controlPanel-content-container">
           {location === "sessions" ? (
-            <Schedulesessionslist search={search} language={LANGUAGES.es}/>
+            <Schedulesessionslist search={search} language={language}/>
           ) : location === "events" ? (
             <Scheduleeventslist search={search}language={language}/>
           ) : location === "institutions" ? (

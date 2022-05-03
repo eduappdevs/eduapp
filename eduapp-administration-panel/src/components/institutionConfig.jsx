@@ -3,9 +3,10 @@ import * as API from "../API";
 import * as INSTITUTIONSERVICE from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
+import Input from './Input';
 import "../styles/institutionConfig.css";
 
-export default function InstitutionConfig() {
+export default function InstitutionConfig(props) {
   const [institutions, setInstitutions] = useState(null);
   const [editButtonHidden, setEditButtonHidden] = useState(false);
   const [editOptionButtonHidden, setEditOptionButtonHidden] = useState(true);
@@ -97,9 +98,9 @@ export default function InstitutionConfig() {
         <table>
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Actions</th>
+              <th>{props.language.code}</th>
+              <th>{props.language.name}</th>
+              <th>{props.language.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -119,12 +120,12 @@ export default function InstitutionConfig() {
                       <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                     </svg>
                     <div id="submit-loader" className="loader">
-                      Loading...
+                      {props.language.loading} ...
                     </div>
                   </button>
                 </td>
                 <td>
-                  <input id="i_name" type="text" placeholder="Name" />
+                  <Input name="i_name" id="i_name" placeholder={props.language.name}/>
                 </td>
               </tr>
             ) : institutions ? (
@@ -170,7 +171,7 @@ export default function InstitutionConfig() {
                             />
                           </svg>
                           <div id="submit-loader" className="loader">
-                            Loading...
+                            {props.language.loading} ...
                           </div>
                         </button>
                       ) : null}
@@ -193,7 +194,7 @@ export default function InstitutionConfig() {
                               <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
                             </svg>
                             <div id="submit-loader" className="loader">
-                              Loading...
+                              {props.language.loading} ...
                             </div>
                           </button>
 

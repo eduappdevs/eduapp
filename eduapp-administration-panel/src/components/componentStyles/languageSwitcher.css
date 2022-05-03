@@ -24,6 +24,14 @@
     cursor: pointer;
 }
 .languageSwitcher > ul > li:hover {
-    background-color: rgb(51, 122, 255);
+    transform: scale(1.1);
+    filter: grayscale(0.5);
     
+}
+.languageSwitcher > ul > li > span{
+  filter: grayscale(1);
+  transition: all 0.3s ease-in-out;
+}
+.languageSelected {
+    filter: grayscale(0) !important;
 }

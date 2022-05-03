@@ -3,7 +3,7 @@ import * as CHATSERVICE from "../services/chat.service";
 import * as API from "../API";
 import "../styles/chatConfig.css";
 
-export default function ChatConfig() {
+export default function ChatConfig(props) {
   const [chat, setChat] = useState([]);
   const [chatId, setChatId] = useState();
 
@@ -320,9 +320,9 @@ export default function ChatConfig() {
         <table className="createTable">
           <thead>
             <tr>
-              <th>ADD</th>
-              <th>Name</th>
-              <th>Group</th>
+              <th>{props.language.add}</th>
+              <th>{props.language.name}</th>
+              <th>{props.language.group}</th>
             </tr>
           </thead>
           <tbody>
@@ -341,7 +341,7 @@ export default function ChatConfig() {
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    Loading...
+                    {props.language.loading} ...
                   </div>
                 </button>
               </td>
@@ -362,9 +362,9 @@ export default function ChatConfig() {
         <table className="eventList" style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>Name Group</th>
-              <th>Group</th>
-              <th>Actions</th>
+              <th>{props.language.name}</th>
+              <th>{props.language.group}</th>
+              <th>{props.language.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -415,7 +415,7 @@ export default function ChatConfig() {
                         <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
                       </svg>
                       <div id="delete-loader" className="loader">
-                        Loading...
+                        {props.language.loading} ...
                       </div>
                     </button>
                     <button
@@ -491,7 +491,7 @@ export default function ChatConfig() {
         <div className="contianer-alert-delete">
           <div className="header-container-alert-delete"></div>
           <div className="contents-continer-alert-delete">
-            <h2>Are you sure want to delete this chat?</h2>
+            <h2>{props.language.alertDeleteChat}</h2>
             <div className="contents-continer-button-alert-delete">
               <p
                 id="delete_contents"
@@ -499,10 +499,10 @@ export default function ChatConfig() {
                   deleteChat(chatId, event);
                 }}
               >
-                Yes
+                {props.language.yes}
               </p>
               <p id="close_alert" onClick={closeAlertDelete}>
-                No
+                {props.language.no}
               </p>
             </div>
           </div>

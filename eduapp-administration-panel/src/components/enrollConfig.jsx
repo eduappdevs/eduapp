@@ -4,7 +4,7 @@ import * as TUITIONSSERVICE from "../services/enrollConfig.service";
 import * as USERSSERVICE from "../services/user.service";
 import * as COURSESERVICE from "../services/course.service";
 
-export default function EnrollConfig() {
+export default function EnrollConfig(props) {
   const [tuitions, setTuitions] = useState(null);
   const [users, setUsers] = useState(null);
   const [courses, setCourses] = useState(null);
@@ -78,8 +78,8 @@ export default function EnrollConfig() {
           <thead>
             <tr>
               <th></th>
-              <th>User</th>
-              <th>Course</th>
+              <th>{props.language.user}</th>
+              <th>{props.language.course}</th>
             </tr>
           </thead>
           <tbody>
@@ -104,13 +104,13 @@ export default function EnrollConfig() {
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    Loading...
+                    {props.language.loading} ...
                   </div>
                 </button>
               </td>
               <td>
                 <select defaultValue={"-"} id="user_select">
-                  <option value="-">Choose User</option>
+                  <option value="-">{props.language.chooseUser}</option>
                   {users
                     ? users.map((u) => {
                         return (
@@ -124,7 +124,7 @@ export default function EnrollConfig() {
               </td>
               <td>
                 <select defaultValue={"-"} id="course_select">
-                  <option value="-">Choose Course</option>
+                  <option value="-">{props.language.chooseCourse}</option>
                   {courses
                     ? courses.map((c) => {
                         return (
@@ -143,9 +143,9 @@ export default function EnrollConfig() {
           <table style={{ marginTop: "50px" }}>
             <thead>
               <tr>
-                <th>User</th>
-                <th>Course</th>
-                <th>Actions</th>
+                <th>{props.language.user}</th>
+                <th>{props.language.course}</th>
+                <th>{props.language.actions}</th>
               </tr>
             </thead>
             <tbody>

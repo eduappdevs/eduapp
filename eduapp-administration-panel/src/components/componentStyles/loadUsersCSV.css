@@ -66,6 +66,21 @@
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
 }
+.batch_modal_body > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.batch_modal_body > ul > li{
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.batch_modal_body > ul > li > span{
+  margin-left: 10px;
+}
 
 .close_button{
   margin-right: 10px !important;
