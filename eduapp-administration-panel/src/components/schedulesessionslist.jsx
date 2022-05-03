@@ -224,7 +224,6 @@ export default function Schedulesessionslist() {
 
             let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
             buttonDelete.style.display = "block";
-            console.log(buttonDelete);
             let button = e.target.parentNode.parentNode.childNodes[1];
             button.style.display = "block";
             let checkButton = e.target.parentNode.parentNode.childNodes[2];
@@ -734,7 +733,6 @@ export default function Schedulesessionslist() {
   };
 
   const listSubject = (sub) => {
-    console.log(sub);
     let list_subject = [];
     subject.map((s) => {
       if (s.id !== parseInt(sub)) {
@@ -775,11 +773,6 @@ export default function Schedulesessionslist() {
   const handleChangeSessionChat = (id) => {
     var content = document.getElementById(`inputSessionChat_${id}`);
     return content.value;
-  };
-
-  const handelChangeSubject = (id) => {
-    var content = document.getElementById(`inputSubjectID_${id}`);
-    console.log(content.defaultValue);
   };
 
   useEffect(() => {

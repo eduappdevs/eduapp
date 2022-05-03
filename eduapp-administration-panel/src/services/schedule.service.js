@@ -17,6 +17,11 @@ export const deleteEvent = async (body) => {
   return axios.delete(`${EVENTS}/${body}`, { headers: requestHeader });
 };
 
+export const editEvent = async (body) => {
+  console.log(body)
+  return axios.put(`${EVENTS}/${body.id}`, body, { headers: requestHeader })
+}
+
 export const fetchSessions = async () => {
   return axios.get(SESSIONS, { headers: requestHeader });
 };
@@ -30,6 +35,5 @@ export const deleteSession = async (id) => {
 };
 
 export const editSession = async (body) => {
-  console.log(body);
   return axios.put(`${SESSIONS}/${body.id}`, body, { headers: requestHeader });
 };
