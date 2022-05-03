@@ -18,6 +18,7 @@ import MainChat from "./views/chat/mainChat/MainChat";
 import Menu from "./views/menu/Menu";
 import ProfileSettings from "./views/menu/profileOptions/ProfileSettings";
 import MenuSettings from "./views/menu/menu-settings/MenuSettings";
+import ChatCreate from "./views/chat/createChat/ChatCreate";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -48,7 +49,9 @@ export default function App() {
         }, 300);
       });
     } else if (
-      new RegExp("/(chat/([a-z]|[A-Z]|[0-9])(.*))$").test(window.location.href)
+      new RegExp("/(?!chat/create)(chat/([a-z]|[A-Z]|[0-9])(.*))$").test(
+        window.location.href
+      )
     ) {
       window.addEventListener("canLoadChat", () => {
         setTimeout(() => {
@@ -98,6 +101,7 @@ export default function App() {
             {/* Pages Subroutes */}
             <Route path="/resource/:resourceId" element={<OpenedResource />} />
             <Route path="/chat/:chatId" element={<MainChat />} />
+            <Route path="/chat/create" element={<ChatCreate />} />
 
             {/* Menu */}
             <Route path="/menu" element={<Menu />} />

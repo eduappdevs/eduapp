@@ -190,7 +190,6 @@
 	border-radius: 80%;
 	background-color: var(--orange);
 	margin-top: -5%;
-	display: none;
 }
 
 .chat-add-button>svg {
