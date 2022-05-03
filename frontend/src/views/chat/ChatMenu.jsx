@@ -1,43 +1,19 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import ACManager from "../../utils/websockets/actioncable/ACManager";
 import Loader from "../../components/loader/Loader";
+import StandardModal from "../../components/modals/standard-modal/StandardModal";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import * as CHAT_SERVICE from "../../services/chat.service";
-import { CHAT_PARTICIPANTS } from "../../config";
 import "./ChatMenu.css";
 
 let acManager = new ACManager();
 export default function ChatMenu() {
-  const [privateChats, setPrivateChats] = useState([]);
-  const [groupChats, setGroupChats] = useState([]);
   const [chats, setChats] = useState([]);
   const [canCreate, setCanCreate] = useState(false);
 
-  let userInfo = FetchUserInfo(localStorage.userId);
+  const [showPopup, setShowPopup] = useState(false);
 
-  const getUserChats = async () => {
-    let tempPrivate = [];
-    let tempGroups = [];
-    axios
-      .get(CHAT_PARTICIPANTS + "?user_id=" + localStorage.userId)
-      .then((r) => {
-        if (Array.isArray(r.data)) {
-          for (let chat of r.data) {
-            if (chat.chat_base.isGroup) tempGroups.push(chat);
-            else tempPrivate.push(chat);
-          }
-        } else {
-          if (r.data.chat_base.isGroup) tempGroups.push(r.data);
-          else tempPrivate.push(r.data);
-        }
-        setPrivateChats(tempPrivate);
-        setGroupChats(tempGroups);
-      })
-      .catch((err) => {
-        console.error(err.message);
-      });
-  };
+  let userInfo = FetchUserInfo(localStorage.userId);
 
   const getChats = async () => {
     let chats = await CHAT_SERVICE.fetchPersonalChats(localStorage.userId);
@@ -47,8 +23,6 @@ export default function ChatMenu() {
 
   useEffect(() => {
     acManager.closeConnection();
-
-    getUserChats();
     getChats();
   }, []);
 
@@ -64,6 +38,26 @@ export default function ChatMenu() {
       <div id="chat-loader">
         <Loader />
       </div>
+      <StandardModal
+        show={showPopup}
+        type={"info"}
+        text={"What type of chat do you wish to create?"}
+        isQuestion
+        hasCancel
+        hasTransition
+        hasIconAnimation
+        customYes={"Direct"}
+        customNo={"Group"}
+        onYesAction={() => {
+          window.location.href = "/chat/create/direct";
+        }}
+        onNoAction={() => {
+          window.location.href = "/chat/create/group";
+        }}
+        onCancelAction={() => {
+          setShowPopup(false);
+        }}
+      />
       <div className="chat-menu-container">
         <div className="chat-search-container">
           <form action="">
@@ -129,7 +123,7 @@ export default function ChatMenu() {
             className="chat-add-button"
             style={{ display: canCreate ? "flex" : "none" }}
             onClick={() => {
-              window.location.href = "/chat/create";
+              setShowPopup(true);
             }}
           >
             <svg

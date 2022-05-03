@@ -18,7 +18,7 @@ import MainChat from "./views/chat/mainChat/MainChat";
 import Menu from "./views/menu/Menu";
 import ProfileSettings from "./views/menu/profileOptions/ProfileSettings";
 import MenuSettings from "./views/menu/menu-settings/MenuSettings";
-import ChatCreate from "./views/chat/createChat/ChatCreate";
+import GroupChatCreate from "./views/chat/createGroupChat/GroupChatCreate";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -101,7 +101,7 @@ export default function App() {
             {/* Pages Subroutes */}
             <Route path="/resource/:resourceId" element={<OpenedResource />} />
             <Route path="/chat/:chatId" element={<MainChat />} />
-            <Route path="/chat/create" element={<ChatCreate />} />
+            <Route path="/chat/create/group" element={<GroupChatCreate />} />
 
             {/* Menu */}
             <Route path="/menu" element={<Menu />} />

@@ -4,9 +4,9 @@ import { asynchronizeRequest } from "../../../API.js";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
-import "./ChatCreate.css";
+import "./GroupChatCreate.css";
 
-export default function ChatCreate() {
+export default function GroupChatCreate() {
   const [displayImageWarning, setWarnDisplay] = useState("none");
   const [changeImage, setChangeImage] = useState(null);
   const [imageWarningText, setWarningText] = useState(
