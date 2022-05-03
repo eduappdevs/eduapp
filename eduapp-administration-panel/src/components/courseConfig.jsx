@@ -4,7 +4,7 @@ import * as INSTITUTIONSERVICES from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
 
-export default function CourseConfig() {
+export default function CourseConfig(props) {
   const [courses, setCourses] = useState(null);
   const [institutions, setInstitutions] = useState([]);
 
@@ -357,9 +357,9 @@ export default function CourseConfig() {
         <table className="createTable">
           <thead>
             <tr>
-              <th>Actions</th>
-              <th>Name</th>
-              <th>Linked Institution</th>
+              <th></th>
+              <th>{props.language.name}</th>
+              <th>{props.language.linkedInstitution}</th>
             </tr>
           </thead>
           <tbody>
@@ -390,7 +390,7 @@ export default function CourseConfig() {
               </td>
               <td>
                 <select defaultValue={"--"} id="institution_chooser">
-                  <option value="--">Choose Institution</option>
+                  <option value="--">{props.language.chooseInstitution}</option>
                   {institutions.map((i) => {
                     return (
                       <option key={`${i.id}`} value={i.id}>
@@ -407,10 +407,10 @@ export default function CourseConfig() {
         <table className="eventList" style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Linked Institution</th>
-              <th>Actions</th>
+              <th>{props.language.code}</th>
+              <th>{props.language.name}</th>
+              <th>{props.language.linkedInstitution}</th>
+              <th>{props.language.actions}</th>
             </tr>
           </thead>
           <tbody>

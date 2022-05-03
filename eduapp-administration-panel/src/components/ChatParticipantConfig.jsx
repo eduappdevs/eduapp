@@ -3,7 +3,7 @@ import * as CHATSERVICE from "../services/chat.service";
 import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
 
-export default function ChatParticipantConfig() {
+export default function ChatParticipantConfig(props) {
   const [participant, setParticipant] = useState([]);
   const [users, setUsers] = useState([]);
   const [chat, setChat] = useState([]);
@@ -120,10 +120,10 @@ export default function ChatParticipantConfig() {
         <table className="createTable">
           <thead>
             <tr>
-              <th>ADD</th>
-              <th>User</th>
-              <th>Chat</th>
-              <th>Admin</th>
+              <th>{props.language.add}</th>
+              <th>{props.language.user}</th>
+              <th>{props.language.chat}</th>
+              <th>{props.language.admin}</th>
             </tr>
           </thead>
           <tbody>
@@ -142,13 +142,13 @@ export default function ChatParticipantConfig() {
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    Loading...
+                    {props.language.loading} ...
                   </div>
                 </button>
               </td>
               <td>
                 <select name="chP_user" id="chP_user">
-                  <option defaultValue="Choose user">Choose user</option>
+                  <option defaultValue="Choose user">{props.language.chooseUser}</option>
                   {users.map((s) => (
                     <option
                       key={s.user_id}
@@ -161,7 +161,7 @@ export default function ChatParticipantConfig() {
               </td>
               <td>
                 <select name="chP_chat" id="chP_chat">
-                  <option defaultValue="Choose Group">Choose Group</option>
+                  <option defaultValue="Choose Group">{props.language.chooseGroup}</option>
                   {chat.map((s) => (
                     <option key={s.id} value={s.id + "_" + s.chat_name}>
                       {s.chat_name}
@@ -179,10 +179,10 @@ export default function ChatParticipantConfig() {
           <table className="eventList" style={{ marginTop: "50px" }}>
             <thead>
               <tr>
-                <th>Name Participant</th>
-                <th>Name Chat</th>
-                <th>Admin</th>
-                <th>Actions</th>
+                <th>{props.language.participantName}</th>
+                <th>{props.language.chatName}</th>
+                <th>{props.language.admin}</th>
+                <th>{props.language.admin}</th>
               </tr>
             </thead>
             <tbody>
@@ -233,7 +233,7 @@ export default function ChatParticipantConfig() {
         <div className="contianer-alert-delete">
           <div className="header-container-alert-delete"></div>
           <div className="contents-continer-alert-delete">
-            <h2>Are you sure delete this chat?</h2>
+            <h2>{props.language.alertDeleteChat}</h2>
             <div className="contents-continer-button-alert-delete">
               <p
                 id="delete_contents"
@@ -241,10 +241,10 @@ export default function ChatParticipantConfig() {
                   deleteParticipant(participantId, event);
                 }}
               >
-                Yes
+                {props.language.yes}
               </p>
               <p id="close_alert" onClick={closeAlertDelete}>
-                No
+                {props.language.no}
               </p>
             </div>
           </div>

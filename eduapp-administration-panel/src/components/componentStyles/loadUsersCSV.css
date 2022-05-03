@@ -1,9 +1,10 @@
-
 .csv-reader-input > #react-csv-reader-input{
-    border: 1px solid #ccc !important;
     display: inline-block !important;
-    padding: 6px 12px !important;
+    padding: 13px 10px !important;
     cursor: pointer !important;
+    border-radius: 0 !important;
+    height: 100% !important;
+    color: white;
 }
 
 .csv-reader-input > #react-csv-reader-input::-webkit-file-upload-button {
@@ -37,7 +38,7 @@
   display: none !important;
 }
 
-.users_modal{
+.batch_modal{
   position: fixed;
   left: 0;
   top: 0;
@@ -50,20 +51,35 @@
   z-index: 9999999;
 }
 
-.users_modal_content{
+.batch_modal_content{
   width: 500px;
   background-color: #fff;
   border-radius: 10px;
 }
 
-.users_modal_header,.users_modal_footer{
+.batch_modal_header,.batch_modal_footer{
   padding: 10px;
 }
 
-.users_modal_body{
+.batch_modal_body{
   padding: 10px;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
+}
+.batch_modal_body > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.batch_modal_body > ul > li{
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.batch_modal_body > ul > li > span{
+  margin-left: 10px;
 }
 
 .close_button{
@@ -74,10 +90,12 @@
 
 .csvLoaderButton{
   background-color: rgb(51, 122, 255);
+  border-radius: 13px 0 0 13px;
 }
 
 .csvTemplate{
   margin-top: 0 !important;
+  border-radius: 0 13px 13px 0;
 }
 
 
@@ -96,7 +114,6 @@
 }
 
 .image_modal_content{
-  width: 500px;
   border-radius: 10px;
 }
 

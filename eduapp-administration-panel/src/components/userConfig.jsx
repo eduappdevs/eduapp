@@ -79,7 +79,6 @@ export default function UserConfig(props) {
   };
 
   const filterUsersWithRole = (role, user) => {
-    // eslint-disable-next-line default-case
     switch (role) {
       case null:
         if (user.isAdmin || !user.isAdmin) {
@@ -120,10 +119,10 @@ export default function UserConfig(props) {
         <table>
           <thead>
             <tr>
-              <th>Add</th>
-              <th>Email</th>
-              <th>Password</th>
-              <th>Is Admin</th>
+              <th></th>
+              <th>{props.language.email}</th>
+              <th>{props.language.password}</th>
+              <th>{props.language.isAdmin}</th>
             </tr>
           </thead>
           <tbody>
@@ -148,18 +147,30 @@ export default function UserConfig(props) {
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    Loading...
+                    {props.language.loading} ...
                   </div>
                 </button>
               </td>
               <td>
-                <input id="u_email" type="email" placeholder="Email" />
+                <input
+                  id="u_email"
+                  type="email"
+                  placeholder={props.language.email}
+                />
               </td>
               <td>
-                <input id="u_pass" type="password" placeholder="Password" />
+                <input
+                  id="u_pass"
+                  type="password"
+                  placeholder={props.language.password}
+                />
               </td>
               <td style={{ textAlign: "center" }}>
-                <input id="u_admin" type="checkbox" placeholder="Name" />
+                <input
+                  id="u_admin"
+                  type="checkbox"
+                  placeholder={props.language.name}
+                />
               </td>
             </tr>
           </tbody>
@@ -167,12 +178,12 @@ export default function UserConfig(props) {
         <table style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>User ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Is Admin</th>
-              <th>Has Google Linked</th>
-              <th>Actions</th>
+              <th>{props.language.userId}</th>
+              <th>{props.language.name}</th>
+              <th>{props.language.email}</th>
+              <th>{props.language.isAdmin}</th>
+              <th>{props.language.googleLinked}</th>
+              <th>{props.language.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -186,9 +197,7 @@ export default function UserConfig(props) {
                     ) {
                       return (
                         <tr key={u.id}>
-                          <td>
-                            <input type="text" disabled value={u.user_id} />
-                          </td>
+                          <td>{u.user.id}</td>
                           <td>
                             <input type="text" disabled value={u.user_name} />
                           </td>
@@ -218,7 +227,7 @@ export default function UserConfig(props) {
                           >
                             <button
                               onClick={() => {
-                                deleteUser(u.id);
+                                deleteUser(u.user.id);
                               }}
                             >
                               <svg
@@ -239,9 +248,8 @@ export default function UserConfig(props) {
                   } else if (filterUsersWithRole(userRole, u)) {
                     return (
                       <tr key={u.id}>
-                        <td>
-                          <input type="text" disabled value={u.user_id} />
-                        </td>
+                        <td>{u.user.id}</td>
+
                         <td>
                           <input type="text" disabled value={u.user_name} />
                         </td>
@@ -271,7 +279,7 @@ export default function UserConfig(props) {
                         >
                           <button
                             onClick={() => {
-                              deleteUser(u.id);
+                              deleteUser(u.user.id);
                             }}
                           >
                             <svg
@@ -330,7 +338,7 @@ export default function UserConfig(props) {
                           >
                             <button
                               onClick={() => {
-                                deleteUser(u.id);
+                                deleteUser(u.user.id);
                               }}
                             >
                               <svg
@@ -383,7 +391,7 @@ export default function UserConfig(props) {
                         >
                           <button
                             onClick={() => {
-                              deleteUser(u.id);
+                              deleteUser(u.user.id);
                             }}
                           >
                             <svg
@@ -442,7 +450,7 @@ export default function UserConfig(props) {
                           >
                             <button
                               onClick={() => {
-                                deleteUser(u.id);
+                                deleteUser(u.user.id);
                               }}
                             >
                               <svg
@@ -495,7 +503,7 @@ export default function UserConfig(props) {
                         >
                           <button
                             onClick={() => {
-                              deleteUser(u.id);
+                              deleteUser(u.user.id);
                             }}
                           >
                             <svg

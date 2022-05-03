@@ -10,6 +10,7 @@ export const fetchEvents = async () => {
 };
 
 export const createEvent = async (body) => {
+  console.log(body)
   return await axios.post(EVENTS, body, { headers: requestHeader });
 };
 
@@ -18,7 +19,6 @@ export const deleteEvent = async (body) => {
 };
 
 export const editEvent = async (body) => {
-  console.log(body)
   return axios.put(`${EVENTS}/${body.id}`, body, { headers: requestHeader })
 }
 
