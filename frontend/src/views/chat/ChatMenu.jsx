@@ -3,27 +3,18 @@ import axios from "axios";
 import ACManager from "../../utils/websockets/actioncable/ACManager";
 import Loader from "../../components/loader/Loader";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import * as CHAT_SERVICE from "../../services/chat.service";
 import { CHAT_PARTICIPANTS } from "../../config";
 import "./ChatMenu.css";
 
 let acManager = new ACManager();
 export default function ChatMenu() {
-  const [isMobile, setIsMobile] = useState(false);
   const [privateChats, setPrivateChats] = useState([]);
   const [groupChats, setGroupChats] = useState([]);
+  const [chats, setChats] = useState([]);
   const [canCreate, setCanCreate] = useState(false);
 
   let userInfo = FetchUserInfo(localStorage.userId);
-
-  const checkMediaQueries = () => {
-    setInterval(() => {
-      if (window.innerWidth < 1000) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
-    }, 4000);
-  };
 
   const getUserChats = async () => {
     let tempPrivate = [];
@@ -48,17 +39,17 @@ export default function ChatMenu() {
       });
   };
 
+  const getChats = async () => {
+    let chats = await CHAT_SERVICE.fetchPersonalChats(localStorage.userId);
+    console.log(chats.data);
+    setChats(chats.data);
+  };
+
   useEffect(() => {
     acManager.closeConnection();
-    checkMediaQueries();
 
     getUserChats();
-
-    if (window.innerWidth < 1000) {
-      setIsMobile(true);
-    } else {
-      setIsMobile(false);
-    }
+    getChats();
   }, []);
 
   useEffect(() => {
@@ -93,27 +84,35 @@ export default function ChatMenu() {
         </div>
 
         <div className="chats-container">
-          {groupChats.length !== 0 ? (
-            <div className="chat-group-container">
-              <h2>Groups</h2>
-              <ul data-testid="group-chat-list">
-                {groupChats.map((gChats) => {
+          {chats.length !== 0 ? (
+            <>
+              <h2>Chats</h2>
+              <ul>
+                {chats.map((chat) => {
+                  let connectionId =
+                    (chat.chat_base.isGroup ? "g" : "p") + chat.chat_base.id;
                   return (
                     <li
-                      key={gChats.chat_base.id}
+                      key={chat.chat_base.id}
                       onClick={() => {
-                        window.location.href = `/chat/g${gChats.chat_base.id}`;
+                        window.location.href = `/chat/${connectionId}`;
                       }}
-                      id={`g${gChats.chat_base.id}`}
+                      id={connectionId}
                     >
                       <img
                         className="chat-icon"
-                        src="https://d22r54gnmuhwmk.cloudfront.net/rendr-fe/img/default-organization-logo-6aecc771.gif"
+                        src={
+                          chat.chat_base.image !== undefined
+                            ? chat.chat_base.image
+                            : chat.chat_base.isGroup
+                            ? "https://d22r54gnmuhwmk.cloudfront.net/rendr-fe/img/default-organization-logo-6aecc771.gif"
+                            : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                        }
                         alt="Chat User Icon"
                       />
                       <div className="chat-info chat-idle-state">
                         <h2 className="chat-name">
-                          {gChats.chat_base.chat_name}
+                          {chat.chat_base.chat_name}
                         </h2>
                         {/* <p className="chat-writing">Equisde is writing...</p> */}
                       </div>
@@ -124,39 +123,7 @@ export default function ChatMenu() {
                   );
                 })}
               </ul>
-            </div>
-          ) : null}
-          {privateChats.length !== 0 ? (
-            <div className="chat-user-container">
-              <h2>Users</h2>
-              <ul data-testid="private-chat-list">
-                {privateChats.map((pChats) => {
-                  return (
-                    <li
-                      onClick={() => {
-                        window.location.href = `/chat/p${pChats.chat_base.id}`;
-                      }}
-                      id={`p${pChats.chat_base.id}`}
-                    >
-                      <img
-                        className="chat-icon"
-                        src="https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
-                        alt="Chat User Icon"
-                      />
-                      <div className="chat-info chat-idle-state">
-                        <h2 className="chat-name">
-                          {pChats.chat_base.chat_name}
-                        </h2>
-                        {/* <p className="chat-writing">Writing...</p> */}
-                      </div>
-                      {/* <p className="chat-pending-messages">
-                        <span>20</span>
-                      </p> */}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            </>
           ) : null}
           <div
             className="chat-add-button"
