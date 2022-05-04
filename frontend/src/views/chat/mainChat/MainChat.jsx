@@ -66,6 +66,10 @@ export default function MainChat() {
             ? nameDisect[2]
             : nameDisect[3];
         let privateCounterPart = await USER_SERVICE.findById(searchId);
+        cInfo.data.image =
+          privateCounterPart.data[0].profile_image !== null
+            ? privateCounterPart.data[0].profile_image
+            : undefined;
         cInfo.data.chat_name = privateCounterPart.data[0].user_name;
       }
 
@@ -120,6 +124,7 @@ export default function MainChat() {
           extrasHandler={() => {
             setPopup(true);
           }}
+          chatImage={chat.chatInfo ? chat.chatInfo.image : ""}
         />
 
         <StandardModal

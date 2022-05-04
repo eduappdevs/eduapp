@@ -23,7 +23,8 @@ import DirectChatCreate from "./views/chat/createDirectChat/DirectChatCreate";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
-  const [ItsMobileDevice, setItsMobileDevice] = useState(false);
+  const [needsLoader, setNeedsLoader] = useState(true);
+  const [ItsMobileDevice, setItsMobileDevice] = useState(null);
   let userinfo = FetchUserInfo(localStorage.userId);
 
   const checkMediaQueries = () => {
@@ -41,6 +42,12 @@ export default function App() {
       !new RegExp(
         "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*))$"
       ).test(window.location.href)
+    );
+
+    setNeedsLoader(
+      !new RegExp("/(menu(/.*)?|chat/create/(direct|group))$").test(
+        window.location.href
+      )
     );
 
     if (new RegExp("/(resource/[0-9]+)$").test(window.location.href)) {
@@ -81,7 +88,9 @@ export default function App() {
     <>
       <BrowserRouter>
         <React.Fragment>
-          <Loader />
+          <div style={{ display: needsLoader ? "flex" : "none" }}>
+            <Loader />
+          </div>
         </React.Fragment>
         {needsExtras && (
           <React.Fragment>
@@ -119,7 +128,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}
-        {needsExtras && (
+        {needsExtras && ItsMobileDevice && (
           <React.Fragment>
             <BottomButtons mobile={ItsMobileDevice} />
           </React.Fragment>
