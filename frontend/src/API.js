@@ -155,17 +155,11 @@ const apiSettings = {
   },
   //Subjects
   getSubjects: async (id) => {
-    let idInt = parseInt(id);
-    const endpoint = `${SUBJECT}?user=${idInt}`;
-    let subjects = [];
-
-    await axios.get(endpoint).then((res) => {
-      res.data.map((subject) => {
-        if (subject.name !== "Noticias") {
-          return subjects.push(subject);
-        }
+    let subjects = await axios
+      .get(`${SUBJECT}?user=${parseInt(id)}`)
+      .then((res) => {
+        return res.data;
       });
-    });
     return subjects;
   },
 

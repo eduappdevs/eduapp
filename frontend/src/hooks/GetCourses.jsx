@@ -12,7 +12,6 @@ export const GetCourses = () => {
           setCourses([...courses]);
         } catch (error) {
           console.log(error);
-          console.log("token", localStorage.userToken);
         }
       }
     };
