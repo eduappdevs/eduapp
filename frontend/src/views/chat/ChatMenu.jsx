@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ACManager from "../../utils/websockets/actioncable/ACManager";
 import Loader from "../../components/loader/Loader";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { CHAT_PARTICIPANTS } from "../../config";
 import "./ChatMenu.css";
 
@@ -10,6 +11,9 @@ export default function ChatMenu() {
   const [isMobile, setIsMobile] = useState(false);
   const [privateChats, setPrivateChats] = useState([]);
   const [groupChats, setGroupChats] = useState([]);
+  const [canCreate, setCanCreate] = useState(false);
+
+  let userInfo = FetchUserInfo(localStorage.userId);
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -57,6 +61,13 @@ export default function ChatMenu() {
     }
   }, []);
 
+  useEffect(() => {
+    if (userInfo.teaching_list !== undefined) {
+      if (userInfo.isAdmin || userInfo.teaching_list.length > 0)
+        setCanCreate(true);
+    }
+  }, [userInfo]);
+
   return (
     <>
       <div id="chat-loader">
@@ -97,7 +108,7 @@ export default function ChatMenu() {
                     >
                       <img
                         className="chat-icon"
-                        src="https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                        src="https://d22r54gnmuhwmk.cloudfront.net/rendr-fe/img/default-organization-logo-6aecc771.gif"
                         alt="Chat User Icon"
                       />
                       <div className="chat-info chat-idle-state">
@@ -147,7 +158,13 @@ export default function ChatMenu() {
               </ul>
             </div>
           ) : null}
-          <div className="chat-add-button">
+          <div
+            className="chat-add-button"
+            style={{ display: canCreate ? "flex" : "none" }}
+            onClick={() => {
+              window.location.href = "/chat/create";
+            }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="white"

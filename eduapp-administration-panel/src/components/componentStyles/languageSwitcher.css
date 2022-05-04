@@ -1,37 +1,40 @@
 .languageSwitcher {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
 }
-.languageSwitcher > ul {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  list-style: none;
-  padding: 0 !important;
-  background-color: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0px 0px 10px rgb(117 117 117 / 33%)
 
+.languageSwitcher>ul {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+	list-style: none;
+	padding: 0 !important;
+	background-color: white;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0px 0px 10px rgb(117 117 117 / 33%)
+}
+
+.languageSwitcher>ul>li {
+	padding: 10px;
+	transition: all 0.3s ease-in-out;
+	cursor: pointer;
+}
+
+.languageSwitcher>ul>li:hover {
+	transform: scale(1.1);
+	filter: grayscale(0.5);
 
 }
-.languageSwitcher > ul > li {
-    padding: 10px;
-    transition: all 0.3s ease-in-out;
-    cursor: pointer;
+
+.languageSwitcher>ul>li>span {
+	filter: grayscale(1);
+	transition: all 0.3s ease-in-out;
 }
-.languageSwitcher > ul > li:hover {
-    transform: scale(1.1);
-    filter: grayscale(0.5);
-    
-}
-.languageSwitcher > ul > li > span{
-  filter: grayscale(1);
-  transition: all 0.3s ease-in-out;
-}
+
 .languageSelected {
-    filter: grayscale(0) !important;
+	filter: grayscale(0) !important;
 }
