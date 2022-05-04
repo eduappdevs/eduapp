@@ -4,6 +4,7 @@ import Loader from "../../components/loader/Loader";
 import StandardModal from "../../components/modals/standard-modal/StandardModal";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import * as CHAT_SERVICE from "../../services/chat.service";
+import * as USER_SERVICE from "../../services/user.service";
 import "./ChatMenu.css";
 
 let acManager = new ACManager();
@@ -17,7 +18,17 @@ export default function ChatMenu() {
 
   const getChats = async () => {
     let chats = await CHAT_SERVICE.fetchPersonalChats(localStorage.userId);
-    console.log(chats.data);
+    for (let c of chats.data) {
+      if (c.chat_base.chat_name.includes("private_chat_")) {
+        let nameDisect = c.chat_base.chat_name.split("_");
+        let searchId =
+          nameDisect.indexOf(localStorage.userId) === 3
+            ? nameDisect[2]
+            : nameDisect[3];
+        let privateCounterPart = await USER_SERVICE.findById(searchId);
+        c.chat_base.chat_name = privateCounterPart.data[0].user_name;
+      }
+    }
     setChats(chats.data);
   };
 

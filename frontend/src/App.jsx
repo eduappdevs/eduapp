@@ -19,6 +19,7 @@ import Menu from "./views/menu/Menu";
 import ProfileSettings from "./views/menu/profileOptions/ProfileSettings";
 import MenuSettings from "./views/menu/menu-settings/MenuSettings";
 import GroupChatCreate from "./views/chat/createGroupChat/GroupChatCreate";
+import DirectChatCreate from "./views/chat/createDirectChat/DirectChatCreate";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -102,6 +103,7 @@ export default function App() {
             <Route path="/resource/:resourceId" element={<OpenedResource />} />
             <Route path="/chat/:chatId" element={<MainChat />} />
             <Route path="/chat/create/group" element={<GroupChatCreate />} />
+            <Route path="/chat/create/direct" element={<DirectChatCreate />} />
 
             {/* Menu */}
             <Route path="/menu" element={<Menu />} />

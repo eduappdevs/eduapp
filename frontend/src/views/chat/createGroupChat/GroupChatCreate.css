@@ -110,9 +110,9 @@ ul.suggested-users li a:hover {
 	width: 90%;
 	color: var(--textColor);
 	border: 1px solid var(--textColor);
-	margin: 10px 0 15px 0;
+	margin: 5vh 0 15px 0;
 	border-radius: 5px;
-	max-height: 75%;
+	max-height: 80%;
 	overflow-y: scroll;
 	height: calc(43vh * 0.7);
 	z-index: 1;
@@ -158,4 +158,5 @@ ul.suggested-users li a:hover {
 	padding: 0.5em;
 	align-self: end;
 	margin-right: 10vw;
+	margin-bottom: 15px;
 }

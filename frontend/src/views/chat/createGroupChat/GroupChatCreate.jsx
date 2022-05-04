@@ -19,6 +19,7 @@ export default function GroupChatCreate() {
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
+  const [createButton, setCreateButton] = useState("Create");
 
   const displayWarning = (text) => {
     setWarningText(text);
@@ -87,21 +88,33 @@ export default function GroupChatCreate() {
       return;
     }
 
-    let finalParticipants = [];
-    for (let p of participants) finalParticipants.push(p.id);
-    asynchronizeRequest(async () => {
-      let chat_id = await CHAT_SERVICE.createCompleteChat({
-        base: {
-          chat_name: groupName,
-          isGroup: true,
-        },
-        participants: {
-          user_ids: [localStorage.userId, ...finalParticipants],
-        },
+    if (createButton === "Create") {
+      setCreateButton("Creating...");
+      let finalParticipants = [];
+      for (let p of participants) finalParticipants.push(p.id);
+      asynchronizeRequest(async () => {
+        let chat_id = await CHAT_SERVICE.createCompleteChat({
+          base: {
+            chat_name: groupName,
+            isGroup: true,
+          },
+          participants: {
+            user_ids: [localStorage.userId, ...finalParticipants],
+          },
+        });
+        window.location.href = "/chat/g" + chat_id;
+        setCreateButton("Create");
+      }).then((err) => {
+        if (err) {
+          setCreateButton("Create");
+          setPopupText(
+            "Something went wrong when trying to create the group chat."
+          );
+          setShowPopup(true);
+          console.log("create error");
+        }
       });
-
-      window.location.href = "/chat/g" + chat_id;
-    });
+    }
   };
 
   useEffect(() => {
@@ -179,7 +192,7 @@ export default function GroupChatCreate() {
               onChange={(e) => {
                 setUserQuery(e.target.value);
               }}
-              placeholder="Search by email"
+              placeholder="Search by Name"
             />
             {suggestedUsers.length > 0 && (
               <ul className="suggested-users">
@@ -266,7 +279,7 @@ export default function GroupChatCreate() {
             createChat();
           }}
         >
-          Create
+          {createButton}
         </button>
       </div>
     </>
