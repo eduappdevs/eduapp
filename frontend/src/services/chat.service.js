@@ -60,6 +60,10 @@ export const createCompleteChat = async (chat_info) => {
   return chat_base.data.id;
 };
 
+export const fetchPersonalChats = async (userId) => {
+  return await axios.get(CHAT_PARTICIPANT + "?user_id=" + userId);
+};
+
 //Message
 export const fetchMessage = async () => {
   return await axios.get(`${CHAT_MESSAGES}`, { headers: requestHeader });

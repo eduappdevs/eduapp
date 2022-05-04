@@ -1,64 +1,40 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import ACManager from "../../utils/websockets/actioncable/ACManager";
 import Loader from "../../components/loader/Loader";
+import StandardModal from "../../components/modals/standard-modal/StandardModal";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import { CHAT_PARTICIPANTS } from "../../config";
+import * as CHAT_SERVICE from "../../services/chat.service";
+import * as USER_SERVICE from "../../services/user.service";
 import "./ChatMenu.css";
 
 let acManager = new ACManager();
 export default function ChatMenu() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [privateChats, setPrivateChats] = useState([]);
-  const [groupChats, setGroupChats] = useState([]);
+  const [chats, setChats] = useState([]);
   const [canCreate, setCanCreate] = useState(false);
+
+  const [showPopup, setShowPopup] = useState(false);
 
   let userInfo = FetchUserInfo(localStorage.userId);
 
-  const checkMediaQueries = () => {
-    setInterval(() => {
-      if (window.innerWidth < 1000) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
+  const getChats = async () => {
+    let chats = await CHAT_SERVICE.fetchPersonalChats(localStorage.userId);
+    for (let c of chats.data) {
+      if (c.chat_base.chat_name.includes("private_chat_")) {
+        let nameDisect = c.chat_base.chat_name.split("_");
+        let searchId =
+          nameDisect.indexOf(localStorage.userId) === 3
+            ? nameDisect[2]
+            : nameDisect[3];
+        let privateCounterPart = await USER_SERVICE.findById(searchId);
+        c.chat_base.chat_name = privateCounterPart.data[0].user_name;
       }
-    }, 4000);
-  };
-
-  const getUserChats = async () => {
-    let tempPrivate = [];
-    let tempGroups = [];
-    axios
-      .get(CHAT_PARTICIPANTS + "?user_id=" + localStorage.userId)
-      .then((r) => {
-        if (Array.isArray(r.data)) {
-          for (let chat of r.data) {
-            if (chat.chat_base.isGroup) tempGroups.push(chat);
-            else tempPrivate.push(chat);
-          }
-        } else {
-          if (r.data.chat_base.isGroup) tempGroups.push(r.data);
-          else tempPrivate.push(r.data);
-        }
-        setPrivateChats(tempPrivate);
-        setGroupChats(tempGroups);
-      })
-      .catch((err) => {
-        console.error(err.message);
-      });
+    }
+    setChats(chats.data);
   };
 
   useEffect(() => {
     acManager.closeConnection();
-    checkMediaQueries();
-
-    getUserChats();
-
-    if (window.innerWidth < 1000) {
-      setIsMobile(true);
-    } else {
-      setIsMobile(false);
-    }
+    getChats();
   }, []);
 
   useEffect(() => {
@@ -73,6 +49,26 @@ export default function ChatMenu() {
       <div id="chat-loader">
         <Loader />
       </div>
+      <StandardModal
+        show={showPopup}
+        type={"info"}
+        text={"What type of chat do you wish to create?"}
+        isQuestion
+        hasCancel
+        hasTransition
+        hasIconAnimation
+        customYes={"Direct"}
+        customNo={"Group"}
+        onYesAction={() => {
+          window.location.href = "/chat/create/direct";
+        }}
+        onNoAction={() => {
+          window.location.href = "/chat/create/group";
+        }}
+        onCancelAction={() => {
+          setShowPopup(false);
+        }}
+      />
       <div className="chat-menu-container">
         <div className="chat-search-container">
           <form action="">
@@ -93,27 +89,35 @@ export default function ChatMenu() {
         </div>
 
         <div className="chats-container">
-          {groupChats.length !== 0 ? (
-            <div className="chat-group-container">
-              <h2>Groups</h2>
-              <ul data-testid="group-chat-list">
-                {groupChats.map((gChats) => {
+          {chats.length !== 0 ? (
+            <>
+              <h2>Chats</h2>
+              <ul>
+                {chats.map((chat) => {
+                  let connectionId =
+                    (chat.chat_base.isGroup ? "g" : "p") + chat.chat_base.id;
                   return (
                     <li
-                      key={gChats.chat_base.id}
+                      key={chat.chat_base.id}
                       onClick={() => {
-                        window.location.href = `/chat/g${gChats.chat_base.id}`;
+                        window.location.href = `/chat/${connectionId}`;
                       }}
-                      id={`g${gChats.chat_base.id}`}
+                      id={connectionId}
                     >
                       <img
                         className="chat-icon"
-                        src="https://d22r54gnmuhwmk.cloudfront.net/rendr-fe/img/default-organization-logo-6aecc771.gif"
+                        src={
+                          chat.chat_base.image !== undefined
+                            ? chat.chat_base.image
+                            : chat.chat_base.isGroup
+                            ? "https://d22r54gnmuhwmk.cloudfront.net/rendr-fe/img/default-organization-logo-6aecc771.gif"
+                            : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                        }
                         alt="Chat User Icon"
                       />
                       <div className="chat-info chat-idle-state">
                         <h2 className="chat-name">
-                          {gChats.chat_base.chat_name}
+                          {chat.chat_base.chat_name}
                         </h2>
                         {/* <p className="chat-writing">Equisde is writing...</p> */}
                       </div>
@@ -124,45 +128,13 @@ export default function ChatMenu() {
                   );
                 })}
               </ul>
-            </div>
-          ) : null}
-          {privateChats.length !== 0 ? (
-            <div className="chat-user-container">
-              <h2>Users</h2>
-              <ul data-testid="private-chat-list">
-                {privateChats.map((pChats) => {
-                  return (
-                    <li
-                      onClick={() => {
-                        window.location.href = `/chat/p${pChats.chat_base.id}`;
-                      }}
-                      id={`p${pChats.chat_base.id}`}
-                    >
-                      <img
-                        className="chat-icon"
-                        src="https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
-                        alt="Chat User Icon"
-                      />
-                      <div className="chat-info chat-idle-state">
-                        <h2 className="chat-name">
-                          {pChats.chat_base.chat_name}
-                        </h2>
-                        {/* <p className="chat-writing">Writing...</p> */}
-                      </div>
-                      {/* <p className="chat-pending-messages">
-                        <span>20</span>
-                      </p> */}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            </>
           ) : null}
           <div
             className="chat-add-button"
             style={{ display: canCreate ? "flex" : "none" }}
             onClick={() => {
-              window.location.href = "/chat/create";
+              setShowPopup(true);
             }}
           >
             <svg

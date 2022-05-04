@@ -4,9 +4,9 @@ import { asynchronizeRequest } from "../../../API.js";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
-import "./ChatCreate.css";
+import "./GroupChatCreate.css";
 
-export default function ChatCreate() {
+export default function GroupChatCreate() {
   const [displayImageWarning, setWarnDisplay] = useState("none");
   const [changeImage, setChangeImage] = useState(null);
   const [imageWarningText, setWarningText] = useState(
@@ -19,6 +19,7 @@ export default function ChatCreate() {
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
+  const [createButton, setCreateButton] = useState("Create");
 
   const displayWarning = (text) => {
     setWarningText(text);
@@ -87,21 +88,33 @@ export default function ChatCreate() {
       return;
     }
 
-    let finalParticipants = [];
-    for (let p of participants) finalParticipants.push(p.id);
-    asynchronizeRequest(async () => {
-      let chat_id = await CHAT_SERVICE.createCompleteChat({
-        base: {
-          chat_name: groupName,
-          isGroup: true,
-        },
-        participants: {
-          user_ids: [localStorage.userId, ...finalParticipants],
-        },
+    if (createButton === "Create") {
+      setCreateButton("Creating...");
+      let finalParticipants = [];
+      for (let p of participants) finalParticipants.push(p.id);
+      asynchronizeRequest(async () => {
+        let chat_id = await CHAT_SERVICE.createCompleteChat({
+          base: {
+            chat_name: groupName,
+            isGroup: true,
+          },
+          participants: {
+            user_ids: [localStorage.userId, ...finalParticipants],
+          },
+        });
+        window.location.href = "/chat/g" + chat_id;
+        setCreateButton("Create");
+      }).then((err) => {
+        if (err) {
+          setCreateButton("Create");
+          setPopupText(
+            "Something went wrong when trying to create the group chat."
+          );
+          setShowPopup(true);
+          console.log("create error");
+        }
       });
-
-      window.location.href = "/chat/g" + chat_id;
-    });
+    }
   };
 
   useEffect(() => {
@@ -179,7 +192,7 @@ export default function ChatCreate() {
               onChange={(e) => {
                 setUserQuery(e.target.value);
               }}
-              placeholder="Search by email"
+              placeholder="Search by Name"
             />
             {suggestedUsers.length > 0 && (
               <ul className="suggested-users">
@@ -266,7 +279,7 @@ export default function ChatCreate() {
             createChat();
           }}
         >
-          Create
+          {createButton}
         </button>
       </div>
     </>

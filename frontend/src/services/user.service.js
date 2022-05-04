@@ -10,6 +10,10 @@ export const fetchUserInfos = async () => {
   return await axios.get(`${USERS_INFO}`, { headers: requestHeader });
 };
 
+export const findById = async (uId) => {
+	return await axios.get(`${USERS_INFO}?user_id=${uId}`, { headers: requestHeader });
+}
+
 export const createInfo = async (body) => {
   return await axios.post(`${USERS_INFO}`, body, { headers: requestHeader });
 };

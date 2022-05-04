@@ -5,27 +5,17 @@ import ACManager from "../../../utils/websockets/actioncable/ACManager";
 import { asynchronizeRequest } from "../../../API";
 import axios from "axios";
 import { CHAT_BASE, CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../../config";
-import "./MainChat.css";
+import * as USER_SERVICE from "../../../services/user.service";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import "./MainChat.css";
 
 const acInstance = new ACManager();
 export default function MainChat() {
-  const [isMobile, setIsMobile] = useState(false);
   const [chat, setChat] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessages, setNewMessages] = useState([]);
 
   const [showPopup, setPopup] = useState(false);
-
-  const checkMediaQueries = () => {
-    setInterval(() => {
-      if (window.innerWidth > 1000) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
-    }, 4000);
-  };
 
   const sendMessage = () => {
     let inputMsg = document.getElementById("message-area");
@@ -67,8 +57,17 @@ export default function MainChat() {
 
     asynchronizeRequest(async function () {
       let cInfo = await axios.get(CHAT_BASE + "/" + chatId);
-
       let cPeople = await axios.get(CHAT_PARTICIPANTS + "?chat_id=" + chatId);
+
+      if (cInfo.data.chat_name.includes("private_chat_")) {
+        let nameDisect = cInfo.data.chat_name.split("_");
+        let searchId =
+          nameDisect.indexOf(localStorage.userId) === 3
+            ? nameDisect[2]
+            : nameDisect[3];
+        let privateCounterPart = await USER_SERVICE.findById(searchId);
+        cInfo.data.chat_name = privateCounterPart.data[0].user_name;
+      }
 
       chat.chatInfo = cInfo.data;
       chat.chatParticipants = cPeople.data;
@@ -85,16 +84,13 @@ export default function MainChat() {
                 messageBox.childNodes.length - 1
               ].scrollIntoView(true);
             }
+
             window.dispatchEvent(new Event("canLoadChat"));
           }, 100);
         });
       });
     });
   }, []);
-
-  useEffect(() => {
-    checkMediaQueries();
-  }, [window.innerWidth]);
 
   useEffect(() => {
     document.addEventListener("new_msg", (e) => {
@@ -109,12 +105,6 @@ export default function MainChat() {
         if (inputArea.value.length !== 0) sendMessage();
       }
     });
-
-    if (window.innerWidth > 1000) {
-      setIsMobile(true);
-    } else {
-      setIsMobile(false);
-    }
   }, [newMessages, acInstance]);
 
   return (
