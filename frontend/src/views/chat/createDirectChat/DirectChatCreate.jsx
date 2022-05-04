@@ -13,6 +13,7 @@ export default function DirectChatCreate() {
   const [createButton, setCreateButton] = useState("Create");
 
   const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
 
   const matchUsers = (nameInput) => {
     if (nameInput.length > 0) {
@@ -42,18 +43,25 @@ export default function DirectChatCreate() {
     if (createButton === "Create") {
       setCreateButton("Creating...");
       asynchronizeRequest(async () => {
-        let connectionId = await CHAT_SERVICE.createCompleteChat({
-          base: {
-            chat_name: `private_chat_${localStorage.userId}_${participant.user.id}`,
-            isGroup: false,
-          },
-          participants: {
-            user_ids: [localStorage.userId, participant.user.id],
-          },
-        });
-        window.location.href = "/chat/p" + connectionId;
+        try {
+          let connectionId = await CHAT_SERVICE.createCompleteChat({
+            base: {
+              chat_name: `private_chat_${localStorage.userId}_${participant.user.id}`,
+              isGroup: false,
+            },
+            participants: {
+              user_ids: [localStorage.userId, participant.user.id],
+            },
+          });
+          window.location.href = "/chat/p" + connectionId;
+        } catch (err) {
+          setPopupMessage("Chat already exists!");
+          setCreateButton("Create");
+          setShowPopup(true);
+        }
       }).then((err) => {
         if (err) {
+          setPopupMessage("An error ocurred while creating the chat.");
           setShowPopup(true);
           setCreateButton("Create");
         }
@@ -78,7 +86,7 @@ export default function DirectChatCreate() {
       <div className="direct-chat-container">
         <StandardModal
           show={showPopup}
-          text={"An error ocurred while trying to create the chat."}
+          text={popupMessage}
           type={"error"}
           hasIconAnimation
           hasTransition
