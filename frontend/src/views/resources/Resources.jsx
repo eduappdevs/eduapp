@@ -4,7 +4,7 @@ import ResourcesModal from "../../components/modals/ResourcesModal";
 import axios from "axios";
 import { RESOURCES } from "../../config";
 import Loader from "../../components/loader/Loader";
-import SubjectSelector from "../../components/subjectSelector/SubjectSelector";
+import SubjectDropdown from "../../components/subjectSelector/SubjectDropdown";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { GetSubjects } from "../../hooks/GetSubjects";
 import "./Resources.css";
@@ -14,7 +14,9 @@ export default function Resources() {
   const [resourcesFilter, setResourcesFilter] = useState("");
   const [resources, setResources] = useState([]);
   const [subjectSelected, setSubjectSelected] = useState("");
+  const [currentSubject, setCurrentSubject] = useState("");
   const [isTeacher, setIsTeacher] = useState(false);
+  const [showResources, setShowResources] = useState(true);
 
   let userInfo = FetchUserInfo(localStorage.userId);
   let subjects = GetSubjects(localStorage.userId);
@@ -31,6 +33,7 @@ export default function Resources() {
 
   const getResources = async (id) => {
     await axios.get(RESOURCES + `?subject_id=${id}`).then((res) => {
+      console.log(res.data);
       res.data.map((x) => {
         if (x.firstfile != null) {
           x.firstfile = x.firstfile.url;
@@ -90,14 +93,31 @@ export default function Resources() {
 
   return subjects && userInfo ? (
     <>
+      <SubjectDropdown
+        dropdown={showResources}
+        onSubjectClick={(e) => {
+          handleChangeSelector(parseInt(e.split("-")[1]));
+          setCurrentSubject(e.split("-")[2]);
+          setShowResources(false);
+        }}
+        closeAction={() => {
+          setShowResources(false);
+        }}
+      />
       <div className="resources-main-container">
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
-          <SubjectSelector
-            handleChangeSubject={handleChangeSelector}
-            data={localStorage.userId}
-          />
+          <div className="reveal-resources">
+            <button
+              onClick={() => {
+                setShowResources(true);
+              }}
+            >
+              All Resources
+            </button>
+          </div>
+          <h2 className="subject-title">{currentSubject}</h2>
           <div className="resources-toolbar">
             <div className="resourcesSearchBar">
               <form action="">
