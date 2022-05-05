@@ -31,5 +31,15 @@ export const updateUserImageOffline = async (newImgUrl) => {
 export const getOfflineUser = () => {
   let user = JSON.parse(localStorage.getItem("offline_user"));
 
-  return user === null ? { profile_image: null } : user;
+  if (user === null) {
+    user = {
+      user: null,
+      profile_image: null,
+      id: null,
+      user_name: null,
+      token: null,
+    };
+  }
+
+  return user;
 };

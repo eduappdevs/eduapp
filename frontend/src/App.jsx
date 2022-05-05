@@ -20,12 +20,15 @@ import ProfileSettings from "./views/menu/profileOptions/ProfileSettings";
 import MenuSettings from "./views/menu/menu-settings/MenuSettings";
 import GroupChatCreate from "./views/chat/createGroupChat/GroupChatCreate";
 import DirectChatCreate from "./views/chat/createDirectChat/DirectChatCreate";
+import { getOfflineUser } from "./utils/OfflineManager";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
   const [needsLoader, setNeedsLoader] = useState(true);
   const [ItsMobileDevice, setItsMobileDevice] = useState(null);
-  let userinfo = FetchUserInfo(localStorage.userId);
+  let userinfo = FetchUserInfo(
+    getOfflineUser().user === null ? -1 : getOfflineUser().user.id
+  );
 
   const checkMediaQueries = () => {
     setInterval(() => {

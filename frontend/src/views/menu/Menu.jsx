@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
 import MenuHeader from "./menuHeader/MenuHeader";
-import API from "../../API";
+import * as AUTH_SERVICE from "../../services/auth.service";
 import "./Menu.css";
 
 export default function Menu(props) {
@@ -40,7 +40,7 @@ export default function Menu(props) {
           </a>
         </li>
         <li>
-          <a onClick={API.logout}>Log out</a>
+          <a onClick={AUTH_SERVICE.logout}>Log out</a>
         </li>
       </ul>
     </div>

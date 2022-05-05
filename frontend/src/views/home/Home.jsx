@@ -2,10 +2,10 @@ import React from "react";
 import { useEffect, useState } from "react";
 import SessionAdd from "../../components/modals/modals-home/SessionAdd";
 import SessionEdit from "../../components/modals/modals-home/SessionEdit";
-import axios from "axios";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import CourseSelector from "../../components/courseSelector/CourseSelector";
-import { SUBJECT } from "../../config";
+import * as SUBJECT_SERVICE from "../../services/subject.service";
+import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import { asynchronizeRequest } from "../../API";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import "./Home.css";
@@ -18,7 +18,7 @@ export default function Home() {
   const [sessionLength, setSessionLength] = useState("");
   const [userImage, setUserImage] = useState(null);
   const sessionsPreSorted = [];
-  let userInfo = FetchUserInfo(localStorage.userId);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let sessionsSorted;
 
   const openSessionAdd = () => {
@@ -28,7 +28,7 @@ export default function Home() {
   };
 
   const openEditSession = async (id) => {
-    let e = await axios.get(SUBJECT + "/" + id);
+    let e = await SUBJECT_SERVICE.fetchSubject(id);
 
     let name = e.data.session_name;
     let date = e.data.session_date;
@@ -65,7 +65,9 @@ export default function Home() {
   };
 
   const getSessions = async () => {
-    let request = await axios.get(`${SUBJECT}?user_id=${localStorage.userId}`);
+    let request = await SUBJECT_SERVICE.fetchUserSubjects(
+      getOfflineUser().user.id
+    );
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -133,9 +135,7 @@ export default function Home() {
 
   const deleteSession = () => {
     asynchronizeRequest(async function () {
-      axios.delete(SUBJECT + "/" + deleteSess).then(() => {
-        window.location.reload();
-      });
+      SCHEDULE_SERVICE.deleteSession(deleteSess[0]);
     });
   };
 
