@@ -2,8 +2,7 @@ import axios from "axios";
 export const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
 const JSREPORT = process.env.REACT_APP_REPORTS_ENDPOINT;
 const PING = `${API_URL}/ping`;
-export const token = process.env.REACT_APP_TOKEN
-
+export const TOKEN = localStorage.getItem("userToken");
 
 export const endpoints = {
   JSREPORT,
@@ -35,4 +34,4 @@ export const asynchronizeRequest = async (requestFunction) => {
   return true;
 };
 
-export default asynchronizeRequest
+export default asynchronizeRequest;

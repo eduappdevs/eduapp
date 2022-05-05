@@ -1,8 +1,8 @@
 import axios from "axios";
-import { API_URL, token } from "../API";
+import { API_URL, TOKEN } from "../API";
 export const USERS_INFO = `${API_URL}/user_infos`;
 export const USERS = `${API_URL}/users`;
-const requestHeader = { Authorization: token };
+const requestHeader = { Authorization: TOKEN };
 
 //User
 export const fetchUserInfos = async () => {
@@ -23,7 +23,7 @@ export const createUser = async (body) => {
 
 export const deleteUser = async (id) => {
   return await axios.delete(`${USERS}/remove/${id}`, {
-    headers: { Authorization: token },
+    headers: requestHeader,
   });
 };
 
@@ -52,4 +52,4 @@ export const findByName = async (name) => {
   return await axios.get(`${USERS_INFO}?name=${name}`, {
     headers: requestHeader,
   });
-}
+};

@@ -1,25 +1,26 @@
 import axios from "axios";
-import { API_URL, token } from '../API'
-const requestHeader = { Authorization: token }
+import { API_URL, TOKEN } from "../API";
+const requestHeader = { Authorization: TOKEN };
 
 const COURSES = `${API_URL}/courses`;
 
-
 //Courses
 export const fetchCourses = async () => {
-    return await axios.get(`${COURSES}`, { headers: requestHeader });
-}
+  return await axios.get(`${COURSES}`, { headers: requestHeader });
+};
 
 export const createCourse = async (body) => {
-    return await axios.post(`${COURSES}`, body, { headers: requestHeader });
-}
+  return await axios.post(`${COURSES}`, body, { headers: requestHeader });
+};
 
 export const deleteCourse = async (id) => {
-    return await axios.delete(`${COURSES}/${id}`, {
-        headers: requestHeader,
-    });
-}
+  return await axios.delete(`${COURSES}/${id}`, {
+    headers: requestHeader,
+  });
+};
 
 export const editCourse = async (body) => {
-    return await axios.put(`${`${COURSES}`}/${body.id}`, body, { headers: requestHeader });
-}
+  return await axios.put(`${`${COURSES}`}/${body.id}`, body, {
+    headers: requestHeader,
+  });
+};

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import * as API from "../API";
+import { asynchronizeRequest } from "../API";
 import * as INSTITUTIONSERVICE from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
@@ -14,7 +14,7 @@ export default function InstitutionConfig(props) {
   const [nameValue, setNameValue] = useState();
 
   const fetchInstitutions = () => {
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       INSTITUTIONSERVICE.fetchInstitutions().then((i) => {
         setInstitutions(i.data);
       });
@@ -25,7 +25,7 @@ export default function InstitutionConfig(props) {
     let name = document.getElementById("i_name").value;
     if (name) {
       swapIcons(true);
-      API.asynchronizeRequest(async function () {
+      asynchronizeRequest(async function () {
         INSTITUTIONSERVICE.createInstitution({ name: name }).then((i) => {
           COURSESERVICE.createCourse({
             name: "General",
@@ -58,7 +58,7 @@ export default function InstitutionConfig(props) {
   const editInstitution = async (id) => {
     document.getElementsByTagName("input")[1].disabled = true;
     let value = document.getElementsByTagName("input")[1].value;
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       INSTITUTIONSERVICE.editInstitution({
         id: id,
         name: value,
