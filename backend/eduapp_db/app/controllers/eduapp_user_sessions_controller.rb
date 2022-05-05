@@ -4,14 +4,13 @@ class EduappUserSessionsController < ApplicationController
 
   # GET /eduapp_user_sessions
   def index
-    if !params[:user_id]
-      @eduapp_user_sessions = EduappUserSession.all
-      render json: @eduapp_user_sessions
+    if params[:subject_id]
+			@eduapp_user_sessions = EduappUserSession.where(subject_id: params[:subject_id])
     else
-      @eduapp_user_sessions = EduappUserSession.where(subject_id: params[:subject_id])
-      render json: @eduapp_user_sessions
+      @eduapp_user_sessions = EduappUserSession.all
     end
-    
+
+    render json: @eduapp_user_sessions
   end
 
   # GET /eduapp_user_sessions/1
