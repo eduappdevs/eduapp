@@ -17,7 +17,7 @@ Devise.setup do |config|
 		jwt.revocation_requests = [
 			['DELETE', %r{^/sign_out$}],
 		]
-    jwt.expiration_time = 14.days.to_i
+    jwt.expiration_time = 1.hour.from_now
     
   end
   # The secret key used by Devise. Devise uses this key to generate
