@@ -1,5 +1,6 @@
 class TuitionsController < ApplicationController
   before_action :set_tuition, only: [:show, :update, :destroy]
+	before_action :authenticate_user!
 
   # GET /tuitions
   def index

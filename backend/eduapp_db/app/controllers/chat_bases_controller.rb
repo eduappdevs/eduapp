@@ -1,5 +1,6 @@
 class ChatBasesController < ApplicationController
   before_action :set_chat_basis, only: [:show, :update, :destroy]
+	before_action :authenticate_user!
 
   # GET /chat_bases
   def index

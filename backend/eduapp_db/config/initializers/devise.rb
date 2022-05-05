@@ -14,6 +14,9 @@ Devise.setup do |config|
     jwt.dispatch_requests = [
       ['POST', %r{^/signin$}],
     ]
+		jwt.revocation_requests = [
+			['DELETE', %r{^/sign_out$}],
+		]
     jwt.expiration_time = 14.days.to_i
     
   end

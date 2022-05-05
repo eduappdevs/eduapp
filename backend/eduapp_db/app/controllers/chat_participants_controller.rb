@@ -1,5 +1,6 @@
 class ChatParticipantsController < ApplicationController
   before_action :set_chat_participant, only: [:show, :update, :destroy]
+	before_action :authenticate_user!
 
   # GET /chat_participants
   def index

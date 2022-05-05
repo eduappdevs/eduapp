@@ -1,5 +1,6 @@
 class ResourcesController < ApplicationController
   before_action :set_resource, only: [:show , :update, :destroy]
+	before_action :authenticate_user!
 
   # GET /resources
   def index

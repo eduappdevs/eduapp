@@ -1,16 +1,9 @@
 class Users::SessionsController < Devise::SessionsController
 
     respond_to :json
-
-    # def new 
-    #   puts 'ENTRA EN NEW SESSIONS CONTROLLER'
-    #   redirect_to user_google_oauth2_omniauth_authorize_url
-    # end
   
     private
 
-    
-  
     def respond_with(resource, _opts = {})
       headers['Access-Control-Allow-Origin'] = '*'
       headers['Access-Control-Allow-Methods'] = 'POST, PUT, DELETE, GET, OPTIONS'
@@ -25,10 +18,12 @@ class Users::SessionsController < Devise::SessionsController
   
       log_out_failure
     end
+
     def log_out_success
       render json: { message: "You are logged out." }, status: :ok
     end
+
     def log_out_failure
-      render json: { message: "Hmm nothing happened."}, status: :unauthorized
+      render json: { message: "Coudln't logout the user."}, status: :unauthorized
     end
   end

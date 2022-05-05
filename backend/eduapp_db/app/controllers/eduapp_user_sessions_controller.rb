@@ -1,5 +1,6 @@
 class EduappUserSessionsController < ApplicationController
   before_action :set_eduapp_user_session, only: [:show, :update, :destroy]
+	before_action :authenticate_user!
 
   # GET /eduapp_user_sessions
   def index
