@@ -30,7 +30,7 @@ export default function UserConfig(props) {
 
       API.asynchronizeRequest(function () {
         USERSERVICE.createUser(payload).then((res) => {
-          userEnroll(res.data.message.id);
+          userEnroll(res.data.user.id);
           fetchUsers();
           document.getElementById("u_admin").checked = false;
           document.getElementById("u_email").value = null;

@@ -4,7 +4,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
 		def create
 			build_resource(sign_up_params)
 	
-			resource.save
+			begin
+				resource.save
+			rescue ActiveRecord::RecordNotUnique => ex
+				render json: { errors: ex.message }, status: :unprocessable_entity
+				return
+			end
 			yield resource if block_given?
 			if resource.persisted?
 				if resource.active_for_authentication?
