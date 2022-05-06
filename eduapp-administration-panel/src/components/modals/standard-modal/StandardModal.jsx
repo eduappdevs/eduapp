@@ -1,4 +1,4 @@
-import "./StandardModal.css";
+import "./StandarModal.css";
 
 export default function StandardModal({
   text,

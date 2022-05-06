@@ -2,18 +2,38 @@ import React, { useEffect, useState } from "react";
 import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
+import StandarModal from "./modals/standard-modal/StandardModal";
+
 import Input from "./Input";
 import "../styles/schedulesessionslist.css";
+import StandardModal from "./modals/standard-modal/StandardModal";
 
 export default function Schedulesessionslist(props) {
   const [sessions, setSessions] = useState(null);
   const [search, setSearch] = useState("");
   const [subject, setSubject] = useState([]);
+
   const [subjectEdit, setSubjectEdit] = useState([]);
   const [newStartDate] = useState();
   const [newEndDate] = useState();
+  const [newName] = useState();
+  const [newStreamPlatform] = useState();
+  const [newResourcesPlatform] = useState();
+  const [newChatId] = useState();
+
   const [changeEndDate, setChangeEndDate] = useState(false);
   const [changeStartDate, setChangeStartDate] = useState(false);
+  const [changeName, setChangeName] = useState(false);
+  const [changeResourcesPlatform, setChangeResourcesPlatform] = useState(false);
+  const [changeChatId, setChangeChatId] = useState(false);
+  const [changeStreamPlatform, setChangeStreamPlatform] = useState(false);
+
+  const [showPopup, setPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
+  const [popupIcon, setPopupIcon] = useState("");
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+  const [popupType, setPopupType] = useState("");
+  const [idDelete, setIdDelete] = useState();
 
   let sessions_filter = {};
 
@@ -23,6 +43,15 @@ export default function Schedulesessionslist(props) {
         setSessions(e.data);
         sessions_filter.sessions = e.data;
       });
+    }).then((e) => {
+      if (e) {
+        setPopup(true);
+        setPopupText(
+          "The calendar sessions could not be showed, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+      }
     });
   };
 
@@ -32,11 +61,21 @@ export default function Schedulesessionslist(props) {
         res.data.shift();
         setSubject(res.data);
       });
+    }).then((e) => {
+      if (e) {
+        setPopup(true);
+        setPopupText(
+          "The subjects could not be showed, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+      }
     });
   };
 
   const AddNewSession = (e) => {
     e.preventDefault();
+    switchSaveState(true);
 
     const context = [
       "session_name",
@@ -77,7 +116,8 @@ export default function Schedulesessionslist(props) {
         subject_id
       );
     } else {
-      console.log("error");
+      alertCreate();
+      switchSaveState(false);
     }
 
     let SessionJson = {};
@@ -85,23 +125,60 @@ export default function Schedulesessionslist(props) {
       SessionJson[context[i]] = json[i];
     }
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.createSession(SessionJson)
-        .then(() => {
-          fetchSessions();
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      SCHEDULESERVICE.createSession(SessionJson).then(() => {
+        fetchSessions();
+        setPopup(true);
+        setPopupType("info");
+        setPopupText("The calendar events was created successfully.");
+        switchSaveState(true);
+      });
+    }).then((e) => {
+      if (e) {
+        setPopup(true);
+        setPopupText(
+          "The calendar session could not be published, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+      }
     });
   };
 
-  const deleteSession = (id) => {
+  const confirmDeleteEvent = async (id) => {
+    setPopupType("warning");
+    setPopupIcon(true);
+    setPopupText("Are you sure you want to delete this session?");
+    setIsConfirmDelete(true);
+    setPopup(true);
+    setIdDelete(id);
+  };
+
+  const showDeleteError = () => {
+    setPopupType("error");
+    popupIcon(false);
+    setPopup(false);
+    setPopupText("The session could not be deleted.");
+    setIsConfirmDelete(false);
+  };
+
+  const deleteSession = async (id) => {
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.deleteSession(id)
         .then(() => {
           fetchSessions();
         })
-        .catch((e) => console.log(e));
+        .catch(() => {
+          showDeleteError();
+        });
+    }).then((e) => {
+      if (e) {
+        setPopup(true);
+        setPopupText(
+          "The calendar session could not be deleted, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(true);
+      }
     });
   };
 
@@ -118,6 +195,24 @@ export default function Schedulesessionslist(props) {
       return true;
     });
     setSessions(filterSessions);
+  };
+
+  const switchSaveState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "scroll";
+      document
+        .getElementById("commit-loader-2")
+        .classList.remove("commit-loader-hide");
+      document.getElementById("add-svg").classList.add("commit-loader-hide");
+    } else {
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+      document.getElementById("add-svg").classList.remove("commit-loader-hide");
+      document
+        .getElementById("commit-loader-2")
+        .classList.add("commit-loader-hide");
+    }
   };
 
   const editSession = (e, s) => {
@@ -239,10 +334,34 @@ export default function Schedulesessionslist(props) {
             resources.disabled = true;
             chat.disabled = true;
             subject.disabled = true;
+
+            setPopup(true);
+            setPopupType("info");
+            setPopupText("The calendar session was edited successfully.");
+            switchSaveState(false);
+            setIsConfirmDelete(false);
           })
-          .catch((error) => {
-            console.log(error);
+          .catch((e) => {
+            if (e) {
+              setPopupText(
+                "The calendar session could not be edited, check if you entered the correct fields."
+              );
+              setPopupIcon("error");
+              switchSaveState(false);
+              setPopup(true);
+              setIsConfirmDelete(false);
+            }
           });
+      }).then((e) => {
+        if (e) {
+          setPopup(true);
+          setPopupText(
+            "The calendar session could not be edited, check if you have an internet connection."
+          );
+          setPopupIcon("error");
+          switchSaveState(false);
+          setIsConfirmDelete(false);
+        }
       });
     } else {
       if (e.target.tagName === "path") {
@@ -357,7 +476,6 @@ export default function Schedulesessionslist(props) {
             .then(() => {
               fetchSessions();
               fetchSubjects();
-
               let buttonDelete =
                 e.target.parentNode.parentNode.parentNode.childNodes[0];
               buttonDelete.style.display = "block";
@@ -377,10 +495,34 @@ export default function Schedulesessionslist(props) {
               resources.disabled = true;
               chat.disabled = true;
               subject.disabled = true;
+
+              switchSaveState(false);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText("The calendar session was edited successfully.");
+              setIsConfirmDelete(false);
             })
-            .catch((error) => {
-              console.log(error);
+            .catch((e) => {
+              if (e) {
+                setPopupText(
+                  "The calendar session could not be edited, check if you entered the correct fields."
+                );
+                setPopupIcon("error");
+                switchSaveState(false);
+                setIsConfirmDelete(false);
+                setPopup(true);
+              }
             });
+        }).then((e) => {
+          if (e) {
+            setPopup(true);
+            setPopupText(
+              "The calendar session could not be edited, check if you have an internet connection."
+            );
+            setPopupIcon("error");
+            switchSaveState(false);
+            setIsConfirmDelete(false);
+          }
         });
       } else {
         let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -501,10 +643,33 @@ export default function Schedulesessionslist(props) {
               resources.disabled = true;
               chat.disabled = true;
               subject.disabled = true;
+              setPopup(true);
+              setPopupType("info");
+              setPopupText("The calendar session was edited successfully.");
+              switchSaveState(false);
+              setIsConfirmDelete(false);
             })
-            .catch((error) => {
-              console.log(error);
+            .catch((e) => {
+              if (e) {
+                setPopupText(
+                  "The calendar session could not be edited, check if you entered the correct fields."
+                );
+                setPopupIcon("error");
+                switchSaveState(false);
+                setPopup(true);
+                setIsConfirmDelete(false);
+              }
             });
+        }).then((e) => {
+          if (e) {
+            setPopup(true);
+            setPopupText(
+              "The calendar session could not be edited, check if you have an internet connection."
+            );
+            setPopupIcon("error");
+            setIsConfirmDelete(false);
+            switchSaveState(false);
+          }
         });
       }
     }
@@ -747,35 +912,39 @@ export default function Schedulesessionslist(props) {
   };
 
   const handleChangeEndDate = (id) => {
-    let content = document.getElementById("inputEndDate_" + id);
     setChangeEndDate(true);
-    return content.value;
+    return document.getElementById("inputEndDate_" + id).value;
   };
 
-  const handleChangeStartDate = (id) => {
-    let content = document.getElementById("inputStartDate_" + id);
+  const handleChangeStartDate = (e, id) => {
     setChangeStartDate(true);
-    return content.value;
+    return e.target.value;
   };
 
   const handleChangeName = (id) => {
-    var content = document.getElementById("inputName_" + id);
-    return content.value;
+    setChangeName(true);
+    return document.getElementById(`inputName_${id}`).value;
   };
 
   const handleChangeStreamPlatform = (id) => {
-    var content = document.getElementById(`inputStreamPlatform_${id}`);
-    return content.value;
+    setChangeStreamPlatform(true);
+    return document.getElementById(`inputStreamPlatform_${id}`).value;
   };
 
   const handleChangeResourcesPlatform = (id) => {
-    var content = document.getElementById(`inputResourcesPlatform_${id}`);
-    return content.value;
+    setChangeResourcesPlatform(true);
+    return document.getElementById(`inputResourcesPlatform_${id}`).value;
   };
 
   const handleChangeSessionChat = (id) => {
-    var content = document.getElementById(`inputSessionChat_${id}`);
-    return content.value;
+    setChangeChatId(true);
+    return document.getElementById(`inputSessionChat_${id}`).value;
+  };
+
+  const alertCreate = async () => {
+    setPopupText("Required information is missing.");
+    setPopupType("error");
+    setPopup(true);
   };
 
   useEffect(() => {
@@ -797,99 +966,12 @@ export default function Schedulesessionslist(props) {
   useEffect(() => {}, [props.language]);
 
   return (
-    <div className="schedulesesionslist-main-container">
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>{props.language.name}</th>
-            <th>{props.language.startDate}</th>
-            <th>{props.language.endDate}</th>
-            <th>{props.language.streaming}</th>
-            <th>{props.language.resources}</th>
-            <th>{props.language.chatLink}</th>
-            <th>{props.language.subjects}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th>
-              <button onClick={AddNewSession}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-plus-circle-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                </svg>
-              </button>
-            </th>
-            <th>
-              <Input
-                id="s_name"
-                type="text"
-                placeholder={props.language.name}
-                autoComplete="off"
-              />
-            </th>
-            <th>
-              <Input
-                id="s_start_date"
-                type="datetime-local"
-                placeholder={props.language.startDate}
-                autoComplete="off"
-              />
-            </th>
-            <th>
-              <Input
-                id="s_end_date"
-                type="datetime-local"
-                placeholder={props.language.endDate}
-                autoComplete="off"
-              />
-            </th>
-            <th>
-              <Input id="s_streaming" type="text" placeholder="Streaming" />
-            </th>
-            <th>
-              <Input
-                id="s_resources"
-                type="text"
-                placeholder={props.language.resources}
-                autoComplete="off"
-              />
-            </th>
-            <th>
-              <Input
-                id="s_chatGroup"
-                type="text"
-                placeholder={props.language.chatLink}
-                autoComplete="off"
-              />
-            </th>
-            <th className="subjecButton">
-              <select id="s_subjectId">
-                <option defaultValue={props.language.chooseSubject}>
-                  {props.language.chooseSubject}
-                </option>
-                {subject.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            </th>
-          </tr>
-        </tbody>
-      </table>
-      {sessions && sessions.length !== 0 ? (
-        <table style={{ marginTop: "50px" }}>
+    <>
+      <div className="schedulesesionslist-main-container">
+        <table>
           <thead>
             <tr>
-              <th>{props.language.code}</th>
+              <th></th>
               <th>{props.language.name}</th>
               <th>{props.language.startDate}</th>
               <th>{props.language.endDate}</th>
@@ -897,15 +979,322 @@ export default function Schedulesessionslist(props) {
               <th>{props.language.resources}</th>
               <th>{props.language.chatLink}</th>
               <th>{props.language.subjects}</th>
-              <th>{props.language.actions}</th>
             </tr>
           </thead>
           <tbody>
-            {sessions.map((s) => {
-              if (search.length > 0) {
-                if (
-                  s.session_name.toLowerCase().includes(search.toLowerCase())
-                ) {
+            <tr>
+              <th>
+                <button onClick={AddNewSession}>
+                  <svg
+                    id="add-svg"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-plus-circle-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                  </svg>
+                  <svg
+                    id="commit-loader-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    fill="currentColor"
+                    className="bi bi-arrow-repeat commit-loader-hide loader-spin"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+                    />
+                  </svg>
+                </button>
+              </th>
+              <th>
+                <Input
+                  id="s_name"
+                  type="text"
+                  placeholder={props.language.name}
+                  autoComplete="off"
+                />
+              </th>
+              <th>
+                <Input
+                  id="s_start_date"
+                  type="datetime-local"
+                  placeholder={props.language.startDate}
+                  autoComplete="off"
+                />
+              </th>
+              <th>
+                <Input
+                  id="s_end_date"
+                  type="datetime-local"
+                  placeholder={props.language.endDate}
+                  autoComplete="off"
+                />
+              </th>
+              <th>
+                <Input id="s_streaming" type="text" placeholder="Streaming" />
+              </th>
+              <th>
+                <Input
+                  id="s_resources"
+                  type="text"
+                  placeholder={props.language.resources}
+                  autoComplete="off"
+                />
+              </th>
+              <th>
+                <Input
+                  id="s_chatGroup"
+                  type="text"
+                  placeholder={props.language.chatLink}
+                  autoComplete="off"
+                />
+              </th>
+              <th className="subjecButton">
+                <select id="s_subjectId">
+                  <option defaultValue={props.language.chooseSubject}>
+                    {props.language.chooseSubject}
+                  </option>
+                  {subject.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </th>
+            </tr>
+          </tbody>
+        </table>
+        {sessions && sessions.length !== 0 ? (
+          <table style={{ marginTop: "50px" }}>
+            <thead>
+              <tr>
+                <th>{props.language.code}</th>
+                <th>{props.language.name}</th>
+                <th>{props.language.startDate}</th>
+                <th>{props.language.endDate}</th>
+                <th>{props.language.streaming}</th>
+                <th>{props.language.resources}</th>
+                <th>{props.language.chatLink}</th>
+                <th>{props.language.subjects}</th>
+                <th>{props.language.actions}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sessions.map((s) => {
+                if (search.length > 0) {
+                  if (
+                    s.session_name.toLowerCase().includes(search.toLowerCase())
+                  ) {
+                    return (
+                      <tr key={s.id}>
+                        <td>{s.id}</td>
+                        <td>
+                          <input
+                            id={`inputName_${s.id}`}
+                            type="text"
+                            disabled
+                            value={
+                              changeName === false ? s.session_name : newName
+                            }
+                            onChange={() => {
+                              handleChangeName(s.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputStartDate_${s.id}`}
+                            type="datetime-local"
+                            value={
+                              changeStartDate === false
+                                ? s.session_start_date
+                                : newStartDate
+                            }
+                            disabled
+                            onChange={(e) => {
+                              handleChangeStartDate(e, s.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputEndDate_${s.id}`}
+                            type="datetime-local"
+                            value={
+                              changeEndDate === false
+                                ? s.session_end_date
+                                : newEndDate
+                            }
+                            disabled
+                            onChange={(e) => {
+                              handleChangeEndDate(e, s.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputStreamPlatform_${s.id}`}
+                            type="text"
+                            disabled
+                            value={
+                              s.streaming_platform === null
+                                ? ""
+                                : changeStreamPlatform === false
+                                ? s.streaming_platform
+                                : newStreamPlatform
+                            }
+                            onChange={() => {
+                              handleChangeStreamPlatform(s.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputResourcePlatform_${s.id}`}
+                            type="text"
+                            disabled
+                            value={
+                              s.resources_platform === null
+                                ? ""
+                                : changeResourcesPlatform === false
+                                ? s.resources_platform
+                                : newResourcesPlatform
+                            }
+                            onChange={() => {
+                              handleChangeResourcesPlatform(s.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputSessionChat_${s.id}`}
+                            type="text"
+                            disabled
+                            value={
+                              s.session_chat_id === null
+                                ? ""
+                                : changeChatId === false
+                                ? s.session_chat_id
+                                : newChatId
+                            }
+                            onChange={() => {
+                              handleChangeSessionChat(s.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <select id={`inputSubjectID_${s.id}`} disabled>
+                            <option
+                              defaultValue={s.subject_id}
+                              value={s.subject_id}
+                            >
+                              {s.subject.name}
+                            </option>
+                            {subjectEdit.map((s) => (
+                              <option key={s.id} value={s.id}>
+                                {s.name}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={() => {
+                              confirmDeleteEvent(s.id);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={(e) => {
+                              showEditOptionSession(e, s);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-pencil-square"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px", display: "none" }}
+                            onClick={(e) => {
+                              editSession(e, s);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-check2"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ display: "none" }}
+                            onClick={(e) => {
+                              closeEditSession(e, s);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-x-lg"
+                              viewBox="0 0 16 16"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                              />
+                              <path
+                                fillRule="evenodd"
+                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                              />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  }
+                } else {
                   return (
                     <tr key={s.id}>
                       <td>{s.id}</td>
@@ -914,9 +1303,11 @@ export default function Schedulesessionslist(props) {
                           id={`inputName_${s.id}`}
                           type="text"
                           disabled
-                          placeholder={s.session_name}
-                          onChange={(e) => {
-                            handleChangeName(e.target.value);
+                          value={
+                            changeName === false ? s.session_name : newName
+                          }
+                          onChange={() => {
+                            handleChangeName(s.id);
                           }}
                         />
                       </td>
@@ -955,10 +1346,12 @@ export default function Schedulesessionslist(props) {
                           id={`inputStreamPlatform_${s.id}`}
                           type="text"
                           disabled
-                          placeholder={
+                          value={
                             s.streaming_platform === null
                               ? ""
-                              : s.streaming_platform
+                              : changeStreamPlatform === false
+                              ? s.streaming_platform
+                              : newStreamPlatform
                           }
                           onChange={() => {
                             handleChangeStreamPlatform(s.id);
@@ -970,10 +1363,10 @@ export default function Schedulesessionslist(props) {
                           id={`inputResourcePlatform_${s.id}`}
                           type="text"
                           disabled
-                          placeholder={
-                            s.resources_platform === null
-                              ? ""
-                              : s.resources_platform
+                          value={
+                            changeResourcesPlatform === false
+                              ? s.resources_platform
+                              : newResourcesPlatform
                           }
                           onChange={() => {
                             handleChangeResourcesPlatform(s.id);
@@ -985,8 +1378,10 @@ export default function Schedulesessionslist(props) {
                           id={`inputSessionChat_${s.id}`}
                           type="text"
                           disabled
-                          placeholder={
-                            s.session_chat_id === null ? "" : s.session_chat_id
+                          value={
+                            changeChatId === false
+                              ? s.session_chat_id
+                              : newChatId
                           }
                           onChange={() => {
                             handleChangeSessionChat(s.id);
@@ -1018,7 +1413,7 @@ export default function Schedulesessionslist(props) {
                         <button
                           style={{ marginRight: "5px" }}
                           onClick={() => {
-                            deleteSession(s.id);
+                            confirmDeleteEvent(s.id);
                           }}
                         >
                           <svg
@@ -1098,203 +1493,40 @@ export default function Schedulesessionslist(props) {
                     </tr>
                   );
                 }
-              } else {
-                return (
-                  <tr key={s.id}>
-                    <td>{s.id}</td>
-                    <td>
-                      <input
-                        id={`inputName_${s.id}`}
-                        type="text"
-                        disabled
-                        placeholder={s.session_name}
-                        onChange={(e) => {
-                          handleChangeName(e.target.value);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        id={`inputStartDate_${s.id}`}
-                        type="datetime-local"
-                        value={
-                          changeStartDate === false
-                            ? s.session_start_date
-                            : newStartDate
-                        }
-                        disabled
-                        onChange={(e) => {
-                          handleChangeStartDate(e, s.id);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        id={`inputEndDate_${s.id}`}
-                        type="datetime-local"
-                        value={
-                          changeEndDate === false
-                            ? s.session_end_date
-                            : newEndDate
-                        }
-                        disabled
-                        onChange={(e) => {
-                          handleChangeEndDate(e, s.id);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        id={`inputStreamPlatform_${s.id}`}
-                        type="text"
-                        disabled
-                        placeholder={
-                          s.streaming_platform === null
-                            ? ""
-                            : s.streaming_platform
-                        }
-                        onChange={() => {
-                          handleChangeStreamPlatform(s.id);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        id={`inputResourcePlatform_${s.id}`}
-                        type="text"
-                        disabled
-                        placeholder={
-                          s.resources_platform === null
-                            ? ""
-                            : s.resources_platform
-                        }
-                        onChange={() => {
-                          handleChangeResourcesPlatform(s.id);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        id={`inputSessionChat_${s.id}`}
-                        type="text"
-                        disabled
-                        placeholder={
-                          s.session_chat_id === null ? "" : s.session_chat_id
-                        }
-                        onChange={() => {
-                          handleChangeSessionChat(s.id);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <select id={`inputSubjectID_${s.id}`} disabled>
-                        <option
-                          defaultValue={s.subject_id}
-                          value={s.subject_id}
-                        >
-                          {s.subject.name}
-                        </option>
-                        {subjectEdit.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <button
-                        style={{ marginRight: "5px" }}
-                        onClick={() => {
-                          deleteSession(s.id);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-trash3"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                        </svg>
-                      </button>
-                      <button
-                        style={{ marginRight: "5px" }}
-                        onClick={(e) => {
-                          showEditOptionSession(e, s);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-pencil-square"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                          <path
-                            fillRule="evenodd"
-                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        style={{ marginRight: "5px", display: "none" }}
-                        onClick={(e) => {
-                          editSession(e, s);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-check2"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                        </svg>
-                      </button>
-                      <button
-                        style={{ display: "none" }}
-                        onClick={(e) => {
-                          closeEditSession(e, s);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-x-lg"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                          />
-                          <path
-                            fillRule="evenodd"
-                            d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                          />
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              }
-            })}
-          </tbody>
-        </table>
-      ) : null}
-    </div>
+              })}
+            </tbody>
+          </table>
+        ) : null}
+      </div>
+      <StandardModal
+        show={showPopup}
+        iconFill={popupIcon}
+        type={popupType}
+        text={popupText}
+        isQuestion={isConfirmDelete}
+        onYesAction={() => {
+          setPopup(false);
+          deleteSession(idDelete);
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+        onNoAction={() => {
+          setPopup(false);
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+        onCloseAction={() => {
+          setPopup(false);
+          switchSaveState();
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+        hasIconAnimation
+        hasTransition
+      />
+    </>
   );
 }

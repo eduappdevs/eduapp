@@ -28,7 +28,7 @@ export const deleteUser = async (id) => {
 };
 
 export const editUser = async (body) => {
-  return await axios.put(`${USERS}/${body.id}`, body, {
+  return await axios.put(`${USERS_INFO}/${body.id}`, body, {
     headers: requestHeader,
   });
 };
@@ -47,6 +47,10 @@ export const delist_teacher = async (uId, subject_id) => {
     }
   );
 };
+
+export const editTeacher = async (body) => {
+  return await axios.put(`${USERS_INFO}/${body.id}`, body, { headers: requestHeader })
+}
 
 export const findByName = async (name) => {
   return await axios.get(`${USERS_INFO}?name=${name}`, {

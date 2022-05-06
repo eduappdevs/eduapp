@@ -12,10 +12,6 @@ export const fetchSubject = async (id) => {
     return await axios.get(`${SUBJECTS}?subject_id=${id}`, { headers: requestHeader })
 }
 
-export const NoticiasSubject = async () => {
-    return await axios.get(`${SUBJECTS}/?name=Noticias`, { headers: requestHeader })
-}
-
 export const createSubject = async (body) => {
     return await axios.post(`${SUBJECTS}`, body, { headers: requestHeader })
 }

@@ -1,9 +1,9 @@
 import axios from "axios";
-import { API_URL, TOKEN } from "../API";
+import { API_URL, token } from "../API";
 export const EVENTS = `${API_URL}/calendar_annotations`;
 export const SESSIONS = `${API_URL}/eduapp_user_sessions`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { Authorization: token };
 
 export const fetchEvents = async () => {
   return await axios.get(EVENTS, { headers: requestHeader });
@@ -14,25 +14,25 @@ export const createEvent = async (body) => {
 };
 
 export const deleteEvent = async (body) => {
-  return axios.delete(`${EVENTS}/${body}`, { headers: requestHeader });
+  return await axios.delete(`${EVENTS}/${body}`, { headers: requestHeader });
 };
 
 export const editEvent = async (body) => {
-  return axios.put(`${EVENTS}/${body.id}`, body, { headers: requestHeader })
+  return await axios.put(`${EVENTS}/${body.id}`, body, { headers: requestHeader })
 }
 
 export const fetchSessions = async () => {
-  return axios.get(SESSIONS, { headers: requestHeader });
+  return await axios.get(SESSIONS, { headers: requestHeader });
 };
 
 export const createSession = async (body) => {
-  return axios.post(SESSIONS, body, { headers: requestHeader });
+  return await axios.post(SESSIONS, body, { headers: requestHeader });
 };
 
 export const deleteSession = async (id) => {
-  return axios.delete(`${SESSIONS}/${id}`, { headers: requestHeader });
+  return await axios.delete(`${SESSIONS}/${id}`, { headers: requestHeader });
 };
 
 export const editSession = async (body) => {
-  return axios.put(`${SESSIONS}/${body.id}`, body, { headers: requestHeader });
+  return await axios.put(`${SESSIONS}/${body.id}`, body, { headers: requestHeader });
 };

@@ -15,8 +15,27 @@ export default function Toolbar(props) {
     );
   };
 
+  const handleChangeFilterEnrollment = (event) => {
+    document.dispatchEvent(
+      new CustomEvent("filter_subject_enroll", { detail: event.target.value })
+    );
+  };
+  const handleChangeFilterCourses = (event) => {
+    document.dispatchEvent(
+      new CustomEvent("filter_subject_course", { detail: event.target.value })
+    );
+  };
+
+  const handleChangeFilterTeacher = (event) => {
+    document.dispatchEvent(
+      new CustomEvent("filter_subject_teacher", { detail: event.target.value })
+    );
+  };
+
   const SearchFilter = (event) => {
-    props.search(event.target.value);
+    console.log(event.target.value);
+    let value = event.target.value;
+    props.search(value);
   };
 
   const userRoleFilter = (event) => {
@@ -139,11 +158,12 @@ export default function Toolbar(props) {
               <Batcher type="users" language={props.language} />
             </li>
 
-            <li>
+            <li className="subjectbar-container">
               <select
                 onChange={userRoleFilter}
                 name="subjects"
                 id="subjects-select"
+                className="subjectOption"
               >
                 <option value="ALL">{props.language.viewAllRoles}</option>
                 <option value="ADMIN">{props.language.admin}</option>
@@ -268,10 +288,31 @@ export default function Toolbar(props) {
               </span>
 
               <Input
-                placeholder={props.language.search}
+                type="text"
                 className="searchbar_toolbar"
                 autoComplete="off"
+                placeholder={props.language.search}
               />
+            </li>
+            <li className="subjectbar-container">
+              <select
+                className="subjectOption"
+                onChange={(e) => {
+                  handleChangeFilterCourses(e);
+                }}
+                name="subject"
+                id="subject_id"
+              >
+                <option defaultValue={"--"}>
+                  {props.language.chooseCourse}
+                </option>
+
+                {props.courses.map((course) => (
+                  <option key={course.id} value={course.id + "_" + course.name}>
+                    {course.name}
+                  </option>
+                ))}
+              </select>
             </li>
           </ul>
         </>
@@ -298,9 +339,75 @@ export default function Toolbar(props) {
                 placeholder={props.language.search}
               />
             </li>
+            <li className="subjectbar-container">
+              <select
+                className="subjectOption"
+                onChange={(e) => {
+                  handleChangeFilterEnrollment(e);
+                }}
+                name="subject"
+                id="subject_id"
+              >
+                <option defaultValue={"--"}>
+                  {props.language.chooseCourse}
+                </option>
+                {props.courses.map((course) => (
+                  <option key={course.id} value={course.id + "_" + course.name}>
+                    {course.name}
+                  </option>
+                ))}
+              </select>
+            </li>
           </ul>
         </>
       ) : props.location === "teachers" ? (
+        <>
+          <ul className="scheduletoolbar-ul teachers-toolbar">
+            <li onChange={SearchFilter} className="searchbar-container">
+              <span className="searchicon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-search"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                </svg>
+              </span>
+              <Input
+                type="text"
+                className="searchbar_toolbar"
+                autoComplete="off"
+                placeholder={props.language.search}
+              />
+            </li>
+            <li className="subjectbar-container">
+              <select
+                className="subjectOption"
+                onChange={(e) => {
+                  handleChangeFilterTeacher(e);
+                }}
+                name="subject"
+                id="subject_id"
+              >
+                <option defaultValue={"--"}>
+                  {props.language.chooseCourse}
+                </option>
+                {props.subjects.map((subject) => (
+                  <option
+                    key={subject.id}
+                    value={subject.id + "_" + subject.name}
+                  >
+                    {subject.name}
+                  </option>
+                ))}
+              </select>
+            </li>
+          </ul>
+        </>
+      ) : props.location === "chatConfig" ? (
         <>
           <ul className="scheduletoolbar-ul teachers-toolbar">
             <li onChange={SearchFilter} className="searchbar-container">

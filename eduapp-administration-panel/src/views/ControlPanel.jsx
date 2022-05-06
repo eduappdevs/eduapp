@@ -18,6 +18,7 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import TeacherConfig from "../components/teacherConfig";
 import * as API from "../API";
 import LANGUAGES from "../constants/languages";
+import * as COURSESERVICE from "../services/course.service";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
@@ -29,6 +30,8 @@ export default function ControlPanel() {
     setLocation(incoming);
   };
   const [subjects, setSubjects] = useState([]);
+  const [courses, setCourses] = useState([]);
+
   const fetchSubject = () => {
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.fetchSubjects().then((i) => {
@@ -36,13 +39,24 @@ export default function ControlPanel() {
       });
     });
   };
+
+  const fetchCourse = () => {
+    API.asynchronizeRequest(function () {
+      COURSESERVICE.fetchCourses().then((i) => {
+        setCourses(i.data);
+      });
+    });
+  };
+
   useEffect(() => {
     fetchSubject();
+    fetchCourse();
   }, []);
 
   const searchFilter = (search) => {
     setSearch(search);
   };
+
   const userRoleFilter = (role) => {
     console.log(role);
     console.log(role === "ADMIN" ? 1 : role === "STUDENT" ? 0 : null);
@@ -67,32 +81,51 @@ export default function ControlPanel() {
 
   return (
     <div className="users-main-container">
-      <Navbar toolbarLocation={changeToolbarLocation} switchLanguage={switchLanguage} location={location} language={language}/>
+      <Navbar
+        toolbarLocation={changeToolbarLocation}
+        switchLanguage={switchLanguage}
+        location={location}
+        language={language}
+      />
       <div className="main-section">
-        <Toolbar location={location} search={searchFilter} userRole={userRoleFilter} subjects={subjects} language={language}/>
-        <div className="controlPanel-content-container">
+        <Toolbar
+          location={location}
+          search={searchFilter}
+          userRole={userRoleFilter}
+          subjects={subjects}
+          courses={courses}
+          language={language}
+        />
+        <div
+          className="controlPanel-content-container"
+          id="controlPanelContentContainer"
+        >
           {location === "sessions" ? (
-            <Schedulesessionslist search={search} language={language}/>
+            <Schedulesessionslist search={search} language={language} />
           ) : location === "events" ? (
-            <Scheduleeventslist search={search}language={language}/>
+            <Scheduleeventslist search={search} language={language} />
           ) : location === "institutions" ? (
-            <InstitutionConfig search={search}language={language}/>
+            <InstitutionConfig search={search} language={language} />
           ) : location === "courses" ? (
-            <CourseConfig search={search}language={language}/>
+            <CourseConfig search={search} language={language} />
           ) : location === "subjects" ? (
-            <SubjectsConfig search={search}language={language}/>
+            <SubjectsConfig search={search} language={language} />
           ) : location === "users" ? (
-            <UserConfig search={search} userRole={userRole} language={language}/>
+            <UserConfig
+              search={search}
+              userRole={userRole}
+              language={language}
+            />
           ) : location === "enroll" ? (
-            <EnrollConfig language={language}/>
+            <EnrollConfig search={search} language={language} />
           ) : location === "teachers" ? (
-            <TeacherConfig language={language}/>
+            <TeacherConfig search={search} language={language} />
           ) : location === "chatConfig" ? (
-            <ChatConfig language={language}/>
+            <ChatConfig search={search} language={language} />
           ) : location === "chatMessage" ? (
-            <ChatMessageConfig language={language}/>
+            <ChatMessageConfig search={search} language={language} />
           ) : location === "chatParticipant" ? (
-            <ChatParticipantConfig language={language}/>
+            <ChatParticipantConfig search={search} language={language} />
           ) : (
             <></>
           )}

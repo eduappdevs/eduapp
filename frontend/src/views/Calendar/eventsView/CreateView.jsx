@@ -99,10 +99,10 @@ export default function CreateView(props) {
         });
       }).then((err) => {
         if (err) {
-          setPopup(true);
           setPopupText("The calendar event could not be published.");
           setPopupIcon("error");
           switchSaveState(false);
+          setPopup(true);
         }
       });
     } else {
