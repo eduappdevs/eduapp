@@ -9,6 +9,12 @@ export const fetchCourses = async () => {
   return await axios.get(`${COURSES}`, { headers: requestHeader });
 };
 
+export const fetchUserCourses = async (uId) => {
+  return await axios.get(`${COURSES}?user_id=${uId}`, {
+    headers: requestHeader,
+  });
+};
+
 export const createCourse = async (body) => {
   return await axios.post(`${COURSES}`, body, { headers: requestHeader });
 };

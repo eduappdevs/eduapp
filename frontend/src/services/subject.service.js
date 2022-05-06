@@ -10,7 +10,19 @@ export const fetchSubjects = async () => {
 };
 
 export const fetchSubject = async (id) => {
-  return await axios.get(`${SUBJECTS}?subject_id=${id}`, {
+  return await axios.get(`${SUBJECTS}/${id}`, {
+    headers: requestHeader,
+  });
+};
+
+export const fetchUserSubjects = async (uId) => {
+  return await axios.get(`${SUBJECTS}?user_id=${uId}`, {
+    headers: requestHeader,
+  });
+};
+
+export const fetchUserVariantSubjects = async (uId) => {
+  return await axios.get(`${SUBJECTS}?user=${uId}`, {
     headers: requestHeader,
   });
 };

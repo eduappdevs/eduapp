@@ -1,13 +1,13 @@
 import { React, useState } from "react";
-import axios from "axios";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
-import { CALENDAR } from "../../../config";
-import "./views.css";
 import { asynchronizeRequest } from "../../../API";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import { getOfflineUser } from "../../../utils/OfflineManager";
+import * as SCHEDULE_SERVICE from "../../../services/schedule.service";
+import "./views.css";
 
 export default function CreateView(props) {
-  let userInfo = FetchUserInfo(localStorage.userId);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
   const [globalValue, setGlobalValue] = useState(true);
 
   const [saveText, setSaveText] = useState("Save");
@@ -90,13 +90,12 @@ export default function CreateView(props) {
         annotation_title: titleValue,
         annotation_description: descriptionValue,
         isGlobal: globalValue,
-        user_id: userInfo.id,
+        user_id: userInfo.user.id,
         subject_id: subjectInt,
       };
-      asynchronizeRequest(() => {
-        axios.post(CALENDAR, newEvent).then(() => {
-          window.location.reload();
-        });
+      asynchronizeRequest(async () => {
+        await SCHEDULE_SERVICE.createEvent(newEvent);
+        window.location.reload();
       }).then((err) => {
         if (err) {
           setPopup(true);
@@ -197,7 +196,10 @@ export default function CreateView(props) {
                 <option defaultValue={"--"}>Choose subject</option>
                 {props.data.map((subject) => {
                   if (userInfo.teaching_list !== undefined) {
-                    if (userInfo.teaching_list.includes(subject.id)) {
+                    if (
+                      userInfo.teaching_list.includes(subject.id) ||
+                      userInfo.isAdmin
+                    ) {
                       return (
                         <option
                           key={subject.id}
@@ -207,7 +209,9 @@ export default function CreateView(props) {
                         </option>
                       );
                     }
+                    return null;
                   }
+                  return null;
                 })}
               </select>
             </div>

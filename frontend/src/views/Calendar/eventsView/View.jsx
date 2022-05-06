@@ -1,11 +1,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import EditView from "./EditView";
-import "./views.css";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import { getOfflineUser } from "../../../utils/OfflineManager";
+import "./views.css";
 
 export default function View(props) {
-  let userinfo = FetchUserInfo(localStorage.userId);
+  let userinfo = FetchUserInfo(getOfflineUser().user.id);
 
   const [editEvent, setEditEvent] = useState({});
 

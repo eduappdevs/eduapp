@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import { getOfflineUser } from "../../utils/OfflineManager";
 import "./BottomButtons.css";
 
 export default function BottomButtons({ mobile }) {
@@ -11,7 +12,7 @@ export default function BottomButtons({ mobile }) {
   const [inChat, setInChat] = useState(false);
   const loc = useLocation();
 
-  let userInfo = FetchUserInfo(localStorage.userId);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
 
   const getPosition = (string, subString, index) => {
     return string.split(subString, index).join(subString).length;

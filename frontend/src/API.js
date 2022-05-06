@@ -12,12 +12,14 @@ import {
 } from "./config";
 
 export const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
-export const TOKEN = localStorage.getItem("userToken");
+export const TOKEN = "Bearer " + localStorage.eduapp_auth;
 
 const saveInLocalStorage = (userDetails) => {
   if (userDetails.data.message.id == null) {
     throw new Error("error");
   }
+
+  console.log(userDetails);
 
   localStorage.setItem("userId", userDetails.data.message.id);
   localStorage.setItem("userToken", userDetails.headers.authorization);
@@ -76,30 +78,6 @@ const apiSettings = {
   createInfo: async (body) => {
     const endpoint = `${USERS_INFO}`;
     return await await axios.post(endpoint, body);
-  },
-  logout: async () => {
-    const endpoint = `${USERS}/sign_out`;
-    return await axios
-      .delete(endpoint, {
-        headers: { Authorization: localStorage.userToken },
-      })
-      .then(() => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userToken");
-        localStorage.removeItem("isAdmin");
-        localStorage.removeItem("offline_user");
-
-        window.location.href = "/login";
-      })
-      .catch((err) => {
-        console.log(err);
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userToken");
-        localStorage.removeItem("isAdmin");
-        localStorage.removeItem("offline_user");
-
-        window.location.href = "/login";
-      });
   },
 
   deleteInfo: async (infoId) => {

@@ -36,7 +36,7 @@ class SubjectsController < ApplicationController
       render json: @subjects
     elsif params[:user]
       @TuitionsUserId = Tuition.where(user_id: params[:user]).pluck(:course_id)
-      @Subjects =[]
+      @Subjects = []
 
       for course in @TuitionsUserId do
         @Subjects += Subject.where(course_id: course)
