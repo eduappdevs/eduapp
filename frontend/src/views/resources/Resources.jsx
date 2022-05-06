@@ -1,12 +1,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import ResourcesModal from "../../components/modals/ResourcesModal";
-import axios from "axios";
-import { RESOURCES } from "../../config";
 import Loader from "../../components/loader/Loader";
 import SubjectDropdown from "../../components/subjectSelector/SubjectDropdown";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { GetSubjects } from "../../hooks/GetSubjects";
+import { getOfflineUser } from "../../utils/OfflineManager";
+import * as RESOURCE_SERVICE from "../../services/resource.service";
 import "./Resources.css";
 
 export default function Resources() {
@@ -18,8 +18,8 @@ export default function Resources() {
   const [isTeacher, setIsTeacher] = useState(false);
   const [showResources, setShowResources] = useState(true);
 
-  let userInfo = FetchUserInfo(localStorage.userId);
-  let subjects = GetSubjects(localStorage.userId);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let subjects = GetSubjects(getOfflineUser().user.id);
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -32,22 +32,19 @@ export default function Resources() {
   };
 
   const getResources = async (id) => {
-    await axios.get(RESOURCES + `?subject_id=${id}`).then((res) => {
-      console.log(res.data);
-      res.data.map((x) => {
-        if (x.firstfile != null) {
-          x.firstfile = x.firstfile.url;
-        }
-        if (x.secondfile != null) {
-          x.secondfile = x.secondfile.url;
-        }
-        if (x.thirdfile != null) {
-          x.thirdfile = x.thirdfile.url;
-        }
-        return true;
-      });
-      setResources(res.data);
+    let resources = await RESOURCE_SERVICE.fetchSubjectResources(id);
+    resources.data.map((x) => {
+      if (x.firstfile != null) {
+        x.firstfile = x.firstfile.url;
+      }
+      if (x.secondfile != null) {
+        x.secondfile = x.secondfile.url;
+      }
+      if (x.thirdfile != null) {
+        x.thirdfile = x.thirdfile.url;
+      }
     });
+    setResources(resources.data);
   };
 
   const createResource = () => {

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
 import MediaFix from "../../../utils/MediaFixer";
 import { asynchronizeRequest } from "../../../API";
-import { RESOURCES } from "../../../config";
+import * as RESOURCE_SERVICE from "../../../services/resource.service";
 import "./OpenedResource.css";
 
 export default function OpenedResource() {
@@ -14,13 +13,9 @@ export default function OpenedResource() {
   const [files, setFiles] = useState([]);
 
   const deleteResource = (id) => {
-    asynchronizeRequest(function () {
-      axios
-        .delete(RESOURCES + `/${id}`)
-        .then((res) => {
-          window.location.reload();
-        })
-        .catch((err) => console.log);
+    asynchronizeRequest(async function () {
+      await RESOURCE_SERVICE.deleteResource(id);
+      window.location.reload();
     });
   };
 
@@ -104,7 +99,7 @@ export default function OpenedResource() {
     asynchronizeRequest(async function () {
       let response = "";
       try {
-        response = await axios.get(RESOURCES + "/" + getResourceId());
+        response = await RESOURCE_SERVICE.findById(getResourceId());
       } catch (err) {
         window.location.href = "/resources";
       }

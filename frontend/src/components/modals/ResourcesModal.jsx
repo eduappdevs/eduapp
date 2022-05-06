@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import API, { asynchronizeRequest } from "../../API";
-import "./ResourcesModal.css";
+import { asynchronizeRequest } from "../../API";
+import * as RESOURCE_SERVICE from "../../services/resource.service";
 import StandardModal from "./standard-modal/StandardModal";
-let finalData = new FormData();
+import "./ResourcesModal.css";
 
+let finalData = new FormData();
 export default function ResourcesModal(props) {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [displayFileWarning, setWarnDisplay] = useState("none");
@@ -104,7 +105,7 @@ export default function ResourcesModal(props) {
     finalData.append("subject_id", props.subject);
 
     asynchronizeRequest(async function () {
-      await API.postResource(finalData);
+      await RESOURCE_SERVICE.createResource(finalData);
       document.getElementsByClassName(
         "resources__createResourceModal"
       )[0].style.display = "none";
