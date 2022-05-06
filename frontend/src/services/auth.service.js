@@ -21,16 +21,14 @@ export const saveInLocalStorage = (userDetails) => {
 };
 
 export const login = async (body) => {
-  const endpoint = `${USERS}/sign_in`;
-  return await axios.post(endpoint, body).then((res) => {
+  return await axios.post(`${USERS}/sign_in`, body).then((res) => {
     saveInLocalStorage(res);
   });
 };
 
 export const logout = async () => {
-  const endpoint = `${USERS}/sign_out`;
   return await axios
-    .delete(endpoint, {
+    .delete(`${USERS}/sign_out`, {
       headers: { Authorization: getOfflineUser().token },
     })
     .then(() => {
@@ -45,6 +43,8 @@ export const logout = async () => {
       console.log(err);
       localStorage.removeItem("eduapp_auth");
       localStorage.removeItem("offline_user");
+      localStorage.removeItem("previousMenuPage");
+      localStorage.removeItem("resourceId");
 
       window.location.href = "/login";
     });
