@@ -10,6 +10,7 @@ export default function UserConfig(props) {
   const fetchUsers = () => {
     API.asynchronizeRequest(function () {
       USERSERVICE.fetchUserInfos().then((us) => {
+        console.log(us.data);
         setUsers(us.data);
       });
     });
@@ -25,24 +26,16 @@ export default function UserConfig(props) {
       const payload = new FormData();
       payload.append("user[email]", email);
       payload.append("user[password]", pass);
+      payload.append("isAdmin", isAdmin);
 
       API.asynchronizeRequest(function () {
         USERSERVICE.createUser(payload).then((res) => {
-          const payload = new FormData();
-          payload.delete("user[email]");
-          payload.delete("user[password]");
-          payload.append("user_id", res.data.message.id);
-          payload.append("user_name", res.data.message.email.split("@")[0]);
-          payload.append("isAdmin", isAdmin);
-
-          USERSERVICE.createInfo(payload).then(() => {
-            userEnroll(res.data.message.id);
-            fetchUsers();
-            document.getElementById("u_admin").checked = false;
-            document.getElementById("u_email").value = null;
-            document.getElementById("u_pass").value = null;
-            swapIcons(false);
-          });
+          userEnroll(res.data.message.id);
+          fetchUsers();
+          document.getElementById("u_admin").checked = false;
+          document.getElementById("u_email").value = null;
+          document.getElementById("u_pass").value = null;
+          swapIcons(false);
         });
       });
     }

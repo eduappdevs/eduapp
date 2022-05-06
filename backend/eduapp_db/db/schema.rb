@@ -162,8 +162,9 @@ ActiveRecord::Schema.define(version: 15) do
     t.string "user_name"
     t.string "profile_image"
     t.integer "teaching_list", default: [], array: true
+    t.boolean "isTeacher", default: false
     t.bigint "user_id"
-    t.boolean "isAdmin"
+    t.boolean "isAdmin", default: false
     t.string "googleid"
     t.boolean "isLoggedWithGoogle"
     t.datetime "created_at", precision: 6, null: false
