@@ -4,7 +4,7 @@ import MenuHeader from "./menuHeader/MenuHeader";
 import * as AUTH_SERVICE from "../../services/auth.service";
 import "./Menu.css";
 
-export default function Menu(props) {
+export default function Menu() {
   return (
     <div
       className={

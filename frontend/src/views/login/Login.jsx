@@ -1,5 +1,4 @@
 import React from "react";
-
 import LoginAuth from "../../components/auth/LoginAuth";
 import "./Login.css";
 

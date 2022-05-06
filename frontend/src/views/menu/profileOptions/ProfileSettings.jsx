@@ -15,13 +15,14 @@ import {
   updateUserImageOffline,
 } from "../../../utils/OfflineManager";
 import FirebaseStorage from "../../../utils/FirebaseStorage";
-import API, { asynchronizeRequest } from "../../../API";
-import "./ProfileSettings.css";
+import { asynchronizeRequest } from "../../../API";
+import * as USER_SERVICE from "../../../services/user.service";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import "./ProfileSettings.css";
 
 export default function ProfileSettings() {
-  let userInfo = FetchUserInfo(localStorage.userId);
-  let courses = GetCourses();
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let courses = GetCourses(getOfflineUser().user.id);
 
   const [userName, setUserName] = useState(null);
   const [changeImage, setChangeImage] = useState(null);
@@ -64,7 +65,10 @@ export default function ProfileSettings() {
       getDownloadURL(snap.ref).then((url) => {
         userFormData.append("profile_image", url);
         asynchronizeRequest(function () {
-          API.updateInfo(localStorage.userId, userFormData).then(() => {
+          USER_SERVICE.editUserInfo(
+            getOfflineUser().user.id,
+            userFormData
+          ).then(() => {
             updateUserImageOffline(url).then(() => {
               window.location.href = "/home";
             });
@@ -100,18 +104,13 @@ export default function ProfileSettings() {
     let newImg = null;
     if (changeImage != null) {
       newImg = FirebaseStorage.getRef(
-        "user_profiles/" +
-          JSON.parse(localStorage.offline_user).user_id +
-          "/" +
-          changeImage.name
+        "user_profiles/" + getOfflineUser().user.id + "/" + changeImage.name
       );
     }
 
     if (newImg) {
       list(
-        FirebaseStorage.getRef(
-          "user_profiles/" + JSON.parse(localStorage.offline_user).user_id
-        )
+        FirebaseStorage.getRef("user_profiles/" + getOfflineUser().user.id)
       ).then((snap) => {
         if (snap.items.length !== 0) {
           deleteObject(snap.items[0]).then(() => {
@@ -121,9 +120,11 @@ export default function ProfileSettings() {
       });
     } else {
       asynchronizeRequest(async function () {
-        API.updateInfo(localStorage.userId, newUserInfo).then(() => {
-          window.location.href = "/home";
-        });
+        USER_SERVICE.editUserInfo(getOfflineUser().user.id, newUserInfo).then(
+          () => {
+            window.location.href = "/home";
+          }
+        );
       }).then((error) => {
         if (error) {
           switchSaveState(false);
@@ -235,8 +236,8 @@ export default function ProfileSettings() {
           <ul className="coursesList">
             {courses.map((course) => {
               return (
-                <li key={course.course.id} className="courseItem">
-                  <p>{course.course.name}</p>
+                <li key={course.id} className="courseItem">
+                  <p>{course.name}</p>
                   {course.isTeacher ? (
                     <img src="/assets/teacher.svg" alt="teacher" />
                   ) : (

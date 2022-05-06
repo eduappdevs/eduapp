@@ -18,7 +18,6 @@ export const GetCourses = (userId) => {
         } else {
           try {
             const courses = (await COURSE_SERVICE.fetchCourses()).data;
-            console.log(courses);
             setCourses([...courses]);
           } catch (error) {
             console.log(error);
