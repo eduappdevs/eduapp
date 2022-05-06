@@ -6,6 +6,7 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import * as CHAT_SERVICE from "../../services/chat.service";
 import * as USER_SERVICE from "../../services/user.service";
 import "./ChatMenu.css";
+import { getOfflineUser } from "../../utils/OfflineManager";
 
 let acManager = new ACManager();
 export default function ChatMenu() {
@@ -14,15 +15,17 @@ export default function ChatMenu() {
 
   const [showPopup, setShowPopup] = useState(false);
 
-  let userInfo = FetchUserInfo(localStorage.userId);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
 
   const getChats = async () => {
-    let chats = await CHAT_SERVICE.fetchPersonalChats(localStorage.userId);
+    let chats = await CHAT_SERVICE.fetchPersonalChats(getOfflineUser().user.id);
     for (let c of chats.data) {
       if (c.chat_base.chat_name.includes("private_chat_")) {
         let nameDisect = c.chat_base.chat_name.split("_");
+        nameDisect[2] = parseInt(nameDisect[2]);
+        nameDisect[3] = parseInt(nameDisect[3]);
         let searchId =
-          nameDisect.indexOf(localStorage.userId) === 3
+          nameDisect.indexOf(getOfflineUser().user.id) === 3
             ? nameDisect[2]
             : nameDisect[3];
         let privateCounterPart = await USER_SERVICE.findById(searchId);

@@ -3,9 +3,9 @@ import ChatBubble from "./chatBubbles/ChatBubble";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ACManager from "../../../utils/websockets/actioncable/ACManager";
 import { asynchronizeRequest } from "../../../API";
-import axios from "axios";
-import { CHAT_BASE, CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../../config";
 import * as USER_SERVICE from "../../../services/user.service";
+import * as CHAT_SERVICE from "../../../services/chat.service";
+import { getOfflineUser } from "../../../utils/OfflineManager";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 import "./MainChat.css";
 
@@ -27,7 +27,7 @@ export default function MainChat() {
       acInstance.sendChannelCmd(
         "message",
         inputMsg.value,
-        localStorage.userId,
+        getOfflineUser().user.id,
         new Date().toISOString()
       );
       inputMsg.value = "";
@@ -56,13 +56,15 @@ export default function MainChat() {
     let chatId = acInstance.chatCode.substring(1);
 
     asynchronizeRequest(async function () {
-      let cInfo = await axios.get(CHAT_BASE + "/" + chatId);
-      let cPeople = await axios.get(CHAT_PARTICIPANTS + "?chat_id=" + chatId);
+      let cInfo = await CHAT_SERVICE.findChatById(chatId);
+      let cPeople = await CHAT_SERVICE.fetchChatUsers(chatId);
 
       if (cInfo.data.chat_name.includes("private_chat_")) {
         let nameDisect = cInfo.data.chat_name.split("_");
+        nameDisect[2] = parseInt(nameDisect[2]);
+        nameDisect[3] = parseInt(nameDisect[3]);
         let searchId =
-          nameDisect.indexOf(localStorage.userId) === 3
+          nameDisect.indexOf(getOfflineUser().user.id) === 3
             ? nameDisect[2]
             : nameDisect[3];
         let privateCounterPart = await USER_SERVICE.findById(searchId);
@@ -77,7 +79,7 @@ export default function MainChat() {
       chat.chatParticipants = cPeople.data;
     }).then(() => {
       acInstance.generateChannelConnection(acInstance.chatCode).then(() => {
-        axios.get(CHAT_MESSAGES + "?chat_base_id=" + chatId).then((msgs) => {
+        CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
           setMessages(msgs.data);
           setTimeout(() => {
             let messageBox = document.getElementsByClassName(
@@ -124,7 +126,15 @@ export default function MainChat() {
           extrasHandler={() => {
             setPopup(true);
           }}
-          chatImage={chat.chatInfo ? chat.chatInfo.image : ""}
+          chatImage={
+            chat.chatInfo
+              ? chat.chatInfo.image
+                ? chat.chatInfo.image
+                : chat.chatInfo.isGroup
+                ? "https://d22r54gnmuhwmk.cloudfront.net/rendr-fe/img/default-organization-logo-6aecc771.gif"
+                : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+              : ""
+          }
         />
 
         <StandardModal
@@ -146,8 +156,10 @@ export default function MainChat() {
                   <ChatBubble
                     key={msg.user.id + "-" + msg.id}
                     message={msg.message}
-                    // eslint-disable-next-line eqeqeq
-                    foreign={msg.user.id != localStorage.userId ? true : false}
+                    foreign={
+                      // eslint-disable-next-line eqeqeq
+                      msg.user.id != getOfflineUser().user.id ? true : false
+                    }
                     isGroup={msg.chat_base.isGroup}
                     author={msg.user.email}
                     isMsgRecent={false}
@@ -161,8 +173,10 @@ export default function MainChat() {
                   <ChatBubble
                     key={msg.user.id + "-" + msg.id}
                     message={msg.message}
-                    // eslint-disable-next-line eqeqeq
-                    foreign={msg.user.id != localStorage.userId ? true : false}
+                    foreign={
+                      // eslint-disable-next-line eqeqeq
+                      msg.user.id != getOfflineUser().user.id ? true : false
+                    }
                     isGroup={msg.chat_base.isGroup}
                     author={msg.user.email}
                     isMsgRecent={true}

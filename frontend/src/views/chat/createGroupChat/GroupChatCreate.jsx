@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import { asynchronizeRequest } from "../../../API.js";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import { getOfflineUser } from "../../../utils/OfflineManager";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
 import "./GroupChatCreate.css";
@@ -60,7 +61,7 @@ export default function GroupChatCreate() {
         for (let u of match.data) {
           if (
             currentParticipants.includes(u.id) ||
-            u.id === parseInt(localStorage.userId)
+            u.id === parseInt(getOfflineUser().user.id)
           )
             continue;
           filteredUsers.push(u);
@@ -99,7 +100,7 @@ export default function GroupChatCreate() {
             isGroup: true,
           },
           participants: {
-            user_ids: [localStorage.userId, ...finalParticipants],
+            user_ids: [getOfflineUser().user.id, ...finalParticipants],
           },
         });
         window.location.href = "/chat/g" + chat_id;
