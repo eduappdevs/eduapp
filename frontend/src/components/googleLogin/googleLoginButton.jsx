@@ -1,6 +1,5 @@
 import React from "react";
 import { GoogleLogin } from "react-google-login";
-import API from "../../API";
 import * as USER_SERVICE from "../../services/user.service";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";

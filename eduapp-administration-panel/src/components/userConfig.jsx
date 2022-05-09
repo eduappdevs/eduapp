@@ -405,8 +405,6 @@ export default function UserConfig(props) {
                         </td>
                       </tr>
                     );
-                  } else {
-                    return null;
                   }
 
                   if (search.length > 0) {

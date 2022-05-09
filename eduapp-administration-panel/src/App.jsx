@@ -1,31 +1,25 @@
-import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ControlPanel from "./views/ControlPanel";
-import * as AUTH_SERVICE from "./services/auth.service";
+import RequireAuth from "./components/auth/RequireAuth";
+import Login from "./views/login/Login";
+import "./index.css";
 
-function App() {
-  useEffect(() => {
-    if (!localStorage.userToken) {
-      let form = new FormData();
-
-      form.append("user[email]", process.env.REACT_APP_TEMP_USER);
-      form.append("user[password]", process.env.REACT_APP_TEMP_PSWD);
-
-      AUTH_SERVICE.login(form).then(() => {
-				window.location.reload();
-			});
-    }
-  }, []);
+export default function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Routes>
-          <Route exact path="/" element={<ControlPanel />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+        {RequireAuth() ? (
+          <Routes>
+            <Route exact path="/" element={<ControlPanel />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        ) : (
+          <Routes>
+            <Route exact path="/login" element={<Login />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </Routes>
+        )}
       </BrowserRouter>
     </div>
   );
 }
-
-export default App;

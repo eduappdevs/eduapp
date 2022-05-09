@@ -18,7 +18,7 @@ export const fetchUser = async () => {
 };
 
 export const createUser = async (body) => {
-  return await axios.post(`${USERS}`, body, { headers: requestHeader });
+  return await axios.post(`${USERS}`, body);
 };
 
 export const deleteUser = async (id) => {
