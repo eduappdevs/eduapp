@@ -1,6 +1,17 @@
 class Users::SessionsController < Devise::SessionsController
 
     respond_to :json
+
+		def create
+			self.resource = warden.authenticate!(auth_options)
+			set_flash_message!(:notice, :signed_in)
+			sign_in(resource_name, resource)
+			yield resource if block_given?
+			@user_info = UserInfo.where(user_id: resource.id).first
+			@user_info = JSON.parse(@user_info.to_json)
+			@user_info = @user_info.merge({user: resource})
+			respond_with @user_info
+		end
   
     private
 

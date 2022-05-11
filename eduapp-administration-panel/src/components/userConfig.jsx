@@ -23,13 +23,12 @@ export default function UserConfig(props) {
 
     if (email && pass) {
       swapIcons(true);
-      const payload = new FormData();
-      payload.append("user[email]", email);
-      payload.append("user[password]", pass);
-      payload.append("isAdmin", isAdmin);
-
       API.asynchronizeRequest(function () {
-        USERSERVICE.createUser(payload).then((res) => {
+        USERSERVICE.createUser({
+          email: email,
+          password: pass,
+          isAdmin: isAdmin,
+        }).then((res) => {
           userEnroll(res.data.user.id);
           fetchUsers();
           document.getElementById("u_admin").checked = false;

@@ -34,7 +34,9 @@ export const editUser = async (body) => {
 };
 
 export const enroll_teacher = async (uId, subject_id) => {
-  return await axios.post(`${USERS_INFO}/add_subject/${uId}/${subject_id}`, {
+  return await axios.request({
+    url: USERS_INFO + `/add_subject/${uId}/${subject_id}`,
+    method: "POST",
     headers: requestHeader,
   });
 };

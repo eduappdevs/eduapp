@@ -14,20 +14,18 @@ export default function Initialization() {
       valid = false;
 
     if (valid) {
-      let user = new FormData();
-
-      user.append("user[email]", form.admin_user.value);
-      user.append("user[email]", form.admin_pswd.value);
-      user.append("isAdmin", true);
-
-      await USER_SERVICE.createUser(user);
-      window.location.href = "/";
+      await USER_SERVICE.createUser({
+        email: form.admin_user.value,
+        password: form.admin_pswd.value,
+        isAdmin: true,
+      });
+      window.location.reload();
     }
   };
 
   return (
     <div className="init-container">
-      <div className="logo">
+      <div className="logo init-logo">
         <img src={logogeduapp} alt="eduapplogo" />
       </div>
       <h2>Welcome to Eduapp Administration!</h2>

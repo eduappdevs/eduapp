@@ -18,6 +18,7 @@ export const saveUserOffline = async (userInfo) => {
     userInfo.profile_image = img64;
   }
 
+  if (userInfo.googleid !== undefined) delete userInfo.googleid;
   localStorage.setItem("offline_user", JSON.stringify(userInfo));
 };
 

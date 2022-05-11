@@ -8,7 +8,7 @@ class CreateUserInfos < ActiveRecord::Migration[6.1]
       t.references :user, foreign_key: true
       t.boolean :isAdmin, default: false
       t.string :googleid
-      t.boolean :isLoggedWithGoogle
+      t.boolean :isLoggedWithGoogle, default: false
 
       t.timestamps
     end

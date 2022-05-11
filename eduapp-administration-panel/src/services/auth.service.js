@@ -1,18 +1,14 @@
 import axios from "axios";
-import { API_URL } from "../API";
-import { getOfflineUser } from "../utils/OfflineManager";
+import { API_URL, TOKEN } from "../API";
+import { saveUserOffline } from "../utils/OfflineManager";
 export const USERS = `${API_URL}/users`;
 
 export const saveInLocalStorage = (userDetails) => {
   if (userDetails.data.message.id == null) {
-    throw new Error("error");
+    throw new Error("Login was not made correctly.");
   }
 
-  let offlineUser = {
-    user: userDetails.data.message,
-  };
-
-  localStorage.setItem("offline_user", JSON.stringify(offlineUser));
+  saveUserOffline(userDetails.data.message);
   localStorage.setItem(
     "eduapp_auth",
     userDetails.headers.authorization.substring(7)
@@ -22,9 +18,10 @@ export const saveInLocalStorage = (userDetails) => {
 
 export const login = async (body) => {
   return await axios.post(`${USERS}/sign_in`, body).then((res) => {
-    console.log(res.data.message);
-    if (res.data.message.isAdmin !== true)
+    if (res.data.message.isAdmin !== true) {
       console.warn("User is not administrator!");
+      return;
+    }
 
     saveInLocalStorage(res);
   });
@@ -37,7 +34,7 @@ export const hasInit = async () => {
 export const logout = async () => {
   return await axios
     .delete(`${USERS}/sign_out`, {
-      headers: { Authorization: getOfflineUser().token },
+      headers: { Authorization: TOKEN },
     })
     .then(() => {
       localStorage.removeItem("eduapp_auth");

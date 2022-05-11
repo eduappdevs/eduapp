@@ -21,7 +21,7 @@ Rails.application.routes.draw do
                sessions: 'users/sessions',
                registrations: 'users/registrations',
                omniauth_callbacks: 'users/omniauth_callbacks'
-             }
+             }, defaults: { format: :json }
 	delete 'users/remove/:id', to: 'user_infos#destroyuser'
   get '/google-login', to: 'glogin#login'
   get '/member-data', to: 'members#show'
