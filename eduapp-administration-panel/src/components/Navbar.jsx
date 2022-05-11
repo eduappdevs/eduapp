@@ -131,7 +131,7 @@ export default function Navbar(props) {
           <img src={logogeduapp} alt="eduapplogo" />
         </div>
         <LanguageSwitcher switchLanguage={switchLanguage} />
-        <div id="liveClock"></div>
+        <div id="liveClock" />
       </div>
       <div className="schedule-button-container button-container">
         <span>

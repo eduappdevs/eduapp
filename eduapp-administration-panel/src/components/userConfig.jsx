@@ -10,7 +10,6 @@ export default function UserConfig(props) {
   const fetchUsers = () => {
     API.asynchronizeRequest(function () {
       USERSERVICE.fetchUserInfos().then((us) => {
-        console.log(us.data);
         setUsers(us.data);
       });
     });

@@ -77,7 +77,7 @@ export default function EnrollConfig(props) {
         <table>
           <thead>
             <tr>
-              <th></th>
+              <th>{props.language.add}</th>
               <th>{props.language.user}</th>
               <th>{props.language.course}</th>
             </tr>

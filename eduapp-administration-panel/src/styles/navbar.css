@@ -14,11 +14,12 @@
 	width: 16%;
 	background-color: rgb(237, 237, 237);
 }
-.navbar-header{
+
+.navbar-header {
 	display: flex;
 	flex-direction: column;
-
 }
+
 a {
 	color: rgb(58, 58, 58);
 	text-decoration: none;
@@ -52,14 +53,17 @@ a {
 	border-radius: 10px 10px 0 0;
 
 }
-.suboptions > li {
+
+.suboptions>li {
 	transition: all 0.3s ease-in-out;
 }
-.button-suboptions{
+
+.button-suboptions {
 	transition: all 0.3s ease-in-out;
 
 }
-.button-suboptions:hover{
+
+.button-suboptions:hover {
 	transform: scale(1.1);
 }
 
@@ -111,10 +115,7 @@ a {
 	background-color: transparent;
 }
 
-
-
-
-.active{
+.active {
 	background-color: orange !important;
 	color: white;
 	transform: scale(0.9);

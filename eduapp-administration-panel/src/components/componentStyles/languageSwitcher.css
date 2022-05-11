@@ -31,10 +31,21 @@
 }
 
 .languageSwitcher>ul>li>span {
+	font-size: 1.25rem;
 	filter: grayscale(1);
 	transition: all 0.3s ease-in-out;
 }
 
 .languageSelected {
 	filter: grayscale(0) !important;
+}
+
+.logout-icon {
+	margin-left: 10px;
+	cursor: pointer;
+	transition: color 0.2s ease-in-out;
+}
+
+.logout-icon:hover {
+	color: grey;
 }
