@@ -7,12 +7,19 @@ export default function StandardModal({
   iconFill,
   iconColor,
   isQuestion,
+  customOkay,
+  customCancel,
+  customYes,
+  customNo,
+  hasCancel,
   onYesAction,
   onNoAction,
   onCloseAction,
+  onCancelAction,
   hasTransition,
   hasIconAnimation,
   showLoader,
+  form
 }) {
   iconFill = localStorage.darkMode === "1" ? true : iconFill || false;
   // TYPES = ['success', 'error', 'warning', 'info']
@@ -133,21 +140,32 @@ export default function StandardModal({
           </div>
         )}
         <h3>{text}</h3>
+        {form && (form)}
 
-        {isQuestion && !showLoader ? (
-          <div className="standard-modal-btn-container">
-            <div className="standard-modal-btn" onClick={onYesAction}>
-              Yes
+
+        <div className="standard-modal-btn-container">
+          {isQuestion && !showLoader && (
+            <>
+              <div className="standard-modal-btn" onClick={onYesAction}>
+                {customYes ? customYes : "Yes"}
+              </div>
+              <div className="standard-modal-btn" onClick={onNoAction}>
+                {customNo ? customNo : "No"}
+              </div>
+            </>
+          )}
+          {!isQuestion && !showLoader && (
+            <div className="standard-modal-btn" onClick={onCloseAction}>
+              {customOkay ? customOkay : "Okay"}
             </div>
-            <div className="standard-modal-btn" onClick={onNoAction}>
-              No
+          )}
+          {hasCancel && !showLoader && (
+            <div className="standard-modal-btn" onClick={onCancelAction}>
+              {customCancel ? customCancel : "Cancel"}
             </div>
-          </div>
-        ) : !isQuestion && !showLoader ? (
-          <div className="standard-modal-btn" onClick={onCloseAction}>
-            Okay
-          </div>
-        ) : null}
+          )}
+        </div>
+
         {showLoader && (
           <div className="standard-modal-btn">
             <div>

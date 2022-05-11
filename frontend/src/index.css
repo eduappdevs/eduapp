@@ -13,6 +13,7 @@ body {
 	src: url("fonts/Consolas.ttf") format("ttf");
 	/* Safari */
 	src: url("fonts/Consolas.woff") format("woff");
+	
 }
 
 code {

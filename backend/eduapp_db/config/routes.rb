@@ -1,11 +1,11 @@
 Rails.application.routes.draw do  
 	mount ActionCable.server => "/chat"
+  get 'calendar_annotations/index'
   resources :chat_messages
   resources :chat_participants
   resources :chat_base_infos
   resources :chat_bases
   resources :subjects
-  get 'calendar_annotations/index'
   resources :calendar_annotations
   resources :tuitions
   resources :courses
@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :resources
   resources :eduapp_user_sessions
   resources :user_infos
+
 	post 'user_infos/add_subject/:user_id/:subject_id', to: 'user_infos#add_subject'
 	delete 'user_infos/remove_subject/:user_id/:subject_id', to: 'user_infos#remove_subject'
   default_url_options :host => "localhost:3000"
@@ -26,4 +27,11 @@ Rails.application.routes.draw do
   get '/google-login', to: 'glogin#login'
   get '/member-data', to: 'members#show'
   get '/ping', to: 'static#home'
+
+  devise_scope :user do
+    get "password/reset", to: "users/passwords#get_reset_password_token"
+    get "reset_password", to: "users/passwords#send_reset_password_link"
+    post "password/reset", to: "users/passwords#do_reset_password"
+  end
+
 end

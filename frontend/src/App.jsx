@@ -18,6 +18,7 @@ import MainChat from "./views/chat/mainChat/MainChat";
 import Menu from "./views/menu/Menu";
 import ProfileSettings from "./views/menu/profileOptions/ProfileSettings";
 import MenuSettings from "./views/menu/menu-settings/MenuSettings";
+import PasswordRecovery from "./views/passwordRecovery/PasswordRecovery";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -37,7 +38,7 @@ export default function App() {
   useEffect(() => {
     setNeedsExtras(
       !new RegExp(
-        "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*))$"
+        "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*)|password/.*)$"
       ).test(window.location.href)
     );
 
@@ -110,6 +111,7 @@ export default function App() {
         ) : (
           <Routes>
             <Route exact path="/login" element={<Login />} />
+            <Route path="/password/reset" element={<PasswordRecovery/>} />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}

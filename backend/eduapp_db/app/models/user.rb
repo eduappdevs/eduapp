@@ -3,11 +3,12 @@ class User < ApplicationRecord
          :jwt_authenticatable,
          :registerable,
          :omniauthable,
+         :recoverable,
          omniauth_providers: [:google_oauth2],
          jwt_revocation_strategy: JwtDenylist
          
   has_one :user_info
-
+  
   def self.from_omniauth(access_token)
     data = access_token.info
     puts data
