@@ -1,6 +1,5 @@
 import axios from "axios";
-import { API_URL } from "../API";
-import { getOfflineUser } from "../utils/OfflineManager";
+import { API_URL, TOKEN } from "../API";
 export const USERS = `${API_URL}/users`;
 
 export const saveInLocalStorage = (userDetails) => {
@@ -29,7 +28,7 @@ export const login = async (body) => {
 export const logout = async () => {
   return await axios
     .delete(`${USERS}/sign_out`, {
-      headers: { Authorization: getOfflineUser().token },
+      headers: { Authorization: TOKEN },
     })
     .then(() => {
       localStorage.removeItem("eduapp_auth");
