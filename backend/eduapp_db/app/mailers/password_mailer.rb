@@ -11,4 +11,20 @@ class PasswordMailer < ApplicationMailer
       render json: {status: 'failure'}
     end
   end
+
+
+  def send_confirmation_email
+    @user = params[:user]
+    @confirmation_code = SecureRandom.hex
+    @expireCodeDate = DateTime.now + 20.minutes
+    if @user.present?
+      @user.confirmation_code = @confirmation_code
+      @user.confirmation_code_exp_time = @expireCodeDate
+      @user.save
+      mail(to: @user.email, subject: 'EduApp Confirmation', confirmation_code: @confirmation_code)
+      render json: {status: 'success', expires_in: @expireCodeDate , message: 'code sent to '+ @user.email}
+    else
+      render json: {status: 'failure', message: 'User not found in send_confirmation_email'}
+    end
+  end
 end

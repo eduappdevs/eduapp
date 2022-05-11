@@ -18,6 +18,7 @@ import FirebaseStorage from "../../../utils/FirebaseStorage";
 import API, { asynchronizeRequest } from "../../../API";
 import "./ProfileSettings.css";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import ChangePasswordButton from "../../../components/ChangePasswordButton";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(localStorage.userId);
@@ -224,7 +225,9 @@ export default function ProfileSettings() {
             />
           </svg>
         </div>
+        <ChangePasswordButton/>
         <GoogleLoginButton useType={"merge"} />
+        
         {userInfo.isAdmin && (
           <div className="youareadmin">
             <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
