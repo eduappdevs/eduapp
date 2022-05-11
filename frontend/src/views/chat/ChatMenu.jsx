@@ -5,8 +5,9 @@ import StandardModal from "../../components/modals/standard-modal/StandardModal"
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import * as CHAT_SERVICE from "../../services/chat.service";
 import * as USER_SERVICE from "../../services/user.service";
-import "./ChatMenu.css";
 import { getOfflineUser } from "../../utils/OfflineManager";
+import RequireAuth from "../../components/auth/RequireAuth";
+import "./ChatMenu.css";
 
 let acManager = new ACManager();
 export default function ChatMenu() {
@@ -41,6 +42,7 @@ export default function ChatMenu() {
 
   useEffect(() => {
     acManager.closeConnection();
+    RequireAuth();
     getChats();
   }, []);
 

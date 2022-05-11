@@ -9,6 +9,7 @@ import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import { asynchronizeRequest } from "../../API";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import "./Home.css";
+import RequireAuth from "../../components/auth/RequireAuth";
 
 export default function Home() {
   const [editFields, setFields] = useState([]);
@@ -193,6 +194,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    RequireAuth();
     checkMediaQueries();
 
     if (window.innerWidth < 1100) {

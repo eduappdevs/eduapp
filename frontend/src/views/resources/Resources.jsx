@@ -8,6 +8,7 @@ import { GetSubjects } from "../../hooks/GetSubjects";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import * as RESOURCE_SERVICE from "../../services/resource.service";
 import "./Resources.css";
+import RequireAuth from "../../components/auth/RequireAuth";
 
 export default function Resources() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -78,6 +79,7 @@ export default function Resources() {
   };
 
   useEffect(() => {
+    RequireAuth();
     checkMediaQueries();
 
     //First check
