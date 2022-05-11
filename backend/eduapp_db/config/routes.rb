@@ -16,7 +16,7 @@ Rails.application.routes.draw do
 
 	post 'user_infos/add_subject/:user_id/:subject_id', to: 'user_infos#add_subject'
 	delete 'user_infos/remove_subject/:user_id/:subject_id', to: 'user_infos#remove_subject'
-  default_url_options :host => "localhost:3000"
+	default_url_options :host => "localhost:3000"
   devise_for :users,
              controllers: {
                sessions: 'users/sessions',

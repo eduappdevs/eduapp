@@ -19,10 +19,13 @@ import Menu from "./views/menu/Menu";
 import ProfileSettings from "./views/menu/profileOptions/ProfileSettings";
 import MenuSettings from "./views/menu/menu-settings/MenuSettings";
 import PasswordRecovery from "./views/passwordRecovery/PasswordRecovery";
+import GroupChatCreate from "./views/chat/createGroupChat/GroupChatCreate";
+import DirectChatCreate from "./views/chat/createDirectChat/DirectChatCreate";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
-  const [ItsMobileDevice, setItsMobileDevice] = useState(false);
+  const [needsLoader, setNeedsLoader] = useState(true);
+  const [ItsMobileDevice, setItsMobileDevice] = useState(null);
   let userinfo = FetchUserInfo(localStorage.userId);
 
   const checkMediaQueries = () => {
@@ -42,6 +45,12 @@ export default function App() {
       ).test(window.location.href)
     );
 
+    setNeedsLoader(
+      !new RegExp("/(menu(/.*)?|chat/create/(direct|group))$").test(
+        window.location.href
+      )
+    );
+
     if (new RegExp("/(resource/[0-9]+)$").test(window.location.href)) {
       window.addEventListener("canLoadResource", () => {
         setTimeout(() => {
@@ -49,7 +58,9 @@ export default function App() {
         }, 300);
       });
     } else if (
-      new RegExp("/(chat/([a-z]|[A-Z]|[0-9])(.*))$").test(window.location.href)
+      new RegExp("/(?!chat/create)(chat/([a-z]|[A-Z]|[0-9])(.*))$").test(
+        window.location.href
+      )
     ) {
       window.addEventListener("canLoadChat", () => {
         setTimeout(() => {
@@ -78,7 +89,9 @@ export default function App() {
     <>
       <BrowserRouter>
         <React.Fragment>
-          <Loader />
+          <div style={{ display: needsLoader ? "flex" : "none" }}>
+            <Loader />
+          </div>
         </React.Fragment>
         {needsExtras && (
           <React.Fragment>
@@ -99,6 +112,8 @@ export default function App() {
             {/* Pages Subroutes */}
             <Route path="/resource/:resourceId" element={<OpenedResource />} />
             <Route path="/chat/:chatId" element={<MainChat />} />
+            <Route path="/chat/create/group" element={<GroupChatCreate />} />
+            <Route path="/chat/create/direct" element={<DirectChatCreate />} />
 
             {/* Menu */}
             <Route path="/menu" element={<Menu />} />
@@ -115,7 +130,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}
-        {needsExtras && (
+        {needsExtras && ItsMobileDevice && (
           <React.Fragment>
             <BottomButtons mobile={ItsMobileDevice} />
           </React.Fragment>

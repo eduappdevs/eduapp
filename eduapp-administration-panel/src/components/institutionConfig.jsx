@@ -3,7 +3,7 @@ import * as API from "../API";
 import * as INSTITUTIONSERVICE from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
-import Input from './Input';
+import Input from "./Input";
 import "../styles/institutionConfig.css";
 
 export default function InstitutionConfig(props) {
@@ -28,13 +28,13 @@ export default function InstitutionConfig(props) {
       API.asynchronizeRequest(async function () {
         INSTITUTIONSERVICE.createInstitution({ name: name }).then((i) => {
           COURSESERVICE.createCourse({
-            name: "Noticias",
+            name: "General",
             institution_id: i.data.id,
           }).then((s) => {
             SUBJECTSERVICE.createSubject({
-              name: "Noticias",
+              name: "General",
               teacherInCharge: name,
-              description: "Noticias para el instituto " + name,
+              description: "Automated resource tab for all users in " + name,
               color: "#96ffb2",
               course_id: parseInt(s.data.id),
             }).then(() => {
@@ -125,7 +125,11 @@ export default function InstitutionConfig(props) {
                   </button>
                 </td>
                 <td>
-                  <Input name="i_name" id="i_name" placeholder={props.language.name}/>
+                  <Input
+                    name="i_name"
+                    id="i_name"
+                    placeholder={props.language.name}
+                  />
                 </td>
               </tr>
             ) : institutions ? (

@@ -36,6 +36,22 @@ export const createParticipant = async (data) => {
     return await axios.post(`${CHAT_PARTICIPANT}`, data, { headers: requestHeader })
 }
 
+export const createCompleteChat = async (chat_info) => {
+    let chat_base = await createChat(chat_info.base);
+
+    let hasBeenAdmin = false;
+    for (let u of chat_info.participants.user_ids) {
+        await createParticipant({
+            chat_base_id: chat_base.data.id,
+            user_id: u,
+            isChatAdmin: hasBeenAdmin ? false : true,
+        });
+        hasBeenAdmin = true;
+    }
+
+    return chat_base.data.id;
+};
+
 //Message 
 export const fetchMessage = async () => {
     return await axios.get(`${CHAT_MESSAGES}`, { headers: requestHeader })

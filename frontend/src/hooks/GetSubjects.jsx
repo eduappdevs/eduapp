@@ -12,7 +12,6 @@ export const GetSubjects = (id) => {
           setSubject([...subject]);
         } catch (error) {
           console.log(error);
-          console.log("token", localStorage.userToken);
         }
       }
     };

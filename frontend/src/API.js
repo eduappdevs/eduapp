@@ -11,6 +11,9 @@ import {
   SUBJECT,
 } from "./config";
 
+export const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
+export const TOKEN = localStorage.getItem("userToken");
+
 const saveInLocalStorage = (userDetails) => {
   if (userDetails.data.message.id == null) {
     throw new Error("error");
@@ -152,17 +155,11 @@ const apiSettings = {
   },
   //Subjects
   getSubjects: async (id) => {
-    let idInt = parseInt(id);
-    const endpoint = `${SUBJECT}?user=${idInt}`;
-    let subjects = [];
-
-    await axios.get(endpoint).then((res) => {
-      res.data.map((subject) => {
-        if (subject.name !== "Noticias") {
-          return subjects.push(subject);
-        }
+    let subjects = await axios
+      .get(`${SUBJECT}?user=${parseInt(id)}`)
+      .then((res) => {
+        return res.data;
       });
-    });
     return subjects;
   },
 

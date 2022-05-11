@@ -1,9 +1,9 @@
 import axios from "axios";
-import { API_URL, token } from "../API";
+import { API_URL, TOKEN } from "../API";
 export const EVENTS = `${API_URL}/calendar_annotations`;
 export const SESSIONS = `${API_URL}/eduapp_user_sessions`;
 
-const requestHeader = { Authorization: token };
+const requestHeader = { Authorization: TOKEN };
 
 export const fetchEvents = async () => {
   return await axios.get(EVENTS, { headers: requestHeader });

@@ -79,7 +79,6 @@ export default function UserConfig(props) {
   };
 
   const filterUsersWithRole = (role, user) => {
-    // eslint-disable-next-line default-case
     switch (role) {
       case null:
         if (user.isAdmin || !user.isAdmin) {
@@ -153,13 +152,25 @@ export default function UserConfig(props) {
                 </button>
               </td>
               <td>
-                <input id="u_email" type="email" placeholder={props.language.email}/>
+                <input
+                  id="u_email"
+                  type="email"
+                  placeholder={props.language.email}
+                />
               </td>
               <td>
-                <input id="u_pass" type="password" placeholder={props.language.password} />
+                <input
+                  id="u_pass"
+                  type="password"
+                  placeholder={props.language.password}
+                />
               </td>
               <td style={{ textAlign: "center" }}>
-                <input id="u_admin" type="checkbox" placeholder={props.language.name} />
+                <input
+                  id="u_admin"
+                  type="checkbox"
+                  placeholder={props.language.name}
+                />
               </td>
             </tr>
           </tbody>
@@ -186,6 +197,7 @@ export default function UserConfig(props) {
                     ) {
                       return (
                         <tr key={u.id}>
+                          <td>{u.user.id}</td>
                           <td>
                             <input type="text" disabled value={u.user_name} />
                           </td>
@@ -215,7 +227,7 @@ export default function UserConfig(props) {
                           >
                             <button
                               onClick={() => {
-                                deleteUser(u.id);
+                                deleteUser(u.user.id);
                               }}
                             >
                               <svg
@@ -236,6 +248,8 @@ export default function UserConfig(props) {
                   } else if (filterUsersWithRole(userRole, u)) {
                     return (
                       <tr key={u.id}>
+                        <td>{u.user.id}</td>
+
                         <td>
                           <input type="text" disabled value={u.user_name} />
                         </td>
@@ -265,7 +279,7 @@ export default function UserConfig(props) {
                         >
                           <button
                             onClick={() => {
-                              deleteUser(u.id);
+                              deleteUser(u.user.id);
                             }}
                           >
                             <svg
@@ -324,7 +338,7 @@ export default function UserConfig(props) {
                           >
                             <button
                               onClick={() => {
-                                deleteUser(u.id);
+                                deleteUser(u.user.id);
                               }}
                             >
                               <svg
@@ -377,7 +391,7 @@ export default function UserConfig(props) {
                         >
                           <button
                             onClick={() => {
-                              deleteUser(u.id);
+                              deleteUser(u.user.id);
                             }}
                           >
                             <svg
@@ -436,7 +450,7 @@ export default function UserConfig(props) {
                           >
                             <button
                               onClick={() => {
-                                deleteUser(u.id);
+                                deleteUser(u.user.id);
                               }}
                             >
                               <svg
@@ -489,7 +503,7 @@ export default function UserConfig(props) {
                         >
                           <button
                             onClick={() => {
-                              deleteUser(u.id);
+                              deleteUser(u.user.id);
                             }}
                           >
                             <svg

@@ -15,13 +15,33 @@ class ChatBasesController < ApplicationController
 
   # POST /chat_bases
   def create
-    @chat_basis = ChatBase.new(chat_basis_params)
+		if params[:chat_name].include?("private_chat_")
+			nameDisect = params[:chat_name].split("_")
+			inverted_name = "private_chat_#{nameDisect[3]}_#{nameDisect[2]}"
+			nameExists = ChatBase.where(chat_name: params[:chat_name])
+			invertedExists = ChatBase.where(chat_name: inverted_name)
 
-    if @chat_basis.save
-      render json: @chat_basis, status: :created, location: @chat_basis
-    else
-      render json: @chat_basis.errors, status: :unprocessable_entity
-    end
+			if !(nameExists === []) || !(invertedExists === []) 
+				render json: {error: "Chat already exists"}, status: :unprocessable_entity
+			else
+				@chat_basis = ChatBase.new(chat_basis_params)
+
+				if @chat_basis.save
+					render json: @chat_basis, status: :created, location: @chat_basis
+				else
+					render json: @chat_basis.errors, status: :unprocessable_entity
+				end
+			end
+		
+		else 
+			@chat_basis = ChatBase.new(chat_basis_params)
+
+			if @chat_basis.save
+				render json: @chat_basis, status: :created, location: @chat_basis
+			else
+				render json: @chat_basis.errors, status: :unprocessable_entity
+			end
+		end
   end
 
   # PATCH/PUT /chat_bases/1

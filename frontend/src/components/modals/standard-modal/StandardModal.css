@@ -138,11 +138,13 @@
 	border-radius: 10px;
 	cursor: pointer;
 	margin-bottom: 5vw;
-}
-
-.standard-modal-btn:first-child {
 	margin-right: 15px;
 }
+
+.standard-modal-btn:last-child {
+	margin-right: 0
+}
+
 
 .loader-format {
 	-webkit-animation: spin 1.5s linear infinite;

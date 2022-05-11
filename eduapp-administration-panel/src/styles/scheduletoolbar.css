@@ -1,4 +1,4 @@
-.scheduletoolbar-container{
+.scheduletoolbar-container {
     display: flex;
     flex-direction: column;
     font-family: sans-serif;
@@ -9,20 +9,23 @@
     background-color: white;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(117, 117, 117, 0.329);
-	border: 1px solid rgba(117, 117, 117, 0.199);
+    border: 1px solid rgba(117, 117, 117, 0.199);
 }
-.scheduletoolbar-container > h1{
+
+.scheduletoolbar-container>h1 {
     margin-left: 40px;
     color: rgba(117, 117, 117, 0.471);
 }
-.scheduletoolbar-ul{
+
+.scheduletoolbar-ul {
     display: flex;
     flex-direction: row;
     list-style: none;
     height: 100%;
     width: 100%;
 }
-.scheduletoolbar-ul > li{
+
+.scheduletoolbar-ul>li {
     margin-right: 50px;
     display: flex;
     justify-content: center;
@@ -31,7 +34,8 @@
 
 
 }
-.scheduletoolbar-ul > li > p{
+
+.scheduletoolbar-ul>li>p {
     color: white;
     width: 80px;
     text-align: center;
@@ -40,22 +44,39 @@
     cursor: pointer;
 }
 
-.searchbar-container{
+.searchbar-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     background-color: white !important;
     box-shadow: 0px 0px 10px rgba(117, 117, 117, 0.329);
-	border: 1px solid rgba(117, 117, 117, 0.199);
+    border: 1px solid rgba(117, 117, 117, 0.199);
     padding: 10px 13px;
 }
-.searchbar_toolbar{
+
+.searchbar_toolbar {
     background-color: rgba(237, 237, 237, 0) !important;
 }
 
-.searchicon{
+.searchicon {
     position: relative;
     margin-left: 10px;
     color: rgb(51, 122, 255)
+}
+
+.subjectbar-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: white !important;
+    box-shadow: 0px 0px 10px rgb(117 117 117 / 33%);
+    border: 1px solid rgba(117, 117, 117, 0.199);
+    padding: 10px 13px;
+}
+
+.subjectOption {
+    border: none;
+    box-shadow: none;
 }

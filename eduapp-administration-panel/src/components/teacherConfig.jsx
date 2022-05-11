@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { asynchronizeRequest } from "../API";
 import * as SUBJECT_SERVICE from "../services/subject.service";
 import * as USER_SERVICE from "../services/user.service";
-import * as ENROLL_SERVICE from "../services/enrollConfig.service";
 
 export default function TeacherConfig(props) {
   const [users, setUsers] = useState(null);
@@ -152,8 +151,8 @@ export default function TeacherConfig(props) {
         <table style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>{props.language.teacher}</th>
-              <th>{props.language.subject}</th>
+              <th>{props.language.teacherName}</th>
+              <th>{props.language.subjectName}</th>
               <th>{props.language.actions}</th>
             </tr>
           </thead>
