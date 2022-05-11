@@ -116,6 +116,8 @@ export default function ChangePasswordButton() {
     text={!formIndex?"1st step":"2nd step"} 
     customOkay={!formIndex? "Next" : "Submit"}
     onCloseAction={!formIndex?begin_password_change : submit_password_change }
+    hasCancel
+    onCancelAction={()=>{window.location.reload()}}
     form={forms[formIndex]}
     />
     <StandardModal type={alertType} showLoader={alertType=== "warning"} hasIconAnimation hasTransition show={showAlertModal} text={alertMessage} onCloseAction={()=>{window.location.reload()}}/>

@@ -142,10 +142,7 @@ export default function StandardModal({
         <h3>{text}</h3>
         {form && (form)}
 
-<<<<<<< HEAD
 
-=======
->>>>>>> develop
         <div className="standard-modal-btn-container">
           {isQuestion && !showLoader && (
             <>

@@ -78,7 +78,7 @@ Rails.application.configure do
   #Development
   config.action_mailer.default_url_options = { host: host, protocol: 'http' }
   config.action_mailer.smtp_settings = {
-    address:              'smtp.gmail.com',
+    address:              ENV.fetch("SMTP_ADDRESS"),
     port:                 ENV.fetch("SMTP_PORT"),
     user_name:            ENV.fetch("GMAIL_USERNAME"),
     password:             ENV.fetch("GMAIL_PASSWORD"),
