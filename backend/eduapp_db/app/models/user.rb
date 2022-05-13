@@ -20,7 +20,7 @@ class User < ApplicationRecord
 		jti = self.gen_jti iat
 
 		jwtEntry = JtiMatchList.new(
-			user_id: user["id"],
+			user_id: user["user_id"],
 			jti: jti,
 			exp: exp,
 			access_ip: user_ip,
@@ -35,19 +35,19 @@ class User < ApplicationRecord
 	def self.generate_token(user, user_ip)
 		iat, exp = self.gen_exp
 
-		userTotalJti = JtiMatchList.where(user_id: user["id"])
+		userTotalJti = JtiMatchList.where(user_id: user["user_id"])
 		if userTotalJti.count === 4
 			userTotalJti.last.destroy
 		end
 
-		existingUserJti = JtiMatchList.where(user_id: user["id"], access_ip: user_ip)
+		existingUserJti = JtiMatchList.where(user_id: user["user_id"], access_ip: user_ip)
 		if existingUserJti.count > 0
 			jti = existingUserJti.first.jti
 		else
 			correctGen = self.generate_jti(user, user_ip)
 
 			if correctGen === true
-				existingUserJti = JtiMatchList.where(user_id: user["id"], access_ip: user_ip)
+				existingUserJti = JtiMatchList.where(user_id: user["user_id"], access_ip: user_ip)
 			else
 				return { error: "Failed to generate token." }
 			end

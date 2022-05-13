@@ -9,7 +9,7 @@ class ApplicationController < ActionController::API
 				if Time.now.to_i > Integer(jwt_payload[0]["exp"])
 					render json: { error: "Token has expired." }, status: 428
 				end
-				jtiMatch = JtiMatchList.where(user_id: Integer(jwt_payload[0]['sub']), jti: jwt_payload[0]["jti"])
+				jtiMatch = JtiMatchList.where(user_id: jwt_payload[0]['sub'], jti: jwt_payload[0]["jti"])
 				if !jtiMatch.present?
 					render json: { error: "Token Mismatch." }, status: 400
 				end
