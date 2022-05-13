@@ -18,6 +18,7 @@ export default function Initialization() {
         email: form.admin_user.value,
         password: form.admin_pswd.value,
         isAdmin: true,
+        device: navigator.userAgent,
       });
       window.location.reload();
     }

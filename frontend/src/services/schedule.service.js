@@ -3,7 +3,7 @@ import { API_URL, TOKEN } from "../API";
 export const EVENTS = `${API_URL}/calendar_annotations`;
 export const SESSIONS = `${API_URL}/eduapp_user_sessions`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 export const fetchEvents = async () => {
   return await axios.get(EVENTS, { headers: requestHeader });

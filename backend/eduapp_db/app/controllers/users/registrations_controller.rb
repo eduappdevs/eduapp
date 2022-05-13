@@ -10,6 +10,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 				render json: { errors: ex.message }, status: :unprocessable_entity
 				return
 			end
+			
 			yield resource if block_given?
 			if resource.persisted?
 				if resource.active_for_authentication?
@@ -24,11 +25,16 @@ class Users::RegistrationsController < Devise::RegistrationsController
 				set_minimum_password_length
 			end
 			
-			user_info = create_info(params, resource)
-			if user_info[1] == 200
-				render json: user_info[0], status: :created, location: user_info[0]
+
+			if User.generate_jti(resource, request.remote_ip)
+				user_info = create_info(params, resource)
+				if user_info[1] == 200
+					render json: user_info[0], status: :created, location: user_info[0]
+				else
+					render json: user_info[0], status: :unprocessable_entity
+				end
 			else
-				render json: user_info[0], status: :unprocessable_entity
+				render json: { errors: "Couldn't generate jti." }, status: :unprocessable_entity
 			end
 		end
   
@@ -62,4 +68,4 @@ class Users::RegistrationsController < Devise::RegistrationsController
     def register_failed
       render json: { message: "Coudln't register user." }
     end
-  end
+end

@@ -1,7 +1,7 @@
 import axios from "axios";
-import { API_URL, TOKEN	 } from "../API";
+import { API_URL, TOKEN } from "../API";
 export const TUITIONS = `${API_URL}/tuitions`;
-const requestHeader = { Authorization: TOKEN	 };
+const requestHeader = { eduauth: TOKEN };
 
 export const fetchTuitions = async () => {
   return axios.get(TUITIONS, { headers: requestHeader });

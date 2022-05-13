@@ -120,10 +120,14 @@ ActiveRecord::Schema.define(version: 15) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "jwt_denylist", force: :cascade do |t|
+  create_table "jti_match_lists", force: :cascade do |t|
+    t.bigint "user_id", null: false
     t.string "jti", null: false
-    t.datetime "exp", null: false
-    t.index ["jti"], name: "index_jwt_denylist_on_jti"
+    t.string "exp"
+    t.string "access_ip", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_jti_match_lists_on_user_id"
   end
 
   create_table "resources", force: :cascade do |t|
@@ -178,6 +182,11 @@ ActiveRecord::Schema.define(version: 15) do
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -195,6 +204,7 @@ ActiveRecord::Schema.define(version: 15) do
   add_foreign_key "chat_participants", "users"
   add_foreign_key "courses", "institutions"
   add_foreign_key "eduapp_user_sessions", "subjects"
+  add_foreign_key "jti_match_lists", "users"
   add_foreign_key "resources", "subjects"
   add_foreign_key "subjects", "courses"
   add_foreign_key "tuitions", "courses"

@@ -4,7 +4,7 @@ export const CHAT_MESSAGES = `${API_URL}/chat_messages`;
 export const CHAT = `${API_URL}/chat_bases`;
 export const CHAT_PARTICIPANT = `${API_URL}/chat_participants`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 //chat
 export const fetchChat = async () => {

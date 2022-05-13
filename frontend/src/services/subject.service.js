@@ -2,7 +2,7 @@ import axios from "axios";
 import { API_URL, TOKEN } from "../API";
 export const SUBJECTS = `${API_URL}/subjects`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 //subject
 export const fetchSubjects = async () => {

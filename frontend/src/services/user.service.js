@@ -4,7 +4,7 @@ export const USERS_INFO = `${API_URL}/user_infos`;
 export const USERS = `${API_URL}/users`;
 export const GLOGIN = `${API_URL}/users/auth/google_oauth2/callback`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 //User
 export const fetchUserInfos = async () => {

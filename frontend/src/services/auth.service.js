@@ -12,10 +12,7 @@ export const saveInLocalStorage = (userDetails) => {
   };
 
   localStorage.setItem("offline_user", JSON.stringify(offlineUser));
-  localStorage.setItem(
-    "eduapp_auth",
-    userDetails.headers.authorization.substring(7)
-  );
+  localStorage.setItem("eduapp_auth", userDetails.headers.eduauth.substring(7));
   window.location.reload();
 };
 
@@ -28,7 +25,7 @@ export const login = async (body) => {
 export const logout = async () => {
   return await axios
     .delete(`${USERS}/sign_out`, {
-      headers: { Authorization: TOKEN },
+      headers: { eduauth: TOKEN },
     })
     .then(() => {
       localStorage.removeItem("eduapp_auth");

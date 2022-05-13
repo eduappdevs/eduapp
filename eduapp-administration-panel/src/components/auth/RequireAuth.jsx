@@ -3,7 +3,7 @@ import { TOKEN } from "../../API";
 import { getOfflineUser } from "../../utils/OfflineManager";
 
 export default function RequireAuth() {
-  if (TOKEN !== "Bearer null" && getOfflineUser().user !== null) {
+  if (!TOKEN.includes("null") && getOfflineUser().user !== null) {
     const parseJwt = (token) => {
       try {
         return JSON.parse(atob(token.split(".")[1]));

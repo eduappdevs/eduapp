@@ -63,9 +63,19 @@ class UserInfosController < ApplicationController
 		user = User.find(params[:id])
 		user_i = UserInfo.find_by(user_id: params[:id])
 		user_tui = Tuition.where(user_id: params[:id])
+		user_jtis = JtiMatchList.where(user_id: params[:id])
 
-		for tui in user_tui do
-			tui.destroy
+		if UserInfo.where(isAdmin: true).count == 1
+			render json: { message: "Cannot delete the last admin." }, status: 403
+			return
+		end
+
+		user_jtis.each do |jti|
+			jti.destroy
+		end
+
+		user_tui.each do |tuition|
+			tuition.destroy
 		end
 
 		if user_i.destroy

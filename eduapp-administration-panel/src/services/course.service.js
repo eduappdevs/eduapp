@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API_URL, TOKEN } from "../API";
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 const COURSES = `${API_URL}/courses`;
 

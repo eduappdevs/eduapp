@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_URL, TOKEN } from "../API";
 export const RESOURCE = `${API_URL}/resources`;
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 export const fetchResources = async () => {
   return axios.get(RESOURCE, { headers: requestHeader });

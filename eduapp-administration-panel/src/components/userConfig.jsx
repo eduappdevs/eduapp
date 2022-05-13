@@ -27,6 +27,7 @@ export default function UserConfig(props) {
           email: email,
           password: pass,
           isAdmin: isAdmin,
+          device: navigator.userAgent,
         }).then((res) => {
           userEnroll(res.data.user.id);
           fetchUsers();
