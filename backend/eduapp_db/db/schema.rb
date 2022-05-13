@@ -43,38 +43,38 @@ ActiveRecord::Schema.define(version: 15) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "calendar_annotations", force: :cascade do |t|
+  create_table "calendar_annotations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "annotation_start_date"
     t.string "annotation_end_date"
     t.string "annotation_title"
     t.string "annotation_description"
     t.boolean "isGlobal"
-    t.bigint "user_id", null: false
-    t.bigint "subject_id"
+    t.uuid "user_id", null: false
+    t.uuid "subject_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["subject_id"], name: "index_calendar_annotations_on_subject_id"
     t.index ["user_id"], name: "index_calendar_annotations_on_user_id"
   end
 
-  create_table "chat_base_infos", force: :cascade do |t|
-    t.bigint "chat_base_id", null: false
+  create_table "chat_base_infos", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "chat_base_id", null: false
     t.string "chat_img"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["chat_base_id"], name: "index_chat_base_infos_on_chat_base_id"
   end
 
-  create_table "chat_bases", force: :cascade do |t|
+  create_table "chat_bases", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "chat_name"
     t.boolean "isGroup"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "chat_messages", force: :cascade do |t|
-    t.bigint "chat_base_id", null: false
-    t.bigint "user_id", null: false
+  create_table "chat_messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "chat_base_id", null: false
+    t.uuid "user_id", null: false
     t.text "message"
     t.datetime "send_date"
     t.datetime "created_at", precision: 6, null: false
@@ -83,9 +83,9 @@ ActiveRecord::Schema.define(version: 15) do
     t.index ["user_id"], name: "index_chat_messages_on_user_id"
   end
 
-  create_table "chat_participants", force: :cascade do |t|
-    t.bigint "chat_base_id", null: false
-    t.bigint "user_id", null: false
+  create_table "chat_participants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "chat_base_id", null: false
+    t.uuid "user_id", null: false
     t.boolean "isChatAdmin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -93,35 +93,35 @@ ActiveRecord::Schema.define(version: 15) do
     t.index ["user_id"], name: "index_chat_participants_on_user_id"
   end
 
-  create_table "courses", force: :cascade do |t|
+  create_table "courses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
-    t.bigint "institution_id"
+    t.uuid "institution_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["institution_id"], name: "index_courses_on_institution_id"
   end
 
-  create_table "eduapp_user_sessions", force: :cascade do |t|
+  create_table "eduapp_user_sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "session_name"
     t.string "session_start_date"
     t.string "session_end_date"
     t.string "streaming_platform"
     t.string "resources_platform"
     t.string "session_chat_id"
-    t.bigint "subject_id", null: false
+    t.uuid "subject_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["subject_id"], name: "index_eduapp_user_sessions_on_subject_id"
   end
 
-  create_table "institutions", force: :cascade do |t|
+  create_table "institutions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "jti_match_lists", force: :cascade do |t|
-    t.bigint "user_id", null: false
+  create_table "jti_match_lists", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
     t.string "jti", null: false
     t.string "exp"
     t.string "access_ip", null: false
@@ -130,44 +130,44 @@ ActiveRecord::Schema.define(version: 15) do
     t.index ["user_id"], name: "index_jti_match_lists_on_user_id"
   end
 
-  create_table "resources", force: :cascade do |t|
+  create_table "resources", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.string "firstfile"
     t.string "secondfile"
     t.string "thirdfile"
     t.string "createdBy"
-    t.bigint "subject_id"
+    t.uuid "subject_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["subject_id"], name: "index_resources_on_subject_id"
   end
 
-  create_table "subjects", force: :cascade do |t|
+  create_table "subjects", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.string "color"
-    t.bigint "course_id", null: false
+    t.uuid "course_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["course_id"], name: "index_subjects_on_course_id"
   end
 
-  create_table "tuitions", force: :cascade do |t|
-    t.bigint "course_id", null: false
-    t.bigint "user_id", null: false
+  create_table "tuitions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "course_id", null: false
+    t.uuid "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["course_id"], name: "index_tuitions_on_course_id"
     t.index ["user_id"], name: "index_tuitions_on_user_id"
   end
 
-  create_table "user_infos", force: :cascade do |t|
+  create_table "user_infos", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "user_name"
     t.string "profile_image"
     t.integer "teaching_list", default: [], array: true
     t.boolean "isTeacher", default: false
-    t.bigint "user_id"
+    t.uuid "user_id"
     t.boolean "isAdmin", default: false
     t.string "googleid"
     t.boolean "isLoggedWithGoogle", default: false
@@ -176,7 +176,7 @@ ActiveRecord::Schema.define(version: 15) do
     t.index ["user_id"], name: "index_user_infos_on_user_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"

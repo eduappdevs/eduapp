@@ -1,11 +1,11 @@
 class CreateUserInfos < ActiveRecord::Migration[6.1]
   def change
-    create_table :user_infos do |t|
+    create_table :user_infos, id: :uuid do |t|
       t.string :user_name
       t.string :profile_image
 			t.integer :teaching_list, array: true, default: []
 			t.boolean :isTeacher, default: false
-      t.references :user, foreign_key: true
+      t.references :user, foreign_key: true, type: :uuid
       t.boolean :isAdmin, default: false
       t.string :googleid
       t.boolean :isLoggedWithGoogle, default: false
