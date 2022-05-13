@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
+import * as AUTH_SERVICE from "../services/auth.service";
 import * as API from "../API";
+import { getOfflineUser } from "../utils/OfflineManager";
 export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
@@ -53,11 +55,15 @@ export default function UserConfig(props) {
   };
 
   const deleteUser = (id) => {
-    API.asynchronizeRequest(function () {
-      USERSERVICE.deleteUser(id).then(() => {
-        fetchUsers();
+    if (id !== getOfflineUser().user.id) {
+      API.asynchronizeRequest(function () {
+        USERSERVICE.deleteUser(id).then(() => {
+          fetchUsers();
+        });
       });
-    });
+    } else {
+      alert("Dumbass");
+    }
   };
 
   const swapIcons = (state) => {
