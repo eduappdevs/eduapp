@@ -9,6 +9,7 @@ export const FetchUserInfo = (userId) => {
     const fetchUserInfo = async () => {
       if (navigator.onLine || userId < 0) {
         try {
+          if (userId < 0) return console.warn("No user logged in.");
           let userInfo = await USER_SERVICE.findById(userId);
 
           userInfo = userInfo.data;
