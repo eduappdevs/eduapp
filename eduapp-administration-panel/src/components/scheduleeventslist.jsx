@@ -4,7 +4,6 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as USER_SERVICE from "../services/user.service";
 import Input from "./Input";
-
 import "../styles/scheduleeventslist.css";
 
 export default function Scheduleeventslist(props) {
@@ -20,6 +19,8 @@ export default function Scheduleeventslist(props) {
   const [search, setSearch] = useState("");
 
   let events_filter = {};
+
+  const shortUUID = (uuid) => uuid.substring(0, 8);
 
   const fetchSubjects = () => {
     API.asynchronizeRequest(function () {
@@ -68,46 +69,44 @@ export default function Scheduleeventslist(props) {
     let description = document.getElementById("e_description").value;
     let start_date = document.getElementById("e_start_date").value;
     let end_date = document.getElementById("e_end_date").value;
-    let subject = [];
+    let subject = !isGlobal
+      ? document.getElementById("e_subjectId").value
+      : (await SUBJECTSERVICE.getGeneralSubject()).data[0].id;
 
     if (
-      !isGlobal
-        ? (subject = document.getElementById("e_subjectId").value)
-        : subject.push(1)
-    )
-      if (
-        name !== "" &&
-        author !== "" &&
-        start_date !== "" &&
-        end_date !== "" &&
-        subject !== "Choose subject"
-      ) {
-        json.push(
-          name,
-          description,
-          start_date,
-          end_date,
-          isGlobal,
-          parseInt(author),
-          parseInt(subject)
-        );
-      } else {
-        console.log("error");
-      }
+      name !== "" &&
+      author !== "" &&
+      start_date !== "" &&
+      end_date !== "" &&
+      subject !== "Choose subject"
+    ) {
+      json.push(
+        name,
+        description,
+        start_date,
+        end_date,
+        isGlobal,
+        author,
+        subject
+      );
 
-    let eventJson = {};
-    for (let i = 0; i <= context.length - 1; i++) {
-      eventJson[context[i]] = json[i];
+      let eventJson = {};
+      for (let i = 0; i <= context.length - 1; i++) {
+        eventJson[context[i]] = json[i];
+      }
+      API.asynchronizeRequest(function () {
+        console.log(eventJson);
+        SCHEDULESERVICE.createEvent(eventJson)
+          .then(() => {
+            fetchEvents();
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      });
+    } else {
+      console.log("error");
     }
-    API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.createEvent(eventJson)
-        .then(() => {
-          fetchEvents();
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    });
   };
 
   const fetchEvents = async () => {
@@ -744,7 +743,7 @@ export default function Scheduleeventslist(props) {
                     {props.language.chooseAuthor}
                   </option>
                   {users.map((u) => (
-                    <option key={u.id} value={u.id}>
+                    <option key={u.id} value={u.user.id}>
                       {u.user.email}
                     </option>
                   ))}
@@ -779,9 +778,7 @@ export default function Scheduleeventslist(props) {
                   onClick={isGlobalEvent}
                 />
               </td>
-              {isGlobal ? (
-                console.log()
-              ) : (
+              {isGlobal ? null : (
                 <td className="subjecButton">
                   <select id="e_subjectId">
                     <option defaultValue="Choose subject">
@@ -803,7 +800,7 @@ export default function Scheduleeventslist(props) {
         <table className="eventList" style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th></th>
+              <th>{props.language.code}</th>
               <th>{props.language.title}</th>
               <th>{props.language.description}</th>
               <th>{props.language.author}</th>
@@ -822,7 +819,7 @@ export default function Scheduleeventslist(props) {
                 ) {
                   return (
                     <tr key={e.id}>
-                      <td>{e.id}</td>
+                      <td>{shortUUID(e.id)}</td>
                       <td>
                         <input
                           type="text"
@@ -994,7 +991,7 @@ export default function Scheduleeventslist(props) {
               } else {
                 return (
                   <tr key={e.id}>
-                    <td>{e.id}</td>
+                    <td>{shortUUID(e.id)}</td>
                     <td>
                       <input
                         type="text"

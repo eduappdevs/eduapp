@@ -49,8 +49,8 @@ export default function EnrollConfig(props) {
     if (valid) {
       API.asynchronizeRequest(function () {
         const payload = new FormData();
-        payload.append("course_id", parseInt(course));
-        payload.append("user_id", parseInt(user));
+        payload.append("course_id", course);
+        payload.append("user_id", user);
 
         TUITIONSSERVICE.createTuition(payload).then(() => {
           fetchAll();

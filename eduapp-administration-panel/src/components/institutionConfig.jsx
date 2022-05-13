@@ -13,6 +13,8 @@ export default function InstitutionConfig(props) {
   const [editValue, setEditValue] = useState(false);
   const [nameValue, setNameValue] = useState();
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const fetchInstitutions = () => {
     asynchronizeRequest(function () {
       INSTITUTIONSERVICE.fetchInstitutions().then((i) => {
@@ -36,7 +38,7 @@ export default function InstitutionConfig(props) {
               teacherInCharge: name,
               description: "Automated resource tab for all users in " + name,
               color: "#96ffb2",
-              course_id: parseInt(s.data.id),
+              course_id: s.data.id,
             }).then(() => {
               setTimeout(() => {
                 swapIcons(true);
@@ -137,7 +139,7 @@ export default function InstitutionConfig(props) {
                 return (
                   <tr className="institution-entries" key={x.id}>
                     <td>
-                      <input type="text" value={x.id} disabled />
+                      <input type="text" value={shortUUID(x.id)} disabled />
                     </td>
                     <td>
                       <input

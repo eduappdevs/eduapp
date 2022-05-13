@@ -31,7 +31,7 @@ class SubjectsController < ApplicationController
       end
 
       render json: @Sessions
-    elsif  params[:name]
+    elsif params[:name]
       @subjects = Subject.where(name: params[:name])
       render json: @subjects
     elsif params[:user]

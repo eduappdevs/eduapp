@@ -32,15 +32,17 @@ class UserInfosController < ApplicationController
   end
 
 	def add_subject
-		@user_info = UserInfo.find(params[:user_id])
+		@user_info = UserInfo.where(user_id: params[:user_id]).first
+		puts @user_info.to_json
+		puts "\n\n\n#{Subject.find(params[:subject_id]).id}"
 		@user_info.teaching_list << Subject.find(params[:subject_id]).id
 		@user_info.save
 		render json: @user_info
 	end
 
 	def remove_subject
-		@user_info = UserInfo.find(params[:user_id])
-		@user_info.teaching_list.delete(Subject.find(params[:subject_id]).id)
+		@user_info = UserInfo.where(user_id: params[:user_id]).first
+		@user_info.teaching_list.delete(Subject.find(id: params[:subject_id]).id)
 		@user_info.save
 		render json: @user_info
 	end

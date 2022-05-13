@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
-import * as AUTH_SERVICE from "../services/auth.service";
 import * as API from "../API";
 import { getOfflineUser } from "../utils/OfflineManager";
 export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
+
+  const shortUUID = (uuid) => uuid.substring(0, 8);
 
   const fetchUsers = () => {
     API.asynchronizeRequest(function () {
@@ -195,7 +196,7 @@ export default function UserConfig(props) {
                     ) {
                       return (
                         <tr key={u.id}>
-                          <td>{u.user.id}</td>
+                          <td>{shortUUID(u.user.id)}</td>
                           <td>
                             <input type="text" disabled value={u.user_name} />
                           </td>
@@ -246,8 +247,7 @@ export default function UserConfig(props) {
                   } else if (filterUsersWithRole(userRole, u)) {
                     return (
                       <tr key={u.id}>
-                        <td>{u.user.id}</td>
-
+                        <td>{shortUUID(u.user.id)}</td>
                         <td>
                           <input type="text" disabled value={u.user_name} />
                         </td>
@@ -307,7 +307,11 @@ export default function UserConfig(props) {
                       return (
                         <tr key={u.id}>
                           <td>
-                            <input type="text" disabled value={u.user_id} />
+                            <input
+                              type="text"
+                              disabled
+                              value={shortUUID(u.user.id)}
+                            />
                           </td>
                           <td>
                             <input type="text" disabled value={u.user_name} />
@@ -362,7 +366,11 @@ export default function UserConfig(props) {
                     return (
                       <tr key={u.id}>
                         <td>
-                          <input type="text" disabled value={u.user_id} />
+                          <input
+                            type="text"
+                            disabled
+                            value={shortUUID(u.user.id)}
+                          />
                         </td>
                         <td>
                           <input type="text" disabled value={u.user_name} />
@@ -421,7 +429,11 @@ export default function UserConfig(props) {
                       return (
                         <tr key={u.id}>
                           <td>
-                            <input type="text" disabled value={u.user_id} />
+                            <input
+                              type="text"
+                              disabled
+                              value={shortUUID(u.user.id)}
+                            />
                           </td>
                           <td>
                             <input type="text" disabled value={u.user_name} />
@@ -474,7 +486,11 @@ export default function UserConfig(props) {
                     return (
                       <tr key={u.id}>
                         <td>
-                          <input type="text" disabled value={u.user_id} />
+                          <input
+                            type="text"
+                            disabled
+                            value={shortUUID(u.user.id)}
+                          />
                         </td>
                         <td>
                           <input type="text" disabled value={u.user_name} />

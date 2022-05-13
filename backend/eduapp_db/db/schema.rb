@@ -165,7 +165,7 @@ ActiveRecord::Schema.define(version: 15) do
   create_table "user_infos", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "user_name"
     t.string "profile_image"
-    t.integer "teaching_list", default: [], array: true
+    t.uuid "teaching_list", default: [], array: true
     t.boolean "isTeacher", default: false
     t.uuid "user_id"
     t.boolean "isAdmin", default: false

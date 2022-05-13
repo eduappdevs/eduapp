@@ -14,8 +14,8 @@ export const fetchSubject = async (id) => {
   });
 };
 
-export const NoticiasSubject = async () => {
-  return await axios.get(`${SUBJECTS}/?name=Noticias`, {
+export const getGeneralSubject = async () => {
+  return await axios.get(`${SUBJECTS}/?name=General`, {
     headers: requestHeader,
   });
 };

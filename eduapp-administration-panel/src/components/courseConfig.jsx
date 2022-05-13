@@ -8,6 +8,8 @@ export default function CourseConfig(props) {
   const [courses, setCourses] = useState(null);
   const [institutions, setInstitutions] = useState([]);
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const showEditOptionCourse = async (e, id) => {
     if (e.target.tagName === "svg") {
       let name =
@@ -284,12 +286,12 @@ export default function CourseConfig(props) {
       API.asynchronizeRequest(function () {
         COURSESERVICE.createCourse({
           name: cName,
-          institution_id: parseInt(cInst),
+          institution_id: cInst,
         }).then((x) => {
           if (courses.length === 0) {
             let instTemp = null;
             for (let inst of institutions) {
-              if (inst.id === parseInt(cInst)) {
+              if (inst.id === cInst) {
                 instTemp = inst.name;
               }
             }
@@ -298,7 +300,7 @@ export default function CourseConfig(props) {
               teacherInCharge: instTemp,
               description: "Noticias para el instituto " + instTemp,
               color: "#96ffb2",
-              course_id: parseInt(x.data.id),
+              course_id: x.data.id,
             }).then(() => {
               fetchCourses();
               swapIcons(false);
@@ -419,7 +421,7 @@ export default function CourseConfig(props) {
                   return (
                     <tr key={c.id}>
                       <td>
-                        <input disabled type="text" value={c.id} />
+                        <input disabled type="text" value={shortUUID(c.id)} />
                       </td>
                       <td>
                         <input

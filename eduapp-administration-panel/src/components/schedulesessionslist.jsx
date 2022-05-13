@@ -17,6 +17,8 @@ export default function Schedulesessionslist(props) {
 
   let sessions_filter = {};
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const fetchSessions = async () => {
     await API.asynchronizeRequest(function () {
       SCHEDULESERVICE.fetchSessions().then((e) => {
@@ -908,7 +910,7 @@ export default function Schedulesessionslist(props) {
                 ) {
                   return (
                     <tr key={s.id}>
-                      <td>{s.id}</td>
+                      <td>{shortUUID(s.id)}</td>
                       <td>
                         <input
                           id={`inputName_${s.id}`}
@@ -1101,7 +1103,7 @@ export default function Schedulesessionslist(props) {
               } else {
                 return (
                   <tr key={s.id}>
-                    <td>{s.id}</td>
+                    <td>{shortUUID(s.id)}</td>
                     <td>
                       <input
                         id={`inputName_${s.id}`}

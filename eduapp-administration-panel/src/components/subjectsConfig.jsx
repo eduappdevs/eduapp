@@ -9,6 +9,8 @@ export default function SubjectsConfig(props) {
   const [changeColor, setChangeColor] = useState(false);
   const [newColor] = useState();
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const fetchSubjects = () => {
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.fetchSubjects().then((sjs) => {
@@ -35,7 +37,6 @@ export default function SubjectsConfig(props) {
 
     let valid = true;
     for (let i of info) {
-      console.log(i);
       if (i.length < 2 && i === "-") {
         valid = false;
         break;
@@ -49,7 +50,7 @@ export default function SubjectsConfig(props) {
           name: name,
           description: desc,
           color: color,
-          course_id: parseInt(sel_course),
+          course_id: sel_course,
         }).then(() => {
           fetchSubjects();
           swapIcons(false);
@@ -514,7 +515,7 @@ export default function SubjectsConfig(props) {
                   return (
                     <tr key={sj.id}>
                       <td>
-                        <input disabled type="text" value={sj.id} />
+                        <input disabled type="text" value={shortUUID(sj.id)} />
                       </td>
                       <td>
                         <input
