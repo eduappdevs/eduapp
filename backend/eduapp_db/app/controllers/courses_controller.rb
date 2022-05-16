@@ -4,12 +4,14 @@ class CoursesController < ApplicationController
 
   # GET /courses
   def index
-    if params[:user_id]
+		if params[:user_id]
 			@courses = []
 			@TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
 			for course in @TuitionsUserId do
         @courses += Course.where(id: course)
-      end
+			end
+		elsif params[:name]
+			@courses = Course.where(name: params[:name]).first
 		else
 			@courses = Course.all
 		end

@@ -19,6 +19,10 @@ export const deleteCourse = async (id) => {
   });
 };
 
+export const fetchGeneralCourse = async () => {
+  return await axios.get(`${COURSES}?name=General`, { headers: requestHeader });
+};
+
 export const editCourse = async (body) => {
   return await axios.put(`${`${COURSES}`}/${body.id}`, body, {
     headers: requestHeader,

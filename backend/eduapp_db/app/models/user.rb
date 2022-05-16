@@ -79,7 +79,7 @@ class User < ApplicationRecord
 	end
 
 	def self.revoke_token(user, user_ip)
-		revokedUserJti = JtiMatchList.where(user_id: user["id"], access_ip: user_ip)
+		revokedUserJti = JtiMatchList.where(user_id: user, access_ip: user_ip)
 			
 		iat, exp = self.gen_exp
 		if revokedUserJti.update(exp: exp, jti: self.gen_jti(iat))

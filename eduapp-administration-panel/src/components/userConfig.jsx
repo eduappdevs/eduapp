@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
-import * as API from "../API";
+import * as COURSESERVICE from "../services/course.service";
+import asynchronizeRequest from "../API";
 import { getOfflineUser } from "../utils/OfflineManager";
+
 export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
@@ -11,7 +13,7 @@ export default function UserConfig(props) {
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
   const fetchUsers = () => {
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       USERSERVICE.fetchUserInfos().then((us) => {
         setUsers(us.data);
       });
@@ -25,14 +27,14 @@ export default function UserConfig(props) {
 
     if (email && pass) {
       swapIcons(true);
-      API.asynchronizeRequest(function () {
+      asynchronizeRequest(async function () {
         USERSERVICE.createUser({
           email: email,
           password: pass,
           isAdmin: isAdmin,
           device: navigator.userAgent,
-        }).then((res) => {
-          userEnroll(res.data.user.id);
+        }).then(async (res) => {
+          await userEnroll(res.data.user.id);
           fetchUsers();
           document.getElementById("u_admin").checked = false;
           document.getElementById("u_email").value = null;
@@ -43,12 +45,15 @@ export default function UserConfig(props) {
     }
   };
 
-  const userEnroll = (uId) => {
+  const userEnroll = async (uId) => {
     const payload = new FormData();
-    payload.append("course_id", 1);
+    payload.append(
+      "course_id",
+      (await COURSESERVICE.fetchGeneralCourse()).data.id
+    );
     payload.append("user_id", uId);
 
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       ENROLLSERVICE.createTuition(payload).then(() => {
         console.log("User tuition has been completed successfully!");
       });
@@ -57,7 +62,7 @@ export default function UserConfig(props) {
 
   const deleteUser = (id) => {
     if (id !== getOfflineUser().user.id) {
-      API.asynchronizeRequest(function () {
+      asynchronizeRequest(function () {
         USERSERVICE.deleteUser(id).then(() => {
           fetchUsers();
         });

@@ -4,13 +4,13 @@ class UserInfosController < ApplicationController
 
   # GET /user_infos
   def index
-    if params[:user_id]
+		if params[:user_id]
 			@user_infos = UserInfo.where(user_id: params[:user_id])
 		elsif params[:name]
 			@user_infos = UserInfo.search_name(params[:name]).take(3)
-    else
+		else
 			@user_infos = UserInfo.all
-    end
+		end
 
     render json: @user_infos
   end
@@ -67,7 +67,7 @@ class UserInfosController < ApplicationController
 		user_tui = Tuition.where(user_id: params[:id])
 		user_jtis = JtiMatchList.where(user_id: params[:id])
 
-		if UserInfo.where(isAdmin: true).count == 1
+		if UserInfo.where(isAdmin: true).count == 1 && user_i.isAdmin
 			render json: { message: "Cannot delete the last admin." }, status: 403
 			return
 		end
