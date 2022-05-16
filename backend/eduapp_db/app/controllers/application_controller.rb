@@ -5,7 +5,7 @@ class ApplicationController < ActionController::API
 		if request.headers['eduauth'].present?
 			token = request.headers['eduauth'].split('Bearer ').last
 			jwt_payload = User.unlock_token(token)
-			if jwt_payload.present? && jwt_payload != []
+			if jwt_payload.instance_of? Array
 				if Time.now.to_i > Integer(jwt_payload[0]["exp"])
 					render json: { error: "Token has expired." }, status: 428
 				end
@@ -15,10 +15,10 @@ class ApplicationController < ActionController::API
 				end
 				@current_user = jwt_payload[0]['sub']
 			else
-				head :unauthorized
+				render json: { error: "Invalid token." }, status: :forbidden
 			end
 		else
-			head :unauthorized
+			render json: { error: "No auth provided." }, status: :unauthorized
 		end
 	end
 

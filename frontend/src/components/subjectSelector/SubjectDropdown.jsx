@@ -64,7 +64,7 @@ export default function SubjectDropdown({
             if (index > 0) {
               return (
                 <li
-                  id={`subject-${subject.id}-${subject.name}`}
+                  id={`subject_${subject.id}_${subject.name}`}
                   onClick={(e) => {
                     onSubjectClick(e.target.id);
                     windUp();
@@ -85,7 +85,7 @@ export default function SubjectDropdown({
           onSubjectClick(e.target.id);
           windUp();
         }}
-        id={`subject-${subjects.length > 0 ? subjects[0].id : -1}-${
+        id={`subject_${subjects.length > 0 ? subjects[0].id : -1}_${
           subjects.length > 0 ? subjects[0].name : -1
         }`}
       >

@@ -26,7 +26,8 @@ export const FetchUserInfo = (userId) => {
             console.warn("No user logged in.");
           else if (
             error.message.includes("428") ||
-            error.message.includes("400")
+            error.message.includes("400") ||
+            error.message.includes("403")
           )
             await AUTH_SERVICE.logout();
           else console.error(error);

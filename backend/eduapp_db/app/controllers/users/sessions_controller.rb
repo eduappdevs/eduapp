@@ -3,21 +3,30 @@ class Users::SessionsController < Devise::SessionsController
     
 		respond_to :json
 
-    def create
-      self.resource = warden.authenticate!(auth_options)
-      set_flash_message!(:notice, :signed_in)
-      sign_in(resource_name, resource)
-      yield resource if block_given?
+		def new 
+			render json: { error: "Method not allowed" }, status: 405
+		end
 
-      @user_info = UserInfo.where(user_id: resource.id).first
-      @user_info = JSON.parse(@user_info.to_json)
-      @user_info = @user_info.merge({user: resource})
-      respond_with @user_info
+    def create
+			self.resource = warden.authenticate!(auth_options)
+			set_flash_message!(:notice, :signed_in)
+			sign_in(resource_name, resource)
+			yield resource if block_given?
+			puts "\n\n\nresource: #{resource.to_json}"
+
+			@user_info = UserInfo.where(user_id: resource.id).first
+			@user_info = JSON.parse(@user_info.to_json)
+			@user_info = @user_info.merge({user: resource})
+			respond_with @user_info
     end
 
 		def destroy
+			if !request.headers['eduauth'].present?
+				render json: { error: "No auth provided." }, status: :unauthorized and return
+			end
+			
 			unlockedToken = User.unlock_token(request.headers['eduauth'].split('Bearer ').last)
-			if unlockedToken.present?
+			if unlockedToken.instance_of? Array
 				jtiOwner = JtiMatchList.where(jti: unlockedToken[0]["jti"]).first
 				if jtiOwner.present?
 					newToken = User.revoke_token(jtiOwner.user_id, request.remote_ip)
@@ -30,10 +39,10 @@ class Users::SessionsController < Devise::SessionsController
 						render json: { errors: "Couldn't revoke token." }, status: :unprocessable_entity
 					end
 				else
-					render json: { errors: "Couldn't find token." }, status: :unprocessable_entity
+					render json: { errors: "Couldn't find token." }, status: 401
 				end
 			else
-				render json: { errors: "Invalid token." }, status: :unprocessable_entity
+				render json: { errors: "Invalid token." }, status: :forbidden
 			end
 		end
   

@@ -7,8 +7,8 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { GetSubjects } from "../../hooks/GetSubjects";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import * as RESOURCE_SERVICE from "../../services/resource.service";
-import "./Resources.css";
 import RequireAuth from "../../components/auth/RequireAuth";
+import "./Resources.css";
 
 export default function Resources() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -95,8 +95,8 @@ export default function Resources() {
       <SubjectDropdown
         dropdown={showResources}
         onSubjectClick={(e) => {
-          handleChangeSelector(parseInt(e.split("-")[1]));
-          setCurrentSubject(e.split("-")[2]);
+          handleChangeSelector(e.split("_")[1]);
+          setCurrentSubject(e.split("_")[2]);
           setShowResources(false);
         }}
         closeAction={() => {
