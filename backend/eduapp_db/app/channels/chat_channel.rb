@@ -10,19 +10,21 @@ class ChatChannel < ApplicationCable::Channel
 
 		case data["command"]
 		when "message"
-			newMsgHash = {}
-			newMsgHash.merge!(JSON.parse("{\"chat_base_id\": #{params[:chat_code]}}"))
-			newMsgHash.merge!(JSON.parse("{\"user_id\": #{data["author"]}}"))
-			newMsgHash.merge!(JSON.parse("{\"message\": \"#{data["message"]}\"}"))
-			newMsgHash.merge!(JSON.parse("{\"send_date\": \"#{data["send_date"]}\"}"))
+			instance = ChatMessage.new(
+				chat_base_id: params[:chat_room][1..-1],
+				user_id: data["author"],
+				message: data["message"],
+				send_date: data["send_date"]
+			)
 
-			instance = ChatMessage.new(JSON.parse(newMsgHash.to_json))
-			instance.save
-
-			newMsg = format_msg(instance)
-			newMsg.merge!(JSON.parse("{\"command\": \"new_message\"}"))
-			
-			ActionCable.server.broadcast @chat_name, newMsg
+			if instance.save
+				newMsg = format_msg(instance)
+				newMsg.merge!(JSON.parse("{\"command\": \"new_message\"}"))
+				
+				ActionCable.server.broadcast @chat_name, newMsg
+			else 
+				ActionCable.server.broadcast @chat_name, { "command" => "error", "message" => "Error saving message" }
+			end
 		else
 			puts "DEFAULT"
 		end

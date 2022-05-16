@@ -92,7 +92,8 @@ export default function GroupChatCreate() {
     if (createButton === "Create") {
       setCreateButton("Creating...");
       let finalParticipants = [];
-      for (let p of participants) finalParticipants.push(p.id);
+      console.log(participants);
+      for (let p of participants) finalParticipants.push(p.user.id);
       asynchronizeRequest(async () => {
         let chat_id = await CHAT_SERVICE.createCompleteChat({
           base: {

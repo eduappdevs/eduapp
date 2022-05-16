@@ -23,8 +23,6 @@ export default function ChatMenu() {
     for (let c of chats.data) {
       if (c.chat_base.chat_name.includes("private_chat_")) {
         let nameDisect = c.chat_base.chat_name.split("_");
-        nameDisect[2] = parseInt(nameDisect[2]);
-        nameDisect[3] = parseInt(nameDisect[3]);
         let searchId =
           nameDisect.indexOf(getOfflineUser().user.id) === 3
             ? nameDisect[2]

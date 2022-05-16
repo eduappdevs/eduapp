@@ -7,7 +7,6 @@ export default class ACManager {
     this.connection = null;
     this.hasConnected = {};
     this.chatCode = null;
-    this.receivedData = {};
   }
 
   generateChannelConnection(chatIdentifier) {
@@ -24,17 +23,27 @@ export default class ACManager {
     };
 
     this.connection.received = (data) => {
-      this.receivedData.data = data;
-      if (
-        this.receivedData.data.command !== undefined &&
-        this.receivedData.data.command === "new_message"
-      ) {
-        document.dispatchEvent(
-          new CustomEvent("new_msg", {
-            detail: this.receivedData.data,
-          })
-        );
-        this.emptyReceivedData();
+      switch (data.command) {
+        case "new_message":
+          document.dispatchEvent(
+            new CustomEvent("new_msg", {
+              detail: {
+                message: data.message,
+                user: data.user,
+                id: data.id,
+                chat_base: data.chat_base,
+                send_date: data.send_date,
+              },
+            })
+          );
+          break;
+        case "error":
+          console.error(
+            "Could not save message: " + this.receivedData.data.error
+          );
+          break;
+        default:
+          break;
       }
     };
 
@@ -73,7 +82,6 @@ export default class ACManager {
   sendChannelCmd(cmd, ...args) {
     if (this.connection != null) {
       let payload = {
-        chat_code: this.chatCode,
         command: cmd,
       };
 
@@ -91,9 +99,5 @@ export default class ACManager {
 
       this.connection.send(payload);
     }
-  }
-
-  emptyReceivedData() {
-    this.receivedData.data = undefined;
   }
 }

@@ -35,10 +35,7 @@ export default function MainChat() {
   };
 
   const manageIncomingMsg = (newMsg) => {
-    if (
-      newMsg.chat_base.id ===
-      parseInt(acInstance.chatCode[acInstance.chatCode.length - 1])
-    ) {
+    if (newMsg.chat_base.id === acInstance.chatCode.substring(1)) {
       setNewMessages((prevMsgs) => [...prevMsgs, newMsg]);
       let messageBox = document.getElementsByClassName(
         "main-chat-messages-container"
@@ -61,8 +58,6 @@ export default function MainChat() {
 
       if (cInfo.data.chat_name.includes("private_chat_")) {
         let nameDisect = cInfo.data.chat_name.split("_");
-        nameDisect[2] = parseInt(nameDisect[2]);
-        nameDisect[3] = parseInt(nameDisect[3]);
         let searchId =
           nameDisect.indexOf(getOfflineUser().user.id) === 3
             ? nameDisect[2]

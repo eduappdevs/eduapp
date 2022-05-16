@@ -5,7 +5,7 @@ class ApplicationController < ActionController::API
 		if request.headers['eduauth'].present?
 			token = request.headers['eduauth'].split('Bearer ').last
 			jwt_payload = User.unlock_token(token)
-			if jwt_payload.present?
+			if jwt_payload.present? && jwt_payload != []
 				if Time.now.to_i > Integer(jwt_payload[0]["exp"])
 					render json: { error: "Token has expired." }, status: 428
 				end

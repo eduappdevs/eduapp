@@ -7,11 +7,10 @@ export const saveInLocalStorage = (userDetails) => {
     throw new Error("error");
   }
 
-  let offlineUser = {
-    user: userDetails.data.message,
-  };
-
-  localStorage.setItem("offline_user", JSON.stringify(offlineUser));
+  localStorage.setItem(
+    "offline_user",
+    JSON.stringify(userDetails.data.message)
+  );
   localStorage.setItem("eduapp_auth", userDetails.headers.eduauth.substring(7));
   window.location.reload();
 };
