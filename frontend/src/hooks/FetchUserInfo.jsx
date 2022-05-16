@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import * as USER_SERVICE from "../services/user.service";
+import * as AUTH_SERVICE from "../services/auth.service";
 import { getOfflineUser, saveUserOffline } from "../utils/OfflineManager";
 
 export const FetchUserInfo = (userId) => {
@@ -23,6 +24,11 @@ export const FetchUserInfo = (userId) => {
         } catch (error) {
           if (error.message.includes("(reading 'protocol')"))
             console.warn("No user logged in.");
+          else if (
+            error.message.includes("428") ||
+            error.message.includes("400")
+          )
+            await AUTH_SERVICE.logout();
           else console.error(error);
         }
       } else {
