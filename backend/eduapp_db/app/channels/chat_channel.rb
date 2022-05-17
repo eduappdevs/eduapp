@@ -1,6 +1,8 @@
 class ChatChannel < ApplicationCable::Channel
 	require 'json'
+
   def subscribed
+		reject and return unless check_chat_user(params[:chat_room][1..-1], params[:connection_requester])
 		@chat_name = "eduapp.channel.#{params[:chat_room]}"
 		stream_from @chat_name
   end
@@ -44,5 +46,15 @@ class ChatChannel < ApplicationCable::Channel
 		mainMsg.delete("user_id")
 		
 		return mainMsg
+	end
+
+	def check_chat_user(chat_base_id, user_id)
+		chat_participants = ChatParticipant.where(chat_base_id: chat_base_id)
+		chat_participants.each do |participant|
+			if participant.user_id == user_id
+				return true
+			end
+		end
+		return false
 	end
 end

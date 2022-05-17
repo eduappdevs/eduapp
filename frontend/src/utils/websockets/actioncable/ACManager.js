@@ -1,5 +1,6 @@
 import { createConsumer } from "@rails/actioncable";
 import { CHATWS } from "../../../config";
+import { getOfflineUser } from "../../OfflineManager";
 
 export default class ACManager {
   constructor() {
@@ -12,9 +13,8 @@ export default class ACManager {
   generateChannelConnection(chatIdentifier) {
     this.connection = this.consumer.subscriptions.create({
       channel: "ChatChannel",
-      chat_code: chatIdentifier[chatIdentifier.length - 1],
       chat_room: chatIdentifier,
-      user_id: localStorage.userId,
+      connection_requester: getOfflineUser().user.id,
     });
 
     this.connection.connected = () => {
@@ -45,6 +45,10 @@ export default class ACManager {
         default:
           break;
       }
+    };
+
+    this.connection.rejected = () => {
+      window.location.href = "/chat";
     };
 
     this.connection.disconnected = () => {

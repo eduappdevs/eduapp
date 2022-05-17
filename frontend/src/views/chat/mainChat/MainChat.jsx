@@ -52,28 +52,28 @@ export default function MainChat() {
     acInstance.chatCode = window.location.pathname.split("/")[2];
     let chatId = acInstance.chatCode.substring(1);
 
-    asynchronizeRequest(async function () {
-      let cInfo = await CHAT_SERVICE.findChatById(chatId);
-      let cPeople = await CHAT_SERVICE.fetchChatUsers(chatId);
+    acInstance.generateChannelConnection(acInstance.chatCode).then(() => {
+      asynchronizeRequest(async function () {
+        let cInfo = await CHAT_SERVICE.findChatById(chatId);
+        let cPeople = await CHAT_SERVICE.fetchChatUsers(chatId);
 
-      if (cInfo.data.chat_name.includes("private_chat_")) {
-        let nameDisect = cInfo.data.chat_name.split("_");
-        let searchId =
-          nameDisect.indexOf(getOfflineUser().user.id) === 3
-            ? nameDisect[2]
-            : nameDisect[3];
-        let privateCounterPart = await USER_SERVICE.findById(searchId);
-        cInfo.data.image =
-          privateCounterPart.data[0].profile_image !== null
-            ? privateCounterPart.data[0].profile_image
-            : undefined;
-        cInfo.data.chat_name = privateCounterPart.data[0].user_name;
-      }
+        if (cInfo.data.chat_name.includes("private_chat_")) {
+          let nameDisect = cInfo.data.chat_name.split("_");
+          let searchId =
+            nameDisect.indexOf(getOfflineUser().user.id) === 3
+              ? nameDisect[2]
+              : nameDisect[3];
+          let privateCounterPart = await USER_SERVICE.findById(searchId);
+          cInfo.data.image =
+            privateCounterPart.data[0].profile_image !== null
+              ? privateCounterPart.data[0].profile_image
+              : undefined;
+          cInfo.data.chat_name = privateCounterPart.data[0].user_name;
+        }
 
-      chat.chatInfo = cInfo.data;
-      chat.chatParticipants = cPeople.data;
-    }).then(() => {
-      acInstance.generateChannelConnection(acInstance.chatCode).then(() => {
+        chat.chatInfo = cInfo.data;
+        chat.chatParticipants = cPeople.data;
+      }).then(() => {
         CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
           setMessages(msgs.data);
           setTimeout(() => {
