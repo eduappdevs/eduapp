@@ -63,6 +63,7 @@ export const createCompleteChat = async (chat_info) => {
       chat_base_id: chat_base.data.id,
       user_id: u,
       isChatAdmin: hasBeenAdmin ? false : true,
+			chat_name: chat_info.base.chat_name,
     });
     hasBeenAdmin = true;
   }

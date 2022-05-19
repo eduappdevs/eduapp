@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ChatBubble from "./chatBubbles/ChatBubble";
 import AppHeader from "../../../components/appHeader/AppHeader";
-import ACManager from "../../../utils/websockets/actioncable/ACManager";
+import ChatsAC from "../../../utils/websockets/actioncable/ChatsAC";
+import NotifsAC from "../../../utils/websockets/actioncable/NotifsAC";
 import { asynchronizeRequest } from "../../../API";
 import * as USER_SERVICE from "../../../services/user.service";
 import * as CHAT_SERVICE from "../../../services/chat.service";
@@ -9,7 +10,8 @@ import { getOfflineUser } from "../../../utils/OfflineManager";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 import "./MainChat.css";
 
-const acInstance = new ACManager();
+const acInstance = new ChatsAC();
+const acNotifs = new NotifsAC();
 export default function MainChat() {
   const [chat, setChat] = useState({});
   const [messages, setMessages] = useState([]);
@@ -52,8 +54,14 @@ export default function MainChat() {
     acInstance.chatCode = window.location.pathname.split("/")[2];
     let chatId = acInstance.chatCode.substring(1);
 
-    acInstance.generateChannelConnection(acInstance.chatCode).then(() => {
-      asynchronizeRequest(async function () {
+    // Generate websocket connection to chat room
+    acInstance.generateChannelConnection(acInstance.chatCode).then(async () => {
+      // Generate temporary connection to notifications to retrieve encryption keys
+      await acNotifs.generateChannelConnection(chatId);
+      acNotifs.sendChannelCmd("keys_request");
+
+      // Retrieve chat info
+      await asynchronizeRequest(async function () {
         let cInfo = await CHAT_SERVICE.findChatById(chatId);
         let cPeople = await CHAT_SERVICE.fetchChatUsers(chatId);
 
@@ -73,22 +81,22 @@ export default function MainChat() {
 
         chat.chatInfo = cInfo.data;
         chat.chatParticipants = cPeople.data;
-      }).then(() => {
-        CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
-          setMessages(msgs.data);
-          setTimeout(() => {
-            let messageBox = document.getElementsByClassName(
-              "main-chat-messages-container"
-            )[0];
-            if (messageBox.childNodes.length !== 0) {
-              messageBox.childNodes[
-                messageBox.childNodes.length - 1
-              ].scrollIntoView(true);
-            }
+      });
+      // Retrieve chat messages
+      CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
+        setMessages(msgs.data);
+        setTimeout(() => {
+          let messageBox = document.getElementsByClassName(
+            "main-chat-messages-container"
+          )[0];
+          if (messageBox.childNodes.length !== 0) {
+            messageBox.childNodes[
+              messageBox.childNodes.length - 1
+            ].scrollIntoView(true);
+          }
 
-            window.dispatchEvent(new Event("canLoadChat"));
-          }, 100);
-        });
+          window.dispatchEvent(new Event("canLoadChat"));
+        }, 100);
       });
     });
   }, []);

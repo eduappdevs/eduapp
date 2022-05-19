@@ -12,9 +12,7 @@ module EduAppUtils
 			pri_key = OpenSSL::PKey::RSA.new(key, "#{hashed_pwd}::#{SecureRandom.random_bytes(32)}")
 			pub_key = OpenSSL::PKey::RSA.new(key.public_key)
 
-			encrypted = self.encrypt("nice", pub_key)
-			puts "Encrypted msg: #{encrypted}"
-			puts "Decrypted msg: #{self.decrypt(encrypted, pri_key)}"
+			return pri_key, pub_key
 		end
 
 		def self.encrypt(msg, pub_key)

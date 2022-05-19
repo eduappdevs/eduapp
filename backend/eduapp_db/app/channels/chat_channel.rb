@@ -1,5 +1,6 @@
 class ChatChannel < ApplicationCable::Channel
 	require 'json'
+	require 'edu_app_utils/encrypt_utils'
 
   def subscribed
 		reject and return unless check_chat_user(params[:chat_room][1..-1], params[:connection_requester])

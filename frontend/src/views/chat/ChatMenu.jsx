@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ACManager from "../../utils/websockets/actioncable/ACManager";
+import ChatsAC from "../../utils/websockets/actioncable/ChatsAC";
 import Loader from "../../components/loader/Loader";
 import StandardModal from "../../components/modals/standard-modal/StandardModal";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
@@ -9,7 +9,7 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
 import "./ChatMenu.css";
 
-let acManager = new ACManager();
+let acManager = new ChatsAC();
 export default function ChatMenu() {
   const [chats, setChats] = useState([]);
   const [canCreate, setCanCreate] = useState(false);

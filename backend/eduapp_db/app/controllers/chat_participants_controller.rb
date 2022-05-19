@@ -2,9 +2,10 @@ class ChatParticipantsController < ApplicationController
   before_action :set_chat_participant, only: [:show, :update, :destroy]
 	before_action :authenticate_user!
 
+	require 'edu_app_utils/encrypt_utils'
+
   # GET /chat_participants
   def index
-
 		if params[:user_id]
 			@participants = ChatParticipant.where(user_id: params[:user_id])
 		elsif params[:chat_id]
@@ -23,13 +24,27 @@ class ChatParticipantsController < ApplicationController
 
   # POST /chat_participants
   def create
-    @chat_participant = ChatParticipant.new(chat_participant_params)
-
-    if @chat_participant.save
-      render json: @chat_participant, status: :created, location: @chat_participant
-    else
-      render json: @chat_participant.errors, status: :unprocessable_entity
-    end
+		if params[:chat_name].include?("private_chat_")
+			pri_key, pub_key = EduAppUtils::EncryptUtils::gen_key_pair(User.find(params[:user_id]).encrypted_password)
+			@chat_participant = ChatParticipant.new(
+				private_key: pri_key,
+				public_key: pub_key,
+				chat_base_id: params[:chat_base_id],
+				user_id: params[:user_id]
+			)
+			if @chat_participant.save
+				render json: @chat_participant, status: :created, location: @chat_participant
+			else
+				render json: @chat_participant.errors, status: :unprocessable_entity
+			end
+		else
+			@chat_participant = ChatParticipant.new(chat_participant_params)
+			if @chat_participant.save
+				render json: @chat_participant, status: :created, location: @chat_participant
+			else
+				render json: @chat_participant.errors, status: :unprocessable_entity
+			end
+		end
   end
 
   # PATCH/PUT /chat_participants/1

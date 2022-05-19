@@ -86,6 +86,10 @@ ActiveRecord::Schema.define(version: 15) do
   create_table "chat_participants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "chat_base_id", null: false
     t.uuid "user_id", null: false
+    t.string "status", default: "Offline", null: false
+    t.datetime "last_seen"
+    t.string "private_key", null: false
+    t.string "public_key", null: false
     t.boolean "isChatAdmin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
