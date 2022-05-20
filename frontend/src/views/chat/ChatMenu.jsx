@@ -27,12 +27,16 @@ export default function ChatMenu() {
           nameDisect.indexOf(getOfflineUser().user.id) === 3
             ? nameDisect[2]
             : nameDisect[3];
-        let privateCounterPart = await USER_SERVICE.findById(searchId);
+
+        let privateCounterPart;
+        if (searchId === "system")
+          privateCounterPart = await USER_SERVICE.fetchSystemUser();
+        else privateCounterPart = await USER_SERVICE.findById(searchId);
         c.chat_base.image =
-          privateCounterPart.data[0].profile_image !== null
-            ? privateCounterPart.data[0].profile_image
+          privateCounterPart.data.profile_image !== null
+            ? privateCounterPart.data.profile_image
             : undefined;
-        c.chat_base.chat_name = privateCounterPart.data[0].user_name;
+        c.chat_base.chat_name = privateCounterPart.data.user_name;
       }
     }
     setChats(chats.data);

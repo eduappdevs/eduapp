@@ -17,6 +17,7 @@ export default function MainChat() {
   const [chat, setChat] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessages, setNewMessages] = useState([]);
+  const [readOnly, setReadOnly] = useState(false);
 
   const [showPopup, setPopup] = useState(false);
 
@@ -64,6 +65,7 @@ export default function MainChat() {
 
         privKey = atob(cInfo.data.private_key);
         pubKey = atob(cInfo.data.public_key);
+        setReadOnly(cInfo.data.isReadOnly);
 
         if (cInfo.data.chat_name.includes("private_chat_")) {
           let nameDisect = cInfo.data.chat_name.split("_");
@@ -73,10 +75,10 @@ export default function MainChat() {
               : nameDisect[3];
           let privateCounterPart = await USER_SERVICE.findById(searchId);
           cInfo.data.image =
-            privateCounterPart.data[0].profile_image !== null
-              ? privateCounterPart.data[0].profile_image
+            privateCounterPart.data.profile_image !== null
+              ? privateCounterPart.data.profile_image
               : undefined;
-          cInfo.data.chat_name = privateCounterPart.data[0].user_name;
+          cInfo.data.chat_name = privateCounterPart.data.user_name;
         }
 
         chat.chatInfo = cInfo.data;
@@ -210,7 +212,15 @@ export default function MainChat() {
             </svg>
           </div>
           <div className="main-chat-input-text">
-            <textarea id="message-area" placeholder="EduApp W.I.P" />
+            <textarea
+              id="message-area"
+              disabled={readOnly}
+              placeholder={
+                readOnly
+                  ? "This chat was created by the system."
+                  : "EduApp W.I.P"
+              }
+            />
           </div>
           <div className="main-chat-send-button">
             <svg

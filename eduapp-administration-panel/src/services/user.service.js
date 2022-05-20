@@ -2,6 +2,7 @@ import axios from "axios";
 import { API_URL, TOKEN } from "../API";
 export const USERS_INFO = `${API_URL}/user_infos`;
 export const USERS = `${API_URL}/users`;
+export const SYSTEM = `${API_URL}/system/user`;
 const requestHeader = { eduauth: TOKEN };
 
 //User
@@ -29,6 +30,12 @@ export const deleteUser = async (id) => {
 
 export const editUser = async (body) => {
   return await axios.put(`${USERS}/${body.id}`, body, {
+    headers: requestHeader,
+  });
+};
+
+export const fetchSystemUser = async () => {
+  return await axios.get(`${SYSTEM}`, {
     headers: requestHeader,
   });
 };

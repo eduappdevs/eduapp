@@ -1,14 +1,14 @@
 class ChatMessagesController < ApplicationController
   before_action :set_chat_message, only: [:show, :update, :destroy]
-	before_action :authenticate_user!
+  before_action :authenticate_user!
 
   # GET /chat_messages
   def index
     if !params[:chat_base_id]
-			@chat_messages = ChatMessage.all
-		else
-			@chat_messages = ChatMessage.order(send_date: :asc).where(chat_base_id: params[:chat_base_id])
-		end
+      @chat_messages = ChatMessage.all
+    else
+      @chat_messages = ChatMessage.order(send_date: :asc).where(chat_base_id: params[:chat_base_id])
+    end
 
     render json: @chat_messages
   end
@@ -44,13 +44,14 @@ class ChatMessagesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_chat_message
-      @chat_message = ChatMessage.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def chat_message_params
-      params.require(:chat_message).permit(:chat_base_id, :user_id, :message, :send_date)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_chat_message
+    @chat_message = ChatMessage.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def chat_message_params
+    params.require(:chat_message).permit(:chat_base_id, :user_id, :message, :send_date)
+  end
 end

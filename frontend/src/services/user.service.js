@@ -3,6 +3,7 @@ import { API_URL, TOKEN } from "../API";
 export const USERS_INFO = `${API_URL}/user_infos`;
 export const USERS = `${API_URL}/users`;
 export const GLOGIN = `${API_URL}/users/auth/google_oauth2/callback`;
+export const SYSTEM = `${API_URL}/system/user`;
 
 const requestHeader = { eduauth: TOKEN };
 
@@ -13,6 +14,12 @@ export const fetchUserInfos = async () => {
 
 export const findById = async (uId) => {
   return await axios.get(`${USERS_INFO}?user_id=${uId}`, {
+    headers: requestHeader,
+  });
+};
+
+export const fetchSystemUser = async () => {
+  return await axios.get(`${SYSTEM}`, {
     headers: requestHeader,
   });
 };

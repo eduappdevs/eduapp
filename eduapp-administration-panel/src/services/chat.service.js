@@ -3,6 +3,7 @@ import { API_URL, TOKEN } from "../API";
 export const CHAT_MESSAGES = `${API_URL}/chat_messages`;
 export const CHAT = `${API_URL}/chat_bases`;
 export const CHAT_PARTICIPANT = `${API_URL}/chat_participants`;
+export const CHAT_SYSTEM_NOTIFS = `${API_URL}/system/chat/notifications`;
 
 const requestHeader = { eduauth: TOKEN };
 
@@ -10,17 +11,29 @@ const requestHeader = { eduauth: TOKEN };
 export const fetchChat = async () => {
   return await axios.get(`${CHAT}`, { headers: requestHeader });
 };
+
+export const findChatById = async (id) => {
+  return await axios.get(`${CHAT}/${id}`, { headers: requestHeader });
+};
+
 export const deleteChat = async (id) => {
   return await axios.delete(`${CHAT}/${id}`, {
     headers: requestHeader,
   });
 };
+
 export const createChat = async (data) => {
   return await axios.post(`${CHAT}`, data, { headers: requestHeader });
 };
 
 export const editChat = async (data) => {
   return await axios.put(`${CHAT}/${data.id}`, data, {
+    headers: requestHeader,
+  });
+};
+
+export const fetchUserNotifsChat = async (uid) => {
+  return await axios.get(`${CHAT_SYSTEM_NOTIFS}?user_id=${uid}`, {
     headers: requestHeader,
   });
 };

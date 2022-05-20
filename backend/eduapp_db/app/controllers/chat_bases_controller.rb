@@ -16,6 +16,16 @@ class ChatBasesController < ApplicationController
     render json: @chat_basis
   end
 
+  def has_system_notifs
+    notifs = ChatBase.where(chat_name: "private_chat_system_#{params[:user_id]}")
+
+    if notifs.count > 0
+      render json: notifs.first, status: :ok and return
+    end
+
+    render json: { :error => "User has no system chat." }, status: 404
+  end
+
   # POST /chat_bases
   def create
     if params[:chat_name].include?("private_chat_")
@@ -30,6 +40,7 @@ class ChatBasesController < ApplicationController
         @chat_basis = ChatBase.new(
           chat_name: params[:chat_name],
           isGroup: params[:isGroup],
+          isReadOnly: params[:isReadOnly].nil? ? false : params[:isReadOnly],
         )
         pri_key, pub_key = EduAppUtils::EncryptUtils::gen_key_pair(@chat_basis.id)
         @chat_basis.private_key = pri_key
@@ -45,6 +56,7 @@ class ChatBasesController < ApplicationController
       @chat_basis = ChatBase.new(
         chat_name: params[:chat_name],
         isGroup: params[:isGroup],
+        isReadOnly: params[:isReadOnly].nil? ? false : params[:isReadOnly],
       )
       pri_key, pub_key = EduAppUtils::EncryptUtils::gen_key_pair(@chat_basis.id)
       @chat_basis.private_key = pri_key

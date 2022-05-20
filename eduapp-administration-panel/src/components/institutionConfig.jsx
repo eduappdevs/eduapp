@@ -3,6 +3,8 @@ import { asynchronizeRequest } from "../API";
 import * as INSTITUTIONSERVICE from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
+import * as USERSERVICE from "../services/user.service";
+import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import Input from "./Input";
 import "../styles/institutionConfig.css";
 
@@ -23,30 +25,49 @@ export default function InstitutionConfig(props) {
     });
   };
 
+  const userEnroll = async (uId) => {
+    const payload = new FormData();
+    payload.append(
+      "course_id",
+      (await COURSESERVICE.fetchGeneralCourse()).data.id
+    );
+    payload.append("user_id", uId);
+
+    asynchronizeRequest(function () {
+      ENROLLSERVICE.createTuition(payload).then(() => {
+        console.log("User tuition has been completed successfully!");
+      });
+    });
+  };
+
   const createInstitution = () => {
     let name = document.getElementById("i_name").value;
     if (name) {
       swapIcons(true);
       asynchronizeRequest(async function () {
-        INSTITUTIONSERVICE.createInstitution({ name: name }).then((i) => {
-          COURSESERVICE.createCourse({
-            name: "General",
-            institution_id: i.data.id,
-          }).then((s) => {
-            SUBJECTSERVICE.createSubject({
-              name: "General",
-              teacherInCharge: name,
-              description: "Automated resource tab for all users in " + name,
-              color: "#96ffb2",
-              course_id: s.data.id,
-            }).then(() => {
-              setTimeout(() => {
-                swapIcons(true);
-                fetchInstitutions();
-              }, 500);
-            });
-          });
+        let new_i = await INSTITUTIONSERVICE.createInstitution({ name: name });
+        let new_c = await COURSESERVICE.createCourse({
+          name: "General",
+          institution_id: new_i.data.id,
         });
+        await SUBJECTSERVICE.createSubject({
+          name: "General",
+          teacherInCharge: name,
+          description: "Automated resource tab for all users in " + name,
+          color: "#96ffb2",
+          course_id: new_c.data.id,
+        });
+        let sys_u = await USERSERVICE.createUser({
+          email: "eduapp_system@eduapp.org",
+          password: process.env.REACT_APP_EDUAPP_SYSTEM_USER_PWD,
+          isAdmin: true,
+        });
+        await userEnroll(sys_u.data.user.id);
+
+        setTimeout(() => {
+          swapIcons(true);
+          fetchInstitutions();
+        }, 500);
       });
     }
   };

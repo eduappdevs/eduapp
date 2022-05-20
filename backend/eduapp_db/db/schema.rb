@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(version: 14) do
 
   create_table "chat_bases", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "chat_name", null: false
+    t.boolean "isReadOnly", default: false, null: false
     t.boolean "isGroup", null: false
     t.string "private_key"
     t.string "public_key"

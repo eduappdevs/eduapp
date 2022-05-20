@@ -2,15 +2,26 @@ import React, { useEffect, useState } from "react";
 import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as COURSESERVICE from "../services/course.service";
+import * as CHATSERVICE from "../services/chat.service";
 import asynchronizeRequest from "../API";
 import { getOfflineUser } from "../utils/OfflineManager";
+import EncryptionUtils from "../utils/EncryptionUtils";
 
+const system_user_name = "eduapp_system";
 export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
+  const [allSelected, setAllSelected] = useState(true);
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
+
+  const selectAll = () => {
+    setAllSelected(!allSelected);
+    for (let c of document.getElementsByName("user-check")) {
+      c.checked = allSelected;
+    }
+  };
 
   const fetchUsers = () => {
     asynchronizeRequest(function () {
@@ -32,7 +43,6 @@ export default function UserConfig(props) {
           email: email,
           password: pass,
           isAdmin: isAdmin,
-          device: navigator.userAgent,
         }).then(async (res) => {
           await userEnroll(res.data.user.id);
           fetchUsers();
@@ -60,15 +70,20 @@ export default function UserConfig(props) {
     });
   };
 
-  const deleteUser = (id) => {
-    if (id !== getOfflineUser().user.id) {
-      asynchronizeRequest(function () {
-        USERSERVICE.deleteUser(id).then(() => {
-          fetchUsers();
+  const deleteUser = async (id) => {
+    let systemUser = (await USERSERVICE.fetchSystemUser()).data;
+    if (id !== systemUser.user.id) {
+      if (id !== getOfflineUser().user.id) {
+        asynchronizeRequest(function () {
+          USERSERVICE.deleteUser(id).then(() => {
+            fetchUsers();
+          });
         });
-      });
+      } else {
+        alert("Dumbass");
+      }
     } else {
-      alert("Dumbass");
+      alert("Cannot delete system user.");
     }
   };
 
@@ -79,6 +94,44 @@ export default function UserConfig(props) {
     } else {
       document.getElementById("submit-loader").style.display = "none";
       document.getElementById("ins-add-icon").style.display = "block";
+    }
+  };
+
+  const notifyUsers = async () => {
+    let notifyMsg = "This is a test message. 2";
+    let systemUser = (await USERSERVICE.fetchSystemUser()).data;
+    for (let u of document.getElementsByName("user-check")) {
+      if (u.checked) {
+        let uid = u.id.split("_")[1];
+        let chat_info;
+        try {
+          chat_info = await CHATSERVICE.fetchUserNotifsChat(uid);
+        } catch (err) {
+          let chat_id = await CHATSERVICE.createCompleteChat({
+            base: {
+              chat_name: "private_chat_system_" + uid,
+              isGroup: false,
+              isReadOnly: true,
+            },
+            participants: {
+              user_ids: [uid, systemUser.user.id],
+            },
+          });
+          chat_info = await CHATSERVICE.findChatById(chat_id);
+        }
+
+        await CHATSERVICE.createMessage({
+          chat_base_id: chat_info.data.id,
+          user_id: systemUser.user.id,
+          message: EncryptionUtils.encrypt(
+            notifyMsg,
+            atob(chat_info.data.public_key)
+          ),
+          send_date: new Date().toISOString(),
+        });
+        u.checked = false;
+        console.log("Sent notification.");
+      }
     }
   };
 
@@ -123,7 +176,7 @@ export default function UserConfig(props) {
         <table>
           <thead>
             <tr>
-              <th></th>
+              <th>{props.language.add}</th>
               <th>{props.language.email}</th>
               <th>{props.language.password}</th>
               <th>{props.language.isAdmin}</th>
@@ -179,9 +232,15 @@ export default function UserConfig(props) {
             </tr>
           </tbody>
         </table>
-        <table style={{ marginTop: "50px" }}>
+        <div className="notify-users">
+          <button onClick={() => notifyUsers()}>Notify Selected Users</button>
+        </div>
+        <table style={{ marginTop: "25px" }}>
           <thead>
             <tr>
+              <th>
+                <input type={"checkbox"} onChange={() => selectAll()} />
+              </th>
               <th>{props.language.userId}</th>
               <th>{props.language.name}</th>
               <th>{props.language.email}</th>
@@ -192,7 +251,8 @@ export default function UserConfig(props) {
           </thead>
           <tbody>
             {users
-              ? users.map((u) => {
+              ? // eslint-disable-next-line array-callback-return
+                users.map((u) => {
                   if (search.length > 0) {
                     if (
                       (u.user_name.includes(search) ||
@@ -201,6 +261,18 @@ export default function UserConfig(props) {
                     ) {
                       return (
                         <tr key={u.id}>
+                          <td>
+                            <input
+                              id={`check_${u.user.id}`}
+                              type={"checkbox"}
+                              disabled={u.user_name === system_user_name}
+                              name={
+                                u.user_name === system_user_name
+                                  ? null
+                                  : "user-check"
+                              }
+                            />
+                          </td>
                           <td>{shortUUID(u.user.id)}</td>
                           <td>
                             <input type="text" disabled value={u.user_name} />
@@ -252,6 +324,18 @@ export default function UserConfig(props) {
                   } else if (filterUsersWithRole(userRole, u)) {
                     return (
                       <tr key={u.id}>
+                        <td>
+                          <input
+                            id={`check_${u.user.id}`}
+                            type={"checkbox"}
+                            disabled={u.user_name === system_user_name}
+                            name={
+                              u.user_name === system_user_name
+                                ? null
+                                : "user-check"
+                            }
+                          />
+                        </td>
                         <td>{shortUUID(u.user.id)}</td>
                         <td>
                           <input type="text" disabled value={u.user_name} />
@@ -313,6 +397,18 @@ export default function UserConfig(props) {
                         <tr key={u.id}>
                           <td>
                             <input
+                              id={`check_${u.user.id}`}
+                              type={"checkbox"}
+                              disabled={u.user_name === system_user_name}
+                              name={
+                                u.user_name === system_user_name
+                                  ? null
+                                  : "user-check"
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
                               type="text"
                               disabled
                               value={shortUUID(u.user.id)}
@@ -370,6 +466,18 @@ export default function UserConfig(props) {
                   } else if (filterUsersWithRole(userRole, u)) {
                     return (
                       <tr key={u.id}>
+                        <td>
+                          <input
+                            id={`check_${u.user.id}`}
+                            type={"checkbox"}
+                            disabled={u.user_name === system_user_name}
+                            name={
+                              u.user_name === system_user_name
+                                ? null
+                                : "user-check"
+                            }
+                          />
+                        </td>
                         <td>
                           <input
                             type="text"
@@ -435,6 +543,18 @@ export default function UserConfig(props) {
                         <tr key={u.id}>
                           <td>
                             <input
+                              id={`check_${u.user.id}`}
+                              type={"checkbox"}
+                              disabled={u.user_name === system_user_name}
+                              name={
+                                u.user_name === system_user_name
+                                  ? null
+                                  : "user-check"
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
                               type="text"
                               disabled
                               value={shortUUID(u.user.id)}
@@ -490,6 +610,18 @@ export default function UserConfig(props) {
                   } else if (filterUsersWithRole(userRole, u)) {
                     return (
                       <tr key={u.id}>
+                        <td>
+                          <input
+                            id={`check_${u.user.id}`}
+                            type={"checkbox"}
+                            disabled={u.user_name === system_user_name}
+                            name={
+                              u.user_name === system_user_name
+                                ? null
+                                : "user-check"
+                            }
+                          />
+                        </td>
                         <td>
                           <input
                             type="text"
