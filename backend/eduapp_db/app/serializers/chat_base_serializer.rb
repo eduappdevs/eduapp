@@ -1,3 +1,3 @@
 class ChatBaseSerializer < ActiveModel::Serializer
-  attributes :id, :chat_name, :isGroup
+  attributes :id, :chat_name, :isGroup, :private_key, :public_key
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 15) do
+ActiveRecord::Schema.define(version: 14) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,17 +57,11 @@ ActiveRecord::Schema.define(version: 15) do
     t.index ["user_id"], name: "index_calendar_annotations_on_user_id"
   end
 
-  create_table "chat_base_infos", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "chat_base_id", null: false
-    t.string "chat_img"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["chat_base_id"], name: "index_chat_base_infos_on_chat_base_id"
-  end
-
   create_table "chat_bases", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "chat_name"
-    t.boolean "isGroup"
+    t.string "chat_name", null: false
+    t.boolean "isGroup", null: false
+    t.string "private_key"
+    t.string "public_key"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -88,8 +82,6 @@ ActiveRecord::Schema.define(version: 15) do
     t.uuid "user_id", null: false
     t.string "status", default: "Offline", null: false
     t.datetime "last_seen"
-    t.string "private_key", null: false
-    t.string "public_key", null: false
     t.boolean "isChatAdmin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -201,7 +193,6 @@ ActiveRecord::Schema.define(version: 15) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "calendar_annotations", "subjects"
   add_foreign_key "calendar_annotations", "users"
-  add_foreign_key "chat_base_infos", "chat_bases", column: "chat_base_id"
   add_foreign_key "chat_messages", "chat_bases", column: "chat_base_id"
   add_foreign_key "chat_messages", "users"
   add_foreign_key "chat_participants", "chat_bases", column: "chat_base_id"

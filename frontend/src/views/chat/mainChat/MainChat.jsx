@@ -2,16 +2,17 @@ import React, { useState, useEffect } from "react";
 import ChatBubble from "./chatBubbles/ChatBubble";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ChatsAC from "../../../utils/websockets/actioncable/ChatsAC";
-import NotifsAC from "../../../utils/websockets/actioncable/NotifsAC";
 import { asynchronizeRequest } from "../../../API";
 import * as USER_SERVICE from "../../../services/user.service";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import { getOfflineUser } from "../../../utils/OfflineManager";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import EncryptionUtils from "../../../utils/EncryptionUtils";
 import "./MainChat.css";
 
 const acInstance = new ChatsAC();
-const acNotifs = new NotifsAC();
+let privKey = null;
+let pubKey = null;
 export default function MainChat() {
   const [chat, setChat] = useState({});
   const [messages, setMessages] = useState([]);
@@ -28,7 +29,7 @@ export default function MainChat() {
     ) {
       acInstance.sendChannelCmd(
         "message",
-        inputMsg.value,
+        EncryptionUtils.encrypt(inputMsg.value, pubKey),
         getOfflineUser().user.id,
         new Date().toISOString()
       );
@@ -56,14 +57,13 @@ export default function MainChat() {
 
     // Generate websocket connection to chat room
     acInstance.generateChannelConnection(acInstance.chatCode).then(async () => {
-      // Generate temporary connection to notifications to retrieve encryption keys
-      await acNotifs.generateChannelConnection(chatId);
-      acNotifs.sendChannelCmd("keys_request");
-
       // Retrieve chat info
       await asynchronizeRequest(async function () {
         let cInfo = await CHAT_SERVICE.findChatById(chatId);
         let cPeople = await CHAT_SERVICE.fetchChatUsers(chatId);
+
+        privKey = atob(cInfo.data.private_key);
+        pubKey = atob(cInfo.data.public_key);
 
         if (cInfo.data.chat_name.includes("private_chat_")) {
           let nameDisect = cInfo.data.chat_name.split("_");
@@ -158,7 +158,9 @@ export default function MainChat() {
                 return (
                   <ChatBubble
                     key={msg.user.id + "-" + msg.id}
-                    message={msg.message}
+                    message={
+                      EncryptionUtils.decrypt(msg.message, privKey).message
+                    }
                     foreign={
                       // eslint-disable-next-line eqeqeq
                       msg.user.id != getOfflineUser().user.id ? true : false
@@ -175,7 +177,9 @@ export default function MainChat() {
                 return (
                   <ChatBubble
                     key={msg.user.id + "-" + msg.id}
-                    message={msg.message}
+                    message={
+                      EncryptionUtils.decrypt(msg.message, privKey).message
+                    }
                     foreign={
                       // eslint-disable-next-line eqeqeq
                       msg.user.id != getOfflineUser().user.id ? true : false

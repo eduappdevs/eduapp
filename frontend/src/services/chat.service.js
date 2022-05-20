@@ -63,7 +63,6 @@ export const createCompleteChat = async (chat_info) => {
       chat_base_id: chat_base.data.id,
       user_id: u,
       isChatAdmin: hasBeenAdmin ? false : true,
-			chat_name: chat_info.base.chat_name,
     });
     hasBeenAdmin = true;
   }
@@ -79,7 +78,9 @@ export const fetchPersonalChats = async (userId) => {
 
 //Message
 export const fetchChatMessages = async (cId) => {
-  return await axios.get(`${CHAT_MESSAGES}?chat_base_id=${cId}`, { headers: requestHeader });
+  return await axios.get(`${CHAT_MESSAGES}?chat_base_id=${cId}`, {
+    headers: requestHeader,
+  });
 };
 
 export const deleteMessage = async (id) => {
