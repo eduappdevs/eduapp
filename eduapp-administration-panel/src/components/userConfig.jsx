@@ -4,7 +4,7 @@ import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as CHATSERVICE from "../services/chat.service";
 import asynchronizeRequest from "../API";
-import { getOfflineUser } from "../utils/OfflineManager";
+import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 import EncryptionUtils from "../utils/EncryptionUtils";
 
 const system_user_name = "eduapp_system";
@@ -25,9 +25,14 @@ export default function UserConfig(props) {
 
   const fetchUsers = () => {
     asynchronizeRequest(function () {
-      USERSERVICE.fetchUserInfos().then((us) => {
-        setUsers(us.data);
-      });
+      USERSERVICE.fetchUserInfos()
+        .then((us) => {
+          setUsers(us.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -43,14 +48,19 @@ export default function UserConfig(props) {
           email: email,
           password: pass,
           isAdmin: isAdmin,
-        }).then(async (res) => {
-          await userEnroll(res.data.user.id);
-          fetchUsers();
-          document.getElementById("u_admin").checked = false;
-          document.getElementById("u_email").value = null;
-          document.getElementById("u_pass").value = null;
-          swapIcons(false);
-        });
+        })
+          .then(async (res) => {
+            await userEnroll(res.data.user.id);
+            fetchUsers();
+            document.getElementById("u_admin").checked = false;
+            document.getElementById("u_email").value = null;
+            document.getElementById("u_pass").value = null;
+            swapIcons(false);
+          })
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
+          });
       });
     }
   };
@@ -64,9 +74,14 @@ export default function UserConfig(props) {
     payload.append("user_id", uId);
 
     asynchronizeRequest(function () {
-      ENROLLSERVICE.createTuition(payload).then(() => {
-        console.log("User tuition has been completed successfully!");
-      });
+      ENROLLSERVICE.createTuition(payload)
+        .then(() => {
+          console.log("User tuition has been completed successfully!");
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -75,9 +90,14 @@ export default function UserConfig(props) {
     if (id !== systemUser.user.id) {
       if (id !== getOfflineUser().user.id) {
         asynchronizeRequest(function () {
-          USERSERVICE.deleteUser(id).then(() => {
-            fetchUsers();
-          });
+          USERSERVICE.deleteUser(id)
+            .then(() => {
+              fetchUsers();
+            })
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
+            });
         });
       } else {
         alert("Dumbass");
@@ -163,9 +183,11 @@ export default function UserConfig(props) {
   useEffect(() => {
     setSearch(props.search);
   }, [props.search]);
+
   useEffect(() => {
     setUserRole(props.userRole);
   }, [props.userRole]);
+
   useEffect(() => {
     fetchUsers();
   }, []);

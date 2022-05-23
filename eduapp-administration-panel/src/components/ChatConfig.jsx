@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as API from "../API";
 import "../styles/chatConfig.css";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function ChatConfig(props) {
   const [chat, setChat] = useState([]);
@@ -124,8 +125,9 @@ export default function ChatConfig(props) {
             cancelButton.style.display = "none";
             name.disabled = true;
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
           });
       } else {
         let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
@@ -166,8 +168,9 @@ export default function ChatConfig(props) {
               cancelButton.style.display = "none";
               name.disabled = true;
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
             });
         } else {
           let buttonDelete =
@@ -205,8 +208,9 @@ export default function ChatConfig(props) {
 
               fetchChat();
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
             });
         } else {
           let buttonDelete = e.target.parentNode.childNodes[0];
@@ -226,9 +230,14 @@ export default function ChatConfig(props) {
 
   const fetchChat = async () => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.fetchChat().then((res) => {
-        setChat(res.data);
-      });
+      CHATSERVICE.fetchChat()
+        .then((res) => {
+          setChat(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -261,10 +270,15 @@ export default function ChatConfig(props) {
     document.getElementById("alert_delete").style.display = "block";
     swapIconsDelete(true, event.target, id);
     API.asynchronizeRequest(function () {
-      CHATSERVICE.deleteChat(id).then(() => {
-        fetchChat();
-        swapIconsDelete(false, event.target, id);
-      });
+      CHATSERVICE.deleteChat(id)
+        .then(() => {
+          fetchChat();
+          swapIconsDelete(false, event.target, id);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -311,9 +325,11 @@ export default function ChatConfig(props) {
     document.getElementById("alert_delete").style.display = "block";
     setChatId(id);
   };
+
   useEffect(() => {
     fetchChat();
   }, []);
+
   return (
     <>
       <div className="chatConfig-main-container">

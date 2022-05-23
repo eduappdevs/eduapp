@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function ChatParticipantConfig(props) {
   const [participant, setParticipant] = useState([]);
@@ -11,25 +12,40 @@ export default function ChatParticipantConfig(props) {
 
   const fetchParticipants = async () => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.fetchChatParticipants().then((res) => {
-        setParticipant(res.data);
-      });
+      CHATSERVICE.fetchChatParticipants()
+        .then((res) => {
+          setParticipant(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchChat = async () => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.fetchChat().then((res) => {
-        setChat(res.data);
-      });
+      CHATSERVICE.fetchChat()
+        .then((res) => {
+          setChat(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchUser = async () => {
     API.asynchronizeRequest(function () {
-      USERSERVICE.fetchUserInfos().then((res) => {
-        setUsers(res.data);
-      });
+      USERSERVICE.fetchUserInfos()
+        .then((res) => {
+          setUsers(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -54,18 +70,28 @@ export default function ChatParticipantConfig(props) {
     }
     API.asynchronizeRequest(function () {
       CHATSERVICE.createParticipant(eventJson);
-    }).then(() => {
-      fetchParticipants();
-      swapIcons(false);
-    });
+    })
+      .then(() => {
+        fetchParticipants();
+        swapIcons(false);
+      })
+      .catch(async (err) => {
+        await interceptExpiredToken(err);
+        console.error(err);
+      });
   };
 
   const deleteParticipant = async (id) => {
     document.getElementById("alert_delete").style.display = "none";
     API.asynchronizeRequest(function () {
-      CHATSERVICE.deleteParticipant(id).then(() => {
-        fetchParticipants();
-      });
+      CHATSERVICE.deleteParticipant(id)
+        .then(() => {
+          fetchParticipants();
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -78,6 +104,7 @@ export default function ChatParticipantConfig(props) {
       document.getElementById("ins-add-icon").style.display = "block";
     }
   };
+
   const swapIconsDelete = (state, button, id) => {
     let deleteIcon = button.childNodes[0];
     let deleteLoader = button.childNodes[1];
@@ -148,7 +175,9 @@ export default function ChatParticipantConfig(props) {
               </td>
               <td>
                 <select name="chP_user" id="chP_user">
-                  <option defaultValue="Choose user">{props.language.chooseUser}</option>
+                  <option defaultValue="Choose user">
+                    {props.language.chooseUser}
+                  </option>
                   {users.map((s) => (
                     <option
                       key={s.user_id}
@@ -161,7 +190,9 @@ export default function ChatParticipantConfig(props) {
               </td>
               <td>
                 <select name="chP_chat" id="chP_chat">
-                  <option defaultValue="Choose Group">{props.language.chooseGroup}</option>
+                  <option defaultValue="Choose Group">
+                    {props.language.chooseGroup}
+                  </option>
                   {chat.map((s) => (
                     <option key={s.id} value={s.id + "_" + s.chat_name}>
                       {s.chat_name}

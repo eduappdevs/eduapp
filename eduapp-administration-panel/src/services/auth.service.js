@@ -28,10 +28,6 @@ export const hasInit = async () => {
   return await axios.get(`${API_URL}/ping/admin`);
 };
 
-export const catchTokenMismatch = async (request) => {
-  if (request.status === 400) await logout();
-};
-
 export const logout = async () => {
   return await axios
     .delete(`${USERS}/sign_out`, {

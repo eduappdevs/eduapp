@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as AUTH_SERVICE from "../services/auth.service";
 
 const blobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
@@ -43,4 +44,11 @@ export const getOfflineUser = () => {
   }
 
   return user;
+};
+
+export const interceptExpiredToken = async (error) => {
+  if (error.message.includes("428") || error.message.includes("403")) {
+    await AUTH_SERVICE.logout();
+    window.location.reload();
+  }
 };

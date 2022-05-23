@@ -8,101 +8,118 @@ import { fetchResourcesJson } from "../services/resource.service";
 import LanguageSwitcher from "./LanguageSwitcher";
 import "./componentStyles/languageSwitcher.css";
 import "../styles/navbar.css";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function Navbar(props) {
   const [activeSection, setActiveSection] = useState("");
   const DISPLAY = false;
+
   const generateResourcesReport = async () => {
     API.asynchronizeRequest(function () {
-      fetchResourcesJson.then((e) => {
-        e.data.map((resource) => {
-          let counts = [];
-          let labels = [];
-          for (let res of resource) {
-            if (!labels.includes(res.createdBy)) {
-              labels.push(res.createdBy);
-              counts.push(1);
-            } else {
-              counts[labels.indexOf(res.createdBy)] += 1;
+      fetchResourcesJson
+        .then((e) => {
+          e.data.map((resource) => {
+            let counts = [];
+            let labels = [];
+            for (let res of resource) {
+              if (!labels.includes(res.createdBy)) {
+                labels.push(res.createdBy);
+                counts.push(1);
+              } else {
+                counts[labels.indexOf(res.createdBy)] += 1;
+              }
             }
-          }
 
-          const payload = {
-            data: {
-              resources: resource,
-              chart_values: counts,
-              chart_labels: labels,
-            },
-          };
+            const payload = {
+              data: {
+                resources: resource,
+                chart_values: counts,
+                chart_labels: labels,
+              },
+            };
 
-          jsreport.serverUrl = endpoints.JSREPORT;
-          const report = jsreport.render({
-            template: {
-              name: "ResourcesReport",
-            },
-            data: JSON.stringify(payload),
+            jsreport.serverUrl = endpoints.JSREPORT;
+            const report = jsreport.render({
+              template: {
+                name: "ResourcesReport",
+              },
+              data: JSON.stringify(payload),
+            });
+
+            report.openInWindow({ title: "Resources Report" });
           });
-
-          report.openInWindow({ title: "Resources Report" });
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
         });
-      });
     });
   };
 
   const generateMessagesReport = async () => {
     API.asynchronizeRequest(function () {
-      fetchMessage().then((e) => {
-        e.data.map((sms) => {
-          let dates = [];
-          let dateCounts = [];
-          for (let msg of sms) {
-            let ftDate = msg.send_date.split("T")[0];
-            if (!dates.includes(ftDate)) {
-              dates.push(ftDate);
-              dateCounts.push(1);
-            } else {
-              dateCounts[dates.indexOf(ftDate)] += 1;
+      fetchMessage()
+        .then((e) => {
+          e.data.map((sms) => {
+            let dates = [];
+            let dateCounts = [];
+            for (let msg of sms) {
+              let ftDate = msg.send_date.split("T")[0];
+              if (!dates.includes(ftDate)) {
+                dates.push(ftDate);
+                dateCounts.push(1);
+              } else {
+                dateCounts[dates.indexOf(ftDate)] += 1;
+              }
             }
-          }
-          const payload = {
-            data: {
-              chart_values: dateCounts,
-              chart_labels: dates,
-            },
-          };
+            const payload = {
+              data: {
+                chart_values: dateCounts,
+                chart_labels: dates,
+              },
+            };
 
-          jsreport.serverUrl = endpoints.JSREPORT;
-          const report = jsreport.render({
-            template: {
-              name: "ChatMessagesReport",
-            },
-            data: JSON.stringify(payload),
+            jsreport.serverUrl = endpoints.JSREPORT;
+            const report = jsreport.render({
+              template: {
+                name: "ChatMessagesReport",
+              },
+              data: JSON.stringify(payload),
+            });
+
+            report.openInWindow({ title: "Chat Messages Report" });
           });
-
-          report.openInWindow({ title: "Chat Messages Report" });
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
         });
-      });
     });
   };
 
   const generateCoursesReport = async () => {
     API.asynchronizeRequest(function () {
-      fetchCourses().then((e) => {
-        e.data.map((course) => {
-          const payload = {
-            data: course,
-          };
-          jsreport.serverUrl = endpoints.JSREPORT;
-          const report = jsreport.render({
-            template: {
-              name: "RegisteredCoursesReport",
-            },
-            data: JSON.stringify(payload),
-          });
+      fetchCourses()
+        .then((e) => {
+          e.data.map((course) => {
+            const payload = {
+              data: course,
+            };
+            jsreport.serverUrl = endpoints.JSREPORT;
+            const report = jsreport.render({
+              template: {
+                name: "RegisteredCoursesReport",
+              },
+              data: JSON.stringify(payload),
+            });
 
-          report.openInWindow({ title: "Registered Courses Report" });
+            report.openInWindow({ title: "Registered Courses Report" });
+          });
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
         });
-      });
     });
   };
 

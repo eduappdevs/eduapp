@@ -3,6 +3,7 @@ import * as API from "../API";
 import * as TUITIONSSERVICE from "../services/enrollConfig.service";
 import * as USERSSERVICE from "../services/user.service";
 import * as COURSESERVICE from "../services/course.service";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function EnrollConfig(props) {
   const [tuitions, setTuitions] = useState(null);
@@ -11,25 +12,40 @@ export default function EnrollConfig(props) {
 
   const fetchTuitions = () => {
     API.asynchronizeRequest(function () {
-      TUITIONSSERVICE.fetchTuitions().then((ts) => {
-        setTuitions(ts.data);
-      });
+      TUITIONSSERVICE.fetchTuitions()
+        .then((ts) => {
+          setTuitions(ts.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchUsers = () => {
     API.asynchronizeRequest(function () {
-      USERSSERVICE.fetchUserInfos().then((us) => {
-        setUsers(us.data);
-      });
+      USERSSERVICE.fetchUserInfos()
+        .then((us) => {
+          setUsers(us.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchCourses = () => {
     API.asynchronizeRequest(function () {
-      COURSESERVICE.fetchCourses().then((cs) => {
-        setCourses(cs.data);
-      });
+      COURSESERVICE.fetchCourses()
+        .then((cs) => {
+          setCourses(cs.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -52,18 +68,28 @@ export default function EnrollConfig(props) {
         payload.append("course_id", course);
         payload.append("user_id", user);
 
-        TUITIONSSERVICE.createTuition(payload).then(() => {
-          fetchAll();
-        });
+        TUITIONSSERVICE.createTuition(payload)
+          .then(() => {
+            fetchAll();
+          })
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
+          });
       });
     }
   };
 
   const deleteTuition = (id) => {
     API.asynchronizeRequest(function () {
-      TUITIONSSERVICE.deleteTuition(id).then(() => {
-        fetchAll();
-      });
+      TUITIONSSERVICE.deleteTuition(id)
+        .then(() => {
+          fetchAll();
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 

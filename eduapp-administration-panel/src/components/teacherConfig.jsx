@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { asynchronizeRequest } from "../API";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 import * as SUBJECT_SERVICE from "../services/subject.service";
 import * as USER_SERVICE from "../services/user.service";
 
@@ -11,6 +12,7 @@ export default function TeacherConfig(props) {
   const fetchUsers = async () => {
     return await asynchronizeRequest(async function () {
       let users = await USER_SERVICE.fetchUserInfos();
+      await interceptExpiredToken(users);
       return users.data;
     });
   };
@@ -18,6 +20,7 @@ export default function TeacherConfig(props) {
   const fetchSubjects = async () => {
     return await asynchronizeRequest(async function () {
       let subjects = await SUBJECT_SERVICE.fetchSubjects();
+      await interceptExpiredToken(users);
       return subjects.data;
     });
   };
@@ -50,7 +53,8 @@ export default function TeacherConfig(props) {
     const subject = document.getElementById("subject_select").value;
 
     asynchronizeRequest(async () => {
-      await USER_SERVICE.enroll_teacher(user, subject);
+      let enroll = await USER_SERVICE.enroll_teacher(user, subject);
+      await interceptExpiredToken(enroll);
       refreshTeachers();
     }).then((err) => {
       if (err) console.log("There was an error creating.");
@@ -58,18 +62,29 @@ export default function TeacherConfig(props) {
   };
 
   const refreshTeachers = () => {
-    fetchUsers().then((users) => {
-      fetchSubjects().then((subjects) => {
-        formatTeachers(users, subjects);
-        setUsers(users);
-        setSubjects(subjects);
+    fetchUsers()
+      .then((users) => {
+        fetchSubjects()
+          .then((subjects) => {
+            formatTeachers(users, subjects);
+            setUsers(users);
+            setSubjects(subjects);
+          })
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
+          });
+      })
+      .catch(async (err) => {
+        await interceptExpiredToken(err);
+        console.error(err);
       });
-    });
   };
 
   const deleteTeacher = async (uId, sId) => {
     asynchronizeRequest(async () => {
-      await USER_SERVICE.delist_teacher(uId, sId);
+      let delist = await USER_SERVICE.delist_teacher(uId, sId);
+      await interceptExpiredToken(delist);
       refreshTeachers();
     }).then((err) => {
       if (err) console.log("There was an error deleting.");

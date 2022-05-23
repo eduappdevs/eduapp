@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 import * as INSTITUTIONSERVICES from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
@@ -174,8 +175,9 @@ export default function CourseConfig(props) {
                   cancelButton.style.display = "none";
                   name.disabled = true;
                 })
-                .catch((error) => {
-                  console.log(error);
+                .catch(async (err) => {
+                  await interceptExpiredToken(err);
+                  console.error(err);
                 });
             });
           }
@@ -217,8 +219,9 @@ export default function CourseConfig(props) {
                     name.disabled = true;
                     console.log();
                   })
-                  .catch((error) => {
-                    console.log(error);
+                  .catch(async (err) => {
+                    await interceptExpiredToken(err);
+                    console.error(err);
                   });
               });
             }
@@ -252,8 +255,9 @@ export default function CourseConfig(props) {
                     fetchInstitutions();
                     fetchCourses();
                   })
-                  .catch((error) => {
-                    console.log(error);
+                  .catch(async (err) => {
+                    await interceptExpiredToken(err);
+                    console.error(err);
                   });
               });
             }
@@ -265,17 +269,27 @@ export default function CourseConfig(props) {
 
   const fetchInstitutions = () => {
     API.asynchronizeRequest(function () {
-      INSTITUTIONSERVICES.fetchInstitutions().then((i) => {
-        setInstitutions(i.data);
-      });
+      INSTITUTIONSERVICES.fetchInstitutions()
+        .then((i) => {
+          setInstitutions(i.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchCourses = () => {
     API.asynchronizeRequest(function () {
-      COURSESERVICE.fetchCourses().then((i) => {
-        setCourses(i.data);
-      });
+      COURSESERVICE.fetchCourses()
+        .then((i) => {
+          setCourses(i.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -287,29 +301,39 @@ export default function CourseConfig(props) {
         COURSESERVICE.createCourse({
           name: cName,
           institution_id: cInst,
-        }).then((x) => {
-          if (courses.length === 0) {
-            let instTemp = null;
-            for (let inst of institutions) {
-              if (inst.id === cInst) {
-                instTemp = inst.name;
+        })
+          .then((x) => {
+            if (courses.length === 0) {
+              let instTemp = null;
+              for (let inst of institutions) {
+                if (inst.id === cInst) {
+                  instTemp = inst.name;
+                }
               }
-            }
-            SUBJECTSERVICE.createSubject({
-              name: "Noticias",
-              teacherInCharge: instTemp,
-              description: "Noticias para el instituto " + instTemp,
-              color: "#96ffb2",
-              course_id: x.data.id,
-            }).then(() => {
+              SUBJECTSERVICE.createSubject({
+                name: "Noticias",
+                teacherInCharge: instTemp,
+                description: "Noticias para el instituto " + instTemp,
+                color: "#96ffb2",
+                course_id: x.data.id,
+              })
+                .then(() => {
+                  fetchCourses();
+                  swapIcons(false);
+                })
+                .catch(async (err) => {
+                  await interceptExpiredToken(err);
+                  console.error(err);
+                });
+            } else {
               fetchCourses();
               swapIcons(false);
-            });
-          } else {
-            fetchCourses();
-            swapIcons(false);
-          }
-        });
+            }
+          })
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
+          });
       });
     }
   };
@@ -318,15 +342,25 @@ export default function CourseConfig(props) {
     API.asynchronizeRequest(function () {
       if (courses.length === 1) {
         API.asynchronizeRequest(function () {
-          COURSESERVICE.deleteCourse(id).then(() => {
-            fetchCourses();
-          });
+          COURSESERVICE.deleteCourse(id)
+            .then(() => {
+              fetchCourses();
+            })
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
+            });
         });
       } else {
         API.asynchronizeRequest(function () {
-          COURSESERVICE.deleteCourse(id).then(() => {
-            fetchCourses();
-          });
+          COURSESERVICE.deleteCourse(id)
+            .then(() => {
+              fetchCourses();
+            })
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
+            });
         });
       }
     });

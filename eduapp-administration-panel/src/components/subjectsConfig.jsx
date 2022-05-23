@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as COURSESERVICE from "../services/course.service";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function SubjectsConfig(props) {
   const [subjects, setSubjects] = useState(null);
@@ -13,17 +14,27 @@ export default function SubjectsConfig(props) {
 
   const fetchSubjects = () => {
     API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubjects().then((sjs) => {
-        setSubjects(sjs.data);
-      });
+      SUBJECTSERVICE.fetchSubjects()
+        .then((sjs) => {
+          setSubjects(sjs.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchCourses = () => {
     API.asynchronizeRequest(function () {
-      COURSESERVICE.fetchCourses().then((cs) => {
-        setCourses(cs.data);
-      });
+      COURSESERVICE.fetchCourses()
+        .then((cs) => {
+          setCourses(cs.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -51,10 +62,15 @@ export default function SubjectsConfig(props) {
           description: desc,
           color: color,
           course_id: sel_course,
-        }).then(() => {
-          fetchSubjects();
-          swapIcons(false);
-        });
+        })
+          .then(() => {
+            fetchSubjects();
+            swapIcons(false);
+          })
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
+          });
       });
     }
   };
@@ -63,9 +79,14 @@ export default function SubjectsConfig(props) {
     //eliminar sessiones + modal de aviso y mostrar las sessiones que se eliminarán
     fetchCourse(id);
     API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.deleteSubject(id).then(() => {
-        fetchSubjects();
-      });
+      SUBJECTSERVICE.deleteSubject(id)
+        .then(() => {
+          fetchSubjects();
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -211,8 +232,9 @@ export default function SubjectsConfig(props) {
             color.disabled = true;
             description.disabled = true;
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
           });
       });
     } else {
@@ -283,8 +305,9 @@ export default function SubjectsConfig(props) {
               description.disabled = true;
               color.disabled = true;
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
             });
         });
       } else {
@@ -344,8 +367,9 @@ export default function SubjectsConfig(props) {
               description.disabled = true;
               color.disabled = true;
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
             });
         });
       }

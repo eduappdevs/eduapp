@@ -5,6 +5,7 @@ import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as USER_SERVICE from "../services/user.service";
 import Input from "./Input";
 import "../styles/scheduleeventslist.css";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function Scheduleeventslist(props) {
   const [subject, setSubject] = useState([]);
@@ -24,18 +25,28 @@ export default function Scheduleeventslist(props) {
 
   const fetchSubjects = () => {
     API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubject().then((res) => {
-        res.data.shift();
-        setSubject(res.data);
-      });
+      SUBJECTSERVICE.fetchSubject()
+        .then((res) => {
+          res.data.shift();
+          setSubject(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchUsers = () => {
     API.asynchronizeRequest(function () {
-      USER_SERVICE.fetchUserInfos().then((res) => {
-        setUsers(res.data);
-      });
+      USER_SERVICE.fetchUserInfos()
+        .then((res) => {
+          setUsers(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -100,8 +111,9 @@ export default function Scheduleeventslist(props) {
           .then(() => {
             fetchEvents();
           })
-          .catch((e) => {
-            console.log(e);
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
           });
       });
     } else {
@@ -111,10 +123,15 @@ export default function Scheduleeventslist(props) {
 
   const fetchEvents = async () => {
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.fetchEvents().then((event) => {
-        setEvents(event.data);
-        events_filter.events = event.data;
-      });
+      SCHEDULESERVICE.fetchEvents()
+        .then((event) => {
+          setEvents(event.data);
+          events_filter.events = event.data;
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -129,7 +146,10 @@ export default function Scheduleeventslist(props) {
         .then(() => {
           fetchEvents();
         })
-        .catch((e) => console.log(e));
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
   const editEvent = (e, s) => {
@@ -223,8 +243,9 @@ export default function Scheduleeventslist(props) {
             description.disabled = true;
             subject.disabled = true;
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
           });
       });
     } else {
@@ -335,8 +356,9 @@ export default function Scheduleeventslist(props) {
               description.disabled = true;
               subject.disabled = true;
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
             });
         });
       } else {
@@ -434,8 +456,9 @@ export default function Scheduleeventslist(props) {
               description.disabled = true;
               subject.disabled = true;
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
             });
         });
       }

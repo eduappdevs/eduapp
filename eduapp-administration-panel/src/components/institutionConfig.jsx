@@ -7,6 +7,7 @@ import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import Input from "./Input";
 import "../styles/institutionConfig.css";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function InstitutionConfig(props) {
   const [institutions, setInstitutions] = useState(null);
@@ -19,9 +20,14 @@ export default function InstitutionConfig(props) {
 
   const fetchInstitutions = () => {
     asynchronizeRequest(function () {
-      INSTITUTIONSERVICE.fetchInstitutions().then((i) => {
-        setInstitutions(i.data);
-      });
+      INSTITUTIONSERVICE.fetchInstitutions()
+        .then((i) => {
+          setInstitutions(i.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -34,9 +40,14 @@ export default function InstitutionConfig(props) {
     payload.append("user_id", uId);
 
     asynchronizeRequest(function () {
-      ENROLLSERVICE.createTuition(payload).then(() => {
-        console.log("User tuition has been completed successfully!");
-      });
+      ENROLLSERVICE.createTuition(payload)
+        .then(() => {
+          console.log("User tuition has been completed successfully!");
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -68,6 +79,9 @@ export default function InstitutionConfig(props) {
           swapIcons(true);
           fetchInstitutions();
         }, 500);
+      }).catch(async (err) => {
+        await interceptExpiredToken(err);
+        console.error(err);
       });
     }
   };
@@ -91,8 +105,9 @@ export default function InstitutionConfig(props) {
           setEditButtonHidden(false);
           fetchInstitutions();
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
         });
     });
   };

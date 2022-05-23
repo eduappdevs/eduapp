@@ -4,6 +4,7 @@ import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import Input from "./Input";
 import "../styles/schedulesessionslist.css";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function Schedulesessionslist(props) {
   const [sessions, setSessions] = useState(null);
@@ -21,19 +22,29 @@ export default function Schedulesessionslist(props) {
 
   const fetchSessions = async () => {
     await API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.fetchSessions().then((e) => {
-        setSessions(e.data);
-        sessions_filter.sessions = e.data;
-      });
+      SCHEDULESERVICE.fetchSessions()
+        .then((e) => {
+          setSessions(e.data);
+          sessions_filter.sessions = e.data;
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchSubjects = async () => {
     await API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubjects().then((res) => {
-        res.data.shift();
-        setSubject(res.data);
-      });
+      SUBJECTSERVICE.fetchSubjects()
+        .then((res) => {
+          res.data.shift();
+          setSubject(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -91,8 +102,9 @@ export default function Schedulesessionslist(props) {
         .then(() => {
           fetchSessions();
         })
-        .catch((e) => {
-          console.log(e);
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
         });
     });
   };
@@ -103,7 +115,10 @@ export default function Schedulesessionslist(props) {
         .then(() => {
           fetchSessions();
         })
-        .catch((e) => console.log(e));
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -242,8 +257,9 @@ export default function Schedulesessionslist(props) {
             chat.disabled = true;
             subject.disabled = true;
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
           });
       });
     } else {
@@ -380,8 +396,9 @@ export default function Schedulesessionslist(props) {
               chat.disabled = true;
               subject.disabled = true;
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
             });
         });
       } else {
@@ -504,8 +521,9 @@ export default function Schedulesessionslist(props) {
               chat.disabled = true;
               subject.disabled = true;
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
             });
         });
       }

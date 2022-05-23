@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as API from "../API";
 import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function PreviewUsersTable(props) {
   const [users, setUsers] = useState(null);
@@ -28,19 +29,29 @@ export default function PreviewUsersTable(props) {
       payload.append("user[password]", pass);
 
       API.asynchronizeRequest(function () {
-        USERSERVICE.createUser(payload).then((res) => {
-          const payload = new FormData();
-          USERSERVICE.createInfo(payload);
-          payload.delete("user[email]");
-          payload.delete("user[password]");
-          payload.append("user_id", res.data.message.id);
-          payload.append("user_name", res.data.message.email.split("@")[0]);
-          payload.append("isAdmin", isAdmin);
+        USERSERVICE.createUser(payload)
+          .then((res) => {
+            const payload = new FormData();
+            USERSERVICE.createInfo(payload);
+            payload.delete("user[email]");
+            payload.delete("user[password]");
+            payload.append("user_id", res.data.message.id);
+            payload.append("user_name", res.data.message.email.split("@")[0]);
+            payload.append("isAdmin", isAdmin);
 
-          USERSERVICE.createInfo(payload).then(() => {
-            userEnroll(res.data.message.id);
+            USERSERVICE.createInfo(payload)
+              .then(() => {
+                userEnroll(res.data.message.id);
+              })
+              .catch(async (err) => {
+                await interceptExpiredToken(err);
+                console.error(err);
+              });
+          })
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
           });
-        });
       });
     }
   };
@@ -50,9 +61,14 @@ export default function PreviewUsersTable(props) {
     payload.append("user_id", uId);
     payload.append("isTeacher", false);
     API.asynchronizeRequest(function () {
-      ENROLLSERVICE.createTuition(payload).then(() => {
-        console.log("User tuition has been completed successfully!");
-      });
+      ENROLLSERVICE.createTuition(payload)
+        .then(() => {
+          console.log("User tuition has been completed successfully!");
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
