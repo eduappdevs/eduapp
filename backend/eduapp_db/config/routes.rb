@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :user_roles
   mount ActionCable.server => "/chat"
   resources :chat_messages
   resources :chat_participants
