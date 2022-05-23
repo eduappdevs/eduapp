@@ -1,6 +1,7 @@
 class TuitionsController < ApplicationController
   before_action :set_tuition, only: [:show, :update, :destroy]
-	before_action :authenticate_user!
+  before_action :authenticate_user!
+  before_action :check_role!
 
   # GET /tuitions
   def index
@@ -40,13 +41,14 @@ class TuitionsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_tuition
-      @tuition = Tuition.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def tuition_params
-      params.permit(:course_id, :user_id)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_tuition
+    @tuition = Tuition.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def tuition_params
+    params.permit(:course_id, :user_id)
+  end
 end

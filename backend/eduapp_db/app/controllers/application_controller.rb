@@ -7,22 +7,22 @@ class ApplicationController < ActionController::API
       jwt_payload = User.unlock_token(token)
       if jwt_payload.instance_of? Array
         if Time.now.to_i > Integer(jwt_payload[0]["exp"])
-          render json: { error: "Token has expired." }, status: 428
+          render json: { error: "Token has expired." }, status: 428 and return
         end
         jtiMatch = JtiMatchList.where(user_id: jwt_payload[0]["sub"], jti: jwt_payload[0]["jti"])
         if !jtiMatch.present?
-          render json: { error: "Token Mismatch." }, status: 400
+          render json: { error: "Token Mismatch." }, status: 400 and return
         end
         @current_user = jwt_payload[0]["sub"]
       else
-        render json: { error: "Invalid token." }, status: :forbidden
+        render json: { error: "Invalid token." }, status: :forbidden and return
       end
     else
-      render json: { error: "No auth provided." }, status: :unauthorized
+      render json: { error: "No auth provided." }, status: :unauthorized and return
     end
   end
 
-  def check_role
+  def check_role!
     if request.headers["eduauth"].present?
       token = request.headers["eduauth"].split("Bearer ").last
       jwt_payload = User.unlock_token(token)
@@ -36,7 +36,7 @@ class ApplicationController < ActionController::API
         end
 
         if !valid_role
-          render json: { error: "Invalid role." }, status: :forbidden
+          render json: { error: "Invalid role." }, status: :forbidden and return
         end
       end
     end

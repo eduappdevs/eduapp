@@ -1,12 +1,12 @@
 class SubjectsController < ApplicationController
   before_action :set_subject, only: [:show, :update, :destroy]
-	before_action :authenticate_user!
+  before_action :authenticate_user!
+  before_action :check_role!
 
   # GET /subjects
   def index
     if params[:user_id]
-      
-      @Subjects =[]
+      @Subjects = []
       @Sessions = []
       @Today = Time.now.strftime("%F")
       @TodayHourNow = Time.now.strftime("%H")
@@ -14,19 +14,18 @@ class SubjectsController < ApplicationController
 
       @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
 
-      for course in @TuitionsUserId do
+      for course in @TuitionsUserId
         @Subjects += Subject.where(course_id: course)
       end
 
-      for subject in @Subjects  do
+      for subject in @Subjects
         @todaySessions += EduappUserSession.where(subject_id: subject).pluck(:session_start_date)
       end
 
-      for hour in @todaySessions do
-        if(hour.split('T')[1].split(":")[0] == @TodayHourNow or hour.split('T')[1].split(":")[0] >= @TodayHourNow and hour.split("T")[0] == @Today)
+      for hour in @todaySessions
+        if (hour.split("T")[1].split(":")[0] == @TodayHourNow or hour.split("T")[1].split(":")[0] >= @TodayHourNow and hour.split("T")[0] == @Today)
           @Sessions += EduappUserSession.where(subject_id: @Subjects, session_start_date: hour)
         else
-
         end
       end
 
@@ -38,10 +37,10 @@ class SubjectsController < ApplicationController
       @TuitionsUserId = Tuition.where(user_id: params[:user]).pluck(:course_id)
       @Subjects = []
 
-      for course in @TuitionsUserId do
+      for course in @TuitionsUserId
         @Subjects += Subject.where(course_id: course)
       end
-      
+
       render json: @Subjects
     else
       @subjects = Subject.all
@@ -80,13 +79,14 @@ class SubjectsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_subject
-      @subject = Subject.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def subject_params
-      params.require(:subject).permit(:name, :description, :color, :course_id)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_subject
+    @subject = Subject.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def subject_params
+    params.require(:subject).permit(:name, :description, :color, :course_id)
+  end
 end

@@ -1,6 +1,7 @@
 class ChatBasesController < ApplicationController
   before_action :set_chat_basis, only: [:show, :update, :destroy]
   before_action :authenticate_user!
+  before_action :check_role!
 
   require "edu_app_utils/encrypt_utils"
 

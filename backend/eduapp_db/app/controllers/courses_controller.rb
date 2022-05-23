@@ -1,20 +1,21 @@
 class CoursesController < ApplicationController
   before_action :set_course, only: [:show, :update, :destroy]
-	before_action :authenticate_user!
+  before_action :authenticate_user!
+  before_action :check_role!
 
   # GET /courses
   def index
-		if params[:user_id]
-			@courses = []
-			@TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
-			for course in @TuitionsUserId do
+    if params[:user_id]
+      @courses = []
+      @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
+      for course in @TuitionsUserId
         @courses += Course.where(id: course)
-			end
-		elsif params[:name]
-			@courses = Course.where(name: params[:name]).first
-		else
-			@courses = Course.all
-		end
+      end
+    elsif params[:name]
+      @courses = Course.where(name: params[:name]).first
+    else
+      @courses = Course.all
+    end
 
     render json: @courses
   end
@@ -50,13 +51,14 @@ class CoursesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_course
-      @course = Course.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def course_params
-      params.permit(:institution_id,:name)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_course
+    @course = Course.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def course_params
+    params.permit(:institution_id, :name)
+  end
 end

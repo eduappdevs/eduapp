@@ -1,6 +1,7 @@
 class UserInfosController < ApplicationController
   before_action :set_user_info, only: [:show, :update, :destroy]
   before_action :authenticate_user!
+  before_action :check_role!
 
   # GET /user_infos
   def index

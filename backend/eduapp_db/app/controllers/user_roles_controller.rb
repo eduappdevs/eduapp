@@ -1,5 +1,7 @@
 class UserRolesController < ApplicationController
   before_action :set_user_role, only: [:show, :update, :destroy]
+  before_action :authenticate_user!
+  before_action :check_role!
 
   # GET /user_roles
   def index
@@ -39,13 +41,14 @@ class UserRolesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user_role
-      @user_role = UserRole.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def user_role_params
-      params.fetch(:user_role, {})
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_user_role
+    @user_role = UserRole.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def user_role_params
+    params.fetch(:user_role, {})
+  end
 end
