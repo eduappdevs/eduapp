@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 14) do
+ActiveRecord::Schema.define(version: 15) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -171,6 +171,28 @@ ActiveRecord::Schema.define(version: 14) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_user_infos_on_user_id"
+  end
+
+  create_table "user_roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "description"
+    t.boolean "perms_institution", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_course", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_subjects", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_resources", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_sessions", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_events", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_teachers", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_users", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_roles", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_tuitions", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_jti_matchlist", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_chat", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_chat_participants", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_message", default: [false, false, true, false, false, false], array: true
+    t.boolean "perms_app_views", default: [true, true, true, true], array: true
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
