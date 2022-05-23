@@ -53,3 +53,5 @@ UserRole.create(
   description: "Guest permissions for EduApp.",
   perms_app_views: [true, true, true, false],
 )
+
+puts "Roles were successfully created!"

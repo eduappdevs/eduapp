@@ -22,6 +22,26 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def check_role
+    if request.headers["eduauth"].present?
+      token = request.headers["eduauth"].split("Bearer ").last
+      jwt_payload = User.unlock_token(token)
+      if jwt_payload.instance_of? Array
+        valid_role = false
+        UserRole.all.each do |role|
+          if role.name === jwt_payload[0]["aud"]
+            valid_role = true
+            break
+          end
+        end
+
+        if !valid_role
+          render json: { error: "Invalid role." }, status: :forbidden
+        end
+      end
+    end
+  end
+
   def current_user
     @current_user ||= super || User.where(id: @current_user)
   end
