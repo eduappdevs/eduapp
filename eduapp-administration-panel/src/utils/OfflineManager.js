@@ -47,7 +47,11 @@ export const getOfflineUser = () => {
 };
 
 export const interceptExpiredToken = async (error) => {
-  if (error.message.includes("428") || error.message.includes("403")) {
+  if (
+    error.message.includes("428") ||
+    error.message.includes("406") ||
+    error.message.includes("403")
+  ) {
     await AUTH_SERVICE.logout();
     window.location.reload();
   }

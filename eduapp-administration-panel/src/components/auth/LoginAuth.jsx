@@ -22,7 +22,6 @@ export default class LoginAuth extends Component {
 
       userData.append("user[email]", email);
       userData.append("user[password]", password);
-      userData.append("device", navigator.userAgent);
 
       await AUTH_SERVICE.login(userData);
     } catch (error) {

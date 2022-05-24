@@ -14,12 +14,17 @@ export default function Initialization() {
       valid = false;
 
     if (valid) {
-      await USER_SERVICE.createUser({
-        email: form.admin_user.value,
-        password: form.admin_pswd.value,
-        isAdmin: true,
-      });
-      window.location.reload();
+      try {
+        await USER_SERVICE.createUser({
+          email: form.admin_user.value,
+          password: form.admin_pswd.value,
+          isAdmin: true,
+          user_role: "eduapp-admin",
+        });
+        window.location.reload();
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 

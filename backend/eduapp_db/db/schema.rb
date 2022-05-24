@@ -168,7 +168,7 @@ ActiveRecord::Schema.define(version: 15) do
     t.boolean "isAdmin", default: false
     t.string "googleid"
     t.boolean "isLoggedWithGoogle", default: false
-    t.uuid "user_roles_id"
+    t.uuid "user_roles_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_user_infos_on_user_id"

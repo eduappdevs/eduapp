@@ -10,8 +10,8 @@ class ApplicationController < ActionController::API
           render json: { error: "Token has expired." }, status: 428 and return
         end
         jtiMatch = JtiMatchList.where(user_id: jwt_payload[0]["sub"], jti: jwt_payload[0]["jti"])
-        if !jtiMatch.present?
-          render json: { error: "Token Mismatch." }, status: 400 and return
+        if jtiMatch.count === 0
+          render json: { error: "Token Mismatch." }, status: 406 and return
         end
         @current_user = jwt_payload[0]["sub"]
       else
@@ -48,5 +48,77 @@ class ApplicationController < ActionController::API
 
   def signed_in?
     @current_user.present?
+  end
+
+  def get_user_roles
+    return UserRole.find(UserInfo.where(user_id: @current_user).first.user_roles_id)
+  end
+
+  def deny_perms_access!
+    render json: { error: "You do not have permission to access this endpoint." }, status: :forbidden and return false
+  end
+
+  def deny_perms_action!
+    render json: { error: "You do not have permission to perform this action." }, status: 405 and return false
+  end
+
+  def check_action_owner!(requester_id)
+    if requester_id === @current_user
+      return true
+    else
+      return deny_perms_action! unless get_user_roles.name === "eduapp-admin"
+    end
+  end
+
+  def check_perms_all!(user_roles)
+    if user_roles[0]
+      return true
+    else
+      return deny_perms_access!
+    end
+  end
+
+  def check_perms_query!(user_roles)
+    if user_roles[1]
+      return true
+    else
+      return deny_perms_access!
+    end
+  end
+
+  def check_perms_query_self!(user_roles, query_user_id)
+    if user_roles[2]
+      if query_user_id === @current_user
+        return true
+      else
+        return check_perms_query!(user_roles)
+      end
+    else
+      return deny_perms_access!
+    end
+  end
+
+  def check_perms_write!(user_roles)
+    if user_roles[3]
+      return true
+    else
+      return deny_perms_action!
+    end
+  end
+
+  def check_perms_update!(user_roles)
+    if user_roles[4]
+      return check_action_owner!
+    else
+      return deny_perms_action!
+    end
+  end
+
+  def check_perms_delete!(user_roles)
+    if user_roles[5]
+      return check_action_owner!
+    else
+      return deny_perms_action!
+    end
   end
 end
