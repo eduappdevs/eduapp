@@ -5,10 +5,16 @@ class ChatMessagesController < ApplicationController
 
   # GET /chat_messages
   def index
-    if !params[:chat_base_id]
-      @chat_messages = ChatMessage.all
-    else
+    if params[:chat_base_id]
+      if !check_user_in_chat(params[:chat_base_id])
+        return deny_perms_access!
+      end
       @chat_messages = ChatMessage.order(send_date: :asc).where(chat_base_id: params[:chat_base_id])
+    else
+      if !check_perms_all!(get_user_roles.perms_message)
+        return
+      end
+      @chat_messages = ChatMessage.all
     end
 
     render json: @chat_messages
@@ -16,11 +22,19 @@ class ChatMessagesController < ApplicationController
 
   # GET /chat_messages/1
   def show
+    if !check_perms_query!(get_user_roles.perms_message)
+      return
+    end
     render json: @chat_message
   end
 
   # POST /chat_messages
   def create
+    if !check_user_in_chat(params[:chat_base_id])
+      if !check_perms_write!(get_user_roles.perms_message)
+        return
+      end
+    end
     @chat_message = ChatMessage.new(chat_message_params)
 
     if @chat_message.save
@@ -32,6 +46,10 @@ class ChatMessagesController < ApplicationController
 
   # PATCH/PUT /chat_messages/1
   def update
+    if !check_perms_update!(get_user_roles.perms_message) && !check_action_owner!(@chat_message.user_id)
+      return
+    end
+
     if @chat_message.update(chat_message_params)
       render json: @chat_message
     else
@@ -41,10 +59,20 @@ class ChatMessagesController < ApplicationController
 
   # DELETE /chat_messages/1
   def destroy
+    if !check_perms_delete!(get_user_roles.perms_roles) && !check_user_in_chat(params[:id])
+      return
+    end
     @chat_message.destroy
   end
 
   private
+
+  def check_user_in_chat(chat_base_id)
+    if ChatParticipant.where(user_id: @current_user, chat_base_id: chat_base_id).count > 0 || get_user_roles.name == "eduapp_admin"
+      return true
+    end
+    return false
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_chat_message

@@ -5,6 +5,9 @@ class InstitutionsController < ApplicationController
 
   # GET /institutions
   def index
+    if !check_perms_all!(get_user_roles.perms_institution)
+      return
+    end
     @institutions = Institution.all
 
     render json: @institutions
@@ -17,6 +20,9 @@ class InstitutionsController < ApplicationController
 
   # POST /institutions
   def create
+    if !check_perms_query!(get_user_roles.perms_institution)
+      return
+    end
     @institution = Institution.new(institution_params)
 
     if @institution.save
@@ -28,6 +34,9 @@ class InstitutionsController < ApplicationController
 
   # PATCH/PUT /institutions/1
   def update
+    if !check_perms_update!(get_user_roles.perms_institution)
+      return
+    end
     if @institution.update(institution_params)
       render json: @institution
     else
@@ -37,6 +46,9 @@ class InstitutionsController < ApplicationController
 
   # DELETE /institutions/1
   def destroy
+    if !check_perms_delete!(get_user_roles.perms_institution)
+      return
+    end
     @institution.destroy
   end
 

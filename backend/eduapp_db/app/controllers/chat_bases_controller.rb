@@ -7,6 +7,9 @@ class ChatBasesController < ApplicationController
 
   # GET /chat_bases
   def index
+    if !check_perms_all!(get_user_roles.perms_chat)
+      return
+    end
     @chat_bases = ChatBase.all
 
     render json: @chat_bases
@@ -14,10 +17,16 @@ class ChatBasesController < ApplicationController
 
   # GET /chat_bases/1
   def show
+    if !check_perms_query!(get_user_roles.perms_chat)
+      return
+    end
     render json: @chat_basis
   end
 
   def has_system_notifs
+    if !check_perms_query!(get_user_roles.perms_chat)
+      return
+    end
     notifs = ChatBase.where(chat_name: "private_chat_system_#{params[:user_id]}")
 
     if notifs.count > 0
@@ -29,6 +38,9 @@ class ChatBasesController < ApplicationController
 
   # POST /chat_bases
   def create
+    if !check_perms_write!(get_user_roles.perms_chat)
+      return
+    end
     if params[:chat_name].include?("private_chat_")
       nameDisect = params[:chat_name].split("_")
       inverted_name = "private_chat_#{nameDisect[3]}_#{nameDisect[2]}"
@@ -73,6 +85,9 @@ class ChatBasesController < ApplicationController
 
   # PATCH/PUT /chat_bases/1
   def update
+    if !check_perms_update!(get_user_roles.perms_chat)
+      return
+    end
     if @chat_basis.update(chat_basis_params)
       render json: @chat_basis
     else
@@ -82,6 +97,9 @@ class ChatBasesController < ApplicationController
 
   # DELETE /chat_bases/1
   def destroy
+    if !check_perms_delete!(get_user_roles.perms_chat)
+      return
+    end
     @chat_basis.destroy
   end
 

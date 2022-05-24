@@ -5,6 +5,9 @@ class TuitionsController < ApplicationController
 
   # GET /tuitions
   def index
+    if !check_perms_all!(get_user_roles.perms_tuitions)
+      return
+    end
     @tuitions = Tuition.all
 
     render json: @tuitions
@@ -12,11 +15,17 @@ class TuitionsController < ApplicationController
 
   # GET /tuitions/1
   def show
+    if !check_perms_query!(get_user_roles.perms_tuitions)
+      return
+    end
     render json: @tuition
   end
 
   # POST /tuitions
   def create
+    if !check_perms_write!(get_user_roles.perms_tuitions)
+      return
+    end
     @tuition = Tuition.new(tuition_params)
 
     if @tuition.save
@@ -28,6 +37,10 @@ class TuitionsController < ApplicationController
 
   # PATCH/PUT /tuitions/1
   def update
+    if !check_perms_update!(get_user_roles.perms_tuitions)
+      return
+    end
+
     if @tuition.update(tuition_params)
       render json: @tuition
     else
@@ -37,6 +50,10 @@ class TuitionsController < ApplicationController
 
   # DELETE /tuitions/1
   def destroy
+    if !check_perms_delete!(get_user_roles.perms_tuitions)
+      return
+    end
+
     @tuition.destroy
   end
 

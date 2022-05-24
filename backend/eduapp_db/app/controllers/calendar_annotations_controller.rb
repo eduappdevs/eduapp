@@ -5,10 +5,10 @@ class CalendarAnnotationsController < ApplicationController
 
   # GET /calendar_annotations
   def index
-    if !params[:user_id]
-      @calendar_annotations = CalendarAnnotation.all
-      render json: @calendar_annotations
-    else
+    if params[:user_id]
+      if !check_perms_query_self!(get_user_roles.perms_events, params[:user_id])
+        return
+      end
       @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
       @calendar_isGlobal = CalendarAnnotation.where(isGlobal: true)
       @subjects = []
@@ -27,16 +27,28 @@ class CalendarAnnotationsController < ApplicationController
         @sessions += EduappUserSession.where(subject_id: subject)
       end
       render :json => { :globalEvents => @calendar_isGlobal, :calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents }
+    else
+      if !check_perms_all!(get_user_roles.perms_events)
+        return
+      end
+      @calendar_annotations = CalendarAnnotation.all
+      render json: @calendar_annotations
     end
   end
 
   # GET /calendar_annotations/1
   def show
+    if !check_perms_query!(get_user_roles.perms_events)
+      return
+    end
     render json: @calendar_annotation
   end
 
   # POST /calendar_annotations
   def create
+    if !check_perms_write!(get_user_roles.perms_events)
+      return
+    end
     @calendar_annotation = CalendarAnnotation.new(calendar_annotation_params)
 
     if @calendar_annotation.save
@@ -48,6 +60,9 @@ class CalendarAnnotationsController < ApplicationController
 
   # PATCH/PUT /calendar_annotations/1
   def update
+    if !check_perms_update!(get_user_roles.perms_events)
+      return
+    end
     if @calendar_annotation.update(calendar_annotation_params)
       render json: @calendar_annotation
     else
@@ -57,6 +72,9 @@ class CalendarAnnotationsController < ApplicationController
 
   # DELETE /calendar_annotations/1
   def destroy
+    if !check_perms_delete!(get_user_roles.perms_events)
+      return
+    end
     @calendar_annotation.destroy
   end
 

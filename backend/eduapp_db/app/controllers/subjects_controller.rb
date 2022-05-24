@@ -6,6 +6,9 @@ class SubjectsController < ApplicationController
   # GET /subjects
   def index
     if params[:user_id]
+      if !check_perms_query_self!(get_user_roles.perms_subjects, params[:user_id])
+        return
+      end
       @Subjects = []
       @Sessions = []
       @Today = Time.now.strftime("%F")
@@ -31,9 +34,11 @@ class SubjectsController < ApplicationController
 
       render json: @Sessions
     elsif params[:name]
+      # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
       @subjects = Subject.where(name: params[:name])
       render json: @subjects
     elsif params[:user]
+      # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
       @TuitionsUserId = Tuition.where(user_id: params[:user]).pluck(:course_id)
       @Subjects = []
 
@@ -43,6 +48,9 @@ class SubjectsController < ApplicationController
 
       render json: @Subjects
     else
+      if !check_perms_all!(get_user_roles.perms_subjects)
+        return
+      end
       @subjects = Subject.all
       render json: @subjects
     end
@@ -50,11 +58,17 @@ class SubjectsController < ApplicationController
 
   # GET /subjects/1
   def show
+    if !check_perms_query!(get_user_roles.perms_subjects) && !subject_in_user_course
+      return
+    end
     render json: @subject
   end
 
   # POST /subjects
   def create
+    if !check_perms_write!(get_user_roles.perms_subjects)
+      return
+    end
     @subject = Subject.new(subject_params)
 
     if @subject.save
@@ -66,6 +80,9 @@ class SubjectsController < ApplicationController
 
   # PATCH/PUT /subjects/1
   def update
+    if !check_perms_update!(get_user_roles.perms_subjects)
+      return
+    end
     if @subject.update(subject_params)
       render json: @subject
     else
@@ -75,10 +92,20 @@ class SubjectsController < ApplicationController
 
   # DELETE /subjects/1
   def destroy
+    if !check_perms_delete!(get_user_roles.perms_subjects)
+      return
+    end
     @subject.destroy
   end
 
   private
+
+  def subject_in_user_course
+    if Tuition.where(user_id: @current_user, course_id: @subject.course_id).count > 0
+      return true
+    end
+    return false
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_subject
