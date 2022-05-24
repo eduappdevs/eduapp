@@ -53,7 +53,7 @@ class User < ApplicationRecord
       end
     end
 
-    user_role = UserRole.find(UserInfo.where(user_id: existingUserJti[0].user_id).first.user_roles_id)
+    user_role = UserRole.find(UserInfo.where(user_id: existingUserJti[0].user_id).first.user_role_id)
     if !user_role
       return { error: "Failed to find user role." }
     end

@@ -51,7 +51,7 @@ class ApplicationController < ActionController::API
   end
 
   def get_user_roles
-    return UserRole.find(UserInfo.where(user_id: @current_user).first.user_roles_id)
+    return UserRole.find(UserInfo.where(user_id: @current_user).first.user_role_id)
   end
 
   def deny_perms_access!

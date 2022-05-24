@@ -168,11 +168,11 @@ ActiveRecord::Schema.define(version: 15) do
     t.boolean "isAdmin", default: false
     t.string "googleid"
     t.boolean "isLoggedWithGoogle", default: false
-    t.uuid "user_roles_id", null: false
+    t.uuid "user_role_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_user_infos_on_user_id"
-    t.index ["user_roles_id"], name: "index_user_infos_on_user_roles_id"
+    t.index ["user_role_id"], name: "index_user_infos_on_user_role_id"
   end
 
   create_table "user_roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -229,6 +229,6 @@ ActiveRecord::Schema.define(version: 15) do
   add_foreign_key "subjects", "courses"
   add_foreign_key "tuitions", "courses"
   add_foreign_key "tuitions", "users"
-  add_foreign_key "user_infos", "user_roles", column: "user_roles_id"
+  add_foreign_key "user_infos", "user_roles"
   add_foreign_key "user_infos", "users"
 end

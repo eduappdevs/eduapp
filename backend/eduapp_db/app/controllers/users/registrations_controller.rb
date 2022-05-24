@@ -46,7 +46,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         user_name: resource.email.split("@")[0],
         isAdmin: createParams[:isAdmin],
         isTeacher: createParams[:isTeacher].present? ? createParams[:isTeacher] : false,
-        user_roles_id: UserRole.where(name: createParams[:user_role]).first.id,
+        user_role_id: UserRole.where(name: createParams[:user_role]).first.id,
       )
 
       if respective_userinfo.save
