@@ -6,7 +6,7 @@ class CreateResources < ActiveRecord::Migration[6.1]
       t.string :firstfile
       t.string :secondfile
       t.string :thirdfile
-      t.string :createdBy
+      t.belongs_to :user, null: false, foreign_key: true, type: :uuid
       t.references :subject, foreign_key: true, type: :uuid
       t.timestamps
     end

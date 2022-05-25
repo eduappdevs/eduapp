@@ -71,7 +71,6 @@ export default function MainChat() {
         let rawChat = (await CHAT_SERVICE.fetchChatInfo(chatId)).data;
         let cInfo = rawChat.chat;
         let participants = rawChat.participants;
-        console.log(rawChat);
 
         privKey = atob(cInfo.private_key);
         pubKey = atob(cInfo.public_key);

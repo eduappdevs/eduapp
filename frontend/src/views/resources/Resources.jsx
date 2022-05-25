@@ -223,7 +223,7 @@ export default function Resources() {
                                 </svg>
                               </div>
                               <div className="resourceInfo__createdBy__content">
-                                {data.createdBy}
+                                {data.user.email}
                               </div>
                             </div>
                           </div>

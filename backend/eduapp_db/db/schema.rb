@@ -133,11 +133,12 @@ ActiveRecord::Schema.define(version: 15) do
     t.string "firstfile"
     t.string "secondfile"
     t.string "thirdfile"
-    t.string "createdBy"
+    t.uuid "user_id", null: false
     t.uuid "subject_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["subject_id"], name: "index_resources_on_subject_id"
+    t.index ["user_id"], name: "index_resources_on_user_id"
   end
 
   create_table "subjects", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -226,6 +227,7 @@ ActiveRecord::Schema.define(version: 15) do
   add_foreign_key "eduapp_user_sessions", "subjects"
   add_foreign_key "jti_match_lists", "users"
   add_foreign_key "resources", "subjects"
+  add_foreign_key "resources", "users"
   add_foreign_key "subjects", "courses"
   add_foreign_key "tuitions", "courses"
   add_foreign_key "tuitions", "users"

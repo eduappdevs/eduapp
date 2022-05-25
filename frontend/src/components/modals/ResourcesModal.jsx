@@ -5,7 +5,7 @@ import StandardModal from "./standard-modal/StandardModal";
 import "./ResourcesModal.css";
 
 let finalData = new FormData();
-export default function ResourcesModal(props) {
+export default function ResourcesModal({ userInfo, subject }) {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [displayFileWarning, setWarnDisplay] = useState("none");
   const [fileWarningText, setWarningText] = useState(
@@ -101,8 +101,8 @@ export default function ResourcesModal(props) {
     if (thirdfile !== null && thirdfile !== undefined) {
       finalData.append("thirdfile", thirdfile);
     }
-    finalData.append("createdBy", props.userInfo.user_name);
-    finalData.append("subject_id", props.subject);
+    finalData.append("user_id", userInfo.user.id);
+    finalData.append("subject_id", subject);
 
     asynchronizeRequest(async function () {
       await RESOURCE_SERVICE.createResource(finalData);
