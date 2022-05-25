@@ -34,7 +34,7 @@ class InstitutionsController < ApplicationController
 
   # PATCH/PUT /institutions/1
   def update
-    if !check_perms_update!(get_user_roles.perms_institution)
+    if !check_perms_update!(get_user_roles.perms_institution, false, :null)
       return
     end
     if @institution.update(institution_params)
@@ -46,7 +46,7 @@ class InstitutionsController < ApplicationController
 
   # DELETE /institutions/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_institution)
+    if !check_perms_delete!(get_user_roles.perms_institution, false, :null)
       return
     end
     @institution.destroy

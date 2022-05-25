@@ -43,7 +43,7 @@ class EduappUserSessionsController < ApplicationController
 
   # PATCH/PUT /eduapp_user_sessions/1
   def update
-    if !check_perms_update!(get_user_roles.perms_sessions)
+    if !check_perms_update!(get_user_roles.perms_sessions, false, :null)
       return
     end
 
@@ -56,7 +56,7 @@ class EduappUserSessionsController < ApplicationController
 
   # DELETE /eduapp_user_sessions/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_roles)
+    if !check_perms_delete!(get_user_roles.perms_roles, false, :null)
       return
     end
     @eduapp_user_session.destroy

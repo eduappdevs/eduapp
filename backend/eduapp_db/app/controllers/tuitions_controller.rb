@@ -37,7 +37,7 @@ class TuitionsController < ApplicationController
 
   # PATCH/PUT /tuitions/1
   def update
-    if !check_perms_update!(get_user_roles.perms_tuitions)
+    if !check_perms_update!(get_user_roles.perms_tuitions, false, :null)
       return
     end
 
@@ -50,7 +50,7 @@ class TuitionsController < ApplicationController
 
   # DELETE /tuitions/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_tuitions)
+    if !check_perms_delete!(get_user_roles.perms_tuitions, false, :null)
       return
     end
 

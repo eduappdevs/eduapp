@@ -62,11 +62,11 @@ class ApplicationController < ActionController::API
     render json: { error: "You do not have permission to perform this action." }, status: 405 and return false
   end
 
-  def check_action_owner!(requester_id)
-    if requester_id === @current_user
+  def check_action_owner!(requested_id)
+    if requested_id === @current_user
       return true
     else
-      return deny_perms_action! unless get_user_roles.name === "eduapp-admin"
+      return deny_perms_action! unless get_user_roles.name === "eduapp-admin" and return true
     end
   end
 
@@ -106,19 +106,27 @@ class ApplicationController < ActionController::API
     end
   end
 
-  def check_perms_update!(user_roles)
+  def check_perms_update!(user_roles, needs_owner_check, requested_id)
     if user_roles[4]
-      return check_action_owner!
+      return true
     else
-      return deny_perms_action!
+      if needs_owner_check
+        return check_action_owner!(requested_id)
+      else
+        return deny_perms_action!
+      end
     end
   end
 
-  def check_perms_delete!(user_roles)
+  def check_perms_delete!(user_roles, needs_owner_check, requested_id)
     if user_roles[5]
-      return check_action_owner!
+      return true
     else
-      return deny_perms_action!
+      if needs_owner_check
+        return check_action_owner!(requested_id)
+      else
+        return deny_perms_action!
+      end
     end
   end
 end

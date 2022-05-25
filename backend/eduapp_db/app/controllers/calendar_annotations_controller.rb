@@ -60,7 +60,7 @@ class CalendarAnnotationsController < ApplicationController
 
   # PATCH/PUT /calendar_annotations/1
   def update
-    if !check_perms_update!(get_user_roles.perms_events)
+    if !check_perms_update!(get_user_roles.perms_events, false, :null)
       return
     end
     if @calendar_annotation.update(calendar_annotation_params)
@@ -72,7 +72,7 @@ class CalendarAnnotationsController < ApplicationController
 
   # DELETE /calendar_annotations/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_events)
+    if !check_perms_delete!(get_user_roles.perms_events, false, :null)
       return
     end
     @calendar_annotation.destroy

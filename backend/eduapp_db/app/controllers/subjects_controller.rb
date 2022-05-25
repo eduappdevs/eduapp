@@ -80,7 +80,7 @@ class SubjectsController < ApplicationController
 
   # PATCH/PUT /subjects/1
   def update
-    if !check_perms_update!(get_user_roles.perms_subjects)
+    if !check_perms_update!(get_user_roles.perms_subjects, false, :null)
       return
     end
     if @subject.update(subject_params)
@@ -92,7 +92,7 @@ class SubjectsController < ApplicationController
 
   # DELETE /subjects/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_subjects)
+    if !check_perms_delete!(get_user_roles.perms_subjects, false, :null)
       return
     end
     @subject.destroy

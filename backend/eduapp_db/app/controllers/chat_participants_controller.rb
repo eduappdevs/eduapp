@@ -68,7 +68,7 @@ class ChatParticipantsController < ApplicationController
 
   # PATCH/PUT /chat_participants/1
   def update
-    if !check_perms_update!(get_user_roles.perms_chat_participants)
+    if !check_perms_update!(get_user_roles.perms_chat_participants, false, :null)
       return
     end
 
@@ -81,7 +81,7 @@ class ChatParticipantsController < ApplicationController
 
   # DELETE /chat_participants/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_chat_participants)
+    if !check_perms_delete!(get_user_roles.perms_chat_participants, false, :null)
       return
     end
     @chat_participant.destroy

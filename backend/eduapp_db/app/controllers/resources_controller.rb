@@ -44,7 +44,7 @@ class ResourcesController < ApplicationController
 
   # PATCH/PUT /resources/1
   def update
-    if !check_perms_update!(get_user_roles.perms_resources)
+    if !check_perms_update!(get_user_roles.perms_resources, true, @resource.user_id)
       return
     end
 
@@ -57,7 +57,7 @@ class ResourcesController < ApplicationController
 
   # DELETE /resources/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_resources)
+    if !check_perms_delete!(get_user_roles.perms_resources, true, @resource.user_id)
       return
     end
     @resource.destroy
@@ -88,6 +88,6 @@ class ResourcesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def resource_params
-    params.permit(:name, :description, :firstfile, :secondfile, :thirdfile, :createdBy, :subject_id)
+    params.permit(:name, :description, :firstfile, :secondfile, :thirdfile, :user_id, :subject_id)
   end
 end

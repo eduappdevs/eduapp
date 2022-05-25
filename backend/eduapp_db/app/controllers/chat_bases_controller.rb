@@ -101,7 +101,7 @@ class ChatBasesController < ApplicationController
 
   # PATCH/PUT /chat_bases/1
   def update
-    if !check_perms_update!(get_user_roles.perms_chat)
+    if !check_perms_update!(get_user_roles.perms_chat, false, :null)
       return
     end
     if @chat_basis.update(chat_basis_params)
@@ -113,7 +113,7 @@ class ChatBasesController < ApplicationController
 
   # DELETE /chat_bases/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_chat)
+    if !check_perms_delete!(get_user_roles.perms_chat, false, :null)
       return
     end
     @chat_basis.destroy

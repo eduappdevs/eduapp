@@ -51,7 +51,7 @@ class CoursesController < ApplicationController
 
   # PATCH/PUT /courses/1
   def update
-    if !check_perms_update!(get_user_roles.perms_course)
+    if !check_perms_update!(get_user_roles.perms_course, false, :null)
       return
     end
     if @course.update(course_params)
@@ -63,7 +63,7 @@ class CoursesController < ApplicationController
 
   # DELETE /courses/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_course)
+    if !check_perms_delete!(get_user_roles.perms_course, false, :null)
       return
     end
     @course.destroy

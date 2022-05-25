@@ -46,7 +46,7 @@ class ChatMessagesController < ApplicationController
 
   # PATCH/PUT /chat_messages/1
   def update
-    if !check_perms_update!(get_user_roles.perms_message) && !check_action_owner!(@chat_message.user_id)
+    if !check_perms_update!(get_user_roles.perms_message, false, :null) && !check_action_owner!(@chat_message.user_id)
       return
     end
 
@@ -59,7 +59,7 @@ class ChatMessagesController < ApplicationController
 
   # DELETE /chat_messages/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_roles) && !check_user_in_chat(params[:id])
+    if !check_perms_delete!(get_user_roles.perms_roles, false, :null) && !check_user_in_chat(params[:id])
       return
     end
     @chat_message.destroy
