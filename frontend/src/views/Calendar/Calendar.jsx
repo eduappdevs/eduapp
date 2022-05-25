@@ -23,6 +23,7 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import * as SUBJECT_SERVICE from "../../services/subject.service";
 import "./calendar.css";
+import useViewsPermissions from "../../hooks/useViewsPermissions";
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
@@ -285,6 +286,7 @@ export default function Calendar() {
     }
   }, []);
 
+  useViewsPermissions(userinfo, "calendar");
   useEffect(() => {
     if (userinfo.teaching_list !== undefined)
       setIsTeacher(userinfo.teaching_list.length > 0);

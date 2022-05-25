@@ -30,8 +30,9 @@ class CreateUserRoles < ActiveRecord::Migration[6.1]
       t.boolean :perms_chat_participants, array: true, default: [false, false, true, false, false, false]
       t.boolean :perms_message, array: true, default: [false, false, true, false, false, false]
 
-      # [home, calendar, resources, chat]
-      t.boolean :perms_app_views, array: true, default: [true, true, true, true]
+      # [calendar, resources, chat]
+      # Home is the default route every user will see and cannot be hidden
+      t.boolean :perms_app_views, array: true, default: [true, true, true]
 
       t.timestamps
     end

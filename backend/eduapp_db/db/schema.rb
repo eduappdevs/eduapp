@@ -192,7 +192,7 @@ ActiveRecord::Schema.define(version: 15) do
     t.boolean "perms_chat", default: [false, false, true, false, false, false], array: true
     t.boolean "perms_chat_participants", default: [false, false, true, false, false, false], array: true
     t.boolean "perms_message", default: [false, false, true, false, false, false], array: true
-    t.boolean "perms_app_views", default: [true, true, true, true], array: true
+    t.boolean "perms_app_views", default: [true, true, true], array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

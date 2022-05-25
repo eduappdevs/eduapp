@@ -11,9 +11,7 @@ export const FetchUserInfo = (userId) => {
       if (navigator.onLine || userId < 0) {
         try {
           if (userId < 0) return console.warn("No user logged in.");
-          let userInfo = await USER_SERVICE.findById(userId);
-
-          userInfo = userInfo.data;
+          let userInfo = (await USER_SERVICE.findById(userId)).data;
           userInfo =
             userInfo.length > 0 ? userInfo[0] : { error: "User not found" };
           delete userInfo.googleid;

@@ -9,6 +9,7 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import * as RESOURCE_SERVICE from "../../services/resource.service";
 import RequireAuth from "../../components/auth/RequireAuth";
 import "./Resources.css";
+import useViewsPermissions from "../../hooks/useViewsPermissions";
 
 export default function Resources() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -78,6 +79,7 @@ export default function Resources() {
     getResources(id);
   };
 
+  useViewsPermissions(userInfo, "resources");
   useEffect(() => {
     RequireAuth();
     checkMediaQueries();

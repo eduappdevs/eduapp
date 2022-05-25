@@ -8,6 +8,8 @@ import { getOfflineUser } from "../../../utils/OfflineManager";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 import EncryptionUtils from "../../../utils/EncryptionUtils";
 import "./MainChat.css";
+import useViewsPermissions from "../../../hooks/useViewsPermissions";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 
 const acInstance = new ChatsAC();
 let privKey = null;
@@ -57,6 +59,7 @@ export default function MainChat() {
       : chat.chatParticipants.find((u) => u.user.id === uId).user_name;
   };
 
+  useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
   useEffect(() => {
     acInstance.chatCode = window.location.pathname.split("/")[2];
     let chatId = acInstance.chatCode.substring(1);

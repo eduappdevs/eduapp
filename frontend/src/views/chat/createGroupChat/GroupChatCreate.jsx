@@ -6,6 +6,8 @@ import { getOfflineUser } from "../../../utils/OfflineManager";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
 import "./GroupChatCreate.css";
+import useViewsPermissions from "../../../hooks/useViewsPermissions";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 
 export default function GroupChatCreate() {
   const [displayImageWarning, setWarnDisplay] = useState("none");
@@ -119,6 +121,7 @@ export default function GroupChatCreate() {
     }
   };
 
+  useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
   useEffect(() => {
     const searchTimeout = setTimeout(() => matchUsers(userQuery), 500);
     return () => clearTimeout(searchTimeout);

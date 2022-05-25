@@ -7,6 +7,7 @@ import * as CHAT_SERVICE from "../../services/chat.service";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
 import "./ChatMenu.css";
+import useViewsPermissions from "../../hooks/useViewsPermissions";
 
 let acManager = new ChatsAC();
 export default function ChatMenu() {
@@ -33,6 +34,7 @@ export default function ChatMenu() {
     setChats(chats);
   };
 
+  useViewsPermissions(userInfo, "chat");
   useEffect(() => {
     acManager.closeConnection();
     RequireAuth();
