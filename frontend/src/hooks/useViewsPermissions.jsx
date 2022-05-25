@@ -6,9 +6,6 @@ export default function useViewsPermissions(userInfo, viewType) {
   useEffect(() => {
     if (userInfo.user_role !== undefined) {
       if (views.includes(viewType)) {
-        console.log(
-          userInfo.user_role.perms_app_views[views.indexOf(viewType)]
-        );
         if (!userInfo.user_role.perms_app_views[views.indexOf(viewType)]) {
           return (window.location.href = "/home");
         }

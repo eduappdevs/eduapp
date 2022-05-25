@@ -140,7 +140,7 @@ export default function EnrollConfig(props) {
                   {users
                     ? users.map((u) => {
                         return (
-                          <option key={u.id} value={u.user_id}>
+                          <option key={u.id} value={u.user.id}>
                             {u.user.email}
                           </option>
                         );

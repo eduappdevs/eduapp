@@ -48,7 +48,7 @@ export default function UserConfig(props) {
           email: email,
           password: pass,
           isAdmin: isAdmin,
-          user_role: "eduapp-student",
+          user_role: isAdmin ? "eduapp-admin" : "eduapp-student",
         })
           .then(async (res) => {
             await userEnroll(res.data.user.id);

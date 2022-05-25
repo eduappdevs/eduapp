@@ -88,14 +88,14 @@ class UserInfosController < ApplicationController
 
   # DELETE /user_infos/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_users)
+    if !check_perms_delete!(get_user_roles.perms_users, true, UserInfo.find(params[:id]).user_id)
       return
     end
     @user_info.destroy
   end
 
   def destroyuser
-    if !check_perms_delete!(get_user_roles.perms_users)
+    if !check_perms_delete!(get_user_roles.perms_users, true, params[:id])
       return
     end
     user = User.find(params[:id])

@@ -49,7 +49,7 @@ class UserRolesController < ApplicationController
 
   # PATCH/PUT /user_roles/1
   def update
-    if !check_perms_update!(get_user_roles.perms_roles)
+    if !check_perms_update!(get_user_roles.perms_roles, false, :null)
       return
     end
 
@@ -62,7 +62,7 @@ class UserRolesController < ApplicationController
 
   # DELETE /user_roles/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_roles)
+    if !check_perms_delete!(get_user_roles.perms_roles, false, :null)
       return
     end
     @user_role.destroy
