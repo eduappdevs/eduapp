@@ -4,7 +4,6 @@ import Loader from "../../components/loader/Loader";
 import StandardModal from "../../components/modals/standard-modal/StandardModal";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import * as CHAT_SERVICE from "../../services/chat.service";
-import * as USER_SERVICE from "../../services/user.service";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
 import "./ChatMenu.css";
@@ -19,27 +18,19 @@ export default function ChatMenu() {
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
 
   const getChats = async () => {
-    let chats = await CHAT_SERVICE.fetchPersonalChats(getOfflineUser().user.id);
-    for (let c of chats.data) {
-      if (c.chat_base.chat_name.includes("private_chat_")) {
-        let nameDisect = c.chat_base.chat_name.split("_");
-        let searchId =
-          nameDisect.indexOf(getOfflineUser().user.id) === 3
-            ? nameDisect[2]
-            : nameDisect[3];
-
-        let privateCounterPart;
-        if (searchId === "system")
-          privateCounterPart = await USER_SERVICE.fetchSystemUser();
-        else privateCounterPart = await USER_SERVICE.findById(searchId);
-        c.chat_base.image =
-          privateCounterPart.data.profile_image !== null
-            ? privateCounterPart.data.profile_image
+    let chats = (
+      await CHAT_SERVICE.fetchPersonalChats(getOfflineUser().user.id)
+    ).data.personal_chats;
+    for (let c of chats) {
+      if (c.chat_info.chat_name.includes("private_chat_")) {
+        c.chat_info.image =
+          c.chat_participant.profile_image !== null
+            ? c.chat_participant.profile_image
             : undefined;
-        c.chat_base.chat_name = privateCounterPart.data.user_name;
+        c.chat_info.chat_name = c.chat_participant.user_name;
       }
     }
-    setChats(chats.data);
+    setChats(chats);
   };
 
   useEffect(() => {
@@ -106,10 +97,10 @@ export default function ChatMenu() {
               <ul>
                 {chats.map((chat) => {
                   let connectionId =
-                    (chat.chat_base.isGroup ? "g" : "p") + chat.chat_base.id;
+                    (chat.chat_info.isGroup ? "g" : "p") + chat.chat_info.id;
                   return (
                     <li
-                      key={chat.chat_base.id}
+                      key={chat.chat_info.id}
                       onClick={() => {
                         window.location.href = `/chat/${connectionId}`;
                       }}
@@ -118,9 +109,9 @@ export default function ChatMenu() {
                       <img
                         className="chat-icon"
                         src={
-                          chat.chat_base.image !== undefined
-                            ? chat.chat_base.image
-                            : chat.chat_base.isGroup
+                          chat.chat_info.image !== undefined
+                            ? chat.chat_info.image
+                            : chat.chat_info.isGroup
                             ? "https://d22r54gnmuhwmk.cloudfront.net/rendr-fe/img/default-organization-logo-6aecc771.gif"
                             : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                         }
@@ -128,7 +119,7 @@ export default function ChatMenu() {
                       />
                       <div className="chat-info chat-idle-state">
                         <h2 className="chat-name">
-                          {chat.chat_base.chat_name}
+                          {chat.chat_info.chat_name}
                         </h2>
                         {/* <p className="chat-writing">Equisde is writing...</p> */}
                       </div>

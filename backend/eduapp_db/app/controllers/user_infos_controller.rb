@@ -37,7 +37,7 @@ class UserInfosController < ApplicationController
 
   # POST /user_infos
   def create
-    if !check_perms_write!(get_user_roles.perms_roles)
+    if !check_perms_write!(get_user_roles.perms_users)
       return
     end
     @user_info = UserInfo.new(user_info_params)
@@ -50,7 +50,7 @@ class UserInfosController < ApplicationController
   end
 
   def add_subject
-    if !check_perms_write!(get_user_roles.perms_roles)
+    if !check_perms_write!(get_user_roles.perms_users)
       return
     end
     @user_info = UserInfo.where(user_id: params[:user_id]).first
@@ -62,7 +62,7 @@ class UserInfosController < ApplicationController
   end
 
   def remove_subject
-    if !check_perms_write!(get_user_roles.perms_roles)
+    if !check_perms_write!(get_user_roles.perms_users)
       return
     end
     @user_info = UserInfo.where(user_id: params[:user_id]).first
@@ -73,8 +73,10 @@ class UserInfosController < ApplicationController
 
   # PATCH/PUT /user_infos/1
   def update
-    if !check_perms_update!(get_user_roles.perms_roles)
-      return
+    if !can_update_self(@user_info.user_id)
+      if !check_perms_update!(get_user_roles.perms_users)
+        return
+      end
     end
 
     if @user_info.update(user_info_params)
@@ -86,14 +88,14 @@ class UserInfosController < ApplicationController
 
   # DELETE /user_infos/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_roles)
+    if !check_perms_delete!(get_user_roles.perms_users)
       return
     end
     @user_info.destroy
   end
 
   def destroyuser
-    if !check_perms_delete!(get_user_roles.perms_roles)
+    if !check_perms_delete!(get_user_roles.perms_users)
       return
     end
     user = User.find(params[:id])
@@ -126,6 +128,13 @@ class UserInfosController < ApplicationController
   end
 
   private
+
+  def can_update_self(requester_id)
+    if requester_id === @current_user
+      return true
+    end
+    return false
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_user_info

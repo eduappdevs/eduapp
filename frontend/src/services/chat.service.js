@@ -11,6 +11,12 @@ export const fetchChat = async () => {
   return await axios.get(`${CHAT}`, { headers: requestHeader });
 };
 
+export const fetchChatInfo = async (id) => {
+  return await axios.get(`${CHAT}?complete_chat_for=${id}`, {
+    headers: requestHeader,
+  });
+};
+
 export const findChatById = async (id) => {
   return await axios.get(`${CHAT}/${id}`, { headers: requestHeader });
 };
@@ -71,7 +77,7 @@ export const createCompleteChat = async (chat_info) => {
 };
 
 export const fetchPersonalChats = async (userId) => {
-  return await axios.get(CHAT_PARTICIPANT + "?user_id=" + userId, {
+  return await axios.get(CHAT_PARTICIPANT + "?chats_for=" + userId, {
     headers: requestHeader,
   });
 };

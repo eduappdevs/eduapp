@@ -7,18 +7,34 @@ class ChatBasesController < ApplicationController
 
   # GET /chat_bases
   def index
-    if !check_perms_all!(get_user_roles.perms_chat)
-      return
+    if params[:complete_chat_for]
+      if !check_user_in_chat(params[:complete_chat_for])
+        return
+      end
+      chat = ChatBase.find(params[:complete_chat_for]).serializable_hash(:except => [:created_at, :updated_at])
+      other_participants = ChatParticipant.where(chat_base_id: params[:complete_chat_for])
+
+      participants = []
+      other_participants.each do |participant|
+        participants.push(UserInfo.where(user_id: participant.user_id).first.serializable_hash(:only => [:isAdmin, :profile_image, :user_name], :include => [:user]))
+      end
+      @chat_bases = { chat: chat, participants: participants }
+    else
+      if !check_perms_all!(get_user_roles.perms_chat)
+        return
+      end
+      @chat_bases = ChatBase.all
     end
-    @chat_bases = ChatBase.all
 
     render json: @chat_bases
   end
 
   # GET /chat_bases/1
   def show
-    if !check_perms_query!(get_user_roles.perms_chat)
-      return
+    if !check_user_in_chat(@chat_basis.id)
+      if !check_perms_query!(get_user_roles.perms_chat)
+        return
+      end
     end
     render json: @chat_basis
   end
@@ -104,6 +120,13 @@ class ChatBasesController < ApplicationController
   end
 
   private
+
+  def check_user_in_chat(chat_base_id)
+    if ChatParticipant.where(user_id: @current_user, chat_base_id: chat_base_id).count > 0 || get_user_roles.name === "eduapp_admin"
+      return true
+    end
+    return false
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_chat_basis

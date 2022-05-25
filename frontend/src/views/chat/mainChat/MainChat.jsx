@@ -3,7 +3,6 @@ import ChatBubble from "./chatBubbles/ChatBubble";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ChatsAC from "../../../utils/websockets/actioncable/ChatsAC";
 import { asynchronizeRequest } from "../../../API";
-import * as USER_SERVICE from "../../../services/user.service";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import { getOfflineUser } from "../../../utils/OfflineManager";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
@@ -52,6 +51,12 @@ export default function MainChat() {
     }
   };
 
+  const findUserName = (uId) => {
+    return chat.chatParticipants.length === undefined
+      ? chat.chatParticipants.user_name
+      : chat.chatParticipants.find((u) => u.user.id === uId).user_name;
+  };
+
   useEffect(() => {
     acInstance.chatCode = window.location.pathname.split("/")[2];
     let chatId = acInstance.chatCode.substring(1);
@@ -60,29 +65,28 @@ export default function MainChat() {
     acInstance.generateChannelConnection(acInstance.chatCode).then(async () => {
       // Retrieve chat info
       await asynchronizeRequest(async function () {
-        let cInfo = await CHAT_SERVICE.findChatById(chatId);
-        let cPeople = await CHAT_SERVICE.fetchChatUsers(chatId);
+        let rawChat = (await CHAT_SERVICE.fetchChatInfo(chatId)).data;
+        let cInfo = rawChat.chat;
+        let participants = rawChat.participants;
+        console.log(rawChat);
 
-        privKey = atob(cInfo.data.private_key);
-        pubKey = atob(cInfo.data.public_key);
-        setReadOnly(cInfo.data.isReadOnly);
+        privKey = atob(cInfo.private_key);
+        pubKey = atob(cInfo.public_key);
+        setReadOnly(cInfo.isReadOnly);
 
-        if (cInfo.data.chat_name.includes("private_chat_")) {
-          let nameDisect = cInfo.data.chat_name.split("_");
-          let searchId =
-            nameDisect.indexOf(getOfflineUser().user.id) === 3
-              ? nameDisect[2]
-              : nameDisect[3];
-          let privateCounterPart = await USER_SERVICE.findById(searchId);
-          cInfo.data.image =
-            privateCounterPart.data.profile_image !== null
-              ? privateCounterPart.data.profile_image
+        if (cInfo.chat_name.includes("private_chat_")) {
+          participants = participants.find(
+            (u) => u.user.id !== getOfflineUser().user.id
+          );
+          cInfo.image =
+            participants.profile_image !== null
+              ? participants.profile_image
               : undefined;
-          cInfo.data.chat_name = privateCounterPart.data.user_name;
+          cInfo.chat_name = participants.user_name;
         }
 
-        chat.chatInfo = cInfo.data;
-        chat.chatParticipants = cPeople.data;
+        chat.chatInfo = cInfo;
+        chat.chatParticipants = participants;
       });
       // Retrieve chat messages
       CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
@@ -165,10 +169,10 @@ export default function MainChat() {
                     }
                     foreign={
                       // eslint-disable-next-line eqeqeq
-                      msg.user.id != getOfflineUser().user.id ? true : false
+                      msg.user.id !== getOfflineUser().user.id ? true : false
                     }
                     isGroup={msg.chat_base.isGroup}
-                    author={msg.user.email}
+                    author={findUserName(msg.user.id)}
                     isMsgRecent={false}
                   />
                 );
@@ -184,10 +188,10 @@ export default function MainChat() {
                     }
                     foreign={
                       // eslint-disable-next-line eqeqeq
-                      msg.user.id != getOfflineUser().user.id ? true : false
+                      msg.user.id !== getOfflineUser().user.id ? true : false
                     }
                     isGroup={msg.chat_base.isGroup}
-                    author={msg.user.email}
+                    author={findUserName(msg.user.id)}
                     isMsgRecent={true}
                   />
                 );
