@@ -16,7 +16,7 @@ class UserNotifsChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    @user_count = 1
+    @user_count = 0
     @notifs_user = nil
   end
 
