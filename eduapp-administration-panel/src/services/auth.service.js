@@ -15,10 +15,8 @@ export const saveInLocalStorage = (userDetails) => {
 
 export const login = async (body) => {
   return await axios.post(`${USERS}/sign_in`, body).then((res) => {
-    if (
-      res.data.message.user_role.name !== "eduapp-admin" ||
-      res.data.message.user_role.name !== "eduapp-admin-query"
-    ) {
+    let acceptedRoles = ["eduapp-admin", "eduapp-admin-query"];
+    if (!acceptedRoles.includes(res.data.message.user_role.name)) {
       console.warn("User is not administrator!");
       return;
     }
