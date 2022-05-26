@@ -6,17 +6,18 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import * as CHAT_SERVICE from "../../services/chat.service";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
-import "./ChatMenu.css";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
+import useRole from "../../hooks/useRole";
+import "./ChatMenu.css";
 
 let acManager = new ChatsAC();
 export default function ChatMenu() {
   const [chats, setChats] = useState([]);
-  const [canCreate, setCanCreate] = useState(false);
 
   const [showPopup, setShowPopup] = useState(false);
 
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let canCreate = useRole(userInfo, ["eduapp-admin", "eduapp-teacher"]);
 
   const getChats = async () => {
     let chats = (
@@ -40,13 +41,6 @@ export default function ChatMenu() {
     RequireAuth();
     getChats();
   }, []);
-
-  useEffect(() => {
-    if (userInfo.teaching_list !== undefined) {
-      if (userInfo.isAdmin || userInfo.teaching_list.length > 0)
-        setCanCreate(true);
-    }
-  }, [userInfo]);
 
   return (
     <>

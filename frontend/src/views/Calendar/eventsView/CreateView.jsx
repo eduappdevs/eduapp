@@ -72,7 +72,7 @@ export default function CreateView(props) {
     var startValue = startDate;
     var endValue = endDate;
     var subjectValue = subjectInfo.split("_")[0];
-    var subjectInt = parseInt(subjectValue);
+    var subjectInt = subjectValue;
     var isGlobalValue = document.getElementById("subject_name").value;
     // var globalCourse = document.getElementById("isGlobalCourse").checked;
     var newEvent = {};

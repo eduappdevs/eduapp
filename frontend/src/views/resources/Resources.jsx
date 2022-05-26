@@ -8,8 +8,9 @@ import { GetSubjects } from "../../hooks/GetSubjects";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import * as RESOURCE_SERVICE from "../../services/resource.service";
 import RequireAuth from "../../components/auth/RequireAuth";
-import "./Resources.css";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
+import useRole from "../../hooks/useRole";
+import "./Resources.css";
 
 export default function Resources() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
@@ -17,11 +18,11 @@ export default function Resources() {
   const [resources, setResources] = useState([]);
   const [subjectSelected, setSubjectSelected] = useState("");
   const [currentSubject, setCurrentSubject] = useState("");
-  const [isTeacher, setIsTeacher] = useState(false);
   const [showResources, setShowResources] = useState(true);
 
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let subjects = GetSubjects(getOfflineUser().user.id);
+  let canCreate = useRole(userInfo, ["eduapp-teacher", "eduapp-admin"]);
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -45,6 +46,7 @@ export default function Resources() {
       if (x.thirdfile != null) {
         x.thirdfile = x.thirdfile.url;
       }
+      return true;
     });
     setResources(resources.data);
   };
@@ -73,7 +75,6 @@ export default function Resources() {
   };
 
   const handleChangeSelector = (id) => {
-    setIsTeacher(userInfo.teaching_list.includes(id));
     setSubjectSelected(id);
     setResources([]);
     getResources(id);
@@ -137,7 +138,9 @@ export default function Resources() {
                 </div>
               </form>
             </div>
-            {subjectSelected && (isTeacher || userInfo.isAdmin) ? (
+            {subjectSelected &&
+            canCreate &&
+            userInfo.teaching_list.includes(subjectSelected) ? (
               <div
                 className="resources__addNewResource"
                 onClick={createResource}

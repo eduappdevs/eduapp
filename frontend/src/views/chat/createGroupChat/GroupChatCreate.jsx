@@ -5,9 +5,10 @@ import StandardModal from "../../../components/modals/standard-modal/StandardMod
 import { getOfflineUser } from "../../../utils/OfflineManager";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
-import "./GroupChatCreate.css";
 import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import useRole from "../../../hooks/useRole";
+import "./GroupChatCreate.css";
 
 export default function GroupChatCreate() {
   const [displayImageWarning, setWarnDisplay] = useState("none");
@@ -23,6 +24,11 @@ export default function GroupChatCreate() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [createButton, setCreateButton] = useState("Create");
+
+  let canCreate = useRole(FetchUserInfo(getOfflineUser().user.id), [
+    "eduapp-admin",
+    "eduapp-teacher",
+  ]);
 
   const displayWarning = (text) => {
     setWarningText(text);
@@ -122,6 +128,13 @@ export default function GroupChatCreate() {
   };
 
   useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
+
+  useEffect(() => {
+    if (canCreate !== null) {
+      if (!canCreate) window.location.href = "/chat";
+    }
+  }, [canCreate]);
+
   useEffect(() => {
     const searchTimeout = setTimeout(() => matchUsers(userQuery), 500);
     return () => clearTimeout(searchTimeout);

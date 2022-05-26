@@ -54,8 +54,9 @@ class UserInfosController < ApplicationController
       return
     end
     @user_info = UserInfo.where(user_id: params[:user_id]).first
-    puts @user_info.to_json
-    puts "\n\n\n#{Subject.find(params[:subject_id]).id}"
+    if @user_info.teaching_list.include?(params[:subject_id])
+      render json: { message: "Subject already added" }, status: :unprocessable_entity and return
+    end
     @user_info.teaching_list << Subject.find(params[:subject_id]).id
     @user_info.save
     render json: @user_info
@@ -66,7 +67,7 @@ class UserInfosController < ApplicationController
       return
     end
     @user_info = UserInfo.where(user_id: params[:user_id]).first
-    @user_info.teaching_list.delete(Subject.find(id: params[:subject_id]).id)
+    @user_info.teaching_list.delete(Subject.find(params[:subject_id]).id)
     @user_info.save
     render json: @user_info
   end

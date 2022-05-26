@@ -11,17 +11,24 @@ export default function TeacherConfig(props) {
 
   const fetchUsers = async () => {
     return await asynchronizeRequest(async function () {
-      let users = await USER_SERVICE.fetchUserInfos();
-      await interceptExpiredToken(users);
-      return users.data;
+      let rawUsers = await USER_SERVICE.fetchUserInfos();
+      await interceptExpiredToken(rawUsers);
+      rawUsers = rawUsers.data.filter((user) =>
+        ["eduapp-teacher", "eduapp-admin"].includes(user.user_role.name)
+      );
+      let sysUserI = rawUsers.indexOf(
+        rawUsers.find((u) => u.user_name === "eduapp_system")
+      );
+      rawUsers.splice(sysUserI, 1);
+      return rawUsers;
     });
   };
 
   const fetchSubjects = async () => {
     return await asynchronizeRequest(async function () {
-      let subjects = await SUBJECT_SERVICE.fetchSubjects();
-      await interceptExpiredToken(users);
-      return subjects.data;
+      let rawSubjects = await SUBJECT_SERVICE.fetchSubjects();
+      await interceptExpiredToken(rawSubjects);
+      return rawSubjects.data;
     });
   };
 
@@ -137,7 +144,7 @@ export default function TeacherConfig(props) {
                 {users
                   ? users.map((u) => {
                       return (
-                        <option key={u.id} value={u.user_id}>
+                        <option key={u.id} value={u.user.id}>
                           {u.user_name}
                         </option>
                       );
@@ -191,7 +198,7 @@ export default function TeacherConfig(props) {
                       >
                         <button
                           onClick={() => {
-                            deleteTeacher(t.user.id, t.subject.id);
+                            deleteTeacher(t.user.user.id, t.subject.id);
                           }}
                         >
                           <svg

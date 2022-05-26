@@ -4,6 +4,9 @@ import ReactPlayer from "react-player";
 import MediaFix from "../../../utils/MediaFixer";
 import { asynchronizeRequest } from "../../../API";
 import * as RESOURCE_SERVICE from "../../../services/resource.service";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import useRole from "../../../hooks/useRole";
+import { getOfflineUser } from "../../../utils/OfflineManager";
 import "./OpenedResource.css";
 
 export default function OpenedResource() {
@@ -12,15 +15,22 @@ export default function OpenedResource() {
   const [subjectOrigin, setSubjectOrigin] = useState("None");
   const [files, setFiles] = useState([]);
 
+  let canAction = useRole(FetchUserInfo(getOfflineUser().user.id), [
+    "eduapp-admin",
+    "eduapp-teacher",
+  ]);
+
   const deleteResource = (id) => {
-    asynchronizeRequest(async function () {
-      await RESOURCE_SERVICE.deleteResource(id);
-      window.location.reload();
-    });
+    if (canAction) {
+      asynchronizeRequest(async function () {
+        await RESOURCE_SERVICE.deleteResource(id);
+        window.location.reload();
+      });
+    }
   };
 
   const editResource = (id) => {
-    console.log(id);
+    if (canAction) console.log(id);
   };
 
   const closeResource = () => {
@@ -137,6 +147,7 @@ export default function OpenedResource() {
         closeHandler={() => {
           closeResource();
         }}
+        canAction={canAction}
         resourceName={name}
         editResource={() => {
           editResource(getResourceId());

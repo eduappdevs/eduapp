@@ -4,8 +4,8 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as USER_SERVICE from "../services/user.service";
 import Input from "./Input";
-import "../styles/scheduleeventslist.css";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import "../styles/scheduleeventslist.css";
 
 export default function Scheduleeventslist(props) {
   const [subject, setSubject] = useState([]);
@@ -106,7 +106,6 @@ export default function Scheduleeventslist(props) {
         eventJson[context[i]] = json[i];
       }
       API.asynchronizeRequest(function () {
-        console.log(eventJson);
         SCHEDULESERVICE.createEvent(eventJson)
           .then(() => {
             fetchEvents();

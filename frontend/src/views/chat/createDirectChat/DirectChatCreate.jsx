@@ -5,9 +5,10 @@ import StandardModal from "../../../components/modals/standard-modal/StandardMod
 import { getOfflineUser } from "../../../utils/OfflineManager";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
-import "./DirectChatCreate.css";
 import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import useRole from "../../../hooks/useRole";
+import "./DirectChatCreate.css";
 
 export default function DirectChatCreate() {
   const [suggestedUsers, setSuggestedUsers] = useState([]);
@@ -17,6 +18,11 @@ export default function DirectChatCreate() {
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
+
+  let canCreate = useRole(FetchUserInfo(getOfflineUser().user.id), [
+    "eduapp-admin",
+    "eduapp-teacher",
+  ]);
 
   const matchUsers = (nameInput) => {
     if (nameInput.length > 0) {
@@ -75,6 +81,13 @@ export default function DirectChatCreate() {
   };
 
   useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
+
+  useEffect(() => {
+    if (canCreate !== null) {
+      if (!canCreate) window.location.href = "/chat";
+    }
+  }, [canCreate]);
+
   useEffect(() => {
     const searchTimeout = setTimeout(() => matchUsers(userQuery), 500);
     return () => clearTimeout(searchTimeout);

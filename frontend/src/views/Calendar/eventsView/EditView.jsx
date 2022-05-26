@@ -2,6 +2,7 @@ import { React, useEffect, useState } from "react";
 import { asynchronizeRequest } from "../../../API";
 import * as SCHEDULE_SERVICE from "../../../services/schedule.service";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import { getOfflineUser } from "../../../utils/OfflineManager";
 import "./views.css";
 
 export default function EditView(props) {
@@ -91,8 +92,7 @@ export default function EditView(props) {
       editEndDate,
       editChat,
       editResources,
-      editStream,
-      editId;
+      editStream;
 
     if (titleValue !== "" && titleValue !== props.data.title) {
       editTitle = titleValue;
@@ -141,13 +141,13 @@ export default function EditView(props) {
 
     if (props.data.description !== undefined) {
       var editEvent = {
-        id: editId,
+        id: props.data.id,
         annotation_start_date: editStartDate,
         annotation_end_date: editEndDate,
         annotation_title: editTitle,
         annotation_description: editDescription,
         isGlobal: props.data.isGlobal,
-        user_id: localStorage.userId,
+        user_id: getOfflineUser().user.id,
       };
       asynchronizeRequest(async function () {
         await SCHEDULE_SERVICE.editEvent(editEvent);

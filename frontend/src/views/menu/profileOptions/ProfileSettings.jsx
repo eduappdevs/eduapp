@@ -18,10 +18,13 @@ import FirebaseStorage from "../../../utils/FirebaseStorage";
 import { asynchronizeRequest } from "../../../API";
 import * as USER_SERVICE from "../../../services/user.service";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import useRole from "../../../hooks/useRole";
 import "./ProfileSettings.css";
 
 export default function ProfileSettings() {
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let isAdmin = useRole(userInfo, "eduapp-admin");
+  let isTeacher = useRole(userInfo, "eduapp-teacher");
   let courses = GetCourses(getOfflineUser().user.id);
 
   const [userName, setUserName] = useState(null);
@@ -226,7 +229,7 @@ export default function ProfileSettings() {
           </svg>
         </div>
         <GoogleLoginButton useType={"merge"} />
-        {userInfo.isAdmin && (
+        {isAdmin && (
           <div className="youareadmin">
             <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
           </div>
@@ -238,11 +241,12 @@ export default function ProfileSettings() {
               return (
                 <li key={course.id} className="courseItem">
                   <p>{course.name}</p>
-                  {course.isTeacher ? (
+                  <img src="/assets/student.svg" alt="student" />
+                  {/* {course.isTeacher ? (
                     <img src="/assets/teacher.svg" alt="teacher" />
                   ) : (
                     <img src="/assets/student.svg" alt="student" />
-                  )}
+                  )} */}
                 </li>
               );
             })}

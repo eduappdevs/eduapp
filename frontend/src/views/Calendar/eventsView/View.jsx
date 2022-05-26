@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 import EditView from "./EditView";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../../utils/OfflineManager";
+import useRole from "../../../hooks/useRole";
 import "./views.css";
 
 export default function View(props) {
   let userinfo = FetchUserInfo(getOfflineUser().user.id);
+  let isTeacher = useRole(userinfo, "eduapp-teacher");
+  let isAdmin = useRole(userinfo, "eduapp-admin");
 
   const [editEvent, setEditEvent] = useState({});
 
@@ -141,7 +144,11 @@ export default function View(props) {
         <div className="calendar-view-header">
           <div
             className={
-              userinfo.isAdmin ? "calendar-view-header-edit-button" : "hidden"
+              isAdmin ||
+              (isTeacher &&
+                userinfo.teaching_list.includes(props.data.subject_id))
+                ? "calendar-view-header-edit-button"
+                : "hidden"
             }
             onClick={openEditMenu}
           >
