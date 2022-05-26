@@ -2,6 +2,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json
 
   def create
+    if !check_perms_write!(get_user_roles(params[:requester_id]).perms_users) || params[:requester_id].nil?
+      return
+    end
+
     build_resource({ email: params[:email], password: params[:password] })
 
     begin
@@ -44,8 +48,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
       respective_userinfo = UserInfo.new(
         user_id: resource.id,
         user_name: resource.email.split("@")[0],
-        isAdmin: createParams[:isAdmin],
-        isTeacher: createParams[:isTeacher].present? ? createParams[:isTeacher] : false,
         user_role_id: UserRole.where(name: createParams[:user_role]).first.id,
       )
 

@@ -4,7 +4,7 @@ class Users::SessionsController < Devise::SessionsController
   respond_to :json
 
   def new
-    render json: { error: "Method not allowed" }, status: 405
+    render json: { error: "Method not allowed" }, status: 405 and return
   end
 
   def create

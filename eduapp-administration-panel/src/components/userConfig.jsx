@@ -3,6 +3,7 @@ import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as CHATSERVICE from "../services/chat.service";
+import * as ROLESERVICE from "../services/role.service";
 import asynchronizeRequest from "../API";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 import EncryptionUtils from "../utils/EncryptionUtils";
@@ -12,6 +13,7 @@ export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
+  const [userPermRoles, setUserPermRoles] = useState([]);
   const [allSelected, setAllSelected] = useState(true);
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
@@ -36,24 +38,36 @@ export default function UserConfig(props) {
     });
   };
 
+  const fetchRoles = () => {
+    asynchronizeRequest(function () {
+      ROLESERVICE.fetchRoles()
+        .then((roles) => {
+          setUserPermRoles(roles);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
+    });
+  };
+
   const createUser = () => {
-    let isAdmin = document.getElementById("u_admin").checked;
     let email = document.getElementById("u_email").value;
     let pass = document.getElementById("u_pass").value;
+    let role = document.getElementById("u_role").value;
 
     if (email && pass) {
       swapIcons(true);
       asynchronizeRequest(async function () {
         USERSERVICE.createUser({
+          requester_id: getOfflineUser().user.id,
           email: email,
           password: pass,
-          isAdmin: isAdmin,
-          user_role: isAdmin ? "eduapp-admin" : "eduapp-student",
+          user_role: role,
         })
           .then(async (res) => {
             await userEnroll(res.data.user.id);
             fetchUsers();
-            document.getElementById("u_admin").checked = false;
             document.getElementById("u_email").value = null;
             document.getElementById("u_pass").value = null;
             swapIcons(false);
@@ -191,6 +205,7 @@ export default function UserConfig(props) {
 
   useEffect(() => {
     fetchUsers();
+    fetchRoles();
   }, []);
 
   return (
@@ -202,7 +217,7 @@ export default function UserConfig(props) {
               <th>{props.language.add}</th>
               <th>{props.language.email}</th>
               <th>{props.language.password}</th>
-              <th>{props.language.isAdmin}</th>
+              <th>{props.language.userRole}</th>
             </tr>
           </thead>
           <tbody>
@@ -246,11 +261,15 @@ export default function UserConfig(props) {
                 />
               </td>
               <td style={{ textAlign: "center" }}>
-                <input
-                  id="u_admin"
-                  type="checkbox"
-                  placeholder={props.language.name}
-                />
+                <select id="u_role">
+                  {userPermRoles.map((r) => {
+                    return (
+                      <option key={r.id} value={r.name}>
+                        {r.name}
+                      </option>
+                    );
+                  })}
+                </select>
               </td>
             </tr>
           </tbody>
@@ -267,7 +286,7 @@ export default function UserConfig(props) {
               <th>{props.language.userId}</th>
               <th>{props.language.name}</th>
               <th>{props.language.email}</th>
-              <th>{props.language.isAdmin}</th>
+              <th>{props.language.userRole}</th>
               <th>{props.language.googleLinked}</th>
               <th>{props.language.actions}</th>
             </tr>
@@ -303,12 +322,12 @@ export default function UserConfig(props) {
                           <td>
                             <input type="text" disabled value={u.user.email} />
                           </td>
-                          <td style={{ textAlign: "center" }}>
-                            {u.isAdmin ? (
-                              <input type="checkbox" disabled checked />
-                            ) : (
-                              <input type="checkbox" disabled />
-                            )}
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              value={u.user_role.name}
+                            />
                           </td>
                           <td>
                             <input
@@ -366,12 +385,12 @@ export default function UserConfig(props) {
                         <td>
                           <input type="text" disabled value={u.user.email} />
                         </td>
-                        <td style={{ textAlign: "center" }}>
-                          {u.isAdmin ? (
-                            <input type="checkbox" disabled checked />
-                          ) : (
-                            <input type="checkbox" disabled />
-                          )}
+                        <td>
+                          <input
+                            type="text"
+                            disabled
+                            value={u.user_role.name}
+                          />
                         </td>
                         <td>
                           <input
@@ -443,12 +462,12 @@ export default function UserConfig(props) {
                           <td>
                             <input type="text" disabled value={u.user.email} />
                           </td>
-                          <td style={{ textAlign: "center" }}>
-                            {u.isAdmin ? (
-                              <input type="checkbox" disabled checked />
-                            ) : (
-                              <input type="checkbox" disabled />
-                            )}
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              value={u.user_role.name}
+                            />
                           </td>
                           <td>
                             <input
@@ -514,12 +533,12 @@ export default function UserConfig(props) {
                         <td>
                           <input type="text" disabled value={u.user.email} />
                         </td>
-                        <td style={{ textAlign: "center" }}>
-                          {u.isAdmin ? (
-                            <input type="checkbox" disabled checked />
-                          ) : (
-                            <input type="checkbox" disabled />
-                          )}
+                        <td>
+                          <input
+                            type="text"
+                            disabled
+                            value={u.user_role.name}
+                          />
                         </td>
                         <td>
                           <input
@@ -589,12 +608,12 @@ export default function UserConfig(props) {
                           <td>
                             <input type="text" disabled value={u.user.email} />
                           </td>
-                          <td style={{ textAlign: "center" }}>
-                            {u.isAdmin ? (
-                              <input type="checkbox" disabled checked />
-                            ) : (
-                              <input type="checkbox" disabled />
-                            )}
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              value={u.user_role.name}
+                            />
                           </td>
                           <td>
                             <input
@@ -658,12 +677,12 @@ export default function UserConfig(props) {
                         <td>
                           <input type="text" disabled value={u.user.email} />
                         </td>
-                        <td style={{ textAlign: "center" }}>
-                          {u.isAdmin ? (
-                            <input type="checkbox" disabled checked />
-                          ) : (
-                            <input type="checkbox" disabled />
-                          )}
+                        <td>
+                          <input
+                            type="text"
+                            disabled
+                            value={u.user_role.name}
+                          />
                         </td>
                         <td>
                           <input

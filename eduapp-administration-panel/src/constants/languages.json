@@ -59,7 +59,8 @@
     "participantName": "Participant name",
     "chatName": "Chat name",
     "subjectName": "Subject Name",
-    "teacherName": "Teacher Name"
+    "teacherName": "Teacher Name",
+    "userRole": "User Role"
   },
   "es": {
     "title": "Titulo",
@@ -121,7 +122,8 @@
     "participantName": "Nombre del participante",
     "chatName": "Nombre del chat",
     "subjectName": "Nombre de la materia",
-    "teacherName": "Nombre del profesor"
+    "teacherName": "Nombre del profesor",
+    "userRole": "Rol de usuario"
   },
   "pt": {
     "title": "Título",
@@ -183,6 +185,7 @@
     "participantName": "Nome do participante",
     "chatName": "Nome do chat",
     "subjectName": "Nome da disciplina",
-    "teacherName": "Nome do professor"
+    "teacherName": "Nome do professor",
+    "userRole": "Papel do usuário"
   }
 }
