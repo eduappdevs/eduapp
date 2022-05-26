@@ -32,7 +32,7 @@ class UserInfosController < ApplicationController
   end
 
   def system_user
-    render json: UserInfo.where(user_name: "eduapp_system", isAdmin: true).first, status: :ok and return
+    render json: UserInfo.where(user_name: "eduapp_system", user_role_id: get_admin_role.id).first, status: :ok and return
   end
 
   # POST /user_infos
@@ -104,7 +104,7 @@ class UserInfosController < ApplicationController
     user_tui = Tuition.where(user_id: params[:id])
     user_jtis = JtiMatchList.where(user_id: params[:id])
 
-    if UserInfo.where(isAdmin: true).count == 1 && user_i.isAdmin
+    if UserInfo.where(user_role_id: get_admin_role.id).count === 1 && user_i.user_role_id === get_admin_role.id
       render json: { message: "Cannot delete the last admin." }, status: 403
       return
     end
@@ -144,6 +144,6 @@ class UserInfosController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def user_info_params
-    params.permit(:user_name, :user_id, :user_role, :profile_image, :teaching_list, :isAdmin, :isTeacher, :googleid, :isLoggedWithGoogle)
+    params.permit(:user_name, :user_id, :user_role, :profile_image, :teaching_list, :googleid, :isLoggedWithGoogle)
   end
 end

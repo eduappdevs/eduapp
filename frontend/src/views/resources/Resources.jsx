@@ -22,7 +22,8 @@ export default function Resources() {
 
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let subjects = GetSubjects(getOfflineUser().user.id);
-  let canCreate = useRole(userInfo, ["eduapp-teacher", "eduapp-admin"]);
+  let isTeacher = useRole(userInfo, "eduapp-teacher");
+  let isAdmin = useRole(userInfo, "eduapp-admin");
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -139,8 +140,9 @@ export default function Resources() {
               </form>
             </div>
             {subjectSelected &&
-            canCreate &&
-            userInfo.teaching_list.includes(subjectSelected) ? (
+            (isAdmin ||
+              (isTeacher &&
+                userInfo.teaching_list.includes(subjectSelected))) ? (
               <div
                 className="resources__addNewResource"
                 onClick={createResource}

@@ -21,14 +21,17 @@ import MenuSettings from "./views/menu/menu-settings/MenuSettings";
 import GroupChatCreate from "./views/chat/createGroupChat/GroupChatCreate";
 import DirectChatCreate from "./views/chat/createDirectChat/DirectChatCreate";
 import { getOfflineUser } from "./utils/OfflineManager";
+import useRole from "./hooks/useRole";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
   const [needsLoader, setNeedsLoader] = useState(true);
   const [ItsMobileDevice, setItsMobileDevice] = useState(null);
+
   let userinfo = FetchUserInfo(
     getOfflineUser().user === null ? -1 : getOfflineUser().user.id
   );
+  let isAdmin = useRole(userinfo, "eduapp-admin");
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -107,7 +110,7 @@ export default function App() {
             <Route exact path="/resources" element={<Resources />} />
             <Route exact path="/calendar" element={<Calendar />} />
             <Route exact path="/chat" element={<ChatMenu />} />
-            {userinfo.isAdmin && (
+            {isAdmin && (
               <Route exact path="/management" element={<ManagementPanel />} />
             )}
 

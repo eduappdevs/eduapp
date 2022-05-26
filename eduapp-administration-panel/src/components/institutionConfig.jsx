@@ -71,7 +71,6 @@ export default function InstitutionConfig(props) {
         let sys_u = await USERSERVICE.createUser({
           email: "eduapp_system@eduapp.org",
           password: process.env.REACT_APP_EDUAPP_SYSTEM_USER_PWD,
-          isAdmin: true,
           user_role: "eduapp-admin",
         });
         await userEnroll(sys_u.data.user.id);

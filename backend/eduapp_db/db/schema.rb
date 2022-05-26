@@ -164,9 +164,7 @@ ActiveRecord::Schema.define(version: 15) do
     t.string "user_name"
     t.string "profile_image"
     t.uuid "teaching_list", default: [], array: true
-    t.boolean "isTeacher", default: false
     t.uuid "user_id"
-    t.boolean "isAdmin", default: false
     t.string "googleid"
     t.boolean "isLoggedWithGoogle", default: false
     t.uuid "user_role_id", null: false

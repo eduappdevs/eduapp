@@ -4,6 +4,7 @@ import * as USER_SERVICE from "../../services/user.service";
 import * as INSTITUTION_SERVICE from "../../services/institution.service";
 import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import * as ENROLL_SERVICE from "../../services/enrollment.service";
+import * as ROLE_SERVICE from "../../services/role.service";
 import AppHeader from "../../components/appHeader/AppHeader";
 import "./ManagementPanel.css";
 
@@ -15,6 +16,7 @@ export default function ManagementPanel() {
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(true);
   const [allowNewInstitution, setAllowInstitution] = useState(true);
+  const [userRoles, setUserRoles] = useState([]);
 
   const postSession = async (e) => {
     e.preventDefault();
@@ -80,6 +82,16 @@ export default function ManagementPanel() {
     }
   };
 
+  const fetchRoles = () => {
+    try {
+      ROLE_SERVICE.fetchRoles().then((res) => {
+        setUserRoles(res);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const fetchCourses = () => {
     try {
       COURSE_SERVICE.fetchCourses().then((res) => {
@@ -119,27 +131,14 @@ export default function ManagementPanel() {
     await COURSE_SERVICE.deleteCourse(id);
   };
 
-  const createUser = (event) => {
+  const createUser = async (event) => {
     event.preventDefault();
-    let isAdmin = event.target.isAdmin.checked;
-    const payload = new FormData();
-    payload.append("user[email]", event.target.email.value);
-    payload.append("user[password]", event.target.password.value);
-    USER_SERVICE.createUser(payload)
-      .then((res) => {
-        const payload = new FormData();
-
-        payload.delete("user[email]");
-        payload.delete("user[password]");
-        payload.append("user_id", res.data.message.id);
-        payload.append("user_name", res.data.message.email.split("@")[0]);
-        payload.append("isAdmin", isAdmin);
-
-        USER_SERVICE.createInfo(payload).then(() => {
-          window.location.reload();
-        });
-      })
-      .catch((err) => console.log(err));
+    const payload = {
+      email: event.target.email.value,
+      password: event.target.password.value,
+      user_role: event.target.new_u_role.value,
+    };
+    await USER_SERVICE.createUser(payload).catch((err) => console.log(err));
   };
 
   const userEnroll = (e) => {
@@ -159,7 +158,6 @@ export default function ManagementPanel() {
       "institution_name",
       getInstitution(e.target.tuition_course.value.split(":")[1].split("/")[1])
     );
-    payload.append("isTeacher", e.target.isTeacher.checked);
 
     ENROLL_SERVICE.createTuition(payload).then(() => {
       window.location.reload();
@@ -201,6 +199,7 @@ export default function ManagementPanel() {
   };
 
   useEffect(() => {
+    fetchRoles();
     fetchInstitutions();
     fetchCourses();
     fetchUsers();
@@ -222,7 +221,7 @@ export default function ManagementPanel() {
     users !== undefined ? (
     <div className="managementpanel__main">
       <div className="managementpanel__container">
-        <div
+        {/* <div
           id="buttonManagementPanel__intitutions"
           className="buttonManagementPanel"
           onClick={() => {
@@ -230,7 +229,7 @@ export default function ManagementPanel() {
           }}
         >
           <span>Institution</span>
-        </div>
+        </div> */}
         <div
           className="buttonManagementPanel"
           onClick={() => {
@@ -383,14 +382,18 @@ export default function ManagementPanel() {
                   <input autoComplete="off" type="text" name="email" />
                   <label htmlFor="password">Password</label>
                   <input autoComplete="off" type="password" name="password" />
-                  <label htmlFor="isAdmin">Admin</label>
-                  <input
-                    autoComplete="off"
-                    type="checkbox"
-                    name="isAdmin"
-                    id="isAdmin"
-                    value="isAdmin"
-                  />
+                  <label htmlFor="new_u_role">Admin</label>
+                  <select name="new_u_role" id="new_u_role">
+                    {userRoles !== undefined
+                      ? userRoles.map((r) => {
+                          return (
+                            <option key={r.id} value={r.name}>
+                              {r.name}
+                            </option>
+                          );
+                        })
+                      : null}
+                  </select>
                   <button type="submit">SIGN UP</button>
                 </form>
               </div>
@@ -427,23 +430,15 @@ export default function ManagementPanel() {
                   })}
                 </select>
                 <label htmlFor="tuition_user">User</label>
-
                 <select name="tuition_user" id="tuition_user">
                   {users.map((i) => {
                     return (
                       <option key={i.id} value={i.id}>
-                        {i.user_name},{i.id}
+                        {i.user_name}
                       </option>
                     );
                   })}
                 </select>
-                <label htmlFor="isTeacher">Teacher</label>
-                <input
-                  type="checkbox"
-                  name="isTeacher"
-                  id="isTeacher"
-                  value="isTeacher"
-                />
                 <button type="submit">ENROLL</button>
               </form>
             </div>

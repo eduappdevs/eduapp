@@ -16,7 +16,7 @@ class ChatBasesController < ApplicationController
 
       participants = []
       other_participants.each do |participant|
-        participants.push(UserInfo.where(user_id: participant.user_id).first.serializable_hash(:only => [:isAdmin, :profile_image, :user_name], :include => [:user]))
+        participants.push(UserInfo.where(user_id: participant.user_id).first.serializable_hash(:only => [:profile_image, :user_name], :include => [:user]))
       end
       @chat_bases = { chat: chat, participants: participants }
     else

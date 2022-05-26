@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";
+import useRole from "../../hooks/useRole";
 import "./BottomButtons.css";
 
 export default function BottomButtons({ mobile }) {
@@ -13,6 +14,7 @@ export default function BottomButtons({ mobile }) {
   const loc = useLocation();
 
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let isAdmin = useRole(userInfo, "eduapp-admin");
 
   const getPosition = (string, subString, index) => {
     return string.split(subString, index).join(subString).length;
@@ -119,7 +121,7 @@ export default function BottomButtons({ mobile }) {
               </li>
             </Link>
           )}
-          {userInfo.isAdmin && navigator.onLine && (
+          {isAdmin && navigator.onLine && (
             <Link to="/management">
               <li
                 className={

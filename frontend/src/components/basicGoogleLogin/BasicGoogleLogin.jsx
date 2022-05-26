@@ -28,7 +28,6 @@ export default function BasicGoogleLogin() {
     const payload = new FormData();
     payload.append("course_id", 1);
     payload.append("user_id", uId);
-    payload.append("isTeacher", false);
 
     API.default.enrollUser(payload).then(() => {
       console.log("User tuition has been completed successfully!");
@@ -51,7 +50,7 @@ export default function BasicGoogleLogin() {
             const payload = new FormData();
             payload.append("user_id", res.data.message.id);
             payload.append("user_name", res.data.message.email.split("@")[0]);
-            payload.append("isAdmin", false);
+            payload.append("user_role", "eduapp-student");
             userEnroll(res.data.message.id);
 
             const userData = new FormData();

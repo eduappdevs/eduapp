@@ -18,7 +18,6 @@ export default function Initialization() {
         await USER_SERVICE.createUser({
           email: form.admin_user.value,
           password: form.admin_pswd.value,
-          isAdmin: true,
           user_role: "eduapp-admin",
         });
         window.location.reload();

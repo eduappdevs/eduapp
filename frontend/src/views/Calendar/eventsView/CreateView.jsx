@@ -5,16 +5,19 @@ import StandardModal from "../../../components/modals/standard-modal/StandardMod
 import { getOfflineUser } from "../../../utils/OfflineManager";
 import * as SCHEDULE_SERVICE from "../../../services/schedule.service";
 import "./views.css";
+import useRole from "../../../hooks/useRole";
 
 export default function CreateView(props) {
-  let userInfo = FetchUserInfo(getOfflineUser().user.id);
   const [globalValue, setGlobalValue] = useState(true);
 
   const [saveText, setSaveText] = useState("Save");
-
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [popupIcon, setPopupIcon] = useState("");
+
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let isTeacher = useRole(userInfo, "eduapp-teacher");
+  let isAdmin = useRole(userInfo, "eduapp-admin");
 
   const getDateTimeLocal = () => {
     let now = new Date();
@@ -197,8 +200,9 @@ export default function CreateView(props) {
                 {props.data.map((subject) => {
                   if (userInfo.teaching_list !== undefined) {
                     if (
-                      userInfo.teaching_list.includes(subject.id) ||
-                      userInfo.isAdmin
+                      (isTeacher &&
+                        userInfo.teaching_list.includes(subject.id)) ||
+                      isAdmin
                     ) {
                       return (
                         <option

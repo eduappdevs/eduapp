@@ -59,7 +59,6 @@ export default function PreviewUsersTable(props) {
     const payload = new FormData();
     payload.append("course_id", 1);
     payload.append("user_id", uId);
-    payload.append("isTeacher", false);
     API.asynchronizeRequest(function () {
       ENROLLSERVICE.createTuition(payload)
         .then(() => {

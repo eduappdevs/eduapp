@@ -82,6 +82,7 @@ export default function BatchPreviewTable(props) {
       });
     });
   };
+
   const createUser = (user) => {
     let email = user[0];
     let pass = user[1];
@@ -126,7 +127,6 @@ export default function BatchPreviewTable(props) {
     const payload = new FormData();
     payload.append("course_id", 1);
     payload.append("user_id", uId);
-    payload.append("isTeacher", false);
 
     API.default.enrollUser(payload).then(() => {
       console.log("User tuition has been completed successfully!");
