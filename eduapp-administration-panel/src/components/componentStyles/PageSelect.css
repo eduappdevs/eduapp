@@ -1,0 +1,9 @@
+.page-selector>button {
+	background-color: var(--blue);
+}
+
+.page-selector>span {
+	margin: 0 10px;
+	font-family: Consolas;
+	font-weight: bolder;
+}

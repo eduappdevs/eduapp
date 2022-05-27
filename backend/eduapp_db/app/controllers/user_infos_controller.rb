@@ -22,6 +22,7 @@ class UserInfosController < ApplicationController
 
     if params[:page]
       @user_infos = query_paginate(@user_infos, params[:page])
+      @user_infos[:current_page] = serialize_each(@user_infos[:current_page], [:created_at, :updated_at, :user_id, :user_role_id], [:user, :user_role])
     end
 
     render json: @user_infos

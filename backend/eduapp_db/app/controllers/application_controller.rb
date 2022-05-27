@@ -62,7 +62,15 @@ class ApplicationController < ActionController::API
     return UserRole.find(UserInfo.where(user_id: user_id).first.user_role_id)
   end
 
-  def query_paginate(query, page, limit = 5)
+  def serialize_each(array, iExcept = [], iInclude = [])
+    s = []
+    array.each do |item|
+      s.push(item.serializable_hash(except: iExcept, include: iInclude))
+    end
+    return s
+  end
+
+  def query_paginate(query, page, limit = 10)
     page = Integer(page)
     if page - 1 < 0
       return { :error => "Page cannot be less than 1" }

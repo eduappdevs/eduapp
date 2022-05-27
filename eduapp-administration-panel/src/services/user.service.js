@@ -3,11 +3,18 @@ import { API_URL, TOKEN } from "../API";
 export const USERS_INFO = `${API_URL}/user_infos`;
 export const USERS = `${API_URL}/users`;
 export const SYSTEM = `${API_URL}/system/user`;
+
 const requestHeader = { eduauth: TOKEN };
 
 //User
 export const fetchUserInfos = async () => {
   return await axios.get(`${USERS_INFO}`, { headers: requestHeader });
+};
+
+export const pagedUserInfos = async (page) => {
+  return await axios.get(`${USERS_INFO}?page=${page}`, {
+    headers: requestHeader,
+  });
 };
 
 export const createInfo = async (body) => {

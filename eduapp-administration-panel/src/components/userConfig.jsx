@@ -7,6 +7,7 @@ import * as ROLESERVICE from "../services/role.service";
 import asynchronizeRequest from "../API";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 import EncryptionUtils from "../utils/EncryptionUtils";
+import PageSelect from "./pagination/PageSelect";
 
 const system_user_name = "eduapp_system";
 export default function UserConfig(props) {
@@ -15,6 +16,7 @@ export default function UserConfig(props) {
   const [userRole, setUserRole] = useState(null);
   const [userPermRoles, setUserPermRoles] = useState([]);
   const [allSelected, setAllSelected] = useState(true);
+  const [maxPages, setMaxPages] = useState(1);
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -27,9 +29,24 @@ export default function UserConfig(props) {
 
   const fetchUsers = () => {
     asynchronizeRequest(function () {
-      USERSERVICE.fetchUserInfos()
+      USERSERVICE.pagedUserInfos(1)
         .then((us) => {
-          setUsers(us.data);
+          setMaxPages(us.data.total_pages);
+          setUsers(us.data.current_page);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
+    });
+  };
+
+  const fetchUserPage = (page) => {
+    asynchronizeRequest(function () {
+      USERSERVICE.pagedUserInfos(page)
+        .then((us) => {
+          setMaxPages(us.data.total_pages);
+          setUsers(us.data.current_page);
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
@@ -275,6 +292,10 @@ export default function UserConfig(props) {
           </tbody>
         </table>
         <div className="notify-users">
+          <PageSelect
+            onPageChange={async (p) => fetchUserPage(p)}
+            maxPages={maxPages}
+          />
           <button onClick={() => notifyUsers()}>Notify Selected Users</button>
         </div>
         <table style={{ marginTop: "25px" }}>
