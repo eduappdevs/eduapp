@@ -10,6 +10,10 @@ class TuitionsController < ApplicationController
     end
     @tuitions = Tuition.all
 
+    if params[:page]
+      @tuitions = query_paginate(@tuitions, params[:page])
+    end
+
     render json: @tuitions
   end
 

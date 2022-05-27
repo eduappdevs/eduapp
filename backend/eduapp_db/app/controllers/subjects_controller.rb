@@ -32,28 +32,30 @@ class SubjectsController < ApplicationController
         end
       end
 
-      render json: @Sessions
+      @subjects = @Sessions
     elsif params[:name]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
       @subjects = Subject.where(name: params[:name])
-      render json: @subjects
     elsif params[:user]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
       @TuitionsUserId = Tuition.where(user_id: params[:user]).pluck(:course_id)
-      @Subjects = []
+      @subjects = []
 
       for course in @TuitionsUserId
-        @Subjects += Subject.where(course_id: course)
+        @subjects += Subject.where(course_id: course)
       end
-
-      render json: @Subjects
     else
       if !check_perms_all!(get_user_roles.perms_subjects)
         return
       end
       @subjects = Subject.all
-      render json: @subjects
     end
+
+    if params[:page]
+      @subjects = query_paginate(@subjects, params[:page])
+    end
+
+    render json: @subjects
   end
 
   # GET /subjects/1

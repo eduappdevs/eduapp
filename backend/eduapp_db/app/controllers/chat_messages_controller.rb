@@ -17,6 +17,10 @@ class ChatMessagesController < ApplicationController
       @chat_messages = ChatMessage.all
     end
 
+    if params[:page]
+      @chat_messages = query_paginate(@chat_messages, params[:page])
+    end
+
     render json: @chat_messages
   end
 

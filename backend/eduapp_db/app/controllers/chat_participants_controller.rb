@@ -42,6 +42,10 @@ class ChatParticipantsController < ApplicationController
       @participants = ChatParticipant.all
     end
 
+    if params[:page]
+      @participants = query_paginate(@participants, params[:page])
+    end
+
     render json: @participants
   end
 

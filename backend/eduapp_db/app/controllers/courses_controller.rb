@@ -24,6 +24,10 @@ class CoursesController < ApplicationController
       @courses = Course.all
     end
 
+    if params[:page]
+      @courses = query_paginate(@courses, params[:page])
+    end
+
     render json: @courses
   end
 

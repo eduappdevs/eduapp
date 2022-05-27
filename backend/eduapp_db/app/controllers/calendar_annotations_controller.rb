@@ -26,14 +26,19 @@ class CalendarAnnotationsController < ApplicationController
       for subject in @subjects
         @sessions += EduappUserSession.where(subject_id: subject)
       end
-      render :json => { :globalEvents => @calendar_isGlobal, :calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents }
+      @calendar_annotations = { :globalEvents => @calendar_isGlobal, :calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents }
     else
       if !check_perms_all!(get_user_roles.perms_events)
         return
       end
       @calendar_annotations = CalendarAnnotation.all
-      render json: @calendar_annotations
     end
+
+    if params[:page]
+      @calendar_annotations = query_paginate(@calendar_annotations, params[:page])
+    end
+
+    render json: @calendar_annotations
   end
 
   # GET /calendar_annotations/1

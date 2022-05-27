@@ -17,6 +17,10 @@ class EduappUserSessionsController < ApplicationController
       @eduapp_user_sessions = EduappUserSession.all
     end
 
+    if params[:page]
+      @eduapp_user_sessions = query_paginate(@eduapp_user_sessions, params[:page])
+    end
+
     render json: @eduapp_user_sessions
   end
 

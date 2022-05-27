@@ -20,6 +20,10 @@ class UserInfosController < ApplicationController
       @user_infos = UserInfo.all
     end
 
+    if params[:page]
+      @user_infos = query_paginate(@user_infos, params[:page])
+    end
+
     render json: @user_infos
   end
 

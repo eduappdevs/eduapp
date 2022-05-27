@@ -26,6 +26,10 @@ class ChatBasesController < ApplicationController
       @chat_bases = ChatBase.all
     end
 
+    if params[:page]
+      @chat_bases = query_paginate(@chat_bases, params[:page])
+    end
+
     render json: @chat_bases
   end
 

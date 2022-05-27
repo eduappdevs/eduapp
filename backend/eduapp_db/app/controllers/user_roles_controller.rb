@@ -22,6 +22,10 @@ class UserRolesController < ApplicationController
       @user_roles = UserRole.all
     end
 
+    if params[:page]
+      @user_roles = query_paginate(@user_roles, params[:page])
+    end
+
     render json: @user_roles
   end
 

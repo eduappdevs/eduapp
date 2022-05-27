@@ -17,6 +17,10 @@ class ResourcesController < ApplicationController
       @resources = Resource.all
     end
 
+    if params[:page]
+      @resources = query_paginate(@resources, params[:page])
+    end
+
     render json: @resources
   end
 

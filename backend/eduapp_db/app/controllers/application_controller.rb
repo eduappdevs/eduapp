@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::API
   private
 
+  # AUTH
+
   def authenticate_user!(options = {})
     if request.headers["eduauth"].present?
       token = request.headers["eduauth"].split("Bearer ").last
@@ -50,6 +52,8 @@ class ApplicationController < ActionController::API
     @current_user.present?
   end
 
+  # UTILS
+
   def get_admin_role
     return UserRole.where(name: "eduapp-admin").first
   end
@@ -57,6 +61,16 @@ class ApplicationController < ActionController::API
   def get_user_roles(user_id = @current_user)
     return UserRole.find(UserInfo.where(user_id: user_id).first.user_role_id)
   end
+
+  def query_paginate(query, page, limit = 5)
+    page = Integer(page)
+    if page - 1 < 0
+      return { :error => "Page cannot be less than 1" }
+    end
+    return query.slice(page - 1, limit)
+  end
+
+  # PERMISSIONS
 
   def deny_perms_access!
     render json: { error: "You do not have permission to access this endpoint." }, status: :forbidden and return false

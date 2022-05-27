@@ -10,6 +10,10 @@ class InstitutionsController < ApplicationController
     end
     @institutions = Institution.all
 
+    if params[:page]
+      @institutions = query_paginate(@institutions, params[:page])
+    end
+
     render json: @institutions
   end
 
