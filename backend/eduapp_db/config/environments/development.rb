@@ -68,4 +68,23 @@ Rails.application.configure do
 	# Action Cable Config (FMV)
 	# config.action_cable.url = "wss://#{ENV.fetch("DOMAIN")}/chat"
   config.action_cable.allowed_request_origins = [ENV.fetch("REACT_APP_FRONTEND_ENDPOINT"), "http://localhost:4001"]
+
+  config.action_mailer.delivery_method = :smtp
+  host = ENV.fetch("HOST")
+
+  #Production
+  # config.action_mailer.default_url_options = { host: host }
+  
+  #Development
+  config.action_mailer.default_url_options = { host: host, protocol: 'http' }
+  config.action_mailer.smtp_settings = {
+    address:              ENV.fetch("SMTP_ADDRESS"),
+    port:                 ENV.fetch("SMTP_PORT"),
+    user_name:            ENV.fetch("GMAIL_USERNAME"),
+    password:             ENV.fetch("GMAIL_PASSWORD"),
+    authentication:       'plain',
+    enable_starttls_auto: true,
+    open_timeout:         5,
+    read_timeout:         5 }
+
 end

@@ -151,6 +151,37 @@
 	animation: spin 1.5s linear infinite;
 }
 
+form{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+}
+form > input {
+	width: 80%;
+	height: 1.7em;
+	border-radius: 10px;
+	border: 1px solid var(--textColor);
+	margin-bottom: 1em;
+	padding-left: 0.5em;
+}
+form > input:focus {
+	outline: none;
+}
+
+form > button {
+	width: 50%;
+	height: 2.5em;
+	border-radius: 10px;
+	border: 1px solid var(--textColor);
+	background-color: var(--blue);
+	color: white;
+	font-size: 14px;
+	cursor: pointer;
+	cursor: pointer;
+	margin-bottom: 1em;
+}
 @-webkit-keyframes spin {
 	0% {
 		-webkit-transform: rotate(0deg);

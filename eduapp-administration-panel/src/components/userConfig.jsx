@@ -712,7 +712,7 @@ export default function UserConfig(props) {
         <table style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th>{props.language.userId}</th>
+              
               <th>{props.language.name}</th>
               <th>{props.language.email}</th>
               <th>{props.language.isAdmin}</th>
