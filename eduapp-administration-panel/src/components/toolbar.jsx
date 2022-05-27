@@ -33,7 +33,6 @@ export default function Toolbar(props) {
   };
 
   const SearchFilter = (event) => {
-    console.log(event.target.value);
     let value = event.target.value;
     props.search(value);
   };

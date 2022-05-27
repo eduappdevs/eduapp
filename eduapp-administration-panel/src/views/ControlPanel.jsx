@@ -19,6 +19,7 @@ import TeacherConfig from "../components/teacherConfig";
 import * as API from "../API";
 import LANGUAGES from "../constants/languages";
 import * as COURSESERVICE from "../services/course.service";
+import ResourcesConfig from "../components/ResourcesConfig";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
@@ -126,6 +127,8 @@ export default function ControlPanel() {
             <ChatMessageConfig search={search} language={language} />
           ) : location === "chatParticipant" ? (
             <ChatParticipantConfig search={search} language={language} />
+          ) : location === "resources" ? (
+            <ResourcesConfig search={search} language={language} />
           ) : (
             <></>
           )}

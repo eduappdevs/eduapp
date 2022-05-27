@@ -208,3 +208,18 @@
 	left: 15px;
 	bottom: 0;
 }
+
+.file-media:last-child {
+	margin-bottom: 5em;
+}
+
+.file-media>h1 {
+	font-size: 15px;
+	max-width: 100vw;
+	/* text-overflow: ellipsis; */
+}
+
+/* .file-media {
+	margin-left: 1em;
+	margin-right: 1em;
+} */

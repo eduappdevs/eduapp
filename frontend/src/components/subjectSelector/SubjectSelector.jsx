@@ -3,7 +3,7 @@ import { GetSubjects } from "../../hooks/GetSubjects";
 import "./subjectSelector.css";
 
 export default function SubjectSelector(props) {
-  let subjects = GetSubjects(props.data);
+  let subjects = GetSubjects();
   const [subjectSelected, setSubjectSelected] = useState();
 
   const handleChangeSubject = (e, id) => {
@@ -12,7 +12,6 @@ export default function SubjectSelector(props) {
       setSubjectSelected(id);
     }
   };
-
   return (
     subjects && (
       <>

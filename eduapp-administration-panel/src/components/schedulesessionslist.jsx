@@ -7,6 +7,7 @@ import StandarModal from "./modals/standard-modal/StandardModal";
 import Input from "./Input";
 import "../styles/schedulesessionslist.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import SessionsModal from "./modals/event-modal/SessionsModal";
 
 export default function Schedulesessionslist(props) {
   const [sessions, setSessions] = useState(null);
@@ -27,6 +28,9 @@ export default function Schedulesessionslist(props) {
   const [changeResourcesPlatform, setChangeResourcesPlatform] = useState(false);
   const [changeChatId, setChangeChatId] = useState(false);
   const [changeStreamPlatform, setChangeStreamPlatform] = useState(false);
+
+  const [showModalSession, setShowModalSession] = useState(false);
+  const [sessionInfo, setSessionInfo] = useState();
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -947,6 +951,28 @@ export default function Schedulesessionslist(props) {
     setPopup(true);
   };
 
+  const showModal = async () => {
+    document.getElementById("controlPanelContentContainer").style.overflow =
+      "hidden";
+
+    let subject_id = document.getElementById("s_subjectId").key;
+    let subject_name = document.getElementById("s_subjectId").value;
+    let name = document.getElementById("s_name").value;
+    let streaming = document.getElementById("s_streaming").value;
+    let resource = document.getElementById("s_resources").value;
+    let chat = document.getElementById("s_chatGroup").value;
+    let info = {
+      name: name,
+      subject_id: subject_id,
+      streaming: streaming,
+      resource: resource,
+      chat: chat,
+      subject_name: subject_name,
+    };
+    setShowModalSession(true);
+    setSessionInfo(info);
+  };
+
   useEffect(() => {
     fetchSessions();
     fetchSubjects();
@@ -973,12 +999,13 @@ export default function Schedulesessionslist(props) {
             <tr>
               <th></th>
               <th>{props.language.name}</th>
-              <th>{props.language.startDate}</th>
-              <th>{props.language.endDate}</th>
               <th>{props.language.streaming}</th>
               <th>{props.language.resources}</th>
               <th>{props.language.chatLink}</th>
               <th>{props.language.subjects}</th>
+              <th>{props.language.repeated}</th>
+              <th>{props.language.startDate}</th>
+              <th>{props.language.endDate}</th>
             </tr>
           </thead>
           <tbody>
@@ -1022,22 +1049,6 @@ export default function Schedulesessionslist(props) {
                 />
               </th>
               <th>
-                <Input
-                  id="s_start_date"
-                  type="datetime-local"
-                  placeholder={props.language.startDate}
-                  autoComplete="off"
-                />
-              </th>
-              <th>
-                <Input
-                  id="s_end_date"
-                  type="datetime-local"
-                  placeholder={props.language.endDate}
-                  autoComplete="off"
-                />
-              </th>
-              <th>
                 <Input id="s_streaming" type="text" placeholder="Streaming" />
               </th>
               <th>
@@ -1062,11 +1073,42 @@ export default function Schedulesessionslist(props) {
                     {props.language.chooseSubject}
                   </option>
                   {subject.map((s) => (
-                    <option key={s.id} value={s.id}>
+                    <option key={s.id} value={s.name}>
                       {s.name}
                     </option>
                   ))}
                 </select>
+              </th>
+              <th className="dailySession">
+                <button onClick={showModal}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-calendar-week"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                  </svg>
+                </button>
+              </th>
+              <th>
+                <Input
+                  id="s_start_date"
+                  type="datetime-local"
+                  placeholder={props.language.startDate}
+                  autoComplete="off"
+                />
+              </th>
+              <th>
+                <Input
+                  id="s_end_date"
+                  type="datetime-local"
+                  placeholder={props.language.endDate}
+                  autoComplete="off"
+                />
               </th>
             </tr>
           </tbody>
@@ -1498,6 +1540,18 @@ export default function Schedulesessionslist(props) {
           </table>
         ) : null}
       </div>
+
+      <SessionsModal
+        show={showModalSession}
+        language={props.language}
+        info={sessionInfo}
+        onCloseModal={() => {
+          setShowModalSession(false);
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+      ></SessionsModal>
       <StandardModal
         show={showPopup}
         iconFill={popupIcon}

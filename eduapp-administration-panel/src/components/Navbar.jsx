@@ -254,6 +254,18 @@ export default function Navbar(props) {
           >
             <p>{props.language.subjects}</p>
           </li>
+          <li
+            onClick={() => {
+              props.toolbarLocation("resources");
+            }}
+            className={
+              activeSection === "resources"
+                ? "active button-suboptions"
+                : "button-suboptions"
+            }
+          >
+            <p>{props.language.resources}</p>
+          </li>
         </ul>
       </div>
       <div className="chat-button-container button-container">

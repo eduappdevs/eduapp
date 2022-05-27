@@ -503,7 +503,6 @@ export default function UserConfig(props) {
     let pass = document.getElementById("u_pass").value;
 
     if (email && pass) {
-      swapIcons(true);
       const payload = new FormData();
       payload.append("user[email]", email);
       payload.append("user[password]", pass);
@@ -523,7 +522,6 @@ export default function UserConfig(props) {
             document.getElementById("u_admin").checked = false;
             document.getElementById("u_email").value = null;
             document.getElementById("u_pass").value = null;
-            swapIcons(false);
             setPopup(true);
             setPopupType("info");
             setPopupText("The new user was created successfully.");
@@ -585,16 +583,6 @@ export default function UserConfig(props) {
         switchSaveState(true);
       }
     });
-  };
-
-  const swapIcons = (state) => {
-    if (state) {
-      document.getElementById("submit-loader").style.display = "block";
-      document.getElementById("ins-add-icon").style.display = "none";
-    } else {
-      document.getElementById("submit-loader").style.display = "none";
-      document.getElementById("ins-add-icon").style.display = "block";
-    }
   };
 
   const handleChangeName = (id) => {

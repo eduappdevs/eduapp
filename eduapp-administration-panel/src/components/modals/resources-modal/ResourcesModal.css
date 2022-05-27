@@ -1,0 +1,123 @@
+.resources-modal-container-main {
+    width: 100vw;
+    height: 100vh;
+    font-family: Consolas;
+    font-size: 18px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999999999999999999999;
+    animation: bg-fade-in 0.5s;
+
+}
+
+.resources-modal-contents {
+    background-color: var(--backgroundColor);
+    padding: 0.1em 0.1em 0.1em 0.1em;
+    color: var(--textColor);
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--textColor);
+    margin-bottom: 10em;
+    margin-right: 20em;
+    border-radius: 15px;
+    flex-direction: column;
+    margin-top: 1em;
+}
+
+.upload-files-modal-button {
+    border: none;
+    background-color: orange;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 700;
+    font-family: "Consolas";
+    margin-top: 1em;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 1em;
+    margin-left: 1em;
+}
+
+.resources-modal-show-files {
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5em;
+    overflow-y: auto;
+
+}
+
+.modal-button-delete-file {
+    margin-right: 1em;
+}
+
+.recources-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    flex-direction: row;
+    right: 0;
+    margin-top: .5em;
+    margin-bottom: .1em;
+    margin-left: 90%;
+
+}
+
+.resources-modal-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    margin-bottom: 1em;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.resources-modal-show-file {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: left;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+.modal-button-add-file {
+    margin-right: 2em;
+    margin-left: 4em !important;
+}
+
+.modal-button-cancel-file {
+    margin-left: 2em;
+}
+
+.modal-button-files {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2em;
+}
+
+.modal-button-close {
+    color: black;
+    background-color: var(--backgroundColor) !important;
+    margin-right: 2em;
+    margin-top: 0 !important;
+    padding: 0 !important;
+}
+
+.resources-information {
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    margin-left: 1em;
+}

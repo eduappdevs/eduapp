@@ -1,0 +1,11 @@
+.button-upload-files {
+    border: none;
+    background-color: orange;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 700;
+    font-family: "Consolas";
+    margin-top: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}

@@ -17,6 +17,7 @@ export const GetSubjects = (id) => {
     };
 
     getSubjects();
+    console.log(subject);
   }, []);
 
   return subject;

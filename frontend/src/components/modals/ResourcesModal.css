@@ -66,6 +66,47 @@
 	transform: scale(1.1);
 }
 
+.resources-modal-show-files {
+	border: 1px solid var(--secondaryColor);
+	width: 64vw;
+	position: relative;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	height: 100px;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.resources-modal-show-file {
+	display: flex;
+	flex-direction: row;
+	margin-top: .5em;
+}
+
+.resources-modal-show-file>p {
+	justify-content: center;
+}
+
+.modal-button-delete-file {
+	border: none;
+	background-color: var(--blue);
+	color: white;
+	padding: 10px 20px;
+	font-weight: 700;
+	font-family: "Consolas";
+	margin-top: 10px;
+	border-radius: 10px;
+	width: 20vw;
+	height: 10vh;
+	margin-right: .5em;
+
+
+}
+
 .resources__createResourceModal>form>input {
 	font-family: Consolas;
 	height: 30px;

@@ -1,10 +1,14 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import EditView from "./EditView";
+import { asynchronizeRequest } from "../../../API";
+import * as USERSERVICE from "../../../services/user.service";
 import "./views.css";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 
 export default function View(props) {
+  const [User, setUser] = useState();
+  const [viewAuthor, setViewAuthor] = useState(false);
   let userinfo = FetchUserInfo(localStorage.userId);
 
   const [editEvent, setEditEvent] = useState({});
@@ -91,6 +95,15 @@ export default function View(props) {
     }
   };
 
+  const fetchUser = () => {
+    asynchronizeRequest(function () {
+      USERSERVICE.findById(props.data.user_id).then((u) => {
+        setUser(u.data);
+        setViewAuthor(true);
+      });
+    });
+  };
+
   useEffect(() => {
     if (props.data.description !== undefined) {
       document
@@ -106,6 +119,8 @@ export default function View(props) {
         document
           .getElementsByClassName("calendar-view-edit-description")[0]
           .classList.add("description-hidden");
+
+        fetchUser();
       } else {
         document
           .getElementsByClassName("calendar-view-description")[0]
@@ -113,6 +128,7 @@ export default function View(props) {
         document
           .getElementsByClassName("calendar-view-edit-description")[0]
           .classList.remove("description-hidden");
+        fetchUser();
       }
     } else {
       document
@@ -203,6 +219,12 @@ export default function View(props) {
               <h3>Description</h3>
               <p>{props.data.description}</p>
             </div>
+            {viewAuthor === true ? (
+              <div className="calendar-view-author">
+                <h3>Author</h3>
+                {User ? <p>{User[0].user.email}</p> : null}
+              </div>
+            ) : null}
 
             <div className="calendar-view-session-information">
               <h3>Links</h3>

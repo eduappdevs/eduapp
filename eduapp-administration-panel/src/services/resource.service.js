@@ -17,7 +17,7 @@ export const editResources = async (body) => {
 };
 
 export const deleteResources = async (body) => {
-    return await axios.delete(`${RESOURCE}/${body.id}`, { headers: requestHeader });
+    return await axios.delete(`${RESOURCE}/${body}}`, { headers: requestHeader });
 };
 
 export const fetchResourcesJson = async () => {

@@ -34,10 +34,17 @@ export default function InstitutionConfig(props) {
     });
   };
 
+  const confirmModalCreate = async () => {
+    setPopup(true);
+    setPopupType("info");
+    setPopupText("The institution was created successfully.");
+    document.getElementById("controlPanelContentContainer").style.overflow =
+      "scroll";
+  };
+
   const createInstitution = () => {
     let name = document.getElementById("i_name").value;
     if (name) {
-      swapIcons(true);
       API.asynchronizeRequest(async function () {
         INSTITUTIONSERVICE.createInstitution({ name: name }).then((i) => {
           COURSESERVICE.createCourse({
@@ -52,7 +59,7 @@ export default function InstitutionConfig(props) {
               course_id: parseInt(s.data.id),
             }).then(() => {
               setTimeout(() => {
-                swapIcons(true);
+                confirmModalCreate();
                 fetchInstitutions();
               }, 500);
             });
@@ -343,14 +350,6 @@ export default function InstitutionConfig(props) {
       document
         .getElementById("commit-loader-2")
         .classList.add("commit-loader-hide");
-    }
-  };
-
-  const swapIcons = (state) => {
-    if (state) {
-      document.getElementById("submit-loader").style.display = "block";
-    } else {
-      document.getElementById("submit-loader").style.display = "none";
     }
   };
 

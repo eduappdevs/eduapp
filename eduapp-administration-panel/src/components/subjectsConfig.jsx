@@ -609,7 +609,6 @@ export default function SubjectsConfig(props) {
   }, []);
 
   useEffect(() => {
-    console.log(props.search);
     setSearch(props.search);
   }, [props.search]);
 
