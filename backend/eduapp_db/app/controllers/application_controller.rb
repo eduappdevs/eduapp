@@ -67,7 +67,7 @@ class ApplicationController < ActionController::API
     if page - 1 < 0
       return { :error => "Page cannot be less than 1" }
     end
-    return query.slice(page - 1, limit)
+    return { :current_page => query.limit(limit).offset((page - 1) * limit), :total_pages => (query.count.to_f / limit).ceil }
   end
 
   # PERMISSIONS
