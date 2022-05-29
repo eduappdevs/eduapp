@@ -139,24 +139,6 @@ export default function ResourcesConfig(props) {
       "scroll";
   };
 
-  // const switchSaveState = (state) => {
-  //   if (state) {
-  //     document.getElementById("controlPanelContentContainer").style.overflow =
-  //       "scroll";
-  //     document
-  //       .getElementById("commit-loader-2")
-  //       .classList.remove("commit-loader-hide");
-  //     document.getElementById("add-svg").classList.add("commit-loader-hide");
-  //   } else {
-  //     document.getElementById("controlPanelContentContainer").style.overflow =
-  //       "hidden";
-  //     document.getElementById("add-svg").classList.remove("commit-loader-hide");
-  //     document
-  //       .getElementById("commit-loader-2")
-  //       .classList.add("commit-loader-hide");
-  //   }
-  // };
-
   const alertCreate = async () => {
     setPopupText("Required information is missing.");
     setPopupType("error");
@@ -164,6 +146,9 @@ export default function ResourcesConfig(props) {
   };
 
   const showModalsEdit = async (res) => {
+    // document.body.scrollTop = 0;
+    // document.documentElement.scrollTop = 0;
+    // window.screenTo(0, 0);
     document.getElementById("controlPanelContentContainer").style.overflow =
       "hidden";
     let subject_id = document.getElementById(`inputSubjectID_${res.id}`).value;
@@ -420,7 +405,7 @@ export default function ResourcesConfig(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-containe">
+      <div className="resources-main-container">
         <table>
           <thead>
             <tr>
@@ -498,166 +483,168 @@ export default function ResourcesConfig(props) {
             </tr>
           </tbody>
         </table>
-        {resources && resources.length !== 0 ? (
-          <table style={{ marginTop: "50px" }}>
-            <thead>
-              <tr>
-                <th>{props.language.code}</th>
-                <th>{props.language.name}</th>
-                <th>{props.language.description}</th>
-                <th>{props.language.author}</th>
-                <th>{props.language.subjects}</th>
-                <th>{props.language.actions}</th>
-              </tr>
-            </thead>
+        <div className="resources-table-info">
+          {resources && resources.length !== 0 ? (
+            <table style={{ marginTop: "50px" }} id="resources-config">
+              <thead>
+                <tr>
+                  <th>{props.language.code}</th>
+                  <th>{props.language.name}</th>
+                  <th>{props.language.description}</th>
+                  <th>{props.language.author}</th>
+                  <th>{props.language.subjects}</th>
+                  <th>{props.language.actions}</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              {resources.map((r) => {
-                return (
-                  <tr key={r.id}>
-                    <td>{r.id}</td>
-                    <td>
-                      <input
-                        type="text"
-                        id={`inputName_${r.id}`}
-                        disabled
-                        value={changeName === false ? r.name : newName}
-                        onChange={() => {
-                          handleChangeName(r.id);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        id={`inputDescription_${r.id}`}
-                        disabled
-                        value={
-                          changeDescription === false
-                            ? r.description
-                            : newDescription
-                        }
-                        onChange={() => {
-                          handleChangeDescription(r.id);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        id={`inputAuthor_${r.id}`}
-                        disabled
-                        value={r.createdBy}
-                      />
-                    </td>
-                    <td>
-                      <select id={`inputSubjectID_${r.id}`} disabled>
-                        <option
-                          defaultValue={r.subject_id}
-                          value={`${r.subject.name}_${r.subject_id}`}
-                        >
-                          {r.subject.name}
-                        </option>
-                        {subjectEdit.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
+              <tbody>
+                {resources.map((r) => {
+                  return (
+                    <tr key={r.id}>
+                      <td>{r.id}</td>
+                      <td>
+                        <input
+                          type="text"
+                          id={`inputName_${r.id}`}
+                          disabled
+                          value={changeName === false ? r.name : newName}
+                          onChange={() => {
+                            handleChangeName(r.id);
+                          }}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          id={`inputDescription_${r.id}`}
+                          disabled
+                          value={
+                            changeDescription === false
+                              ? r.description
+                              : newDescription
+                          }
+                          onChange={() => {
+                            handleChangeDescription(r.id);
+                          }}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          id={`inputAuthor_${r.id}`}
+                          disabled
+                          value={r.createdBy}
+                        />
+                      </td>
+                      <td>
+                        <select id={`inputSubjectID_${r.id}`} disabled>
+                          <option
+                            defaultValue={r.subject_id}
+                            value={`${r.subject.name}_${r.subject_id}`}
+                          >
+                            {r.subject.name}
                           </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <button
-                        style={{ marginRight: "5px" }}
-                        onClick={() => {
-                          confirmDeleteResource(r.id);
+                          {subjectEdit.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
                         }}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-trash3"
-                          viewBox="0 0 16 16"
+                        <button
+                          style={{ marginRight: "5px" }}
+                          onClick={() => {
+                            confirmDeleteResource(r.id);
+                          }}
                         >
-                          <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                        </svg>
-                      </button>
-                      <button
-                        style={{ marginRight: "5px" }}
-                        onClick={(e) => {
-                          showEditOptionResource(e);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-pencil-square"
-                          viewBox="0 0 16 16"
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-trash3"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                          </svg>
+                        </button>
+                        <button
+                          style={{ marginRight: "5px" }}
+                          onClick={(e) => {
+                            showEditOptionResource(e);
+                          }}
                         >
-                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                          <path
-                            fillRule="evenodd"
-                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        style={{ marginRight: "5px", display: "none" }}
-                        onClick={() => {
-                          showModalsEdit(r);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-check2"
-                          viewBox="0 0 16 16"
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-pencil-square"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                            <path
+                              fillRule="evenodd"
+                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          style={{ marginRight: "5px", display: "none" }}
+                          onClick={() => {
+                            showModalsEdit(r);
+                          }}
                         >
-                          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                        </svg>
-                      </button>
-                      <button
-                        style={{ display: "none" }}
-                        onClick={(e) => {
-                          closeEditResource(e, r);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-x-lg"
-                          viewBox="0 0 16 16"
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-check2"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                          </svg>
+                        </button>
+                        <button
+                          style={{ display: "none" }}
+                          onClick={(e) => {
+                            closeEditResource(e, r);
+                          }}
                         >
-                          <path
-                            fillRule="evenodd"
-                            d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                          />
-                          <path
-                            fillRule="evenodd"
-                            d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                          />
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        ) : null}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-x-lg"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                            />
+                            <path
+                              fillRule="evenodd"
+                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                            />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          ) : null}
+        </div>
       </div>
       <ResourcesModal
         create={showCreateModal}

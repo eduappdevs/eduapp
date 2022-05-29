@@ -7,7 +7,7 @@ let finalData = new FormData();
 
 export default function ResourcesModal(props) {
   const [filesToUpload, setFilesToUpload] = useState([]);
-  const [showFilesToUpload, setShowFilesToUpload] = useState(false);
+  const [firstFile, setFirstFile] = useState(true);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -25,16 +25,42 @@ export default function ResourcesModal(props) {
       }
       return true;
     });
+    if (newFile.length === 0) {
+      document.getElementById("resources_modal_show_files").style.display =
+        "none";
+      setFilesToUpload();
+    } else {
+      setFilesToUpload(newFile);
+    }
+  };
+
+  const deleteFirstfile = (e) => {
+    let newFile = [];
+    filesToUpload.map((file) => {
+      if (file !== e) {
+        newFile.push(file);
+      }
+      return true;
+    });
+    if (newFile.length === 0) {
+      document.getElementById("resources_modal_show_files").style.display =
+        "none";
+      setFilesToUpload();
+    } else {
+      setFilesToUpload(newFile);
+    }
   };
 
   const handleFileSelect = (e) => {
     e.preventDefault();
+    console.log(e);
     if (e.target.files.length > 10) {
       setPopup(true);
       setPopupText("Only 10 files are allowed");
       setPopupType("info");
       setFilesToUpload();
-      setShowFilesToUpload(false);
+      document.getElementById("resources_modal_show_files").style.display =
+        "none";
       return;
     } else {
       let files = Array.from(e.target.files);
@@ -46,7 +72,9 @@ export default function ResourcesModal(props) {
             setPopupText("Video is larger than 15MB");
             setPopupType("info");
             setFilesToUpload();
-            setShowFilesToUpload(false);
+            document.getElementById(
+              "resources_modal_show_files"
+            ).style.display = "none";
             return;
           }
         } else if (imageRegex.test(f.name)) {
@@ -55,7 +83,9 @@ export default function ResourcesModal(props) {
             setPopupText("Image is larger than 2MB");
             setPopupType("info");
             setFilesToUpload();
-            setShowFilesToUpload(false);
+            document.getElementById(
+              "resources_modal_show_files"
+            ).style.display = "none";
             return;
           }
         } else {
@@ -64,20 +94,25 @@ export default function ResourcesModal(props) {
             setPopupText("File is larger than 3MB");
             setPopupType("info");
             setFilesToUpload();
-            setShowFilesToUpload(false);
+            document.getElementById(
+              "resources_modal_show_files"
+            ).style.display = "none";
             return;
           }
         }
       }
-      setShowFilesToUpload(true);
+
       if (files.length <= 10) {
         setFilesToUpload(files);
+        document.getElementById("resources_modal_show_files").style.display =
+          "block";
       } else {
         setPopup(true);
         setPopupText("There are too many files, only 10 are allowed.");
         setPopupType("info");
         setFilesToUpload();
-        setShowFilesToUpload(false);
+        document.getElementById("resources_modal_show_files").style.display =
+          "none";
       }
     }
   };
@@ -216,38 +251,79 @@ export default function ResourcesModal(props) {
             name="description"
             placeholder="Description"
             autoComplete="off"
-            required
           />
-          {showFilesToUpload === true ? (
-            <div className="resources-modal-show-files">
-              {filesToUpload.map((e) => {
-                return (
-                  <div className="resources-modal-show-file">
-                    <button
-                      id={e.name}
-                      onClick={() => {
-                        deletefile(e);
-                      }}
-                      className="modal-button-delete-file"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="bi bi-trash3"
-                        viewBox="0 0 16 16"
-                        id="ins-delete-icon"
-                      >
-                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                      </svg>
-                    </button>
-                    <p>{e.name}</p>
-                  </div>
-                );
-              })}
-            </div>
-          ) : null}
+          <div
+            id="resources_modal_show_files"
+            className="resources-modal-show-files"
+          >
+            <ul>
+              {filesToUpload !== undefined &&
+              filesToUpload.length > 0 &&
+              filesToUpload !== null &&
+              firstFile !== false
+                ? filesToUpload.map((e) => {
+                    return (
+                      <>
+                        <li className="file-media-resource-modal">
+                          <div
+                            id={e.name}
+                            onClick={() => {
+                              deletefile(e);
+                            }}
+                            className="modal-button-delete-file"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
+                              id="ins-delete-icon"
+                            >
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </div>
+                          <p>{e.name}</p>
+                        </li>
+                      </>
+                    );
+                  })
+                : filesToUpload !== undefined &&
+                  filesToUpload.length > 0 &&
+                  filesToUpload !==
+                    null(
+                      filesToUpload.map((e) => {
+                        return (
+                          <>
+                            <li className="file-media-resource-modal">
+                              <div
+                                id={e.name}
+                                onClick={() => {
+                                  deleteFirstfile(e);
+                                }}
+                                className="modal-button-delete-file"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-trash3"
+                                  viewBox="0 0 16 16"
+                                  id="ins-delete-icon"
+                                >
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                              </div>
+                              <p>{e.name}</p>
+                            </li>
+                          </>
+                        );
+                      })
+                    )}
+            </ul>
+          </div>
           <div className="submit-action">
             <button type="submit">SUBMIT</button>
             <div id="submit-loader" className="loader">

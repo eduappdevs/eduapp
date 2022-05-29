@@ -66,6 +66,6 @@ class CalendarAnnotationsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def calendar_annotation_params
-      params.require(:calendar_annotation).permit(:annotation_start_date,:annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :user_id, :subject_id)
+      params.require(:calendar_annotation).permit(:id,:annotation_start_date,:annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :user_id, :subject_id)
     end
 end

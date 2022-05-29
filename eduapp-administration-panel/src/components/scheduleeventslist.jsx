@@ -194,7 +194,7 @@ export default function Scheduleeventslist(props) {
             switchSaveState(false);
           }
         });
-    })
+    });
   };
 
   const isGlobalEvent = () => {
@@ -288,7 +288,7 @@ export default function Scheduleeventslist(props) {
       } else {
         editDescription = s.annotation_description;
       }
-      if (subject !== undefined) {
+      if (subject !== undefined && subject !== s.subject_id) {
         let inputSubject = document.getElementById(
           "inputSubjectID_" + s.id
         ).value;
@@ -328,8 +328,9 @@ export default function Scheduleeventslist(props) {
             startDate.disabled = true;
             endDate.disabled = true;
             description.disabled = true;
-            subject.disabled = true;
-
+            if (subject !== undefined && subject !== null) {
+              subject.disabled = true;
+            }
             setIsConfirmDelete(false);
             setPopup(true);
             setPopupType("info");
@@ -346,8 +347,8 @@ export default function Scheduleeventslist(props) {
               setIsConfirmDelete(false);
             }
           });
-      }).then((e) => {
-        if (e) {
+      }).catch((error) => {
+        if (error) {
           setPopup(true);
           setPopupText(
             "The calendar event could not be edited, check if you have an internet connection."
@@ -365,7 +366,6 @@ export default function Scheduleeventslist(props) {
         let description =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
             .childNodes[0];
-
         let startDate =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
             .childNodes[0];
@@ -418,7 +418,7 @@ export default function Scheduleeventslist(props) {
         } else {
           editDescription = s.annotation_description;
         }
-        if (subject !== undefined) {
+        if (subject !== undefined && subject !== null) {
           let inputSubject = document.getElementById(
             "inputSubjectID_" + s.id
           ).value;
@@ -463,14 +463,16 @@ export default function Scheduleeventslist(props) {
               startDate.disabled = true;
               endDate.disabled = true;
               description.disabled = true;
-              subject.disabled = true;
+              if (subject !== undefined && subject !== null) {
+                subject.disabled = true;
+              }
               setIsConfirmDelete(false);
               setPopup(true);
               setPopupType("info");
               setPopupText("The calendar event was edited successfully.");
             })
-            .catch((e) => {
-              if (e) {
+            .catch((error) => {
+              if (error) {
                 setPopupText(
                   "The calendar event could not be edited, check if you entered the correct fields."
                 );
@@ -479,8 +481,8 @@ export default function Scheduleeventslist(props) {
                 setPopup(true);
               }
             });
-        }).then((e) => {
-          if (e) {
+        }).catch((error) => {
+          if (error) {
             setIsConfirmDelete(false);
             setPopup(true);
             setPopupText(
@@ -498,8 +500,6 @@ export default function Scheduleeventslist(props) {
           e.target.parentNode.parentNode.childNodes[4].childNodes[0];
         let endDate =
           e.target.parentNode.parentNode.childNodes[5].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
 
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputStartDate = document.getElementById(
@@ -543,7 +543,9 @@ export default function Scheduleeventslist(props) {
         } else {
           editDescription = s.annotation_description;
         }
-        if (subject !== undefined) {
+        let subject =
+          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
+        if (subject !== undefined && subject !== null) {
           let inputSubject = document.getElementById(
             "inputSubjectID_" + s.id
           ).value;
@@ -556,7 +558,6 @@ export default function Scheduleeventslist(props) {
         } else {
           editSubject = s.subject_id;
         }
-
         API.asynchronizeRequest(function () {
           SCHEDULESERVICE.editEvent({
             id: s.id,
@@ -568,29 +569,34 @@ export default function Scheduleeventslist(props) {
             user_id: s.user_id,
             subject_id: editSubject,
           })
-            .then(() => {
-              setIsConfirmDelete(false);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The calendar event was edited successfully.");
-              fetchEvents();
-              fetchSubjects();
-              let buttonDelete = e.target.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              startDate.disabled = true;
-              endDate.disabled = true;
-              description.disabled = true;
-              subject.disabled = true;
+            .then((error) => {
+              if (error) {
+                setIsConfirmDelete(false);
+                setPopup(true);
+                setPopupType("info");
+                setPopupText("The calendar event was edited successfully.");
+                fetchEvents();
+                fetchSubjects();
+                let buttonDelete = e.target.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button = e.target.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton = e.target.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton = e.target.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                name.disabled = true;
+                startDate.disabled = true;
+                endDate.disabled = true;
+                description.disabled = true;
+                if (subject !== undefined && subject !== null) {
+                  subject.disabled = true;
+                }
+              }
             })
-            .catch((e) => {
-              if (e) {
+            .catch((error) => {
+              if (error) {
+                console.log(error);
                 setIsConfirmDelete(false);
                 setPopupText(
                   "The calendar event could not be edited, check if you entered the correct fields."
@@ -600,8 +606,8 @@ export default function Scheduleeventslist(props) {
                 setPopup(true);
               }
             });
-        }).then((e) => {
-          if (e) {
+        }).catch((error) => {
+          if (error) {
             setIsConfirmDelete(false);
             setPopup(true);
             setPopupText(
@@ -993,6 +999,7 @@ export default function Scheduleeventslist(props) {
           </tbody>
         </table>
       </div>
+      .
       {events && events.length !== 0 ? (
         <table className="eventList" style={{ marginTop: "50px" }}>
           <thead>
@@ -1089,9 +1096,7 @@ export default function Scheduleeventslist(props) {
                         )}
                       </td>
                       <td>
-                        {e.isGlobal ? (
-                          console.log()
-                        ) : (
+                        {e.isGlobal ? null : (
                           <select disabled id={`inputSubjectID_${e.id}`}>
                             <option
                               defaultValue={e.subject_id}
@@ -1382,7 +1387,6 @@ export default function Scheduleeventslist(props) {
           </tbody>
         </table>
       ) : null}
-
       <StandardModal
         show={showPopup}
         iconFill={popupIcon}

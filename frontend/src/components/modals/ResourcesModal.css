@@ -1,6 +1,6 @@
 .resourceModal-container {
 	font-family: Consolas;
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	height: 100vh;
@@ -62,30 +62,43 @@
 	display: flex;
 	flex-direction: column;
 	width: 50%;
-	margin-top: 15%;
 	transform: scale(1.1);
 }
 
 .resources-modal-show-files {
+	flex: 0.6;
+	height: 100%;
+	width: 100%;
+	color: var(--textColor);
+	display: none;
+}
+
+.resources-modal-show-files>ul {
+	background-color: var(--backgroundColor);
+	border-radius: 10px;
 	border: 1px solid var(--secondaryColor);
-	width: 64vw;
-	position: relative;
+	width: 70vw;
+	position: absolute;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	height: 100px;
-	margin: 0;
+	height: 100%;
 	padding: 0;
 	display: flex;
-	align-items: center;
-	justify-content: center;
 	flex-direction: column;
 }
 
-.resources-modal-show-file {
+.resources-modal-show-files>ul>li {
+	border-bottom: 1px solid var(--secondaryColor);
+	height: auto;
+	width: 100%;
 	display: flex;
+	justify-content: left;
+	align-items: center;
 	flex-direction: row;
-	margin-top: .5em;
+	margin-left: .2em;
+	margin-bottom: 1em;
 }
+
 
 .resources-modal-show-file>p {
 	justify-content: center;
@@ -95,16 +108,14 @@
 	border: none;
 	background-color: var(--blue);
 	color: white;
-	padding: 10px 20px;
 	font-weight: 700;
 	font-family: "Consolas";
-	margin-top: 10px;
 	border-radius: 10px;
-	width: 20vw;
-	height: 10vh;
+	padding: 8%;
 	margin-right: .5em;
-
-
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .resources__createResourceModal>form>input {
@@ -133,7 +144,6 @@
 .fileInputs {
 	display: flex;
 	flex-direction: row;
-	height: 80px;
 	width: 100%;
 }
 
@@ -179,9 +189,14 @@
 }
 
 .submit-action {
+	position: absolute;
+	transform: translate(2em, 10em);
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	bottom: 0;
+	right: 0;
+	z-index: 1;
 }
 
 #submit-loader {
@@ -190,11 +205,9 @@
 
 .resources__createResourceModal>form>div>button {
 	background-color: white;
-	height: 35px;
+	padding: 5.47px;
 	border-radius: 5px;
 	border: none;
-	width: 50%;
-	transform: translateX(50%);
 	font-weight: bold;
 	color: var(--blue);
 	cursor: pointer;
@@ -204,8 +217,8 @@
 
 #resources__closeResourceModal {
 	position: absolute;
-	bottom: 6px;
-	right: 6px;
+	bottom: 14%;
+	left: 6px;
 	border: none;
 	border-radius: 5px;
 	background-color: rgb(255, 64, 64);
@@ -240,7 +253,6 @@
 		display: flex;
 		flex-direction: column;
 		width: 70%;
-		margin-top: 15%;
 		transform: scale(1.1);
 	}
 }

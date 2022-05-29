@@ -16,5 +16,5 @@ export const login = async (body) => {
     return await axios.post(endpoint, body).then((res) => {
         saveInLocalStorage(res);
     });
-    
+
 }

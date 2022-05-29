@@ -2,7 +2,6 @@
 	width: 100vw;
 	height: 100vh;
 	position: fixed;
-	/* background-color: rgb(255, 255, 255); */
 	background-color: var(--backgroundColor);
 	z-index: 999999999;
 	display: flex;
@@ -216,10 +215,4 @@
 .file-media>h1 {
 	font-size: 15px;
 	max-width: 100vw;
-	/* text-overflow: ellipsis; */
 }
-
-/* .file-media {
-	margin-left: 1em;
-	margin-right: 1em;
-} */

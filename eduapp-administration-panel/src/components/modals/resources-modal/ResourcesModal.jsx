@@ -34,26 +34,67 @@ export default function ResourcesModal({
 
   let finalData = new FormData();
 
-  const deletefile = async (i) => {
+  const deleteFirstFileEdited = async (i) => {
     let newFile = [];
     let deleteFile = [];
     let indexOf = [];
+    let indexOfJson = [];
     let json = [];
+
     info.resource_files.map((file) => {
       if (file !== i) {
         newFile.push(file);
         setIsUpload(true);
+        indexOfJson.push(info.resource_files.indexOf(file));
       } else {
         indexOf.push(info.resource_files.indexOf(file));
       }
       return true;
     });
+    if (indexOf !== undefined) {
+      indexOf.map((i) => {
+        return deleteFile.push(info.resource_files_json[i]);
+      });
+    }
+    if (indexOfJson !== undefined) {
+      indexOfJson.map((i) => {
+        return json.push(info.resource_files_json[i]);
+      });
+    }
 
-    indexOf.map((i) => {
-      json.push(info.resource_files_json[i]);
-      return deleteFile.push(info.resource_files_json[i]);
+    setFilesEdit(false);
+    setFilesToDelete(deleteFile);
+    setFilesToUpload(newFile);
+    setFilesToUploadJson(json);
+  };
+
+  const deletefileEdited = (i) => {
+    let newFile = [];
+    let deleteFile = [];
+    let indexOf = [];
+    let indexOfJson = [];
+    let json = [];
+
+    filesToUpload.map((file) => {
+      if (file !== i) {
+        newFile.push(file);
+        setIsUpload(true);
+        indexOfJson.push(filesToUpload.indexOf(file));
+      } else {
+        indexOf.push(filesToUpload.indexOf(file));
+      }
     });
-    setFilesEdit(true);
+    if (indexOf !== undefined) {
+      indexOf.map((i) => {
+        return deleteFile.push(info.resource_files_json[i]);
+      });
+    }
+    if (indexOfJson !== undefined) {
+      indexOfJson.map((i) => {
+        return json.push(info.resource_files_json[i]);
+      });
+    }
+    setFilesEdit(false);
     setFilesToDelete(deleteFile);
     setFilesToUpload(newFile);
     setFilesToUploadJson(json);
@@ -61,26 +102,15 @@ export default function ResourcesModal({
 
   const deleteNewfile = async (i) => {
     let newFile = [];
-    let deleteFile = [];
-    let indexOf = [];
-    let json = [];
+
     filesToUpload.map(async (file) => {
       if (file !== i) {
         newFile.push(file);
-        setIsUpload(true);
-      } else {
-        indexOf.push(filesToUpload.indexOf(file));
       }
       return true;
     });
-    indexOf.map((i) => {
-      json.push(info.resource_files_json[i]);
-      return deleteFile.push(info.resource_files_json[i]);
-    });
     setFilesEdit(true);
-    setFilesToDelete(deleteFile);
     setFilesToUpload(newFile);
-    setFilesToUploadJson(json);
   };
 
   const createResource = async () => {
@@ -320,13 +350,17 @@ export default function ResourcesModal({
     setShowFilesToUpload(false);
   }, [show]);
 
+  useEffect(() => {
+    setFilesEdit(true);
+  }, [edit]);
+
   return (
     <>
       <div
         className="resources-modal-container-main"
         style={{ display: show ? "flex" : "none" }}
       >
-        {show && create && (
+        {create && (
           <>
             <div className="resources-modal-contents">
               <div className="recources-modal-header">
@@ -396,7 +430,7 @@ export default function ResourcesModal({
                           <button
                             id={e.name}
                             onClick={() => {
-                              deletefile(e);
+                              deleteNewfile(e);
                             }}
                             className="modal-button-delete-file"
                           >
@@ -473,34 +507,31 @@ export default function ResourcesModal({
                   <p>
                     {language.subjects}:{subject.split("_")[0]}
                   </p>
-                  {filesEdit !== true && info.resource_files !== null
+                  {filesEdit === true && info.resource_files !== null
                     ? info.resource_files.map((f) => {
-                        if (f !== null) {
-                          return (
-                            <div className="resources-modal-show-file">
-                              <button
-                                onClick={() => {
-                                  deletefile(f);
-                                }}
-                                className="modal-button-delete-file"
+                        return (
+                          <div className="resources-modal-show-file">
+                            <button
+                              onClick={() => {
+                                deleteFirstFileEdited(f);
+                              }}
+                              className="modal-button-delete-file"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                                id="ins-delete-icon"
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-trash3"
-                                  viewBox="0 0 16 16"
-                                  id="ins-delete-icon"
-                                >
-                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                                </svg>
-                              </button>
-                              <p>{f.split("/")[8]}</p>
-                            </div>
-                          );
-                        }
-                        return true;
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                            <p>{f.split("/")[8]}</p>
+                          </div>
+                        );
                       })
                     : filesToUpload !== null && filesToUpload !== undefined
                     ? filesToUpload.map((f) => {
@@ -509,7 +540,7 @@ export default function ResourcesModal({
                             <div className="resources-modal-show-file">
                               <button
                                 onClick={() => {
-                                  deleteNewfile(f);
+                                  deletefileEdited(f);
                                 }}
                                 className="modal-button-delete-file"
                               >
