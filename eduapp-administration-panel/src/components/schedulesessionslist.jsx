@@ -955,7 +955,6 @@ export default function Schedulesessionslist(props) {
     document.getElementById("controlPanelContentContainer").style.overflow =
       "hidden";
 
-    let subject_id = document.getElementById("s_subjectId").key;
     let subject_name = document.getElementById("s_subjectId").value;
     let name = document.getElementById("s_name").value;
     let streaming = document.getElementById("s_streaming").value;
@@ -963,14 +962,14 @@ export default function Schedulesessionslist(props) {
     let chat = document.getElementById("s_chatGroup").value;
     let info = {
       name: name,
-      subject_id: subject_id,
       streaming: streaming,
       resource: resource,
       chat: chat,
-      subject_name: subject_name,
+      subject: subject_name,
     };
     setShowModalSession(true);
     setSessionInfo(info);
+    console.log(info);
   };
 
   useEffect(() => {
@@ -1073,26 +1072,18 @@ export default function Schedulesessionslist(props) {
                     {props.language.chooseSubject}
                   </option>
                   {subject.map((s) => (
-                    <option key={s.id} value={s.name}>
+                    <option key={s.id} value={`${s.name}_${s.id}`}>
                       {s.name}
                     </option>
                   ))}
                 </select>
               </th>
-              <th className="dailySession">
-                <button onClick={showModal}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    className="bi bi-calendar-week"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
-                  </svg>
-                </button>
+              <th>
+                <input
+                  id="s_dailySession"
+                  type="checkbox"
+                  onClick={showModal}
+                />
               </th>
               <th>
                 <Input
@@ -1550,6 +1541,10 @@ export default function Schedulesessionslist(props) {
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";
+          let box = document.getElementById("s_dailySession").checked;
+          if (box === true) {
+            document.getElementById("s_dailySession").checked = false;
+          }
         }}
       ></SessionsModal>
       <StandardModal

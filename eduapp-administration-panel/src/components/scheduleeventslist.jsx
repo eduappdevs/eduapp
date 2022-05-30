@@ -979,9 +979,7 @@ export default function Scheduleeventslist(props) {
                   onClick={isGlobalEvent}
                 />
               </td>
-              {isGlobal ? (
-                console.log()
-              ) : (
+              {isGlobal ? null : (
                 <td className="subjecButton">
                   <select id="e_subjectId">
                     <option defaultValue="Choose subject">

@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   resources :resources
   resources :eduapp_user_sessions
   resources :user_infos
-
+  post 'eduapp_user_sessions/batch_load', to: 'eduapp_user_sessions#session_batch_load'
 	post 'user_infos/add_subject/:user_id/:subject_id', to: 'user_infos#add_subject'
 	delete 'user_infos/remove_subject/:user_id/:subject_id', to: 'user_infos#remove_subject'
 	default_url_options :host => "localhost:3000"

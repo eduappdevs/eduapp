@@ -29,6 +29,10 @@ export const createSession = async (body) => {
   return await axios.post(SESSIONS, body, { headers: requestHeader });
 };
 
+export const createSessionBatch = async (body) => {
+  return await axios.post(`${SESSIONS}/batch_load`, body, { headers: requestHeader });
+};
+
 export const deleteSession = async (id) => {
   return await axios.delete(`${SESSIONS}/${id}`, { headers: requestHeader });
 };
