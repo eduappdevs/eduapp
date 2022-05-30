@@ -64,7 +64,7 @@ export default function Home() {
     }, 4000);
   };
 
-  const getSessions = async () => {
+  const   getSessions = async () => {
     let request = await axios.get(`${SUBJECT}?user_id=${localStorage.userId}`);
     request.data.map((e) => {
       let id = e.id;
@@ -112,8 +112,9 @@ export default function Home() {
       return 0;
     });
     setSessionLength(sessionsSorted.length);
-    if (sessionsSorted.length > 0) setFirstSessionId(sessionsSorted[0].id);
     setSessions(sessionsSorted);
+
+    if (sessionsSorted.length > 0) setFirstSessionId(sessionsSorted[0].id);
   };
 
   const deleteSess = [];
@@ -186,14 +187,9 @@ export default function Home() {
     });
   };
 
-  const handleChangeSelector = (id) => {
-    asynchronizeRequest(async function () {
-      getSessions(id);
-    });
-  };
-
   useEffect(() => {
     checkMediaQueries();
+    getSessions();
 
     if (window.innerWidth < 1100) {
       setIsMobile(true);
@@ -258,7 +254,6 @@ export default function Home() {
                   </svg>
                 </div>
               </div>
-              <CourseSelector handleChangeCourse={handleChangeSelector} />
               {sessions.length > 0 ? (
                 <div className="sessions">
                   <p id="home__nextSession">Next session</p>
@@ -418,14 +413,7 @@ export default function Home() {
                     );
                   })}
                 </div>
-              ) : (
-                <div
-                  className="select-course"
-                  style={{ display: sessionLength !== "" ? "none" : "flex" }}
-                >
-                  <h1>You must select a course</h1>
-                </div>
-              )}
+              ) : null}
             </div>
           </div>
         </section>

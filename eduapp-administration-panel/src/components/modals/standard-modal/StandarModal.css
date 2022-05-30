@@ -1,14 +1,14 @@
 .standard-modal-container {
+    width: 100%;
+    height: 100vh;
     font-family: Consolas;
     font-size: 18px;
     position: fixed;
+    top: 0;
+    left: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    right: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 9999999999999999999999;
 }
@@ -58,16 +58,17 @@
 
 .standard-modal {
     background-color: var(--backgroundColor);
-    width: 90%;
+    width: 40%;
     padding: 0.1em 0.1em 0.1em 0.1em;
     color: var(--textColor);
     position: fixed;
     display: flex;
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
     align-items: center;
     border: 1px solid var(--textColor);
-    margin-left: 5vw;
-    margin-right: 5vw;
+    margin-bottom: 10em;
     border-radius: 15px;
 }
 
@@ -167,4 +168,15 @@
     100% {
         transform: rotate(360deg);
     }
+}
+
+.commit-loader-hide {
+    display: none;
+}
+
+.loader-spin {
+    -webkit-transform: scale(1.25);
+    transform: scale(1.25);
+    -webkit-animation: spin 1.5s linear infinite;
+    animation: spin 1.5s linear infinite;
 }

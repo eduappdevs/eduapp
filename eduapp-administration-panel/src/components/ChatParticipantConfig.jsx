@@ -2,12 +2,38 @@ import React, { useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
+import StandardModal from "./modals/standard-modal/StandardModal";
 
 export default function ChatParticipantConfig(props) {
   const [participant, setParticipant] = useState([]);
   const [users, setUsers] = useState([]);
   const [chat, setChat] = useState([]);
   const [participantId, setParticipantId] = useState();
+
+  const [showPopup, setPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
+  const [popupIcon, setPopupIcon] = useState("");
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+  const [popupType, setPopupType] = useState("");
+  const [idDelete, setIdDelete] = useState();
+
+  const switchSaveState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "scroll";
+      document
+        .getElementById("commit-loader-2")
+        .classList.remove("commit-loader-hide");
+      document.getElementById("add-svg").classList.add("commit-loader-hide");
+    } else {
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+      document.getElementById("add-svg").classList.remove("commit-loader-hide");
+      document
+        .getElementById("commit-loader-2")
+        .classList.add("commit-loader-hide");
+    }
+  };
 
   const fetchParticipants = async () => {
     API.asynchronizeRequest(function () {
@@ -33,9 +59,17 @@ export default function ChatParticipantConfig(props) {
     });
   };
 
+  const alertCreate = async () => {
+    setIsConfirmDelete(false);
+    setPopupText("Required information is missing.");
+    setPopupType("error");
+    setPopup(true);
+  };
+
   const addParticipant = async (e) => {
     e.preventDefault();
-    swapIcons(true);
+    switchSaveState(true);
+
     const context = ["chat_base_id", "user_id", "isChatAdmin"];
     let json = [];
     let chatBaseId = document.getElementById("chP_chat").value;
@@ -46,22 +80,45 @@ export default function ChatParticipantConfig(props) {
     if (userId !== "" && chatId !== "") {
       json.push(chatId, userId, isAdmin);
     } else {
-      console.log("error");
+      alertCreate();
+      switchSaveState(false);
     }
     let eventJson = {};
     for (let i = 0; i <= context.length - 1; i++) {
       eventJson[context[i]] = json[i];
     }
     API.asynchronizeRequest(function () {
-      CHATSERVICE.createParticipant(eventJson);
-    }).then(() => {
-      fetchParticipants();
-      swapIcons(false);
+      CHATSERVICE.createParticipant(eventJson)
+        .then(() => {
+          fetchParticipants();
+          setIsConfirmDelete(false);
+          setPopup(true);
+          setPopupType("info");
+          setPopupText("The participant was created successfully.");
+          switchSaveState(false);
+        })
+        .catch((e) => {
+          if (e) {
+            alertCreate();
+            setIsConfirmDelete(false);
+            switchSaveState(false);
+          }
+        });
+    }).then((e) => {
+      if (e) {
+        setIsConfirmDelete(false);
+        setPopupText(
+          "The participant could not be created, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+        setPopup(true);
+        switchSaveState(false);
+      }
     });
   };
 
   const deleteParticipant = async (id) => {
-    document.getElementById("alert_delete").style.display = "none";
     API.asynchronizeRequest(function () {
       CHATSERVICE.deleteParticipant(id).then(() => {
         fetchParticipants();
@@ -69,43 +126,13 @@ export default function ChatParticipantConfig(props) {
     });
   };
 
-  const swapIcons = (state) => {
-    if (state) {
-      document.getElementById("submit-loader").style.display = "block";
-      document.getElementById("ins-add-icon").style.display = "none";
-    } else {
-      document.getElementById("submit-loader").style.display = "none";
-      document.getElementById("ins-add-icon").style.display = "block";
-    }
-  };
-  const swapIconsDelete = (state, button, id) => {
-    let deleteIcon = button.childNodes[0];
-    let deleteLoader = button.childNodes[1];
-
-    if (state) {
-      if (button.tagName === "button") {
-        deleteLoader.style.display = "block";
-        deleteIcon.style.display = "none";
-      } else {
-        let buttonDelete = document.getElementById(id);
-        let deleteIcon = buttonDelete.childNodes[0];
-        let deleteLoader = buttonDelete.childNodes[1];
-        deleteLoader.style.display = "block";
-        deleteIcon.style.display = "none";
-      }
-    } else {
-      deleteLoader.style.display = "none";
-      deleteIcon.style.display = "block";
-    }
-  };
-
-  const closeAlertDelete = () => {
-    document.getElementById("alert_delete").style.display = "none";
-  };
-
-  const showAlertDelete = (id) => {
-    document.getElementById("alert_delete").style.display = "block";
-    setParticipantId(id);
+  const confirmDeleteParticipant = async (id) => {
+    setPopupType("warning");
+    setPopupIcon(true);
+    setPopupText("Are you sure you want to delete this participant?");
+    setIsConfirmDelete(true);
+    setPopup(true);
+    setIdDelete(id);
   };
 
   useEffect(() => {
@@ -131,24 +158,38 @@ export default function ChatParticipantConfig(props) {
               <td>
                 <button onClick={addParticipant}>
                   <svg
-                    xmlns="http://www.w3.org/2000/ svg"
+                    id="add-svg"
+                    xmlns="http://www.w3.org/2000/svg"
                     width="16"
                     height="16"
                     fill="currentColor"
                     className="bi bi-plus-circle-fill"
                     viewBox="0 0 16 16"
-                    id="ins-add-icon"
                   >
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                   </svg>
-                  <div id="submit-loader" className="loader">
-                    {props.language.loading} ...
-                  </div>
+                  <svg
+                    id="commit-loader-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    fill="currentColor"
+                    className="bi bi-arrow-repeat commit-loader-hide loader-spin"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+                    />
+                  </svg>
                 </button>
               </td>
               <td>
                 <select name="chP_user" id="chP_user">
-                  <option defaultValue="Choose user">{props.language.chooseUser}</option>
+                  <option defaultValue="Choose user">
+                    {props.language.chooseUser}
+                  </option>
                   {users.map((s) => (
                     <option
                       key={s.user_id}
@@ -161,7 +202,9 @@ export default function ChatParticipantConfig(props) {
               </td>
               <td>
                 <select name="chP_chat" id="chP_chat">
-                  <option defaultValue="Choose Group">{props.language.chooseGroup}</option>
+                  <option defaultValue="Choose Group">
+                    {props.language.chooseGroup}
+                  </option>
                   {chat.map((s) => (
                     <option key={s.id} value={s.id + "_" + s.chat_name}>
                       {s.chat_name}
@@ -207,7 +250,7 @@ export default function ChatParticipantConfig(props) {
                     >
                       <button
                         onClick={() => {
-                          showAlertDelete(e.id);
+                          confirmDeleteParticipant(e.id);
                         }}
                       >
                         <svg
@@ -229,27 +272,35 @@ export default function ChatParticipantConfig(props) {
           </table>
         ) : null}
       </div>
-      <div className="alert-delete" id="alert_delete">
-        <div className="contianer-alert-delete">
-          <div className="header-container-alert-delete"></div>
-          <div className="contents-continer-alert-delete">
-            <h2>{props.language.alertDeleteChat}</h2>
-            <div className="contents-continer-button-alert-delete">
-              <p
-                id="delete_contents"
-                onClick={(event) => {
-                  deleteParticipant(participantId, event);
-                }}
-              >
-                {props.language.yes}
-              </p>
-              <p id="close_alert" onClick={closeAlertDelete}>
-                {props.language.no}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+
+      <StandardModal
+        show={showPopup}
+        iconFill={popupIcon}
+        type={popupType}
+        text={popupText}
+        isQuestion={isConfirmDelete}
+        onYesAction={() => {
+          setPopup(false);
+          deleteParticipant(idDelete);
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+        onNoAction={() => {
+          setPopup(false);
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+        onCloseAction={() => {
+          setPopup(false);
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+        hasIconAnimation
+        hasTransition
+      />
     </>
   );
 }

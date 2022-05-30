@@ -14,25 +14,29 @@ export const createEvent = async (body) => {
 };
 
 export const deleteEvent = async (body) => {
-  return axios.delete(`${EVENTS}/${body}`, { headers: requestHeader });
+  return await axios.delete(`${EVENTS}/${body}`, { headers: requestHeader });
 };
 
 export const editEvent = async (body) => {
-  return axios.put(`${EVENTS}/${body.id}`, body, { headers: requestHeader })
+  return await axios.put(`${EVENTS}/${body.id}`, body, { headers: requestHeader })
 }
 
 export const fetchSessions = async () => {
-  return axios.get(SESSIONS, { headers: requestHeader });
+  return await axios.get(SESSIONS, { headers: requestHeader });
 };
 
 export const createSession = async (body) => {
-  return axios.post(SESSIONS, body, { headers: requestHeader });
+  return await axios.post(SESSIONS, body, { headers: requestHeader });
+};
+
+export const createSessionBatch = async (body) => {
+  return await axios.post(`${SESSIONS}/batch_load`, body, { headers: requestHeader });
 };
 
 export const deleteSession = async (id) => {
-  return axios.delete(`${SESSIONS}/${id}`, { headers: requestHeader });
+  return await axios.delete(`${SESSIONS}/${id}`, { headers: requestHeader });
 };
 
 export const editSession = async (body) => {
-  return axios.put(`${SESSIONS}/${body.id}`, body, { headers: requestHeader });
+  return await axios.put(`${SESSIONS}/${body.id}`, body, { headers: requestHeader });
 };

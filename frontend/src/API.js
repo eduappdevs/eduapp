@@ -15,6 +15,8 @@ export const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
 export const TOKEN = localStorage.getItem("userToken");
 
 const saveInLocalStorage = (userDetails) => {
+  console.log(userDetails)
+
   if (userDetails.data.message.id == null) {
     throw new Error("error");
   }

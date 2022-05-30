@@ -3,7 +3,6 @@ import { API_URL } from '../API'
 export const USERS = `${API_URL}/users`;
 
 export const saveInLocalStorage = (userDetails) => {
-    console.log(userDetails);
     if (userDetails.data.message.id == null) {
         throw new Error("error");
     }
@@ -17,5 +16,5 @@ export const login = async (body) => {
     return await axios.post(endpoint, body).then((res) => {
         saveInLocalStorage(res);
     });
-    
+
 }

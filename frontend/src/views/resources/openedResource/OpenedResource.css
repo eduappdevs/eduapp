@@ -2,7 +2,6 @@
 	width: 100vw;
 	height: 100vh;
 	position: fixed;
-	/* background-color: rgb(255, 255, 255); */
 	background-color: var(--backgroundColor);
 	z-index: 999999999;
 	display: flex;
@@ -207,4 +206,13 @@
 	position: absolute;
 	left: 15px;
 	bottom: 0;
+}
+
+.file-media:last-child {
+	margin-bottom: 5em;
+}
+
+.file-media>h1 {
+	font-size: 15px;
+	max-width: 100vw;
 }

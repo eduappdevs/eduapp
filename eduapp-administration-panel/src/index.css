@@ -13,3 +13,49 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+@font-face {
+  font-family: Consolas;
+  /* Normal Browser */
+  src: url("fonts/Consolas.ttf") format("ttf");
+  /* Safari */
+  src: url("fonts/Consolas.woff") format("woff");
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.overflow-hide {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.overflow-show {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#wip {
+  font-weight: bold;
+  color: var(--textColor);
+  opacity: 0.25;
+  font-style: italic;
+  text-align: center;
+}
+
+:root {
+  --orange: #FF8139;
+  --blue: #4B91FF;
+  --textColor: #000;
+  --backgroundColor: #fff;
+  --shadowColor: rgba(158, 158, 158, 0.411);
+  --secondaryColor: rgba(158, 158, 158, 0.311);
+  --headerBackground: var(--blue);
+  --headerButtonBG: white;
+  --headerButtonFill: var(--blue);
+  --navbarHeight: 100px;
+  --calendarIcon: invert(0);
+  --calendarColorLine: #6d6d6d;
+}

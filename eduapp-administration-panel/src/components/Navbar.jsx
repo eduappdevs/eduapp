@@ -254,6 +254,18 @@ export default function Navbar(props) {
           >
             <p>{props.language.subjects}</p>
           </li>
+          <li
+            onClick={() => {
+              props.toolbarLocation("resources");
+            }}
+            className={
+              activeSection === "resources"
+                ? "active button-suboptions"
+                : "button-suboptions"
+            }
+          >
+            <p>{props.language.resources}</p>
+          </li>
         </ul>
       </div>
       <div className="chat-button-container button-container">
@@ -262,7 +274,11 @@ export default function Navbar(props) {
         </span>
         <ul className="suboptions">
           <li
-            className="button-suboptions"
+            className={
+              activeSection === "chatConfig"
+                ? "active button-suboptions"
+                : "button-suboptions"
+            }
             onClick={() => {
               props.toolbarLocation("chatConfig");
             }}
@@ -270,7 +286,11 @@ export default function Navbar(props) {
             <p>{props.language.chat}</p>
           </li>
           <li
-            className="button-suboptions"
+            className={
+              activeSection === "chatParticipant"
+                ? "active button-suboptions"
+                : "button-suboptions"
+            }
             onClick={() => {
               props.toolbarLocation("chatParticipant");
             }}
@@ -279,7 +299,11 @@ export default function Navbar(props) {
           </li>
           {DISPLAY ? (
             <li
-              className="button-suboptions"
+              className={
+                activeSection === "chatMessage"
+                  ? "active button-suboptions"
+                  : "button-suboptions"
+              }
               onClick={() => {
                 props.toolbarLocation("chatMessage");
               }}

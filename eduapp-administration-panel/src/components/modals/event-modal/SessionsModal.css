@@ -1,0 +1,84 @@
+.session-modal-container-main {
+    width: 100vw;
+    height: 100vh;
+    font-family: Consolas;
+    font-size: 18px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999999999999999999999;
+    animation: bg-fade-in 0.5s;
+}
+
+.session-modal-contents {
+    background-color: var(--backgroundColor);
+    padding: 0.1em 0.1em 0.1em 0.1em;
+    color: var(--textColor);
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    align-items: center;
+    border: 1px solid var(--textColor);
+    margin-bottom: 10em;
+    margin-right: 15em;
+    border-radius: 15px;
+    flex-direction: column;
+    margin-top: 1em;
+    height: 500px;
+}
+
+.session-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    flex-direction: row;
+    right: 0;
+    margin-top: .5em;
+    margin-bottom: .1em;
+    margin-left: 90%;
+}
+
+.session-modal-body {
+    margin-left: 2em;
+    margin-right: 2em;
+    overflow-y: auto;
+}
+
+.session-modal-weekdays {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    flex-direction: row;
+    overflow-y: auto;
+
+}
+
+.session-modal-week {
+    display: flex;
+    justify-content: left;
+    flex-direction: row;
+    overflow-y: auto;
+}
+
+.session-modal-button {
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+input[type="number"i] {
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-top: .8em;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 30px;
+    padding: 0;
+}

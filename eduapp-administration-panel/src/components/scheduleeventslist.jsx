@@ -6,20 +6,51 @@ import * as USER_SERVICE from "../services/user.service";
 import Input from "./Input";
 
 import "../styles/scheduleeventslist.css";
+import StandardModal from "./modals/standard-modal/StandardModal";
 
 export default function Scheduleeventslist(props) {
   const [subject, setSubject] = useState([]);
   const [events, setEvents] = useState([]);
   const [users, setUsers] = useState([]);
   const [isGlobal, setIsGlobal] = useState(false);
-  const [newEndDate] = useState();
   const [newStartDate] = useState();
+  const [newEndDate] = useState();
+  const [newName] = useState();
+  const [newDescription] = useState();
+
   const [changeEndDate, setChangeEndDate] = useState(false);
   const [changeStartDate, setChangeStartDate] = useState(false);
+  const [changeName, setChangeName] = useState(false);
+  const [changeDescription, setChangeDescription] = useState(false);
   const [subjectEdit, setSubjectEdit] = useState([]);
   const [search, setSearch] = useState("");
 
+  const [showPopup, setPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
+  const [popupIcon, setPopupIcon] = useState("");
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+  const [popupType, setPopupType] = useState("");
+  const [idDelete, setIdDelete] = useState();
+
   let events_filter = {};
+
+  const switchSaveState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "scroll";
+      document
+        .getElementById("commit-loader-2")
+        .classList.remove("commit-loader-hide");
+      document.getElementById("add-svg").classList.add("commit-loader-hide");
+    } else {
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+      document.getElementById("add-svg").classList.remove("commit-loader-hide");
+      document
+        .getElementById("commit-loader-2")
+        .classList.add("commit-loader-hide");
+    }
+  };
 
   const fetchSubjects = () => {
     API.asynchronizeRequest(function () {
@@ -27,6 +58,15 @@ export default function Scheduleeventslist(props) {
         res.data.shift();
         setSubject(res.data);
       });
+    }).then((e) => {
+      if (e) {
+        setPopup(true);
+        setPopupText(
+          "The subjects could not be showed, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+      }
     });
   };
 
@@ -35,6 +75,33 @@ export default function Scheduleeventslist(props) {
       USER_SERVICE.fetchUserInfos().then((res) => {
         setUsers(res.data);
       });
+    }).then((e) => {
+      if (e) {
+        setPopup(true);
+        setPopupText(
+          "The users could not be showed, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+      }
+    });
+  };
+
+  const fetchEvents = async () => {
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.fetchEvents().then((event) => {
+        setEvents(event.data);
+        events_filter.events = event.data;
+      });
+    }).then((e) => {
+      if (e) {
+        setPopup(true);
+        setPopupText(
+          "The calendar events could not be showed, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+      }
     });
   };
 
@@ -49,8 +116,15 @@ export default function Scheduleeventslist(props) {
     setSubjectEdit(list_subject);
   };
 
+  const alertCreate = async () => {
+    setPopupText("Required information is missing.");
+    setPopupType("error");
+    setPopup(true);
+  };
+
   const AddNewEvent = async (e) => {
     e.preventDefault();
+    switchSaveState(true);
 
     const context = [
       "annotation_title",
@@ -92,7 +166,8 @@ export default function Scheduleeventslist(props) {
           parseInt(subject)
         );
       } else {
-        console.log("error");
+        alertCreate();
+        switchSaveState(false);
       }
 
     let eventJson = {};
@@ -103,19 +178,22 @@ export default function Scheduleeventslist(props) {
       SCHEDULESERVICE.createEvent(eventJson)
         .then(() => {
           fetchEvents();
+          setPopup(true);
+          setPopupType("info");
+          setPopupText("The calendar events was created successfully.");
+          switchSaveState(false);
         })
         .catch((e) => {
-          console.log(e);
+          if (e) {
+            setPopupText(
+              "The calendar session could not be created, check if you entered the correct fields."
+            );
+            setPopupIcon("error");
+            switchSaveState(false);
+            setPopup(true);
+            switchSaveState(false);
+          }
         });
-    });
-  };
-
-  const fetchEvents = async () => {
-    API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.fetchEvents().then((event) => {
-        setEvents(event.data);
-        events_filter.events = event.data;
-      });
     });
   };
 
@@ -124,13 +202,41 @@ export default function Scheduleeventslist(props) {
     setIsGlobal(checkbox);
   };
 
-  const deleteEvent = (id) => {
+  const confirmDeleteEvent = async (id) => {
+    setPopupType("warning");
+    setPopupIcon(true);
+    setPopupText("Are you sure you want to delete this event?");
+    setIsConfirmDelete(true);
+    setPopup(true);
+    setIdDelete(id);
+  };
+
+  const showDeleteError = () => {
+    setPopupType("error");
+    popupIcon(false);
+    setPopup(false);
+    setPopupText("The event could not be deleted.");
+    setIsConfirmDelete(false);
+  };
+
+  const deleteEvent = async (id) => {
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.deleteEvent(id)
         .then(() => {
           fetchEvents();
         })
-        .catch((e) => console.log(e));
+        .catch(() => {
+          showDeleteError();
+        });
+    }).then((e) => {
+      if (e) {
+        setPopup(true);
+        setPopupText(
+          "The calendar event could not be deleted, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+      }
     });
   };
   const editEvent = (e, s) => {
@@ -182,7 +288,7 @@ export default function Scheduleeventslist(props) {
       } else {
         editDescription = s.annotation_description;
       }
-      if (subject !== undefined) {
+      if (subject !== undefined && subject !== s.subject_id) {
         let inputSubject = document.getElementById(
           "inputSubjectID_" + s.id
         ).value;
@@ -222,11 +328,35 @@ export default function Scheduleeventslist(props) {
             startDate.disabled = true;
             endDate.disabled = true;
             description.disabled = true;
-            subject.disabled = true;
+            if (subject !== undefined && subject !== null) {
+              subject.disabled = true;
+            }
+            setIsConfirmDelete(false);
+            setPopup(true);
+            setPopupType("info");
+            setPopupText("The calendar event was edited successfully.");
           })
           .catch((error) => {
-            console.log(error);
+            if (error) {
+              setPopupText(
+                "The calendar session could not be edited, check if you entered the correct fields."
+              );
+              setPopupIcon("error");
+              switchSaveState(false);
+              setPopup(true);
+              setIsConfirmDelete(false);
+            }
           });
+      }).catch((error) => {
+        if (error) {
+          setPopup(true);
+          setPopupText(
+            "The calendar event could not be edited, check if you have an internet connection."
+          );
+          setPopupIcon("error");
+          switchSaveState(false);
+          setIsConfirmDelete(false);
+        }
       });
     } else {
       if (e.target.tagName === "path") {
@@ -236,7 +366,6 @@ export default function Scheduleeventslist(props) {
         let description =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
             .childNodes[0];
-
         let startDate =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
             .childNodes[0];
@@ -289,7 +418,7 @@ export default function Scheduleeventslist(props) {
         } else {
           editDescription = s.annotation_description;
         }
-        if (subject !== undefined) {
+        if (subject !== undefined && subject !== null) {
           let inputSubject = document.getElementById(
             "inputSubjectID_" + s.id
           ).value;
@@ -334,11 +463,34 @@ export default function Scheduleeventslist(props) {
               startDate.disabled = true;
               endDate.disabled = true;
               description.disabled = true;
-              subject.disabled = true;
+              if (subject !== undefined && subject !== null) {
+                subject.disabled = true;
+              }
+              setIsConfirmDelete(false);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText("The calendar event was edited successfully.");
             })
             .catch((error) => {
-              console.log(error);
+              if (error) {
+                setPopupText(
+                  "The calendar event could not be edited, check if you entered the correct fields."
+                );
+                setPopupIcon("error");
+                switchSaveState(false);
+                setPopup(true);
+              }
             });
+        }).catch((error) => {
+          if (error) {
+            setIsConfirmDelete(false);
+            setPopup(true);
+            setPopupText(
+              "The calendar event could not be edited, check if you have an internet connection."
+            );
+            setPopupIcon("error");
+            switchSaveState(false);
+          }
         });
       } else {
         let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -348,8 +500,6 @@ export default function Scheduleeventslist(props) {
           e.target.parentNode.parentNode.childNodes[4].childNodes[0];
         let endDate =
           e.target.parentNode.parentNode.childNodes[5].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
 
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputStartDate = document.getElementById(
@@ -393,7 +543,9 @@ export default function Scheduleeventslist(props) {
         } else {
           editDescription = s.annotation_description;
         }
-        if (subject !== undefined) {
+        let subject =
+          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
+        if (subject !== undefined && subject !== null) {
           let inputSubject = document.getElementById(
             "inputSubjectID_" + s.id
           ).value;
@@ -406,7 +558,6 @@ export default function Scheduleeventslist(props) {
         } else {
           editSubject = s.subject_id;
         }
-
         API.asynchronizeRequest(function () {
           SCHEDULESERVICE.editEvent({
             id: s.id,
@@ -418,26 +569,53 @@ export default function Scheduleeventslist(props) {
             user_id: s.user_id,
             subject_id: editSubject,
           })
-            .then(() => {
-              fetchEvents();
-              fetchSubjects();
-              let buttonDelete = e.target.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              startDate.disabled = true;
-              endDate.disabled = true;
-              description.disabled = true;
-              subject.disabled = true;
+            .then((error) => {
+              if (error) {
+                setIsConfirmDelete(false);
+                setPopup(true);
+                setPopupType("info");
+                setPopupText("The calendar event was edited successfully.");
+                fetchEvents();
+                fetchSubjects();
+                let buttonDelete = e.target.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button = e.target.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton = e.target.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton = e.target.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                name.disabled = true;
+                startDate.disabled = true;
+                endDate.disabled = true;
+                description.disabled = true;
+                if (subject !== undefined && subject !== null) {
+                  subject.disabled = true;
+                }
+              }
             })
             .catch((error) => {
-              console.log(error);
+              if (error) {
+                console.log(error);
+                setIsConfirmDelete(false);
+                setPopupText(
+                  "The calendar event could not be edited, check if you entered the correct fields."
+                );
+                setPopupIcon("error");
+                switchSaveState(false);
+                setPopup(true);
+              }
             });
+        }).catch((error) => {
+          if (error) {
+            setIsConfirmDelete(false);
+            setPopup(true);
+            setPopupText(
+              "The calendar event could not be edited, check if you have an internet connection."
+            );
+            setPopupIcon("error");
+            switchSaveState(false);
+          }
         });
       }
     }
@@ -649,8 +827,8 @@ export default function Scheduleeventslist(props) {
   };
 
   const handleChangeName = (id) => {
-    var content = document.getElementById("inputName_" + id);
-    return content.value;
+    setChangeName(true);
+    return document.getElementById(`inputName_${id}`).value;
   };
 
   const handleChangeEndDate = (id) => {
@@ -664,6 +842,12 @@ export default function Scheduleeventslist(props) {
     setChangeStartDate(true);
     return content.value;
   };
+
+  const handleChangeDescription = (id) => {
+    setChangeDescription(true);
+    return document.getElementById(`inputDescription_${id}`);
+  };
+
   const sessionFilterEvent = (sessionList) => {
     let filterSessions = [];
     sessionList.map((s) => {
@@ -711,7 +895,7 @@ export default function Scheduleeventslist(props) {
               <th>{props.language.startDate}</th>
               <th>{props.language.endDate}</th>
               <th>{props.language.isGlobal}</th>
-              {isGlobal ? console.log() : <th>Subject</th>}
+              {isGlobal ? console.log() : <th>{props.language.subjects}</th>}
             </tr>
           </thead>
           <tbody>
@@ -719,6 +903,7 @@ export default function Scheduleeventslist(props) {
               <td>
                 <button onClick={AddNewEvent}>
                   <svg
+                    id="add-svg"
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
                     height="16"
@@ -727,6 +912,21 @@ export default function Scheduleeventslist(props) {
                     viewBox="0 0 16 16"
                   >
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                  </svg>
+                  <svg
+                    id="commit-loader-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    fill="currentColor"
+                    className="bi bi-arrow-repeat commit-loader-hide loader-spin"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+                    />
                   </svg>
                 </button>
               </td>
@@ -779,9 +979,7 @@ export default function Scheduleeventslist(props) {
                   onClick={isGlobalEvent}
                 />
               </td>
-              {isGlobal ? (
-                console.log()
-              ) : (
+              {isGlobal ? null : (
                 <td className="subjecButton">
                   <select id="e_subjectId">
                     <option defaultValue="Choose subject">
@@ -799,6 +997,7 @@ export default function Scheduleeventslist(props) {
           </tbody>
         </table>
       </div>
+      .
       {events && events.length !== 0 ? (
         <table className="eventList" style={{ marginTop: "50px" }}>
           <thead>
@@ -810,6 +1009,7 @@ export default function Scheduleeventslist(props) {
               <th>{props.language.startDate}</th>
               <th>{props.language.endDate}</th>
               <th>{props.language.isGlobal}</th>
+              <th>{props.language.subjects}</th>
               <th>{props.language.actions}</th>
             </tr>
           </thead>
@@ -817,8 +1017,10 @@ export default function Scheduleeventslist(props) {
             {events.map((e) => {
               if (search.length > 0) {
                 if (
-                  e.title.toLowerCase().includes(search.toLowerCase()) ||
-                  e.description.toLowerCase().includes(search.toLowerCase())
+                  e.annotation_title
+                    .toLowerCase()
+                    .includes(search.toLowerCase()) ||
+                  e.user.email.toLowerCase().includes(search.toLowerCase())
                 ) {
                   return (
                     <tr key={e.id}>
@@ -828,18 +1030,27 @@ export default function Scheduleeventslist(props) {
                           type="text"
                           id={`inputName_${e.id}`}
                           disabled
-                          placeholder={e.annotation_title}
-                          onChange={(event) => {
-                            handleChangeName(event.target.value);
+                          value={
+                            changeName === false ? e.annotation_title : newName
+                          }
+                          onChange={() => {
+                            handleChangeName(e.id);
                           }}
                         />
                       </td>
                       <td>
                         <input
                           type="text"
-                          placeholder={e.annotation_description}
+                          value={
+                            changeDescription === false
+                              ? e.annotation_description
+                              : newDescription
+                          }
                           disabled
                           id={`inputDescription_${e.id}`}
+                          onChange={() => {
+                            handleChangeDescription();
+                          }}
                         />
                       </td>
                       <td>
@@ -855,8 +1066,8 @@ export default function Scheduleeventslist(props) {
                               : newStartDate
                           }
                           disabled
-                          onChange={(event) => {
-                            handleChangeStartDate(event, e.id);
+                          onChange={() => {
+                            handleChangeStartDate(e.id);
                           }}
                         />
                       </td>
@@ -870,8 +1081,8 @@ export default function Scheduleeventslist(props) {
                               : newEndDate
                           }
                           disabled
-                          onChange={(e) => {
-                            handleChangeEndDate(e, e.id);
+                          onChange={() => {
+                            handleChangeEndDate(e.id);
                           }}
                         />
                       </td>
@@ -883,9 +1094,7 @@ export default function Scheduleeventslist(props) {
                         )}
                       </td>
                       <td>
-                        {e.isGlobal ? (
-                          console.log()
-                        ) : (
+                        {e.isGlobal ? null : (
                           <select disabled id={`inputSubjectID_${e.id}`}>
                             <option
                               defaultValue={e.subject_id}
@@ -911,7 +1120,7 @@ export default function Scheduleeventslist(props) {
                         <button
                           style={{ marginRight: "5px" }}
                           onClick={() => {
-                            deleteEvent(e.id);
+                            confirmDeleteEvent(e.id);
                           }}
                         >
                           <svg
@@ -1000,18 +1209,27 @@ export default function Scheduleeventslist(props) {
                         type="text"
                         id={`inputName_${e.id}`}
                         disabled
-                        placeholder={e.annotation_title}
-                        onChange={(event) => {
-                          handleChangeName(event.target.value);
+                        value={
+                          changeName === false ? e.annotation_title : newName
+                        }
+                        onChange={() => {
+                          handleChangeName(e.id);
                         }}
                       />
                     </td>
                     <td>
                       <input
                         type="text"
-                        placeholder={e.annotation_description}
+                        value={
+                          changeDescription === false
+                            ? e.annotation_description
+                            : newDescription
+                        }
                         disabled
                         id={`inputDescription_${e.id}`}
+                        onChange={() => {
+                          handleChangeDescription();
+                        }}
                       />
                     </td>
                     <td>
@@ -1027,8 +1245,8 @@ export default function Scheduleeventslist(props) {
                             : newStartDate
                         }
                         disabled
-                        onChange={(event) => {
-                          handleChangeStartDate(event, e.id);
+                        onChange={() => {
+                          handleChangeStartDate(e.id);
                         }}
                       />
                     </td>
@@ -1042,8 +1260,8 @@ export default function Scheduleeventslist(props) {
                             : newEndDate
                         }
                         disabled
-                        onChange={(e) => {
-                          handleChangeEndDate(e, e.id);
+                        onChange={() => {
+                          handleChangeEndDate(e.id);
                         }}
                       />
                     </td>
@@ -1083,7 +1301,7 @@ export default function Scheduleeventslist(props) {
                       <button
                         style={{ marginRight: "5px" }}
                         onClick={() => {
-                          deleteEvent(e.id);
+                          confirmDeleteEvent(e.id);
                         }}
                       >
                         <svg
@@ -1167,6 +1385,34 @@ export default function Scheduleeventslist(props) {
           </tbody>
         </table>
       ) : null}
+      <StandardModal
+        show={showPopup}
+        iconFill={popupIcon}
+        type={popupType}
+        text={popupText}
+        isQuestion={isConfirmDelete}
+        onYesAction={() => {
+          setPopup(false);
+          deleteEvent(idDelete);
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+        onNoAction={() => {
+          setPopup(false);
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+        onCloseAction={() => {
+          setPopup(false);
+          document.getElementById(
+            "controlPanelContentContainer"
+          ).style.overflow = "scroll";
+        }}
+        hasIconAnimation
+        hasTransition
+      />
     </>
   );
 }

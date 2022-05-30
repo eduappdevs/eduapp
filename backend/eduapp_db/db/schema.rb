@@ -129,9 +129,9 @@ ActiveRecord::Schema.define(version: 15) do
   create_table "resources", force: :cascade do |t|
     t.string "name"
     t.string "description"
-    t.string "firstfile"
-    t.string "secondfile"
-    t.string "thirdfile"
+    t.string "blob_id_delete"
+    t.string "resource_files", array: true
+    t.string "resource_files_json", array: true
     t.string "createdBy"
     t.bigint "subject_id"
     t.datetime "created_at", precision: 6, null: false

@@ -32,9 +32,33 @@ export default function OpenedResource() {
     window.history.back();
   };
 
+  const namefixed = (name) => {
+    // let codes = [
+    //   ["%3A", ":"],
+    //   ["%C3%A1", "á"],
+    //   ["%C3%81", "Á"],
+    //   ["","é"],
+    //   ["","É"],
+    //   ["","í"],
+    //   ["","Í"],
+    //   ["","ó"],
+    //   ["","Ó"],
+    //   ["","ú"],
+    //   ["","Ú"],
+
+    // ];
+
+    // for (let c of codes) {
+    //   name = name.replaceAll(c[0], c[1]);
+    // }
+
+    return decodeURI(name);
+  };
+
   const manageMediaType = (media) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
     const videoRegex = new RegExp("^.*(mp4|mov)$");
+    let name = media.split("/")[media.split("/").length - 1];
 
     media = process.env.REACT_APP_BACKEND_ENDPOINT.includes("localhost")
       ? media
@@ -44,9 +68,7 @@ export default function OpenedResource() {
       if (imageRegex.test(media)) {
         return (
           <>
-            <h1 it="fileTitle">
-              {media.split("/")[media.split("/").length - 1]}
-            </h1>
+            <h1 it="fileTitle">{namefixed(name)}</h1>
             <div
               className={"resource__image"}
               style={{
@@ -61,9 +83,7 @@ export default function OpenedResource() {
       } else {
         return (
           <>
-            <h1 it="fileTitle">
-              {media.split("/")[media.split("/").length - 1]}
-            </h1>
+            <h1 it="fileTitle">{namefixed(name)}</h1>
             <ReactPlayer
               url={media}
               controls={true}
@@ -80,11 +100,7 @@ export default function OpenedResource() {
       return (
         <>
           <>
-            <h1 htmlFor="file">
-              {media != null
-                ? media.split("/")[media.split("/").length - 1]
-                : "file"}
-            </h1>
+            <h1 htmlFor="file">{media != null ? namefixed(name) : "file"}</h1>
             <a className="fileDownload-button" name="file" href={media}>
               DOWNLOAD
             </a>
@@ -111,21 +127,7 @@ export default function OpenedResource() {
 
       setName(response.data.name);
       setDescription(response.data.description);
-
-      let tempfiles = [];
-      if (response.data.firstfile !== null) {
-        tempfiles.push(response.data.firstfile.url);
-      }
-
-      if (response.data.secondfile !== null) {
-        tempfiles.push(response.data.secondfile.url);
-      }
-
-      if (response.data.thirdfile !== null) {
-        tempfiles.push(response.data.thirdfile.url);
-      }
-
-      setFiles(tempfiles);
+      setFiles(response.data.resource_files);
       setSubjectOrigin(response.data.subject_id);
 
       window.dispatchEvent(new Event("canLoadResource"));

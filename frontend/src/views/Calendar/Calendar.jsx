@@ -47,6 +47,8 @@ export default function Calendar() {
         let title = e.annotation_title;
         let description = e.annotation_description;
         let subject = e.subject_id;
+        let author = e.user_id;
+
         let backgroundColor;
 
         for (let i in data.colorEvents) {
@@ -62,6 +64,7 @@ export default function Calendar() {
           description: description,
           subject_id: subject,
           backgroundColor: backgroundColor,
+          user_id: author,
         });
       }
     }
@@ -76,6 +79,7 @@ export default function Calendar() {
         let description = calendarEvents.annotation_description;
         let subject = calendarEvents.subject_id;
         let isGlobal = calendarEvents.isGlobal;
+        let author = calendarEvents.user_id;
         let backgroundColor;
 
         for (let i in data.colorEvents) {
@@ -92,6 +96,7 @@ export default function Calendar() {
           subject_id: subject,
           backgroundColor: backgroundColor,
           isGlobal: isGlobal,
+          user_id: author,
         });
       }
     }
@@ -107,6 +112,7 @@ export default function Calendar() {
         let stream = e.streaming_platform;
         let chat = e.session_chat_id;
         let subject = e.subject_id;
+        let author = e.user_id;
         let backgroundColor;
 
         for (let i in data.colorEvents) {
@@ -124,6 +130,7 @@ export default function Calendar() {
           chat: chat,
           subject_id: subject,
           backgroundColor: backgroundColor,
+          user_id: author,
         });
       }
     }
