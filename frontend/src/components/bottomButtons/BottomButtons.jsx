@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import "./BottomButtons.css";
 
-export default function BottomButtons({ mobile }) {
+export default function BottomButtons({ mobile , badgeCount }) {
   const [inHome, setInHome] = useState(false);
   const [inResources, setInResources] = useState(false);
   const [inCalendar, setInCalendar] = useState(false);
@@ -146,7 +146,11 @@ export default function BottomButtons({ mobile }) {
           </li>
         </Link>
         <Link to="/chat">
-          <li className={inChat ? "activeButton" : console.log()}>
+          <li className={inChat && "activeButton"}>
+            <div className="badgeNotifyContainer">
+            <span className="badgeNotify badgeNotifyMobile">{badgeCount}</span>
+            </div>
+            
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="35"

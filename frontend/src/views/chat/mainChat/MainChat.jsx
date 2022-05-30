@@ -7,7 +7,9 @@ import axios from "axios";
 import { CHAT_BASE, CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../../config";
 import * as USER_SERVICE from "../../../services/user.service";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import pushNotify from "../../../components/notifications/notifications";
 import "./MainChat.css";
+
 
 const acInstance = new ACManager();
 export default function MainChat() {
@@ -39,6 +41,12 @@ export default function MainChat() {
       newMsg.chat_base.id ===
       parseInt(acInstance.chatCode[acInstance.chatCode.length - 1])
     ) {
+
+      //Notify
+      if(parseInt(newMsg.user.id) !== parseInt(localStorage.userId)){
+        console.log("Notify to : ", newMsg.user.id , " with message : ", newMsg.message);
+        pushNotify(newMsg.user.email.split('@')[0] + ' say : ' + newMsg.message)
+      }else return
       setNewMessages((prevMsgs) => [...prevMsgs, newMsg]);
       let messageBox = document.getElementsByClassName(
         "main-chat-messages-container"

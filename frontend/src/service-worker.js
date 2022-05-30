@@ -62,4 +62,6 @@ self.addEventListener("message", (event) => {
         break;
     }
   }
-});
+}
+
+)

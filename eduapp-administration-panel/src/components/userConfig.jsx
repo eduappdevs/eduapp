@@ -6,6 +6,7 @@ export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
+  let selectedUsers = []
 
   const fetchUsers = () => {
     API.asynchronizeRequest(function () {
@@ -103,6 +104,39 @@ export default function UserConfig(props) {
     }
   };
 
+
+  const selectAllUsers = ()=>{
+
+    if(selectedUsers.length === 0){
+      users.map((user)=>{
+        selectedUsers.push(user.user.id)
+        document.getElementById('select_user_'+user.user.id).checked = true
+      })
+  
+      document.getElementById('select_all_users').checked = true;
+    }else{
+      selectedUsers = [];
+      document.getElementById('select_all_users').checked = false;
+      users.map((user)=>{
+        document.getElementById('select_user_'+user.user.id).checked = false
+      })
+
+    }
+
+   
+
+  }
+  const selectUser = (id)=>{
+    console.log(' que cojones ')
+    if(document.getElementById('select_user_'+id).checked){
+      selectedUsers.push(id)
+    }else{
+      selectedUsers = selectedUsers.filter((user)=>{
+        return user !== id
+      })
+    }
+  }
+
   useEffect(() => {
     setSearch(props.search);
   }, [props.search]);
@@ -175,11 +209,22 @@ export default function UserConfig(props) {
             </tr>
           </tbody>
         </table>
+        
         <table style={{ marginTop: "50px" }}>
           <thead>
             <tr>
               
-              <th>{props.language.name}</th>
+              <th>
+                
+                <div className="sendMessages">
+                <input type="checkbox" onClick={selectAllUsers} name="select_all_users" id={`select_all_users`}/>
+                <button  className={selectedUsers.length > 0 && 'disabled'} disabled={selectedUsers.length > 0 ? false : true}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-plus-fill" viewBox="0 0 16 16">
+                      <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 1.59 2.498C8 14 8 13 8 12.5a4.5 4.5 0 0 1 5.026-4.47L15.964.686Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                      <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0v-1h1a.5.5 0 0 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+                    </svg>
+                </button>
+        </div></th>
               <th>{props.language.email}</th>
               <th>{props.language.isAdmin}</th>
               <th>{props.language.googleLinked}</th>
@@ -197,7 +242,7 @@ export default function UserConfig(props) {
                     ) {
                       return (
                         <tr key={u.id}>
-                          <td>{u.user.id}</td>
+                          <td><input type="checkbox" name="select_user" onClick={()=>{selectUser(u.user.id)}} id={`select_user_${u.user.id}`}/></td>
                           <td>
                             <input type="text" disabled value={u.user_name} />
                           </td>
@@ -248,7 +293,7 @@ export default function UserConfig(props) {
                   } else if (filterUsersWithRole(userRole, u)) {
                     return (
                       <tr key={u.id}>
-                        <td>{u.user.id}</td>
+                        <td><input type="checkbox" name="select_user" onClick={()=>{selectUser(u.user.id)}} id={`select_user_${u.user.id}`}/></td>
 
                         <td>
                           <input type="text" disabled value={u.user_name} />
@@ -307,7 +352,7 @@ export default function UserConfig(props) {
                       return (
                         <tr key={u.id}>
                           <td>
-                            <input type="text" disabled value={u.user_id} />
+                          <input type="checkbox" disabled name="select_user" id={`select_user_${u.user.id}`}/>
                           </td>
                           <td>
                             <input type="text" disabled value={u.user_name} />
@@ -360,7 +405,7 @@ export default function UserConfig(props) {
                     return (
                       <tr key={u.id}>
                         <td>
-                          <input type="text" disabled value={u.user_id} />
+                        <input type="checkbox" name="select_user" disabled id={`select_user_${u.user.id}`}/> 
                         </td>
                         <td>
                           <input type="text" disabled value={u.user_name} />
@@ -419,7 +464,7 @@ export default function UserConfig(props) {
                       return (
                         <tr key={u.id}>
                           <td>
-                            <input type="text" disabled value={u.user_id} />
+                          <input type="checkbox" name="select_user" disabled id={`select_user_${u.user.id}`}/>
                           </td>
                           <td>
                             <input type="text" disabled value={u.user_name} />
@@ -472,7 +517,7 @@ export default function UserConfig(props) {
                     return (
                       <tr key={u.id}>
                         <td>
-                          <input type="text" disabled value={u.user_id} />
+                        <input type="checkbox" name="select_user" disabled id={`select_user_${u.user.id}`}/>
                         </td>
                         <td>
                           <input type="text" disabled value={u.user_name} />

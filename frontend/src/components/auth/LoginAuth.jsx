@@ -3,6 +3,7 @@ import API from "../../API";
 import BasicGoogleLogin from "../basicGoogleLogin/BasicGoogleLogin";
 import StandardModal from "../modals/standard-modal/StandardModal";
 import { Mailer } from "../Mailer";
+import Notification from "../notifications/notifications";
 export default class LoginAuth extends Component {
   constructor(props) {
     super(props);
@@ -40,6 +41,10 @@ export default class LoginAuth extends Component {
 
 
   showEmailSentModal = () => {
+    setTimeout(()=>{
+    new Notification("Email Sent Successfully");
+
+    },1000)
     this.setState({
       emailSentModalShow: true,
     });
@@ -78,13 +83,15 @@ export default class LoginAuth extends Component {
         <StandardModal 
           type={'info'} 
           text='To what email should we send the password recovery?' 
-          form={<Mailer showEmailSent={this.showEmailSentModal} email={this.state.email} sendEmail={this.state.sendEmail}/>} 
+          form={<Mailer showEmailSentModal={this.showEmailSentModal} email={this.state.email} sendEmail={this.state.sendEmail}/>} 
           show={this.state.forgotModalShow} 
           onCloseAction={()=>{this.setState({forgotModalShow:false,sendEmail:true})}}
           hasIconAnimation
           hasTransition
+          hasCancel 
+          onCancelAction={()=>{window.location.reload()}}
           />
-        <StandardModal type={'success'} text={'Email Sent Successfully'} hasIconAnimation hasTransition show={this.state.emailSentModalShow} onCloseAction={()=>{this.setState({emailSentModalShow:false})}}/>
+        <StandardModal type={'success'} text={'Email Sent Successfully'}  hasIconAnimation hasTransition show={this.state.emailSentModalShow} onCloseAction={()=>{this.setState({emailSentModalShow:false})}}/>
         <button data-testid="loginButton" type="submit">
           Login
         </button>

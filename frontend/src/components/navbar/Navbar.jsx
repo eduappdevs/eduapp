@@ -5,7 +5,7 @@ import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import "./Navbar.css";
 
-export default function Navbar({ mobile }) {
+export default function Navbar({ mobile, badgeCount }) {
   const [ProfileMenuOpened, setProfileMenuOpened] = useState(false);
   const [inHome, setInHome] = useState(false);
   const [inResources, setInResources] = useState(false);
@@ -161,6 +161,9 @@ export default function Navbar({ mobile }) {
               <Link to="/resources"> Resources</Link>
             </li>
             <li className={inChat ? "activeLocation" : console.log()}>
+            <div className="badgeNotifyContainer">
+            <span className="badgeNotify">{badgeCount}</span>
+            </div>
               <Link to="/chat"> Chat</Link>
             </li>
           </ul>

@@ -16,6 +16,16 @@
 	right: 4px;
 	top: 0;
 }
+.sendMessages{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+.disabled{
+	pointer-events: none;
+	opacity: 0.3;
+}
 select{
 	-webkit-appearance: button;
 	-webkit-border-radius: 2px;

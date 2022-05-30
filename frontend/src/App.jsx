@@ -21,11 +21,18 @@ import MenuSettings from "./views/menu/menu-settings/MenuSettings";
 import PasswordRecovery from "./views/passwordRecovery/PasswordRecovery";
 import GroupChatCreate from "./views/chat/createGroupChat/GroupChatCreate";
 import DirectChatCreate from "./views/chat/createDirectChat/DirectChatCreate";
+import instanceBadge, { resetBadge , getBadgeCount } from "./components/notifications/notifications";
+import WebTitle from "./components/WebTitle";
+
+
+
+
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
   const [needsLoader, setNeedsLoader] = useState(true);
   const [ItsMobileDevice, setItsMobileDevice] = useState(null);
+  
   let userinfo = FetchUserInfo(localStorage.userId);
 
   const checkMediaQueries = () => {
@@ -81,13 +88,30 @@ export default function App() {
     }
   }, []);
 
+  document.addEventListener('visibilitychange',()=>{
+    resetBadge();
+    console.log('hidden')
+  }
+  )
+
   useEffect(() => {
     checkMediaQueries();
   }, [window.innerWidth]);
 
+
+
+  useEffect(() => {
+    instanceBadge();
+    console.log('badge')
+  }, []);
+
+  
+
+
   return userinfo ? (
     <>
       <BrowserRouter>
+      <WebTitle/>
         <React.Fragment>
           <div style={{ display: needsLoader ? "flex" : "none" }}>
             <Loader />
@@ -95,7 +119,7 @@ export default function App() {
         </React.Fragment>
         {needsExtras && (
           <React.Fragment>
-            <Navbar mobile={ItsMobileDevice} />
+            <Navbar badgeCount={badgeCount} mobile={ItsMobileDevice} />
           </React.Fragment>
         )}
         {requireAuth() ? (
@@ -132,7 +156,7 @@ export default function App() {
         )}
         {needsExtras && ItsMobileDevice && (
           <React.Fragment>
-            <BottomButtons mobile={ItsMobileDevice} />
+            <BottomButtons badgeCount={badgeCount} mobile={ItsMobileDevice} />
           </React.Fragment>
         )}
       </BrowserRouter>
@@ -143,3 +167,12 @@ export default function App() {
     </>
   );
 }
+
+let badgeCount = 0;
+
+export function incrementBadgeCount(){
+  // badgeCount++;
+  console.log("Badge count : ", badgeCount);
+}
+
+

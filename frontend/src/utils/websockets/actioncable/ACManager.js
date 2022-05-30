@@ -1,6 +1,5 @@
 import { createConsumer } from "@rails/actioncable";
 import { CHATWS } from "../../../config";
-
 export default class ACManager {
   constructor() {
     this.consumer = createConsumer(CHATWS);
@@ -88,7 +87,6 @@ export default class ACManager {
             break;
         }
       }
-
       this.connection.send(payload);
     }
   }

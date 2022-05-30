@@ -5,7 +5,7 @@ class PasswordMailer < ApplicationMailer
     @url
     if @user.present? 
       token = @user.reset_password_token
-      @url = ENV.fetch("FRONTEND_URL") + "/password/reset?email="+ @user.email + "&token="+token
+      @url = ENV.fetch("REACT_APP_FRONTEND_ENDPOINT") + "/password/reset?email="+ @user.email + "&token="+token
       mail(to: @user.email, subject: 'EduApp Password Reset', url: @url)
     else
       render json: {status: 'failure'}

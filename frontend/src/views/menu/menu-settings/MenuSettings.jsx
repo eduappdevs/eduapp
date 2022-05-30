@@ -3,6 +3,7 @@ import MenuHeader from "../menuHeader/MenuHeader";
 import DarkModeChanger from "../../../components/DarkModeChanger";
 import "./MenuSettings.css";
 
+
 export default function MenuSettings() {
   return (
     <div className={"MenuSettings__main-container"}>
@@ -13,7 +14,7 @@ export default function MenuSettings() {
         location={"SETTINGS"}
       />
       <ul>
-        <li>LANGUAGE</li>
+        <li >LANGUAGE</li>
         <li>
           <ul id={"darkModes"}>
             <li

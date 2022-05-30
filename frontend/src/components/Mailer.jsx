@@ -11,6 +11,7 @@ export const Mailer = (props) => {
             let http_request_url = `http://localhost:3000/reset_password?email=${email}`;
             await axios.get(http_request_url).then(res => {
                 console.log(res.data.status)
+                props.showEmailSentModal();
                 
             }).catch(err => {
                 console.log(err);
