@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import { asynchronizeRequest } from "../../../API.js";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import { getOfflineUser } from "../../../utils/OfflineManager";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
+import useViewsPermissions from "../../../hooks/useViewsPermissions";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import useRole from "../../../hooks/useRole";
 import "./GroupChatCreate.css";
 
 export default function GroupChatCreate() {
@@ -20,6 +24,11 @@ export default function GroupChatCreate() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [createButton, setCreateButton] = useState("Create");
+
+  let canCreate = useRole(FetchUserInfo(getOfflineUser().user.id), [
+    "eduapp-admin",
+    "eduapp-teacher",
+  ]);
 
   const displayWarning = (text) => {
     setWarningText(text);
@@ -60,7 +69,7 @@ export default function GroupChatCreate() {
         for (let u of match.data) {
           if (
             currentParticipants.includes(u.id) ||
-            u.id === parseInt(localStorage.userId)
+            u.id === parseInt(getOfflineUser().user.id)
           )
             continue;
           filteredUsers.push(u);
@@ -91,7 +100,8 @@ export default function GroupChatCreate() {
     if (createButton === "Create") {
       setCreateButton("Creating...");
       let finalParticipants = [];
-      for (let p of participants) finalParticipants.push(p.id);
+      console.log(participants);
+      for (let p of participants) finalParticipants.push(p.user.id);
       asynchronizeRequest(async () => {
         let chat_id = await CHAT_SERVICE.createCompleteChat({
           base: {
@@ -99,7 +109,7 @@ export default function GroupChatCreate() {
             isGroup: true,
           },
           participants: {
-            user_ids: [localStorage.userId, ...finalParticipants],
+            user_ids: [getOfflineUser().user.id, ...finalParticipants],
           },
         });
         window.location.href = "/chat/g" + chat_id;
@@ -116,6 +126,14 @@ export default function GroupChatCreate() {
       });
     }
   };
+
+  useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
+
+  useEffect(() => {
+    if (canCreate !== null) {
+      if (!canCreate) window.location.href = "/chat";
+    }
+  }, [canCreate]);
 
   useEffect(() => {
     const searchTimeout = setTimeout(() => matchUsers(userQuery), 500);

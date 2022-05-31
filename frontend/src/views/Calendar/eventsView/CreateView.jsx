@@ -1,20 +1,23 @@
 import { React, useState } from "react";
-import axios from "axios";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
-import { CALENDAR } from "../../../config";
-import "./views.css";
 import { asynchronizeRequest } from "../../../API";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import { getOfflineUser } from "../../../utils/OfflineManager";
+import * as SCHEDULE_SERVICE from "../../../services/schedule.service";
+import "./views.css";
+import useRole from "../../../hooks/useRole";
 
 export default function CreateView(props) {
-  let userInfo = FetchUserInfo(localStorage.userId);
   const [globalValue, setGlobalValue] = useState(true);
 
   const [saveText, setSaveText] = useState("Save");
-
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [popupIcon, setPopupIcon] = useState("");
+
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let isTeacher = useRole(userInfo, "eduapp-teacher");
+  let isAdmin = useRole(userInfo, "eduapp-admin");
 
   const getDateTimeLocal = () => {
     let now = new Date();
@@ -72,7 +75,7 @@ export default function CreateView(props) {
     var startValue = startDate;
     var endValue = endDate;
     var subjectValue = subjectInfo.split("_")[0];
-    var subjectInt = parseInt(subjectValue);
+    var subjectInt = subjectValue;
     var isGlobalValue = document.getElementById("subject_name").value;
     // var globalCourse = document.getElementById("isGlobalCourse").checked;
     var newEvent = {};
@@ -90,13 +93,12 @@ export default function CreateView(props) {
         annotation_title: titleValue,
         annotation_description: descriptionValue,
         isGlobal: globalValue,
-        user_id: userInfo.id,
+        user_id: userInfo.user.id,
         subject_id: subjectInt,
       };
-      asynchronizeRequest(() => {
-        axios.post(CALENDAR, newEvent).then(() => {
-          window.location.reload();
-        });
+      asynchronizeRequest(async () => {
+        await SCHEDULE_SERVICE.createEvent(newEvent);
+        window.location.reload();
       }).then((err) => {
         if (err) {
           setPopupText("The calendar event could not be published.");
@@ -197,7 +199,11 @@ export default function CreateView(props) {
                 <option defaultValue={"--"}>Choose subject</option>
                 {props.data.map((subject) => {
                   if (userInfo.teaching_list !== undefined) {
-                    if (userInfo.teaching_list.includes(subject.id)) {
+                    if (
+                      (isTeacher &&
+                        userInfo.teaching_list.includes(subject.id)) ||
+                      isAdmin
+                    ) {
                       return (
                         <option
                           key={subject.id}
@@ -207,7 +213,9 @@ export default function CreateView(props) {
                         </option>
                       );
                     }
+                    return null;
                   }
+                  return null;
                 })}
               </select>
             </div>

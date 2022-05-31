@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GetSubjects } from "../../hooks/GetSubjects";
+import { getOfflineUser } from "../../utils/OfflineManager";
 import "./SubjectDropdown.css";
 
 export default function SubjectDropdown({
@@ -9,7 +10,7 @@ export default function SubjectDropdown({
 }) {
   const [showDropdown, setShowDropdown] = useState(true);
   const [hasDoneFirstAppearance, setHasDoneFirstAppearance] = useState(false);
-  const subjects = GetSubjects(localStorage.userId);
+  const subjects = GetSubjects(getOfflineUser().user.id);
 
   const windDown = () => {
     document.getElementById("subject-dropdown").classList.remove("wind-up");
@@ -63,7 +64,7 @@ export default function SubjectDropdown({
             if (index > 0) {
               return (
                 <li
-                  id={`subject-${subject.id}-${subject.name}`}
+                  id={`subject_${subject.id}_${subject.name}`}
                   onClick={(e) => {
                     onSubjectClick(e.target.id);
                     windUp();
@@ -84,7 +85,7 @@ export default function SubjectDropdown({
           onSubjectClick(e.target.id);
           windUp();
         }}
-        id={`subject-${subjects.length > 0 ? subjects[0].id : -1}-${
+        id={`subject_${subjects.length > 0 ? subjects[0].id : -1}_${
           subjects.length > 0 ? subjects[0].name : -1
         }`}
       >

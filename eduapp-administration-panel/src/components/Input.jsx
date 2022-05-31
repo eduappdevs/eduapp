@@ -7,7 +7,7 @@ export default function Input(props) {
       id={props.id}
       className={props.className}
       autoComplete={props.autoComplete}
-      placeholder={props.placeholder}
+      placeholder={String(props.placeholder)}
       disabled={props.disabled}
     />
   );

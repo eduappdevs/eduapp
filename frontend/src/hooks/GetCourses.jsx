@@ -1,17 +1,27 @@
 import { useState, useEffect } from "react";
-import API from "../API";
+import * as COURSE_SERVICE from "../services/course.service";
 
-export const GetCourses = () => {
+export const GetCourses = (userId) => {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
     const getCourses = async () => {
       if (navigator.onLine) {
-        try {
-          const courses = await API.getCourses();
-          setCourses([...courses]);
-        } catch (error) {
-          console.log(error);
+        if (userId) {
+          try {
+            const courses = (await COURSE_SERVICE.fetchUserCourses(userId))
+              .data;
+            setCourses([...courses]);
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          try {
+            const courses = (await COURSE_SERVICE.fetchCourses()).data;
+            setCourses([...courses]);
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
     };

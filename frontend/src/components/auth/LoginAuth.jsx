@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import API from "../../API";
+import * as AUTH_SERVICE from "../../services/auth.service";
 import BasicGoogleLogin from "../basicGoogleLogin/BasicGoogleLogin";
 import StandardModal from "../modals/standard-modal/StandardModal";
 import { Mailer } from "../Mailer";
@@ -30,12 +30,9 @@ export default class LoginAuth extends Component {
       userData.append("user[email]", email);
       userData.append("user[password]", password);
 
-      API.login(userData).then((res) => {
-        console.log(res);
-        window.location.href = "/";
-      });
+      await AUTH_SERVICE.login(userData);
     } catch (error) {
-      console.log("error");
+      console.log(error);
     }
   };
 

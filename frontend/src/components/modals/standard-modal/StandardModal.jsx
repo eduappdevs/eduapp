@@ -19,7 +19,7 @@ export default function StandardModal({
   hasTransition,
   hasIconAnimation,
   showLoader,
-  form
+  form,
 }) {
   iconFill = localStorage.darkMode === "1" ? true : iconFill || false;
   // TYPES = ['success', 'error', 'warning', 'info']
@@ -140,8 +140,7 @@ export default function StandardModal({
           </div>
         )}
         <h3>{text}</h3>
-        {form && (form)}
-
+        {form ? form : null}
 
         <div className="standard-modal-btn-container">
           {isQuestion && !showLoader && (

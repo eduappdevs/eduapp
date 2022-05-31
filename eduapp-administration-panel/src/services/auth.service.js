@@ -1,20 +1,51 @@
 import axios from "axios";
-import { API_URL } from '../API'
+import { API_URL, TOKEN } from "../API";
+import { saveUserOffline } from "../utils/OfflineManager";
 export const USERS = `${API_URL}/users`;
 
 export const saveInLocalStorage = (userDetails) => {
-    if (userDetails.data.message.id == null) {
-        throw new Error("error");
-    }
+  if (userDetails.data.message.id == null) {
+    throw new Error("Login was not made correctly.");
+  }
 
-    localStorage.setItem("userId", userDetails.data.message.id);
-    localStorage.setItem("userToken", userDetails.headers.authorization);
+  saveUserOffline(userDetails.data.message);
+  localStorage.setItem("eduapp_auth", userDetails.headers.eduauth.substring(7));
+  window.location.reload();
 };
 
 export const login = async (body) => {
-    const endpoint = `${USERS}/sign_in`;
-    return await axios.post(endpoint, body).then((res) => {
-        saveInLocalStorage(res);
-    });
+  return await axios.post(`${USERS}/sign_in`, body).then((res) => {
+    let acceptedRoles = ["eduapp-admin", "eduapp-admin-query"];
+    if (!acceptedRoles.includes(res.data.message.user_role.name)) {
+      console.warn("User is not administrator!");
+      return;
+    }
 
-}
+    saveInLocalStorage(res);
+  });
+};
+
+export const hasInit = async () => {
+  return await axios.get(`${API_URL}/ping/admin`);
+};
+
+export const logout = async () => {
+  return await axios
+    .delete(`${USERS}/sign_out`, {
+      headers: { eduauth: TOKEN },
+      data: { device: navigator.userAgent },
+    })
+    .then(() => {
+      localStorage.removeItem("eduapp_auth");
+      localStorage.removeItem("offline_user");
+
+      window.location.href = "/login";
+    })
+    .catch((err) => {
+      console.log(err);
+      localStorage.removeItem("eduapp_auth");
+      localStorage.removeItem("offline_user");
+
+      window.location.href = "/login";
+    });
+};

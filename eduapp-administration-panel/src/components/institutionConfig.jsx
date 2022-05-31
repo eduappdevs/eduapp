@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import * as API from "../API";
+import { asynchronizeRequest } from "../API";
 import * as INSTITUTIONSERVICE from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
+import * as USERSERVICE from "../services/user.service";
+import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import Input from "./Input";
 import "../styles/institutionConfig.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function InstitutionConfig(props) {
   const [institutions, setInstitutions] = useState(null);
@@ -17,13 +20,16 @@ export default function InstitutionConfig(props) {
   const [popupIcon, setPopupIcon] = useState("");
   const [popupType, setPopupType] = useState("");
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const fetchInstitutions = () => {
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       INSTITUTIONSERVICE.fetchInstitutions().then((i) => {
         setInstitutions(i.data);
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The institution not be showed, check if you have an internet connection."
@@ -31,6 +37,26 @@ export default function InstitutionConfig(props) {
         setPopupIcon("error");
         switchSaveState(false);
       }
+    });
+  };
+
+  const userEnroll = async (uId) => {
+    const payload = new FormData();
+    payload.append(
+      "course_id",
+      (await COURSESERVICE.fetchGeneralCourse()).data.id
+    );
+    payload.append("user_id", uId);
+
+    asynchronizeRequest(function () {
+      ENROLLSERVICE.createTuition(payload)
+        .then(() => {
+          console.log("User tuition has been completed successfully!");
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -45,36 +71,46 @@ export default function InstitutionConfig(props) {
   const createInstitution = () => {
     let name = document.getElementById("i_name").value;
     if (name) {
-      API.asynchronizeRequest(async function () {
-        INSTITUTIONSERVICE.createInstitution({ name: name }).then((i) => {
-          COURSESERVICE.createCourse({
-            name: "General",
-            institution_id: i.data.id,
-          }).then((s) => {
-            SUBJECTSERVICE.createSubject({
-              name: "General",
-              teacherInCharge: name,
-              description: "Automated resource tab for all users in " + name,
-              color: "#96ffb2",
-              course_id: parseInt(s.data.id),
-            }).then(() => {
-              setTimeout(() => {
-                confirmModalCreate();
-                fetchInstitutions();
-              }, 500);
-            });
-          });
+      asynchronizeRequest(async () => {
+        let new_i = await INSTITUTIONSERVICE.createInstitution({ name: name });
+        let new_c = await COURSESERVICE.createCourse({
+          name: "General",
+          institution_id: new_i.data.id,
         });
-      }).then((e) => {
-        if (e) {
-          setPopup(true);
-          setPopupText(
-            "The institution not be created, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
-        }
-      });
+        await SUBJECTSERVICE.createSubject({
+          name: "General",
+          description: "Automated resource tab for all users in " + name,
+          color: "#96ffb2",
+          course_id: new_c.data.id,
+        });
+        let sys_u = await USERSERVICE.createUser({
+          requester_id: getOfflineUser().user.id,
+          email: "eduapp_system@eduapp.org",
+          password: process.env.REACT_APP_EDUAPP_SYSTEM_USER_PWD,
+          user_role: "eduapp-admin",
+        });
+        await userEnroll(sys_u.data.user.id);
+
+        setTimeout(() => {
+          confirmModalCreate();
+          fetchInstitutions();
+        }, 500);
+      })
+        .then(async (e) => {
+          if (e) {
+            await interceptExpiredToken(e);
+            setPopup(true);
+            setPopupText(
+              "The institution not be created, check if you have an internet connection."
+            );
+            setPopupIcon("error");
+            switchSaveState(false);
+          }
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     }
   };
 
@@ -136,7 +172,7 @@ export default function InstitutionConfig(props) {
         editName = s.name;
       }
 
-      API.asynchronizeRequest(function () {
+      asynchronizeRequest(function () {
         INSTITUTIONSERVICE.editInstitution({
           id: s.id,
           name: editName,
@@ -155,9 +191,9 @@ export default function InstitutionConfig(props) {
             setPopupType("info");
             setPopupText("The institution was edited successfully.");
           })
-          .catch((e) => {
-            console.log(e);
+          .catch(async (e) => {
             if (e) {
+              await interceptExpiredToken(e);
               setPopupText(
                 "The institution could not be edited, check if you entered the correct fields."
               );
@@ -166,8 +202,9 @@ export default function InstitutionConfig(props) {
               setPopup(true);
             }
           });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
             "The institution could not be edited, check if you have an internet connection."
@@ -192,7 +229,7 @@ export default function InstitutionConfig(props) {
           editName = s.name;
         }
 
-        API.asynchronizeRequest(function () {
+        asynchronizeRequest(function () {
           INSTITUTIONSERVICE.editInstitution({
             id: s.id,
             name: editName,
@@ -215,8 +252,9 @@ export default function InstitutionConfig(props) {
               setPopupType("info");
               setPopupText("The institution was edited successfully.");
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setPopupText(
                   "The institution could not be edited, check if you entered the correct fields."
                 );
@@ -224,8 +262,9 @@ export default function InstitutionConfig(props) {
                 setPopup(true);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The institution could not be edited, check if you have an internet connection."
@@ -248,7 +287,7 @@ export default function InstitutionConfig(props) {
           editName = s.name;
         }
 
-        API.asynchronizeRequest(function () {
+        asynchronizeRequest(function () {
           INSTITUTIONSERVICE.editInstitution({
             id: s.id,
             name: editName,
@@ -269,8 +308,9 @@ export default function InstitutionConfig(props) {
               setPopupType("info");
               setPopupText("The institution was edited successfully.");
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setPopupText(
                   "The institution could not be edited, check if you entered the correct fields."
                 );
@@ -278,8 +318,9 @@ export default function InstitutionConfig(props) {
                 setPopup(true);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The institution could not be edited, check if you have an internet connection."
@@ -346,10 +387,14 @@ export default function InstitutionConfig(props) {
     } else {
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
+      if (document.getElementById("add-svg") !== null)
+        document
+          .getElementById("add-svg")
+          .classList.remove("commit-loader-hide");
+      if (document.getElementById("commit-loader-2") !== null)
+        document
+          .getElementById("commit-loader-2")
+          .classList.add("commit-loader-hide");
     }
   };
 
@@ -414,7 +459,7 @@ export default function InstitutionConfig(props) {
                 return (
                   <tr className="institution-entries" key={x.id}>
                     <td>
-                      <input type="text" value={x.id} disabled />
+                      <input type="text" value={shortUUID(x.id)} disabled />
                     </td>
                     <td>
                       <input
@@ -492,7 +537,7 @@ export default function InstitutionConfig(props) {
                           width="16"
                           height="16"
                           fill="currentColor"
-                          class="bi bi-x-lg"
+                          className="bi bi-x-lg"
                           viewBox="0 0 16 16"
                         >
                           <path

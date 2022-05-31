@@ -3,6 +3,7 @@ import * as CHATSERVICE from "../services/chat.service";
 import * as API from "../API";
 import "../styles/chatConfig.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function ChatConfig(props) {
   const [chat, setChat] = useState([]);
@@ -166,8 +167,9 @@ export default function ChatConfig(props) {
             cancelButton.style.display = "none";
             name.disabled = true;
           })
-          .catch((e) => {
+          .catch(async (e) => {
             if (e) {
+              await interceptExpiredToken(e);
               setIsConfirmDelete(false);
               setPopupText(
                 "The chat group could not be edited, check if you entered the correct fields."
@@ -177,8 +179,9 @@ export default function ChatConfig(props) {
               setPopup(true);
             }
           });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setIsConfirmDelete(false);
           setPopup(true);
           setPopupText(
@@ -229,8 +232,9 @@ export default function ChatConfig(props) {
               cancelButton.style.display = "none";
               name.disabled = true;
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setIsConfirmDelete(false);
                 setPopupText(
                   "The chat group could not be edited, check if you entered the correct fields."
@@ -240,8 +244,9 @@ export default function ChatConfig(props) {
                 setPopup(true);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setIsConfirmDelete(false);
             setPopup(true);
             setPopupText(
@@ -286,8 +291,9 @@ export default function ChatConfig(props) {
 
               fetchChat();
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setIsConfirmDelete(false);
                 setPopupText(
                   "The chat group could not be edited, check if you entered the correct fields."
@@ -297,8 +303,9 @@ export default function ChatConfig(props) {
                 setPopup(true);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setIsConfirmDelete(false);
             setPopup(true);
             setPopupText(
@@ -314,9 +321,14 @@ export default function ChatConfig(props) {
 
   const fetchChat = async () => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.fetchChat().then((res) => {
-        setChat(res.data);
-      });
+      CHATSERVICE.fetchChat()
+        .then((res) => {
+          setChat(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -334,12 +346,15 @@ export default function ChatConfig(props) {
     let json = [];
     let name = document.getElementById("ch_chat_name").value;
     let isGroup = document.getElementById("ch_isGroup").checked;
+
     if (name !== "" && isGroup !== null) {
       json.push(name, isGroup);
     } else {
       alertCreate();
       switchSaveState(false);
+      return;
     }
+
     let eventJson = {};
     for (let i = 0; i <= context.length - 1; i++) {
       eventJson[context[i]] = json[i];
@@ -353,14 +368,16 @@ export default function ChatConfig(props) {
           setPopupText("The chat group was created successfully.");
           switchSaveState(false);
         })
-        .catch((e) => {
+        .catch(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             alertCreate();
             switchSaveState(false);
           }
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopupText(
           "The chat group could not be created, check if you have an internet connection."
         );
@@ -396,13 +413,15 @@ export default function ChatConfig(props) {
         .then(() => {
           fetchChat();
         })
-        .catch((e) => {
+        .catch(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             showDeleteError();
           }
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The chat group could not be deleted, check if you have an internet connection."
@@ -425,6 +444,7 @@ export default function ChatConfig(props) {
   useEffect(() => {
     setSearch(props.search);
   }, [props.search]);
+
   return (
     <>
       <div className="chatConfig-main-container">
@@ -736,6 +756,7 @@ export default function ChatConfig(props) {
         isQuestion={isConfirmDelete}
         onYesAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           deleteChat(idDelete);
           document.getElementById(
             "controlPanelContentContainer"
@@ -743,12 +764,14 @@ export default function ChatConfig(props) {
         }}
         onNoAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";
         }}
         onCloseAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";

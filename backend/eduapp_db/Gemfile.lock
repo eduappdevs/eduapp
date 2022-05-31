@@ -157,6 +157,7 @@ GEM
     omniauth-rails_csrf_protection (1.0.1)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
+    openssl (3.0.0)
     orm_adapter (0.5.0)
     pg (1.2.3)
     pg (1.2.3-x64-mingw32)
@@ -237,6 +238,7 @@ GEM
       concurrent-ruby (~> 1.0)
     tzinfo-data (1.2021.5)
       tzinfo (>= 1.0.0)
+    useragent (0.16.10)
     warden (1.2.9)
       rack (>= 2.0.9)
     warden-jwt_auth (0.6.0)
@@ -262,9 +264,11 @@ DEPENDENCIES
   devise-jwt
   dotenv-rails
   image_processing (~> 1.2)
+  jwt
   omniauth
   omniauth-google-oauth2
   omniauth-rails_csrf_protection
+  openssl
   pg (~> 1.1)
   puma (~> 5.0)
   rack-cors
@@ -272,6 +276,7 @@ DEPENDENCIES
   ransack
   rspec-rails
   tzinfo-data
+  useragent
 
 RUBY VERSION
    ruby 2.6.8p205

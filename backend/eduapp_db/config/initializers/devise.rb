@@ -12,9 +12,12 @@ Devise.setup do |config|
   config.jwt do |jwt|
     jwt.secret = ENV['RAILS_SECRET_KEY']
     jwt.dispatch_requests = [
-      ['POST', %r{^/signin$}],
+      ['POST', %r{^/sign_in$}],
     ]
-    jwt.expiration_time = 14.days.to_i
+		jwt.revocation_requests = [
+			['DELETE', %r{^/sign_out$}],
+		]
+    jwt.expiration_time = 1.hour.to_i
     
   end
   # The secret key used by Devise. Devise uses this key to generate

@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Paper from "@material-ui/core/Paper";
@@ -17,25 +16,32 @@ import {
   CurrentTimeIndicator,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { ViewState } from "@devexpress/dx-react-scheduler";
-import { CALENDAR_USER_ID, SUBJECT } from "../../config";
 import View from "./eventsView/View";
 import CreateView from "./eventsView/CreateView";
-import "./calendar.css";
 import { asynchronizeRequest } from "../../API";
+import { getOfflineUser } from "../../utils/OfflineManager";
+import * as SCHEDULE_SERVICE from "../../services/schedule.service";
+import * as SUBJECT_SERVICE from "../../services/subject.service";
+import useViewsPermissions from "../../hooks/useViewsPermissions";
+import useRole from "../../hooks/useRole";
+import "./calendar.css";
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [activeEvent, setActiveEvent] = useState({});
   const [subject, setSubject] = useState([]);
-  const [isTeacher, setIsTeacher] = useState(false);
   const today = new Date();
   const currentDate = today;
-  let userinfo = FetchUserInfo(localStorage.userId);
+
+  let userinfo = FetchUserInfo(getOfflineUser().user.id);
+  let canCreate = useRole(userinfo, ["eduapp-teacher", "eduapp-admin"]);
 
   const getCalendar = async () => {
     let events = [];
-    let annotations = await axios.get(CALENDAR_USER_ID + localStorage.userId);
+    let annotations = await SCHEDULE_SERVICE.fetchUserEvents(
+      getOfflineUser().user.id
+    );
     let data = annotations.data;
 
     for (let globalEvent in data.globalEvents) {
@@ -138,7 +144,9 @@ export default function Calendar() {
   };
 
   const getSubject = async () => {
-    let request = await axios.get(SUBJECT + "?user=" + localStorage.userId);
+    let request = await SUBJECT_SERVICE.fetchUserVariantSubjects(
+      getOfflineUser().user.id
+    );
     let subject = [];
     request.data.map((e) => {
       let id = e.id;
@@ -287,10 +295,7 @@ export default function Calendar() {
     }
   }, []);
 
-  useEffect(() => {
-    if (userinfo.teaching_list !== undefined)
-      setIsTeacher(userinfo.teaching_list.length > 0);
-  }, [userinfo]);
+  useViewsPermissions(userinfo, "calendar");
 
   return (
     <div className="calendar-main-container">
@@ -323,9 +328,7 @@ export default function Calendar() {
         </Paper>
       </section>
       <div
-        className={
-          userinfo.isAdmin || isTeacher ? "button-calendar-option " : "hidden"
-        }
+        className={canCreate ? "button-calendar-option " : "hidden"}
         onClick={openCreate}
       >
         <svg

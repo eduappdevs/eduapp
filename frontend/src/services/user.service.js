@@ -2,8 +2,10 @@ import axios from "axios";
 import { API_URL, TOKEN } from "../API";
 export const USERS_INFO = `${API_URL}/user_infos`;
 export const USERS = `${API_URL}/users`;
+export const GLOGIN = `${API_URL}/users/auth/google_oauth2/callback`;
+export const SYSTEM = `${API_URL}/system/user`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 //User
 export const fetchUserInfos = async () => {
@@ -11,8 +13,16 @@ export const fetchUserInfos = async () => {
 };
 
 export const findById = async (uId) => {
-	return await axios.get(`${USERS_INFO}?user_id=${uId}`, { headers: requestHeader });
-}
+  return await axios.get(`${USERS_INFO}?user_id=${uId}`, {
+    headers: requestHeader,
+  });
+};
+
+export const fetchSystemUser = async () => {
+  return await axios.get(`${SYSTEM}`, {
+    headers: requestHeader,
+  });
+};
 
 export const createInfo = async (body) => {
   return await axios.post(`${USERS_INFO}`, body, { headers: requestHeader });
@@ -32,8 +42,12 @@ export const deleteUser = async (id) => {
   });
 };
 
-export const editUser = async (body) => {
-  return await axios.put(`${USERS}/${body.id}`, body, {
+export const editUserInfo = async (uId, body) => {
+  let info = await axios.get(`${USERS_INFO}?user_id=${uId}`, {
+    headers: requestHeader,
+  });
+
+  return await axios.put(`${USERS_INFO}/${info.data[0].id}`, body, {
     headers: requestHeader,
   });
 };
@@ -54,7 +68,31 @@ export const delist_teacher = async (uId, subject_id) => {
 };
 
 export const findByName = async (name) => {
-	return await axios.get(`${USERS_INFO}?name=${name}`, {
-		headers: requestHeader,
-	});
-}
+  return await axios.get(`${USERS_INFO}?name=${name}`, {
+    headers: requestHeader,
+  });
+};
+
+// Google Management
+
+export const addGoogleId = async (uId, data) => {
+  let info = await axios.get(`${USERS_INFO}?user_id=${uId}`, {
+    headers: requestHeader,
+  });
+
+  let finaldata = new FormData();
+  await axios.put(`${USERS_INFO}/${info.data[0].id}`, data);
+  finaldata.append("isLoggedWithGoogle", true);
+  return await axios.put(`${USERS_INFO}/${info.data[0].id}`, finaldata);
+};
+
+export const unlinkGoogleId = async (userId, body) => {
+  let finaldata = new FormData();
+  await axios.put(`${USERS_INFO}/${userId}`, body);
+  finaldata.append("isLoggedWithGoogle", false);
+  return await axios.put(`${USERS_INFO}/${userId}`, finaldata);
+};
+
+export const googleLogin = async (data) => {
+  return await axios.post(`${GLOGIN}`, data);
+};

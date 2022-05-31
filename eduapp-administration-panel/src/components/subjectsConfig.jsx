@@ -3,6 +3,7 @@ import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as COURSESERVICE from "../services/course.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function SubjectsConfig(props) {
   const [subjects, setSubjects] = useState(null);
@@ -20,14 +21,17 @@ export default function SubjectsConfig(props) {
 
   let course_filter = {};
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const fetchSubjects = () => {
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.fetchSubjects().then((sjs) => {
         setSubjects(sjs.data);
         course_filter.subject = sjs.data;
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The subjects could not be showed, check if you have an internet connection."
@@ -60,8 +64,9 @@ export default function SubjectsConfig(props) {
       COURSESERVICE.fetchCourses().then((cs) => {
         setCourses(cs.data);
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The courses could not be showed, check if you have an internet connection."
@@ -99,7 +104,7 @@ export default function SubjectsConfig(props) {
           name: name,
           description: desc,
           color: color,
-          course_id: parseInt(sel_course),
+          course_id: sel_course,
         })
           .then(() => {
             fetchSubjects();
@@ -108,13 +113,15 @@ export default function SubjectsConfig(props) {
             setPopupText("The calendar events was created successfully.");
             switchSaveState(true);
           })
-          .catch((e) => {
+          .catch(async (e) => {
             if (e) {
+              await interceptExpiredToken(e);
               alertCreate();
             }
           });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
             "The subject could not be published, check if you have an internet connection."
@@ -122,7 +129,7 @@ export default function SubjectsConfig(props) {
           setPopupIcon("error");
         }
       });
-    }
+    } else alertCreate();
   };
 
   const confirmDeleteEvent = async (id) => {
@@ -149,13 +156,15 @@ export default function SubjectsConfig(props) {
         .then(() => {
           fetchSubjects();
         })
-        .catch((e) => {
+        .catch(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             showDeleteError();
           }
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The subject could not be deleted, check if you have an internet connection."
@@ -302,8 +311,9 @@ export default function SubjectsConfig(props) {
             switchSaveState(false);
             setIsConfirmDelete(false);
           })
-          .catch((e) => {
+          .catch(async (e) => {
             if (e) {
+              await interceptExpiredToken(e);
               setPopupText(
                 "The subject could not be edited, check if you entered the correct fields."
               );
@@ -313,8 +323,9 @@ export default function SubjectsConfig(props) {
               setIsConfirmDelete(false);
             }
           });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
             "The calendar session could not be edited, check if you have an internet connection."
@@ -398,8 +409,9 @@ export default function SubjectsConfig(props) {
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setPopupText(
                   "The subject could not be edited, check if you entered the correct fields."
                 );
@@ -409,8 +421,9 @@ export default function SubjectsConfig(props) {
                 setIsConfirmDelete(false);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The calendar session could not be edited, check if you have an internet connection."
@@ -482,8 +495,9 @@ export default function SubjectsConfig(props) {
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setPopupText(
                   "The subject could not be edited, check if you entered the correct fields."
                 );
@@ -493,8 +507,9 @@ export default function SubjectsConfig(props) {
                 setIsConfirmDelete(false);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The calendar session could not be edited, check if you have an internet connection."
@@ -837,7 +852,7 @@ export default function SubjectsConfig(props) {
                   return (
                     <tr key={sj.id}>
                       <td>
-                        <input disabled type="text" value={sj.id} />
+                        <input disabled type="text" value={shortUUID(sj.id)} />
                       </td>
                       <td>
                         <input
@@ -970,6 +985,7 @@ export default function SubjectsConfig(props) {
         isQuestion={isConfirmDelete}
         onYesAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           deleteSubject(idDelete);
           document.getElementById(
             "controlPanelContentContainer"
@@ -977,12 +993,14 @@ export default function SubjectsConfig(props) {
         }}
         onNoAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";
         }}
         onCloseAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           switchSaveState();
           document.getElementById(
             "controlPanelContentContainer"
