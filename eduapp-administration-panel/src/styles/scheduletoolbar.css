@@ -1,7 +1,7 @@
 .scheduletoolbar-container {
     display: flex;
     flex-direction: column;
-    font-family: sans-serif;
+    font-family: Consolas;
     margin-top: 5vh;
     width: 75vw;
     position: absolute;
@@ -79,4 +79,30 @@
 .subjectOption {
     border: none;
     box-shadow: none;
+}
+
+.check-button-container {
+    background-color: #337aff;
+    border-radius: 13px 0 0 13px;
+    display: inline-block !important;
+    padding: 13px 10px !important;
+    cursor: pointer !important;
+    border-radius: 0 !important;
+    height: 100% !important;
+    color: white;
+}
+
+.check-button-main {
+    display: inline-block;
+    background-color: #337affae;
+    border-radius: 12px;
+    border: none;
+    padding: 5px 8px 5px 8px;
+    outline: none;
+    color: white;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 10pt;
 }

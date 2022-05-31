@@ -1,6 +1,5 @@
-Rails.application.routes.draw do  
-	mount ActionCable.server => "/chat"
-  get 'calendar_annotations/index'
+Rails.application.routes.draw do
+  mount ActionCable.server => "/chat"
   resources :chat_messages
   resources :chat_participants
   resources :chat_base_infos
@@ -13,20 +12,23 @@ Rails.application.routes.draw do
   resources :resources
   resources :eduapp_user_sessions
   resources :user_infos
-  post 'eduapp_user_sessions/batch_load', to: 'eduapp_user_sessions#session_batch_load'
-	post 'user_infos/add_subject/:user_id/:subject_id', to: 'user_infos#add_subject'
-	delete 'user_infos/remove_subject/:user_id/:subject_id', to: 'user_infos#remove_subject'
-	default_url_options :host => "localhost:3000"
+
+  post "eduapp_user_sessions/batch_load", to: "eduapp_user_sessions#session_batch_load"
+  delete "eduapp_user_sessions/batch_delete/:batch_id", to: "eduapp_user_sessions#destroy_batch"
+  put "eduapp_user_sessions/batch_update/:batch_id", to: "eduapp_user_sessions#update_batch"
+  post "user_infos/add_subject/:user_id/:subject_id", to: "user_infos#add_subject"
+  delete "user_infos/remove_subject/:user_id/:subject_id", to: "user_infos#remove_subject"
+  default_url_options :host => "localhost:3000"
   devise_for :users,
              controllers: {
-               sessions: 'users/sessions',
-               registrations: 'users/registrations',
-               omniauth_callbacks: 'users/omniauth_callbacks'
+               sessions: "users/sessions",
+               registrations: "users/registrations",
+               omniauth_callbacks: "users/omniauth_callbacks",
              }
-	delete 'users/remove/:id', to: 'user_infos#destroyuser'
-  get '/google-login', to: 'glogin#login'
-  get '/member-data', to: 'members#show'
-  get '/ping', to: 'static#home'
+  delete "users/remove/:id", to: "user_infos#destroyuser"
+  get "/google-login", to: "glogin#login"
+  get "/member-data", to: "members#show"
+  get "/ping", to: "static#home"
 
   devise_scope :user do
     get "password/reset", to: "users/passwords#get_reset_password_token"
@@ -35,5 +37,4 @@ Rails.application.routes.draw do
     get "send_change_password_instructions", to: "users/passwords#send_change_password_instructions"
     get "change_password_with_code", to: "users/passwords#change_password"
   end
-
 end

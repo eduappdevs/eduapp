@@ -30,3 +30,58 @@ tr:nth-child(even) {
 	border-radius: 3px;
 	text-align: left;
 }
+
+.selected-main-container {
+	width: 100%;
+	height: 100vh;
+	font-family: Consolas;
+	font-size: 18px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 9999999999999999999999;
+}
+
+.selected-container {
+	background-color: var(--backgroundColor);
+	width: 40%;
+	padding: 0.1em 0.1em 0.1em 0.1em;
+	color: var(--textColor);
+	position: fixed;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	border: 1px solid var(--textColor);
+	margin-bottom: 10em;
+	border-radius: 15px;
+}
+
+.selected-container-header {
+	width: 100%;
+	margin-top: 1em;
+	margin-left: 53em;
+	top: 0 !important;
+	right: 0 !important;
+	position: relative;
+	cursor: pointer;
+}
+
+.selected-container-body {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 1em;
+	flex-direction: column;
+}
+
+.selected-container-body-option>button:first-child {
+	margin-right: 5em;
+}

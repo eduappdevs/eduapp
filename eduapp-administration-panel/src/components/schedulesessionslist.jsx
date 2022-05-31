@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
+
 import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
-import StandarModal from "./modals/standard-modal/StandardModal";
 
 import Input from "./Input";
-import "../styles/schedulesessionslist.css";
+
 import StandardModal from "./modals/standard-modal/StandardModal";
-import SessionsModal from "./modals/event-modal/SessionsModal";
+import SessionsModal from "./modals/sessions-modal/SessionsModal";
+
+import "../styles/schedulesessionslist.css";
 
 export default function Schedulesessionslist(props) {
   const [sessions, setSessions] = useState(null);
@@ -31,6 +33,9 @@ export default function Schedulesessionslist(props) {
 
   const [showModalSession, setShowModalSession] = useState(false);
   const [sessionInfo, setSessionInfo] = useState();
+  const [selectType, setSelectType] = useState(false);
+  const [selectTypeModal, setSelectTypeModal] = useState(false);
+  const [selectInfo, setSelectInfo] = useState([]);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -38,6 +43,8 @@ export default function Schedulesessionslist(props) {
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
+  const [idBatch, setIdBatch] = useState();
+  const [selectedAll, setSelectedAll] = useState(false);
 
   let sessions_filter = {};
 
@@ -99,7 +106,8 @@ export default function Schedulesessionslist(props) {
     let streaming = document.getElementById("s_streaming").value;
     let chat = 1;
     let subject = document.getElementById("s_subjectId").value;
-    let subject_id = subject.split("_")[0];
+    let subject_id = subject.split("_")[1];
+
     if (
       name !== "" &&
       start_date !== "" &&
@@ -148,13 +156,14 @@ export default function Schedulesessionslist(props) {
     });
   };
 
-  const confirmDeleteEvent = async (id) => {
+  const confirmDeleteEvent = async (s) => {
     setPopupType("warning");
     setPopupIcon(true);
     setPopupText("Are you sure you want to delete this session?");
     setIsConfirmDelete(true);
     setPopup(true);
-    setIdDelete(id);
+    setIdDelete(s.id);
+    setIdBatch(s.batch_id);
   };
 
   const showDeleteError = () => {
@@ -165,34 +174,39 @@ export default function Schedulesessionslist(props) {
     setIsConfirmDelete(false);
   };
 
-  const deleteSession = async (id) => {
-    API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.deleteSession(id)
-        .then(() => {
-          fetchSessions();
-        })
-        .catch(() => {
-          showDeleteError();
-        });
-    }).then((e) => {
-      if (e) {
-        setPopup(true);
-        setPopupText(
-          "The calendar session could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(true);
-      }
-    });
+  const deleteSession = async (id, batch_id) => {
+    if (batch_id === null) {
+      API.asynchronizeRequest(function () {
+        SCHEDULESERVICE.deleteSession(id)
+          .then(() => {
+            fetchSessions();
+          })
+          .catch(() => {
+            showDeleteError();
+          });
+      }).then((e) => {
+        if (e) {
+          setPopup(true);
+          setPopupText(
+            "The calendar session could not be deleted, check if you have an internet connection."
+          );
+          setPopupIcon("error");
+          switchSaveState(true);
+        }
+      });
+    } else {
+      setSelectType(true);
+      setSelectTypeModal(false);
+    }
   };
 
   const sessionFilter = (sessionList) => {
     let filterSessions = [];
     sessionList.map((s) => {
       if (
-        s.subject_id ===
+        s.subject.id ===
         (sessions_filter.filter === -1
-          ? s.subject_id
+          ? s.subject.id
           : parseInt(sessions_filter.filter))
       )
         filterSessions.push(s);
@@ -302,14 +316,14 @@ export default function Schedulesessionslist(props) {
         editStream = s.streaming_platform;
       }
 
-      if (inputSubject !== "" && inputSubject !== s.subject_id) {
+      if (inputSubject !== "" && inputSubject !== s.subject.id) {
         editSubject = inputSubject;
       } else {
-        editSubject = s.subject_id;
+        editSubject = s.subject.id;
       }
 
       API.asynchronizeRequest(function () {
-        SCHEDULESERVICE.editSession({
+        setSelectInfo({
           id: s.id,
           session_name: editTitle,
           session_start_date: editStartDate,
@@ -318,44 +332,60 @@ export default function Schedulesessionslist(props) {
           resources_platform: editResources,
           session_chat_id: editChat,
           subject_id: editSubject,
-        })
-          .then(() => {
-            fetchSessions();
-            fetchSubjects();
-
-            let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-            buttonDelete.style.display = "block";
-            let button = e.target.parentNode.parentNode.childNodes[1];
-            button.style.display = "block";
-            let checkButton = e.target.parentNode.parentNode.childNodes[2];
-            checkButton.style.display = "none";
-            let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-            cancelButton.style.display = "none";
-            name.disabled = true;
-            startDate.disabled = true;
-            endDate.disabled = true;
-            streaming.disabled = true;
-            resources.disabled = true;
-            chat.disabled = true;
-            subject.disabled = true;
-
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The calendar session was edited successfully.");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+          batch_id: s.batch_id,
+        });
+        if (s.batch_id === null) {
+          SCHEDULESERVICE.editSession({
+            id: s.id,
+            session_name: editTitle,
+            session_start_date: editStartDate,
+            session_end_date: editEndDate,
+            streaming_platform: editStream,
+            resources_platform: editResources,
+            session_chat_id: editChat,
+            subject_id: editSubject,
           })
-          .catch((e) => {
-            if (e) {
-              setPopupText(
-                "The calendar session could not be edited, check if you entered the correct fields."
-              );
-              setPopupIcon("error");
-              switchSaveState(false);
+            .then(() => {
+              fetchSessions();
+              fetchSubjects();
+
+              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+              buttonDelete.style.display = "block";
+              let button = e.target.parentNode.parentNode.childNodes[1];
+              button.style.display = "block";
+              let checkButton = e.target.parentNode.parentNode.childNodes[2];
+              checkButton.style.display = "none";
+              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+              cancelButton.style.display = "none";
+              name.disabled = true;
+              startDate.disabled = true;
+              endDate.disabled = true;
+              streaming.disabled = true;
+              resources.disabled = true;
+              chat.disabled = true;
+              subject.disabled = true;
+
               setPopup(true);
+              setPopupType("info");
+              setPopupText("The calendar session was edited successfully.");
+              switchSaveState(false);
               setIsConfirmDelete(false);
-            }
-          });
+            })
+            .catch((e) => {
+              if (e) {
+                setPopupText(
+                  "The calendar session could not be edited, check if you entered the correct fields."
+                );
+                setPopupIcon("error");
+                switchSaveState(false);
+                setPopup(true);
+                setIsConfirmDelete(false);
+              }
+            });
+        } else {
+          setSelectType(true);
+          setSelectTypeModal(true);
+        }
       }).then((e) => {
         if (e) {
           setPopup(true);
@@ -460,14 +490,14 @@ export default function Schedulesessionslist(props) {
           editStream = s.streaming_platform;
         }
 
-        if (inputSubject !== "" && inputSubject !== s.subject_id) {
+        if (inputSubject !== "" && inputSubject !== s.subject.id) {
           editSubject = inputSubject;
         } else {
-          editSubject = s.subject_id;
+          editSubject = s.subject.id;
         }
 
         API.asynchronizeRequest(function () {
-          SCHEDULESERVICE.editSession({
+          setSelectInfo({
             id: s.id,
             session_name: editTitle,
             session_start_date: editStartDate,
@@ -476,47 +506,63 @@ export default function Schedulesessionslist(props) {
             resources_platform: editResources,
             session_chat_id: editChat,
             subject_id: editSubject,
-          })
-            .then(() => {
-              fetchSessions();
-              fetchSubjects();
-              let buttonDelete =
-                e.target.parentNode.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button =
-                e.target.parentNode.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              startDate.disabled = true;
-              endDate.disabled = true;
-              streaming.disabled = true;
-              resources.disabled = true;
-              chat.disabled = true;
-              subject.disabled = true;
-
-              switchSaveState(false);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The calendar session was edited successfully.");
-              setIsConfirmDelete(false);
+            batch_id: s.batch_id,
+          });
+          if (s.batch_id === null) {
+            SCHEDULESERVICE.editSession({
+              id: s.id,
+              session_name: editTitle,
+              session_start_date: editStartDate,
+              session_end_date: editEndDate,
+              streaming_platform: editStream,
+              resources_platform: editResources,
+              session_chat_id: editChat,
+              subject_id: editSubject,
             })
-            .catch((e) => {
-              if (e) {
-                setPopupText(
-                  "The calendar session could not be edited, check if you entered the correct fields."
-                );
-                setPopupIcon("error");
+              .then(() => {
+                fetchSessions();
+                fetchSubjects();
+                let buttonDelete =
+                  e.target.parentNode.parentNode.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button =
+                  e.target.parentNode.parentNode.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                name.disabled = true;
+                startDate.disabled = true;
+                endDate.disabled = true;
+                streaming.disabled = true;
+                resources.disabled = true;
+                chat.disabled = true;
+                subject.disabled = true;
+
                 switchSaveState(false);
-                setIsConfirmDelete(false);
                 setPopup(true);
-              }
-            });
+                setPopupType("info");
+                setPopupText("The calendar session was edited successfully.");
+                setIsConfirmDelete(false);
+              })
+              .catch((e) => {
+                if (e) {
+                  setPopupText(
+                    "The calendar session could not be edited, check if you entered the correct fields."
+                  );
+                  setPopupIcon("error");
+                  switchSaveState(false);
+                  setIsConfirmDelete(false);
+                  setPopup(true);
+                }
+              });
+          } else {
+            setSelectType(true);
+            setSelectTypeModal(true);
+          }
         }).then((e) => {
           if (e) {
             setPopup(true);
@@ -612,14 +658,14 @@ export default function Schedulesessionslist(props) {
           editStream = s.streaming_platform;
         }
 
-        if (inputSubject !== "" && inputSubject !== s.subject_id) {
+        if (inputSubject !== "" && inputSubject !== s.subject.id) {
           editSubject = inputSubject;
         } else {
-          editSubject = s.subject_id;
+          editSubject = s.subject.id;
         }
 
         API.asynchronizeRequest(function () {
-          SCHEDULESERVICE.editSession({
+          setSelectInfo({
             id: s.id,
             session_name: editTitle,
             session_start_date: editStartDate,
@@ -628,42 +674,58 @@ export default function Schedulesessionslist(props) {
             resources_platform: editResources,
             session_chat_id: editChat,
             subject_id: editSubject,
-          })
-            .then(() => {
-              fetchSessions();
-              fetchSubjects();
-              let buttonDelete = e.target.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              startDate.disabled = true;
-              endDate.disabled = true;
-              streaming.disabled = true;
-              resources.disabled = true;
-              chat.disabled = true;
-              subject.disabled = true;
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The calendar session was edited successfully.");
-              switchSaveState(false);
-              setIsConfirmDelete(false);
+            batch_id: s.batch_id,
+          });
+          if (s.batch_id === null) {
+            SCHEDULESERVICE.editSession({
+              id: s.id,
+              session_name: editTitle,
+              session_start_date: editStartDate,
+              session_end_date: editEndDate,
+              streaming_platform: editStream,
+              resources_platform: editResources,
+              session_chat_id: editChat,
+              subject_id: editSubject,
             })
-            .catch((e) => {
-              if (e) {
-                setPopupText(
-                  "The calendar session could not be edited, check if you entered the correct fields."
-                );
-                setPopupIcon("error");
-                switchSaveState(false);
+              .then(() => {
+                fetchSessions();
+                fetchSubjects();
+                let buttonDelete = e.target.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button = e.target.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton = e.target.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton = e.target.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                name.disabled = true;
+                startDate.disabled = true;
+                endDate.disabled = true;
+                streaming.disabled = true;
+                resources.disabled = true;
+                chat.disabled = true;
+                subject.disabled = true;
                 setPopup(true);
+                setPopupType("info");
+                setPopupText("The calendar session was edited successfully.");
+                switchSaveState(false);
                 setIsConfirmDelete(false);
-              }
-            });
+              })
+              .catch((e) => {
+                if (e) {
+                  setPopupText(
+                    "The calendar session could not be edited, check if you entered the correct fields."
+                  );
+                  setPopupIcon("error");
+                  switchSaveState(false);
+                  setPopup(true);
+                  setIsConfirmDelete(false);
+                }
+              });
+          } else {
+            setSelectType(true);
+            setSelectTypeModal(true);
+          }
         }).then((e) => {
           if (e) {
             setPopup(true);
@@ -677,6 +739,73 @@ export default function Schedulesessionslist(props) {
         });
       }
     }
+  };
+
+  const editGlobalSession = () => {
+    SCHEDULESERVICE.editSessionBatch({
+      id: selectInfo.id,
+      session_name: selectInfo.session_name,
+      session_start_date: selectInfo.session_start_date,
+      session_end_date: selectInfo.session_end_date,
+      streaming_platform: selectInfo.streaming_platform,
+      resources_platform: selectInfo.resources_platform,
+      session_chat_id: selectInfo.session_chat_id,
+      subject_id: selectInfo.subject_id,
+      batch_id: selectInfo.batch_id,
+    })
+      .then(() => {
+        fetchSessions();
+        fetchSubjects();
+        setPopup(true);
+        setPopupType("info");
+        setPopupText("The calendar session was edited successfully.");
+        switchSaveState(false);
+        setIsConfirmDelete(false);
+      })
+      .catch((e) => {
+        if (e) {
+          setPopupText(
+            "The calendar session could not be edited, check if you entered the correct fields."
+          );
+          setPopupIcon("error");
+          switchSaveState(false);
+          setPopup(true);
+          setIsConfirmDelete(false);
+        }
+      });
+  };
+
+  const editSingleSession = () => {
+    SCHEDULESERVICE.editSession({
+      id: selectInfo.id,
+      session_name: selectInfo.session_name,
+      session_start_date: selectInfo.session_start_date,
+      session_end_date: selectInfo.session_end_date,
+      streaming_platform: selectInfo.streaming_platform,
+      resources_platform: selectInfo.resources_platform,
+      session_chat_id: selectInfo.session_chat_id,
+      subject_id: selectInfo.subject_id,
+    })
+      .then(() => {
+        fetchSessions();
+        fetchSubjects();
+        setPopup(true);
+        setPopupType("info");
+        setPopupText("The calendar session was edited successfully.");
+        switchSaveState(false);
+        setIsConfirmDelete(false);
+      })
+      .catch((e) => {
+        if (e) {
+          setPopupText(
+            "The calendar session could not be edited, check if you entered the correct fields."
+          );
+          setPopupIcon("error");
+          switchSaveState(false);
+          setPopup(true);
+          setIsConfirmDelete(false);
+        }
+      });
   };
 
   const closeEditSession = (e, s) => {
@@ -711,8 +840,8 @@ export default function Schedulesessionslist(props) {
       let cancelButton = e.target.parentNode.parentNode.childNodes[3];
       cancelButton.style.display = "none";
       let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-      if (s.subject_id !== parseInt(content.value)) {
-        content = s.subject_id;
+      if (s.subject.id !== parseInt(content.value)) {
+        content = s.subject.id;
       }
     } else {
       if (e.target.tagName === "path") {
@@ -756,8 +885,8 @@ export default function Schedulesessionslist(props) {
           e.target.parentNode.parentNode.parentNode.childNodes[3];
         cancelButton.style.display = "none";
         let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-        if (s.subject_id !== parseInt(content.value)) {
-          content = s.subject_id;
+        if (s.subject.id !== parseInt(content.value)) {
+          content = s.subject.id;
         }
       } else {
         let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -788,8 +917,8 @@ export default function Schedulesessionslist(props) {
         let cancelButton = e.target.parentNode.childNodes[3];
         cancelButton.style.display = "none";
         let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-        if (s.subject_id !== parseInt(content.value)) {
-          content = s.subject_id;
+        if (s.subject.id !== parseInt(content.value)) {
+          content = s.subject.id;
         }
       }
     }
@@ -904,6 +1033,43 @@ export default function Schedulesessionslist(props) {
     }
   };
 
+  const deleteGlobalSession = async () => {
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.deleteGlobal(idBatch)
+        .then((e) => {
+          if (e) {
+            fetchSessions();
+            setPopup(true);
+            setPopupType("info");
+            setPopupText("The calendar session was deleted successfully.");
+            switchSaveState(false);
+            setIsConfirmDelete(false);
+            setSelectType(false);
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          if (e) {
+            setPopupText("The calendar session could not be deleted.");
+            setPopupIcon("error");
+            switchSaveState(false);
+            setPopup(true);
+            setIsConfirmDelete(false);
+          }
+        });
+    }).then((e) => {
+      if (e) {
+        setPopupText(
+          "The calendar session could not be edited, check if you entered the correct fields."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+        setPopup(true);
+        setIsConfirmDelete(false);
+      }
+    });
+  };
+
   const listSubject = (sub) => {
     let list_subject = [];
     subject.map((s) => {
@@ -969,7 +1135,6 @@ export default function Schedulesessionslist(props) {
     };
     setShowModalSession(true);
     setSessionInfo(info);
-    console.log(info);
   };
 
   useEffect(() => {
@@ -1225,8 +1390,8 @@ export default function Schedulesessionslist(props) {
                         <td>
                           <select id={`inputSubjectID_${s.id}`} disabled>
                             <option
-                              defaultValue={s.subject_id}
-                              value={s.subject_id}
+                              defaultValue={s.subject.id}
+                              value={s.subject.id}
                             >
                               {s.subject.name}
                             </option>
@@ -1247,7 +1412,7 @@ export default function Schedulesessionslist(props) {
                           <button
                             style={{ marginRight: "5px" }}
                             onClick={() => {
-                              confirmDeleteEvent(s.id);
+                              confirmDeleteEvent(s);
                             }}
                           >
                             <svg
@@ -1424,8 +1589,8 @@ export default function Schedulesessionslist(props) {
                       <td>
                         <select id={`inputSubjectID_${s.id}`} disabled>
                           <option
-                            defaultValue={s.subject_id}
-                            value={s.subject_id}
+                            defaultValue={s.subject.id}
+                            value={s.subject.id}
                           >
                             {s.subject.name}
                           </option>
@@ -1446,7 +1611,7 @@ export default function Schedulesessionslist(props) {
                         <button
                           style={{ marginRight: "5px" }}
                           onClick={() => {
-                            confirmDeleteEvent(s.id);
+                            confirmDeleteEvent(s);
                           }}
                         >
                           <svg
@@ -1532,6 +1697,58 @@ export default function Schedulesessionslist(props) {
         ) : null}
       </div>
 
+      {selectType ? (
+        <div className="selected-main-container">
+          <div className="selected-container">
+            <div className="selected-container-body">
+              <div className="selected-container-body-title">
+                {selectTypeModal ? (
+                  <h4>Do you want to modify all or just one?</h4>
+                ) : (
+                  <h4>Do you want to delete all or just one?</h4>
+                )}
+              </div>
+              <div className="selected-container-body-option">
+                <button
+                  onClick={
+                    selectTypeModal
+                      ? () => {
+                          editGlobalSession();
+                        }
+                      : () => {
+                          deleteGlobalSession();
+                        }
+                  }
+                >
+                  All
+                </button>
+                <button
+                  onClick={
+                    selectTypeModal
+                      ? () => {
+                          editSingleSession();
+                          setSelectedAll(false);
+                        }
+                      : () => {
+                          console.log("first");
+                        }
+                  }
+                >
+                  Just one.
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectType(false);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <SessionsModal
         show={showModalSession}
         language={props.language}
@@ -1555,7 +1772,7 @@ export default function Schedulesessionslist(props) {
         isQuestion={isConfirmDelete}
         onYesAction={() => {
           setPopup(false);
-          deleteSession(idDelete);
+          deleteSession(idDelete, idBatch);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";

@@ -5,7 +5,6 @@ import ImageModal from "./ImageModal";
 import PreviewUsersTable from "./previewUsersTable";
 import csvtemplate from "../assets/csvtemplate.png";
 export default function LoadUsersCSV(props) {
-    
   let tempUsers = [];
   const [modalActive, setModalActive] = useState(false);
   const [csvTemplateActive, setCsvTemplateActive] = useState(false);

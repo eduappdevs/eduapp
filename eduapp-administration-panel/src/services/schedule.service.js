@@ -37,6 +37,14 @@ export const deleteSession = async (id) => {
   return await axios.delete(`${SESSIONS}/${id}`, { headers: requestHeader });
 };
 
+export const deleteGlobal = async (batch_id) => {
+  return await axios.delete(`${SESSIONS}/batch_delete/${batch_id}`, { headers: requestHeader });
+};
+
 export const editSession = async (body) => {
   return await axios.put(`${SESSIONS}/${body.id}`, body, { headers: requestHeader });
 };
+
+export const editSessionBatch = async (body) => {
+  return await axios.put(`${SESSIONS}/batch_update/${body.batch_id}`, body, { headers: requestHeader });
+}

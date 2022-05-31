@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/scheduletoolbar.css";
 import Batcher from "./Batcher";
 import Input from "./Input";
+import SessionCSVModal from "./modals/sessionCSV-batch-modal/SessionCSVModal";
 export default function Toolbar(props) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [sessionType, setSessionType] = useState("");
+
   const handleChangeFilterSession = (event) => {
     document.dispatchEvent(
       new CustomEvent("filter_subject", { detail: event.target.value })
@@ -41,14 +45,25 @@ export default function Toolbar(props) {
     let value = event.target.value;
     props.userRole(value);
   };
-
+  useEffect(() => {
+    if (props.location === "sessions") setSessionType("");
+  }, [props.location]);
   return (
     <div className="scheduletoolbar-container">
       {props.location === "sessions" ? (
         <>
           <ul className="scheduletoolbar-ul sessions-toolbar">
             <li>
-              <Batcher type="sessions" />
+              <div
+                className="check-button-containter"
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+              >
+                <div className="check-button-main">
+                  <p>CSV file upload</p>
+                </div>
+              </div>
             </li>
             <li className="subjectbar-container">
               <select
@@ -98,6 +113,22 @@ export default function Toolbar(props) {
               />
             </li>
           </ul>
+          {modalOpen === true ? (
+            <SessionCSVModal
+              closed={() => {
+                setModalOpen(false);
+                document.getElementById(
+                  "controlPanelContentContainer"
+                ).style.overflow = "scroll";
+              }}
+              type={(x) => {
+                setSessionType(x);
+                document.getElementById(
+                  "controlPanelContentContainer"
+                ).style.overflow = "scroll";
+              }}
+            />
+          ) : null}
         </>
       ) : props.location === "events" ? (
         <>

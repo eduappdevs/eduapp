@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 15) do
     t.string "streaming_platform"
     t.string "resources_platform"
     t.string "session_chat_id"
+    t.string "batch_id"
     t.bigint "subject_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

@@ -1,5 +1,5 @@
 .standard-modal-container {
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     font-family: Consolas;
     font-size: 18px;
@@ -58,7 +58,6 @@
 
 .standard-modal {
     background-color: var(--backgroundColor);
-    width: 40%;
     padding: 0.1em 0.1em 0.1em 0.1em;
     color: var(--textColor);
     position: fixed;
@@ -68,9 +67,13 @@
     flex-direction: column;
     align-items: center;
     border: 1px solid var(--textColor);
-    margin-bottom: 10em;
+    bottom: 0;
+    margin-bottom: 7em;
     border-radius: 15px;
+    max-width: 40%;
 }
+
+
 
 .standard-modal-icon>svg {
     width: 40px;

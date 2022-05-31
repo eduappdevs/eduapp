@@ -16,14 +16,104 @@ export default function BatchPreviewTable(props) {
           break;
         case "events":
           postEvent(x);
-          console.log("click event");
+          break;
+        case "sessionsBatch":
+          postSessionModal(x);
+          break;
+        default:
           break;
       }
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 2000);
     });
   };
+
+  const postSessionModal = (session) => {
+    if (
+      parseInt(session[8]) === 1 ||
+      parseInt(session[9]) === 1 ||
+      parseInt(session[10]) === 1 ||
+      parseInt(session[11]) === 1 ||
+      parseInt(session[12]) === 1 ||
+      parseInt(session[13]) === 1 ||
+      parseInt(session[14]) === 1
+    ) {
+      let checkDays = [
+        session[8],
+        session[9],
+        session[10],
+        session[11],
+        session[12],
+        session[13],
+        session[14],
+      ];
+      for (let i in checkDays) {
+        if (parseInt(checkDays[i]) === 1) {
+          checkDays[i] = true;
+        } else {
+          checkDays[i] = false;
+        }
+      }
+
+      let start = new Date(session[1]);
+      let end = new Date(session[2]);
+      let diff = end - start;
+      let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      let weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+      let name = session[0];
+      let start_date = session[1];
+      let end_date = session[2];
+      let streaming = session[3];
+      let resources = session[4];
+      let chat = session[5];
+      let subject_id = session[6];
+      let total_weeks = weeks;
+      let check_week_days = checkDays;
+      let diff_days = parseInt(days);
+      let week_repeat = parseInt(session[7]);
+
+      if (
+        name !== "" &&
+        start_date !== "" &&
+        end_date !== "" &&
+        resources !== "" &&
+        streaming !== "" &&
+        chat !== "" &&
+        subject_id !== "" &&
+        total_weeks !== 0 &&
+        diff_days !== 0 &&
+        check_week_days !== null
+      ) {
+        let sessionJson = {
+          session_name: name,
+          session_start_date: start_date,
+          session_end_date: end_date,
+          streaming_platform: streaming,
+          resources_platform: resources,
+          session_chat_id: chat,
+          subject_id: subject_id,
+          total_weeks: total_weeks,
+          check_week_days: check_week_days,
+          diff_days: diff_days,
+          week_repeat: week_repeat < 1 ? 0 : week_repeat < 2 ? 2 : week_repeat,
+        };
+        console.log(week_repeat < 1 ? 0 : week_repeat < 2 ? 2 : week_repeat);
+        API.asynchronizeRequest(function () {
+          SCHEDULESERVICE.createSessionBatch(sessionJson)
+            .then(() => {
+              props.close();
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        });
+      } else {
+        console.log("error");
+      }
+    }
+  };
+
   const postSession = (session) => {
     const context = [
       "session_name",
@@ -78,6 +168,7 @@ export default function BatchPreviewTable(props) {
         });
     });
   };
+
   const createUser = (user) => {
     let email = user[0];
     let pass = user[1];
