@@ -1,12 +1,7 @@
 import React from "react";
-import "./componentStyles/loadUsersCSV.css";
 import BatcherButtonTemplate from "./BatcherButtonTemplate";
+import "./componentStyles/loadUsersCSV.css";
 
 export default function Batcher(props) {
-  console.log(props);
-  return (
-    <>
-      <BatcherButtonTemplate type={props.type} />
-    </>
-  );
+  return <BatcherButtonTemplate type={props.type} />;
 }

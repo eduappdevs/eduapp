@@ -23,6 +23,7 @@ export default function ResourcesModal({
   const [filesToUploadJson, setFilesToUploadJson] = useState({});
   const [showFilesToUpload, setShowFilesToUpload] = useState(false);
   const [filesEdit, setFilesEdit] = useState(false);
+
   const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
   const videoRegex = new RegExp("^.*(mp4|mov)$");
 
@@ -75,7 +76,7 @@ export default function ResourcesModal({
     let indexOfJson = [];
     let json = [];
 
-    filesToUpload.map((file) => {
+    for (let file of filesToUpload) {
       if (file !== i) {
         newFile.push(file);
         setIsUpload(true);
@@ -83,17 +84,20 @@ export default function ResourcesModal({
       } else {
         indexOf.push(filesToUpload.indexOf(file));
       }
-    });
+    }
+
     if (indexOf !== undefined) {
       indexOf.map((i) => {
         return deleteFile.push(info.resource_files_json[i]);
       });
     }
+
     if (indexOfJson !== undefined) {
       indexOfJson.map((i) => {
         return json.push(info.resource_files_json[i]);
       });
     }
+
     setFilesEdit(false);
     setFilesToDelete(deleteFile);
     setFilesToUpload(newFile);
@@ -120,11 +124,18 @@ export default function ResourcesModal({
       for (let i = 0; i < filesToUpload.length; i++)
         finalData.append("file_" + i, filesToUpload[i]);
     }
-    finalData.append("createdBy", author);
-    finalData.append("subject_id", parseInt(subject.split("_")[1]));
+    finalData.append("user_id", author.user.id);
+    finalData.append("subject_id", subject.split("_")[1]);
 
     asynchronizeRequest(function () {
-      RESOURCESERVICE.createResources(finalData).then(onAddModal("create"));
+      RESOURCESERVICE.createResources(finalData)
+        .then(() => onAddModal("create"))
+        .catch((e) => {
+          setPopupText("An error ocurred while trying to create the resource.");
+          setPopupIcon("error");
+          setPopup(true);
+          setIsConfirmDelete(false);
+        });
     }).then((e) => {
       if (e) {
         setPopup(true);
@@ -158,7 +169,7 @@ export default function ResourcesModal({
     if (e.target.files.length > 10) {
       setPopup(true);
       setPopupText("Only 10 files are allowed");
-      setPopupType("info");
+      setPopupType("warning");
       setFilesToUpload();
       setShowFilesToUpload(false);
       return;
@@ -195,13 +206,14 @@ export default function ResourcesModal({
           }
         }
       }
+
       setShowFilesToUpload(true);
       if (files.length <= 10) {
         setFilesToUpload(files);
       } else {
         setPopup(true);
         setPopupText("There are too many files, only 10 are allowed.");
-        setPopupType("info");
+        setPopupType("error");
         setFilesToUpload();
         setShowFilesToUpload(false);
       }
@@ -231,18 +243,16 @@ export default function ResourcesModal({
       editDescription = r.description;
     }
 
-    if (
-      inputSubject.split("_")[1] !== "" &&
-      inputSubject.split("_")[1] !== r.subject_id
-    ) {
-      editSubject = inputSubject.split("_")[1];
+    if (inputSubject !== "" && inputSubject !== r.subject.id) {
+      editSubject = inputSubject;
     } else {
-      editSubject = r.subject_id;
+      editSubject = r.subject.id;
     }
 
     let url = [];
     let blob_id_delete = [];
     let urlJson = [];
+
     if (isUpload === true) {
       if (filesToUpload !== undefined) {
         filesToUpload.map((f) => {
@@ -256,21 +266,19 @@ export default function ResourcesModal({
       }
       if (filesToDelete !== undefined) {
         filesToDelete.map((del) => {
-          return blob_id_delete.push(
-            parseInt(del.split('blob_id":')[1].split(",")[0])
-          );
+          return blob_id_delete.push(del.split('blob_id":')[1].split(",")[0]);
         });
       }
       asynchronizeRequest(function () {
         RESOURCESERVICE.editResources({
           id: r.id,
-          subject_id: parseInt(editSubject),
+          subject_id: editSubject,
           name: editTitle,
           description: editDescription,
           resource_files: url,
           resource_files_json: urlJson,
           blob_id_delete: blob_id_delete,
-          createdBy: author,
+          user_id: author.user.id,
         })
           .then((e) => {
             if (e) {
@@ -283,7 +291,7 @@ export default function ResourcesModal({
           .catch((e) => {
             if (e) {
               setPopupText(
-                "The resources could not be edited, check if you entered the correct fields."
+                "The resource could not be edited, check if you entered the correct fields."
               );
               setIsConfirmDelete(false);
               setPopupIcon("error");
@@ -305,13 +313,13 @@ export default function ResourcesModal({
       asynchronizeRequest(function () {
         RESOURCESERVICE.editResources({
           id: r.id,
-          subject_id: parseInt(editSubject),
+          subject_id: editSubject,
           name: editTitle,
           description: editDescription,
           resource_files: info.resource_files,
           resource_files_json: info.resource_files_json,
           blob_id_delete: blob_id_delete,
-          createdBy: author,
+          user_id: author.user.id,
         })
           .then((e) => {
             if (e) {
@@ -411,22 +419,22 @@ export default function ResourcesModal({
               <div className="resources-modal-show-files">
                 <div className="resources-information">
                   <p>
-                    {language.name}:{name}
+                    {language.name}: {name}
                   </p>
                   <p>
-                    {language.description}:{description}
+                    {language.description}: {description}
                   </p>
                   <p>
-                    {language.author}:{author}
+                    {language.author}: {author.user_name}
                   </p>
                   <p>
-                    {language.subjects}:{subject.split("_")[0]}
+                    {language.subjects}: {subject.split("_")[0]}
                   </p>
                 </div>
                 {showFilesToUpload === true
-                  ? filesToUpload.map((e) => {
+                  ? filesToUpload.map((e, i) => {
                       return (
-                        <div className="resources-modal-show-file">
+                        <div key={i} className="resources-modal-show-file">
                           <button
                             id={e.name}
                             onClick={() => {
@@ -496,21 +504,21 @@ export default function ResourcesModal({
               <div className="resources-modal-show-files">
                 <div className="resources-information">
                   <p>
-                    {language.name}:{name}
+                    {language.name}: {name}
                   </p>
                   <p>
-                    {language.description}:{description}
+                    {language.description}: {description}
                   </p>
                   <p>
-                    {language.author}:{author}
+                    {language.author}: {author.user_name}
                   </p>
                   <p>
-                    {language.subjects}:{subject.split("_")[0]}
+                    {language.subjects}: {subject.name}
                   </p>
                   {filesEdit === true && info.resource_files !== null
-                    ? info.resource_files.map((f) => {
+                    ? info.resource_files.map((f, i) => {
                         return (
-                          <div className="resources-modal-show-file">
+                          <div key={i} className="resources-modal-show-file">
                             <button
                               onClick={() => {
                                 deleteFirstFileEdited(f);
@@ -534,10 +542,10 @@ export default function ResourcesModal({
                         );
                       })
                     : filesToUpload !== null && filesToUpload !== undefined
-                    ? filesToUpload.map((f) => {
+                    ? filesToUpload.map((f, i) => {
                         if (f[0] !== null) {
                           return (
-                            <div className="resources-modal-show-file">
+                            <div key={i} className="resources-modal-show-file">
                               <button
                                 onClick={() => {
                                   deletefileEdited(f);
@@ -606,16 +614,10 @@ export default function ResourcesModal({
         }}
         onNoAction={() => {
           setPopup(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onCloseAction={() => {
           setPopup(false);
           setFilesEdit();
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         hasIconAnimation
         hasTransition

@@ -12,14 +12,12 @@ export default function ImageModal(props) {
   //     console.log(props.imageRoute)
   // },[])
 
+  useEffect(() => {
+    setShow(props.show);
+  }, [props.show]);
 
-    useEffect(()=>{
-        setShow(props.show)
-
-    },[props.show])
-
-
-  return show && (
+  return (
+    show && (
       <div className="image_modal">
         <div className="image_modal_header">
           <button className="closeModal" onClick={props.close}>
@@ -40,5 +38,5 @@ export default function ImageModal(props) {
         </div>
       </div>
     )
-  
+  );
 }

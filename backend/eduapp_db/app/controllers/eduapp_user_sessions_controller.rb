@@ -1,14 +1,27 @@
 class EduappUserSessionsController < ApplicationController
   before_action :set_eduapp_user_session, only: [:show, :update, :destroy]
+  before_action :authenticate_user!
+  before_action :check_role!
+
   require "date"
   require "securerandom"
 
   # GET /eduapp_user_sessions
   def index
     if params[:subject_id]
+      if !subject_in_user_course(params[:subject_id])
+        return deny_perms_access!
+      end
       @eduapp_user_sessions = EduappUserSession.where(subject_id: params[:subject_id])
     else
+      if !check_perms_all!(get_user_roles.perms_sessions)
+        return
+      end
       @eduapp_user_sessions = EduappUserSession.all
+    end
+
+    if params[:page]
+      @eduapp_user_sessions = query_paginate(@eduapp_user_sessions, params[:page])
     end
 
     render json: @eduapp_user_sessions
@@ -16,11 +29,17 @@ class EduappUserSessionsController < ApplicationController
 
   # GET /eduapp_user_sessions/1
   def show
+    if !check_perms_query!(get_user_roles.perms_sessions)
+      return
+    end
     render json: @eduapp_user_session
   end
 
   # POST /eduapp_user_sessions
   def create
+    if !check_perms_write!(get_user_roles.perms_sessions)
+      return
+    end
     @eduapp_user_session = EduappUserSession.new(eduapp_user_session_params)
     if @eduapp_user_session.save
       render json: @eduapp_user_session, status: :created, location: @eduapp_user_session
@@ -31,6 +50,10 @@ class EduappUserSessionsController < ApplicationController
 
   # PATCH/PUT /eduapp_user_sessions/1
   def update
+    if !check_perms_update!(get_user_roles.perms_sessions, false, :null)
+      return
+    end
+
     if @eduapp_user_session.update(session_name: params[:session_name],
                                    session_start_date: params[:session_start_date],
                                    session_end_date: params[:session_end_date],
@@ -46,6 +69,9 @@ class EduappUserSessionsController < ApplicationController
 
   # DELETE /eduapp_user_sessions/1
   def destroy
+    if !check_perms_delete!(get_user_roles.perms_roles, false, :null)
+      return
+    end
     @eduapp_user_session.destroy
   end
 
@@ -124,7 +150,7 @@ class EduappUserSessionsController < ApplicationController
         resources_platform: params[:resources_platform],
         streaming_platform: params[:streaming_platform],
         session_chat_id: params[:session_chat_id],
-        subject_id: params[:subject_id].to_i,
+        subject_id: params[:subject_id],
         batch_id: batch_id,
       )
 
@@ -162,6 +188,14 @@ class EduappUserSessionsController < ApplicationController
   end
 
   private
+
+  def subject_in_user_course(s_id)
+    c_id = Subject.find(s_id).course_id
+    if Tuition.where(user_id: @current_user, course_id: c_id).count > 0
+      return true
+    end
+    return false
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_eduapp_user_session

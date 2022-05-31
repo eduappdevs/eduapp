@@ -2,13 +2,14 @@ import React from "react";
 import { useEffect, useState } from "react";
 import SessionAdd from "../../components/modals/modals-home/SessionAdd";
 import SessionEdit from "../../components/modals/modals-home/SessionEdit";
-import axios from "axios";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import CourseSelector from "../../components/courseSelector/CourseSelector";
-import { SUBJECT } from "../../config";
+import * as SUBJECT_SERVICE from "../../services/subject.service";
+import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import { asynchronizeRequest } from "../../API";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import "./Home.css";
+import RequireAuth from "../../components/auth/RequireAuth";
 
 export default function Home() {
   const [editFields, setFields] = useState([]);
@@ -18,7 +19,7 @@ export default function Home() {
   const [sessionLength, setSessionLength] = useState("");
   const [userImage, setUserImage] = useState(null);
   const sessionsPreSorted = [];
-  let userInfo = FetchUserInfo(localStorage.userId);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let sessionsSorted;
 
   const openSessionAdd = () => {
@@ -28,7 +29,7 @@ export default function Home() {
   };
 
   const openEditSession = async (id) => {
-    let e = await axios.get(SUBJECT + "/" + id);
+    let e = await SUBJECT_SERVICE.fetchSubject(id);
 
     let name = e.data.session_name;
     let date = e.data.session_date;
@@ -64,8 +65,10 @@ export default function Home() {
     }, 4000);
   };
 
-  const   getSessions = async () => {
-    let request = await axios.get(`${SUBJECT}?user_id=${localStorage.userId}`);
+  const getSessions = async () => {
+    let request = await SUBJECT_SERVICE.fetchUserSubjects(
+      getOfflineUser().user.id
+    );
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -134,9 +137,7 @@ export default function Home() {
 
   const deleteSession = () => {
     asynchronizeRequest(async function () {
-      axios.delete(SUBJECT + "/" + deleteSess).then(() => {
-        window.location.reload();
-      });
+      SCHEDULE_SERVICE.deleteSession(deleteSess[0]);
     });
   };
 
@@ -188,6 +189,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    RequireAuth();
     checkMediaQueries();
     getSessions();
 
@@ -199,11 +201,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!localStorage.offline_user) {
-      setUserImage(userInfo.profile_image);
-    } else {
-      setUserImage(getOfflineUser().profile_image);
-    }
+    setUserImage(getOfflineUser().profile_image);
   }, [userInfo]);
 
   return (
@@ -261,6 +259,7 @@ export default function Home() {
                     return (
                       <>
                         <div
+                          key={data.id}
                           className={
                             firstSessionId === data.id
                               ? "home__firstSession sessions-container"
@@ -358,7 +357,7 @@ export default function Home() {
                             >
                               <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
                               <path
-                                fill-rule="evenodd"
+                                fillRule="evenodd"
                                 d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
                               />
                             </svg>
@@ -413,7 +412,11 @@ export default function Home() {
                     );
                   })}
                 </div>
-              ) : null}
+              ) : (
+                <div className="select-subject">
+                  <h3>There are no more sessions today.</h3>
+                </div>
+              )}
             </div>
           </div>
         </section>

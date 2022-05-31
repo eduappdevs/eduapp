@@ -75,6 +75,10 @@
 	cursor: pointer;
 }
 
+.commitChanges>span {
+	font-family: Consolas;
+}
+
 .commit-loader-hide {
 	display: none;
 }
@@ -121,6 +125,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	font-family: Consolas;
 }
 
 .coursesList>li>img {
@@ -187,6 +192,7 @@
 	flex: 0.8;
 	font-size: 14px;
 	padding-left: 10px;
+	font-family: Consolas;
 }
 
 .youareadmin>img {

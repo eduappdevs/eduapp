@@ -21,19 +21,23 @@ import MenuSettings from "./views/menu/menu-settings/MenuSettings";
 import PasswordRecovery from "./views/passwordRecovery/PasswordRecovery";
 import GroupChatCreate from "./views/chat/createGroupChat/GroupChatCreate";
 import DirectChatCreate from "./views/chat/createDirectChat/DirectChatCreate";
-import instanceBadge, { resetBadge , getBadgeCount } from "./components/notifications/notifications";
+import instanceBadge, {
+  resetBadge,
+  getBadgeCount,
+} from "./components/notifications/notifications";
 import WebTitle from "./components/WebTitle";
-
-
-
-
+import { getOfflineUser } from "./utils/OfflineManager";
+import useRole from "./hooks/useRole";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
   const [needsLoader, setNeedsLoader] = useState(true);
   const [ItsMobileDevice, setItsMobileDevice] = useState(null);
-  
-  let userinfo = FetchUserInfo(localStorage.userId);
+
+  let userinfo = FetchUserInfo(
+    getOfflineUser().user === null ? -1 : getOfflineUser().user.id
+  );
+  let isAdmin = useRole(userinfo, "eduapp-admin");
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -46,6 +50,8 @@ export default function App() {
   };
 
   useEffect(() => {
+    instanceBadge();
+
     setNeedsExtras(
       !new RegExp(
         "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*)|password/.*)$"
@@ -86,32 +92,24 @@ export default function App() {
     } finally {
       FirebaseStorage.init();
     }
-  }, []);
 
-  document.addEventListener('visibilitychange',()=>{
-    resetBadge();
-    console.log('hidden')
-  }
-  )
+    document.addEventListener("visibilitychange", () => resetBadge());
+
+    return () => {
+      document.removeEventListener("visibilitychange", () => {});
+      document.removeEventListener("canLoadResource", () => {});
+      document.removeEventListener("canLoadChat", () => {});
+    };
+  }, []);
 
   useEffect(() => {
     checkMediaQueries();
   }, [window.innerWidth]);
 
-
-
-  useEffect(() => {
-    instanceBadge();
-    console.log('badge')
-  }, []);
-
-  
-
-
   return userinfo ? (
     <>
       <BrowserRouter>
-      <WebTitle/>
+        <WebTitle />
         <React.Fragment>
           <div style={{ display: needsLoader ? "flex" : "none" }}>
             <Loader />
@@ -129,7 +127,7 @@ export default function App() {
             <Route exact path="/resources" element={<Resources />} />
             <Route exact path="/calendar" element={<Calendar />} />
             <Route exact path="/chat" element={<ChatMenu />} />
-            {userinfo.isAdmin && (
+            {isAdmin && (
               <Route exact path="/management" element={<ManagementPanel />} />
             )}
 
@@ -150,7 +148,11 @@ export default function App() {
         ) : (
           <Routes>
             <Route exact path="/login" element={<Login />} />
-            <Route path="/password/reset" element={<PasswordRecovery/>} />
+            <Route
+              exact
+              path="/password/reset/"
+              element={<PasswordRecovery />}
+            />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}
@@ -169,10 +171,7 @@ export default function App() {
 }
 
 let badgeCount = 0;
-
-export function incrementBadgeCount(){
-  // badgeCount++;
-  console.log("Badge count : ", badgeCount);
+export function incrementBadgeCount() {
+  badgeCount++;
+  console.log("Badge count: ", badgeCount);
 }
-
-

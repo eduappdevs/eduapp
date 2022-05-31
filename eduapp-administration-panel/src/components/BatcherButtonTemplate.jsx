@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import usersTemplate from "../assets/usersTemplate.png";
 import sessionsTemplate from "../assets/sessionsTemplate.png";
 import eventsTemplate from "../assets/eventsTemplate.png";
@@ -6,12 +6,13 @@ import CSVReader from "react-csv-reader";
 import ImageModal from "./ImageModal";
 import BatchPreviewTable from "./BatchPreviewTable";
 
-export default function BatcherButtonTemplate(props) {
-  const type = props.type;
+export default function BatcherButtonTemplate({ type }) {
   const [modalActive, setModalActive] = useState(false);
   const [csvTemplateActive, setCsvTemplateActive] = useState(false);
   const [csvData, setCsvData] = useState([]);
+
   const beforeLoad = (data) => {
+    // eslint-disable-next-line array-callback-return
     data.map((x) => {
       if (x[0] !== "") {
         setCsvData((csvData) => [...csvData, x]);
@@ -35,9 +36,9 @@ export default function BatcherButtonTemplate(props) {
     <>
       <ImageModal
         imageRoute={
-          props.type === "users"
+          type === "users"
             ? usersTemplate
-            : props.type === "sessions"
+            : type === "sessions"
             ? sessionsTemplate
             : eventsTemplate
         }
@@ -45,9 +46,7 @@ export default function BatcherButtonTemplate(props) {
         close={closeCSVTemplate}
       />
       <div className="csvLoaderButton">
-        <CSVReader
-          onFileLoaded={(data, fileInfo, originalFile) => beforeLoad(data)}
-        />
+        <CSVReader onFileLoaded={(data) => beforeLoad(data)} />
       </div>
       <button className="csvTemplate" onClick={showCSVTemplate}>
         <svg

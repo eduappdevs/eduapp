@@ -17,7 +17,7 @@ export default function ChatBubble(props) {
             marginLeft: msgMargin,
           }
     );
-  }, [props.foreign, msgMargin, props.isMsgRecent]);
+  }, [props.foreign, msgMargin, props.isMsgRecent, window.innerWidth]);
 
   return (
     <div className={props.foreign ? "foreign-align" : "self-align"}>

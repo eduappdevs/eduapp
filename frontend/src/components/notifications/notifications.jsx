@@ -1,77 +1,57 @@
-import incrementBadgeCount from '../../App'
+import { incrementBadgeCount } from "../../App";
+import EncryptionUtils from "../../utils/EncryptionUtils";
 
 let unreadMessagesCount = 0;
 
-function pushNotify(text, image) {
-    if(!text) {
-        console.log('xd')
-        return false
-    }
+export default function pushNotify(text, privateKey, image) {
+  if (!text) {
+    return false;
+  }
 
-    if (!("Notification" in window)) {
-        console.log("This browser does not support desktop notification");
-    } 
-    else if (Notification.permission === "granted") {
-        let data = {
-            title: "Eduapp",
-            icon: './assets/logo.png',
-            data: {
-                dateOfArrival: Date.now(),
-                primaryKey: 1
-            }        
+  if (navigator.userAgent.includes("Macintosh") && !("PushManager" in window))
+    return console.warn("Safari does not support desktop notification");
+
+  if (!("Notification" in window))
+    return console.warn("This browser does not support desktop notification");
+
+  switch (Notification.permission) {
+    case "granted":
+      console.log("granted");
+      var notify = new Notification("EduApp", {
+        body: text,
+      });
+      notify.onshow = () => console.log("SHOWN");
+      incrementBadgeCount();
+      break;
+    case "denied":
+    case "default":
+      console.log("default");
+      window.Notification.requestPermission().then(function (permission) {
+        if (permission === "granted") {
+          var notify = new Notification("EduApp", {
+            body: text,
+          });
+          notify.onshow = () => console.log("SHOWN");
+          incrementBadgeCount();
         }
-        new Notification(text, data)
-        .then((res)=>{
-            console.log("Notification : ", res);
-            incrementBadgeCount() 
-        })
-        .catch((err)=>{
-            console.log("Notification ERROR : ", err);
-        })
-    }
-    // The user has previously denied or blocked the notifications. 
-    else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then(function (permission) {
-            if (permission === "granted") {
-                let data = {
-                    title: "Thanks for subscribing",
-                    icon: './assets/logo.png',
-                    vibrate: [
-                        100, 50, 100
-                    ],
-                    data: {
-                        dateOfArrival: Date.now(),
-                        primaryKey: 1
-                    }
-                };
-                return new Notification(text, data)
-                .then((res)=>{
-                    console.log("Notification : ", res);
-                    incrementBadgeCount() 
-                })
-                .catch((err)=>{
-                    console.log("Notification ERROR : ", err);
-                })
-
-            }
-
-
-        });} else if (Notification.permission === "blocked") { 
-        console.log("The user has blocked notifications");
-    }
+      });
+      break;
+    default:
+      console.warn("The user has blocked notifications for EduApp.");
+      break;
+  }
 }
 
-
 // Badge
-
 async function instanceBadge() {
-    try{
-    navigator && 
-    navigator.setClientBadge(unreadMessagesCount).setAppBadge(unreadMessagesCount); 
-    }
-    catch(err){
-        console.log('badge instance error',err)
-    }
+  try {
+    if (navigator)
+      navigator
+        .setClientBadge(unreadMessagesCount)
+        .setAppBadge(unreadMessagesCount);
+  } catch (err) {
+    console.error("Badge instance error", err);
+  }
 }
 
 // async function incrementBadgeCount() {
@@ -79,13 +59,8 @@ async function instanceBadge() {
 // }
 
 async function resetBadge() {
-    await navigator.setAppBadge(0);
-    unreadMessagesCount = 0;
+  await navigator.setAppBadge(0);
+  unreadMessagesCount = 0;
 }
 
-export default pushNotify;
-
-export {
-    instanceBadge,
-    resetBadge
-};
+export { instanceBadge, resetBadge };

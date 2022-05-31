@@ -2,23 +2,19 @@ import axios from "axios";
 import { API_URL, TOKEN } from "../API";
 export const INSTITUTIONS = `${API_URL}/institutions`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 //Institutions
 export const fetchInstitutions = async () => {
-  return await axios.get(`${INSTITUTIONS}`).then({ headers: requestHeader });
+  return await axios.get(`${INSTITUTIONS}`, { headers: requestHeader });
 };
 
 export const fetchInstitution = async (id) => {
-  return await axios
-    .get(`${INSTITUTIONS}/${id}`)
-    .then({ headers: requestHeader });
+  return await axios.get(`${INSTITUTIONS}/${id}`, { headers: requestHeader });
 };
 
 export const createInstitution = async (body) => {
-  return await axios
-    .post(`${INSTITUTIONS}`, body)
-    .then({ headers: requestHeader });
+  return await axios.post(`${INSTITUTIONS}`, body, { headers: requestHeader });
 };
 
 export const deleteInstitution = async (id) => {
@@ -28,7 +24,7 @@ export const deleteInstitution = async (id) => {
 };
 
 export const editInstitution = async (body) => {
-  return await axios
-    .put(`${INSTITUTIONS}/${body.id}`, body)
-    .then({ headers: requestHeader });
+  return await axios.put(`${INSTITUTIONS}/${body.id}`, body, {
+    headers: requestHeader,
+  });
 };

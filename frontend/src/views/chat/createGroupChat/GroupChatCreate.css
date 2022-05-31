@@ -153,7 +153,7 @@ ul.suggested-users li a:hover {
 	background-color: var(--blue);
 	border: none !important;
 	border-radius: 5px;
-	color: var(--textColor);
+	color: white;
 	font-size: 1.3em;
 	padding: 0.5em;
 	align-self: end;

@@ -4,7 +4,7 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as USER_SERVICE from "../services/user.service";
 import Input from "./Input";
-
+import { interceptExpiredToken } from "../utils/OfflineManager";
 import "../styles/scheduleeventslist.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
 
@@ -34,6 +34,8 @@ export default function Scheduleeventslist(props) {
 
   let events_filter = {};
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const switchSaveState = (state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflow =
@@ -54,12 +56,17 @@ export default function Scheduleeventslist(props) {
 
   const fetchSubjects = () => {
     API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubject().then((res) => {
-        res.data.shift();
-        setSubject(res.data);
-      });
-    }).then((e) => {
+      SUBJECTSERVICE.fetchSubject()
+        .then((res) => {
+          res.data.shift();
+          setSubject(res.data);
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The subjects could not be showed, check if you have an internet connection."
@@ -75,8 +82,9 @@ export default function Scheduleeventslist(props) {
       USER_SERVICE.fetchUserInfos().then((res) => {
         setUsers(res.data);
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The users could not be showed, check if you have an internet connection."
@@ -93,8 +101,9 @@ export default function Scheduleeventslist(props) {
         setEvents(event.data);
         events_filter.events = event.data;
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The calendar events could not be showed, check if you have an internet connection."
@@ -142,33 +151,30 @@ export default function Scheduleeventslist(props) {
     let description = document.getElementById("e_description").value;
     let start_date = document.getElementById("e_start_date").value;
     let end_date = document.getElementById("e_end_date").value;
-    let subject = [];
+    let subject = !isGlobal
+      ? document.getElementById("e_subjectId").value
+      : (await SUBJECTSERVICE.getGeneralSubject()).data[0].id;
 
     if (
-      !isGlobal
-        ? (subject = document.getElementById("e_subjectId").value)
-        : subject.push(1)
-    )
-      if (
-        name !== "" &&
-        author !== "" &&
-        start_date !== "" &&
-        end_date !== "" &&
-        subject !== "Choose subject"
-      ) {
-        json.push(
-          name,
-          description,
-          start_date,
-          end_date,
-          isGlobal,
-          parseInt(author),
-          parseInt(subject)
-        );
-      } else {
-        alertCreate();
-        switchSaveState(false);
-      }
+      name !== "" &&
+      author !== "" &&
+      start_date !== "" &&
+      end_date !== "" &&
+      subject !== "Choose subject"
+    ) {
+      json.push(
+        name,
+        description,
+        start_date,
+        end_date,
+        isGlobal,
+        author,
+        subject
+      );
+    } else {
+      alertCreate();
+      return;
+    }
 
     let eventJson = {};
     for (let i = 0; i <= context.length - 1; i++) {
@@ -183,8 +189,9 @@ export default function Scheduleeventslist(props) {
           setPopupText("The calendar events was created successfully.");
           switchSaveState(false);
         })
-        .catch((e) => {
+        .catch(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopupText(
               "The calendar session could not be created, check if you entered the correct fields."
             );
@@ -225,11 +232,13 @@ export default function Scheduleeventslist(props) {
         .then(() => {
           fetchEvents();
         })
-        .catch(() => {
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
           showDeleteError();
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The calendar event could not be deleted, check if you have an internet connection."
@@ -336,8 +345,9 @@ export default function Scheduleeventslist(props) {
             setPopupType("info");
             setPopupText("The calendar event was edited successfully.");
           })
-          .catch((error) => {
+          .catch(async (error) => {
             if (error) {
+              await interceptExpiredToken(e);
               setPopupText(
                 "The calendar session could not be edited, check if you entered the correct fields."
               );
@@ -347,8 +357,9 @@ export default function Scheduleeventslist(props) {
               setIsConfirmDelete(false);
             }
           });
-      }).catch((error) => {
+      }).catch(async (error) => {
         if (error) {
+          await interceptExpiredToken(error);
           setPopup(true);
           setPopupText(
             "The calendar event could not be edited, check if you have an internet connection."
@@ -471,8 +482,9 @@ export default function Scheduleeventslist(props) {
               setPopupType("info");
               setPopupText("The calendar event was edited successfully.");
             })
-            .catch((error) => {
+            .catch(async (error) => {
               if (error) {
+                await interceptExpiredToken(e);
                 setPopupText(
                   "The calendar event could not be edited, check if you entered the correct fields."
                 );
@@ -594,8 +606,9 @@ export default function Scheduleeventslist(props) {
                 }
               }
             })
-            .catch((error) => {
+            .catch(async (error) => {
               if (error) {
+                await interceptExpiredToken(error);
                 console.log(error);
                 setIsConfirmDelete(false);
                 setPopupText(
@@ -606,8 +619,9 @@ export default function Scheduleeventslist(props) {
                 setPopup(true);
               }
             });
-        }).catch((error) => {
+        }).catch(async (error) => {
           if (error) {
+            await interceptExpiredToken(e);
             setIsConfirmDelete(false);
             setPopup(true);
             setPopupText(
@@ -944,7 +958,7 @@ export default function Scheduleeventslist(props) {
                     {props.language.chooseAuthor}
                   </option>
                   {users.map((u) => (
-                    <option key={u.id} value={u.id}>
+                    <option key={u.id} value={u.user.id}>
                       {u.user.email}
                     </option>
                   ))}
@@ -997,12 +1011,11 @@ export default function Scheduleeventslist(props) {
           </tbody>
         </table>
       </div>
-      .
       {events && events.length !== 0 ? (
         <table className="eventList" style={{ marginTop: "50px" }}>
           <thead>
             <tr>
-              <th></th>
+              <th>{props.language.code}</th>
               <th>{props.language.title}</th>
               <th>{props.language.description}</th>
               <th>{props.language.author}</th>
@@ -1024,7 +1037,7 @@ export default function Scheduleeventslist(props) {
                 ) {
                   return (
                     <tr key={e.id}>
-                      <td>{e.id}</td>
+                      <td>{shortUUID(e.id)}</td>
                       <td>
                         <input
                           type="text"
@@ -1203,7 +1216,7 @@ export default function Scheduleeventslist(props) {
               } else {
                 return (
                   <tr key={e.id}>
-                    <td>{e.id}</td>
+                    <td>{shortUUID(e.id)}</td>
                     <td>
                       <input
                         type="text"

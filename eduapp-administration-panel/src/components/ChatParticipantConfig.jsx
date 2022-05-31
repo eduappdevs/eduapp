@@ -3,6 +3,7 @@ import * as CHATSERVICE from "../services/chat.service";
 import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function ChatParticipantConfig(props) {
   const [participant, setParticipant] = useState([]);
@@ -37,25 +38,40 @@ export default function ChatParticipantConfig(props) {
 
   const fetchParticipants = async () => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.fetchChatParticipants().then((res) => {
-        setParticipant(res.data);
-      });
+      CHATSERVICE.fetchChatParticipants()
+        .then((res) => {
+          setParticipant(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchChat = async () => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.fetchChat().then((res) => {
-        setChat(res.data);
-      });
+      CHATSERVICE.fetchChat()
+        .then((res) => {
+          setChat(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchUser = async () => {
     API.asynchronizeRequest(function () {
-      USERSERVICE.fetchUserInfos().then((res) => {
-        setUsers(res.data);
-      });
+      USERSERVICE.fetchUserInfos()
+        .then((res) => {
+          setUsers(res.data);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -77,12 +93,15 @@ export default function ChatParticipantConfig(props) {
     let isAdmin = document.getElementById("chP_isAdmin").checked;
     let chatId = chatBaseId.split("_")[0];
     let userId = UserId.split("_")[0];
-    if (userId !== "" && chatId !== "") {
+
+    if (userId !== "Choose User" && chatId !== "") {
       json.push(chatId, userId, isAdmin);
     } else {
       alertCreate();
       switchSaveState(false);
+      return;
     }
+
     let eventJson = {};
     for (let i = 0; i <= context.length - 1; i++) {
       eventJson[context[i]] = json[i];
@@ -97,15 +116,17 @@ export default function ChatParticipantConfig(props) {
           setPopupText("The participant was created successfully.");
           switchSaveState(false);
         })
-        .catch((e) => {
+        .catch(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             alertCreate();
             setIsConfirmDelete(false);
             switchSaveState(false);
           }
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setIsConfirmDelete(false);
         setPopupText(
           "The participant could not be created, check if you have an internet connection."
@@ -120,9 +141,14 @@ export default function ChatParticipantConfig(props) {
 
   const deleteParticipant = async (id) => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.deleteParticipant(id).then(() => {
-        fetchParticipants();
-      });
+      CHATSERVICE.deleteParticipant(id)
+        .then(() => {
+          fetchParticipants();
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -192,8 +218,8 @@ export default function ChatParticipantConfig(props) {
                   </option>
                   {users.map((s) => (
                     <option
-                      key={s.user_id}
-                      value={s.user_id + "_" + s.user_name}
+                      key={s.user.id}
+                      value={s.user.id + "_" + s.user_name}
                     >
                       {s.user_name}
                     </option>
@@ -281,6 +307,7 @@ export default function ChatParticipantConfig(props) {
         isQuestion={isConfirmDelete}
         onYesAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           deleteParticipant(idDelete);
           document.getElementById(
             "controlPanelContentContainer"
@@ -288,12 +315,14 @@ export default function ChatParticipantConfig(props) {
         }}
         onNoAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";
         }}
         onCloseAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";

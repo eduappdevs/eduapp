@@ -3,19 +3,25 @@ import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import * as COURSESERVICE from "../services/course.service";
+import * as CHATSERVICE from "../services/chat.service";
+import * as ROLESERVICE from "../services/role.service";
+import asynchronizeRequest from "../API";
+import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
+import EncryptionUtils from "../utils/EncryptionUtils";
+import PageSelect from "./pagination/PageSelect";
+
+const system_user_name = "eduapp_system";
 export default function UserConfig(props) {
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
-  let selectedUsers = [];
 
   const [changeName, setChangeName] = useState(false);
   const [changeEmail, setChangeEmail] = useState(false);
-  const [changeIsAdmin, setChangeIsAdmin] = useState(false);
 
   const [newName] = useState();
   const [newEmail] = useState();
-  const [newIsAdmin] = useState();
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -23,6 +29,19 @@ export default function UserConfig(props) {
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
+
+  const [userPermRoles, setUserPermRoles] = useState([]);
+  const [allSelected, setAllSelected] = useState(true);
+  const [maxPages, setMaxPages] = useState(1);
+
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
+  const selectAll = () => {
+    setAllSelected(!allSelected);
+    for (let c of document.getElementsByName("user-check")) {
+      c.checked = allSelected;
+    }
+  };
 
   const switchSaveState = (state) => {
     if (state) {
@@ -43,12 +62,19 @@ export default function UserConfig(props) {
   };
 
   const fetchUsers = () => {
-    API.asynchronizeRequest(function () {
-      USERSERVICE.fetchUserInfos().then((us) => {
-        setUsers(us.data);
-      });
-    }).then((e) => {
+    asynchronizeRequest(function () {
+      USERSERVICE.pagedUserInfos(1)
+        .then((us) => {
+          setMaxPages(us.data.total_pages);
+          setUsers(us.data.current_page);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The users could not be showed, check if you have an internet connection."
@@ -56,6 +82,33 @@ export default function UserConfig(props) {
         setPopupIcon("error");
         switchSaveState(false);
       }
+    });
+  };
+
+  const fetchUserPage = (page) => {
+    asynchronizeRequest(function () {
+      USERSERVICE.pagedUserInfos(page)
+        .then((us) => {
+          setMaxPages(us.data.total_pages);
+          setUsers(us.data.current_page);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
+    });
+  };
+
+  const fetchRoles = () => {
+    asynchronizeRequest(function () {
+      ROLESERVICE.fetchRoles()
+        .then((roles) => {
+          setUserPermRoles(roles);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -91,9 +144,11 @@ export default function UserConfig(props) {
       let isAdmin =
         e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
 
-      let inputName = document.getElementById("inputName_" + s.id).value;
-      let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-      let inputIsAdmin = document.getElementById("inputIsAdmin_" + s.id).value;
+      let inputName = document.getElementById("inputName_" + s.user.id).value;
+      let inputEmail = document.getElementById("inputEmail_" + s.user.id).value;
+      let inputIsAdmin = document.getElementById(
+        "inputIsAdmin_" + s.user.id
+      ).value;
 
       let editTitle, editEmail, editisAdmin;
 
@@ -123,7 +178,7 @@ export default function UserConfig(props) {
           isLoggedWithGoogle: s.isLoggedWithGoogle,
           googleid: s.googleid,
           user: {
-            id: s.user_id,
+            id: s.user.id,
             email: editEmail,
           },
         })
@@ -214,7 +269,7 @@ export default function UserConfig(props) {
             isLoggedWithGoogle: s.isLoggedWithGoogle,
             googleid: s.googleid,
             user: {
-              id: s.user_id,
+              id: s.user.id,
               email: editEmail,
             },
           })
@@ -270,14 +325,13 @@ export default function UserConfig(props) {
         let isAdmin =
           e.target.parentNode.parentNode.childNodes[3].childNodes[0];
 
-        let inputName = document.getElementById("inputName_" + s.user_id).value;
+        let inputName = document.getElementById("inputName_" + s.user.id).value;
         let inputEmail = document.getElementById(
-          "inputEmail_" + s.user_id
+          "inputEmail_" + s.user.id
         ).value;
         let inputIsAdmin = document.getElementById(
-          "inputIsAdmin_" + s.user_id
+          "inputIsAdmin_" + s.user.id
         ).checked;
-        console.log(inputName, inputEmail, inputIsAdmin);
 
         let editTitle, editEmail, editisAdmin;
 
@@ -302,7 +356,7 @@ export default function UserConfig(props) {
         API.asynchronizeRequest(function () {
           USERSERVICE.editUser({
             id: s.id,
-            user_id: s.user_id,
+            user_id: s.user.id,
             user_name: editTitle,
             isAdmin: editisAdmin,
             profile_image: s.profile_image,
@@ -499,38 +553,30 @@ export default function UserConfig(props) {
   };
 
   const createUser = () => {
-    let isAdmin = document.getElementById("u_admin").checked;
     let email = document.getElementById("u_email").value;
     let pass = document.getElementById("u_pass").value;
+    let role = document.getElementById("u_role").value;
 
     if (email && pass) {
-      const payload = new FormData();
-      payload.append("user[email]", email);
-      payload.append("user[password]", pass);
-
-      API.asynchronizeRequest(function () {
-        USERSERVICE.createUser(payload).then((res) => {
-          const payload = new FormData();
-          payload.delete("user[email]");
-          payload.delete("user[password]");
-          payload.append("user_id", res.data.message.id);
-          payload.append("user_name", res.data.message.email.split("@")[0]);
-          payload.append("isAdmin", isAdmin);
-
-          USERSERVICE.createInfo(payload).then(() => {
-            userEnroll(res.data.message.id);
-            fetchUsers();
-            document.getElementById("u_admin").checked = false;
-            document.getElementById("u_email").value = null;
-            document.getElementById("u_pass").value = null;
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The new user was created successfully.");
-            switchSaveState(true);
-          });
+      asynchronizeRequest(async function () {
+        USERSERVICE.createUser({
+          requester_id: getOfflineUser().user.id,
+          email: email,
+          password: pass,
+          user_role: role,
+        }).then(async (res) => {
+          await userEnroll(res.data.user.id);
+          fetchUsers();
+          document.getElementById("u_email").value = null;
+          document.getElementById("u_pass").value = null;
+          setPopup(true);
+          setPopupType("info");
+          setPopupText("The new user was created successfully.");
+          switchSaveState(true);
         });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
             "The new user could not be published, check if you have an internet connection."
@@ -544,17 +590,21 @@ export default function UserConfig(props) {
     }
   };
 
-  const userEnroll = (uId) => {
+  const userEnroll = async (uId) => {
     const payload = new FormData();
-    payload.append("course_id", 1);
+    payload.append(
+      "course_id",
+      (await COURSESERVICE.fetchGeneralCourse()).data.id
+    );
     payload.append("user_id", uId);
 
     API.asynchronizeRequest(function () {
       ENROLLSERVICE.createTuition(payload).then(() => {
         console.log("User tuition has been completed successfully!");
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The new user could not be published, check if you have an internet connection."
@@ -565,25 +615,36 @@ export default function UserConfig(props) {
     });
   };
 
-  const deleteUser = (id) => {
-    API.asynchronizeRequest(function () {
-      USERSERVICE.deleteUser(id)
-        .then(() => {
-          fetchUsers();
-        })
-        .catch(() => {
-          showDeleteError();
+  const deleteUser = async (id) => {
+    let systemUser = (await USERSERVICE.fetchSystemUser()).data;
+    if (id !== systemUser.user.id) {
+      if (id !== getOfflineUser().user.id) {
+        asynchronizeRequest(function () {
+          USERSERVICE.deleteUser(id)
+            .then(() => {
+              fetchUsers();
+            })
+            .catch(async (err) => {
+              await interceptExpiredToken(err);
+              console.error(err);
+            });
+        }).then(async (e) => {
+          if (e) {
+            await interceptExpiredToken(e);
+            setPopup(true);
+            setPopupText(
+              "The user could not be deleted, check if you have an internet connection."
+            );
+            setPopupIcon("error");
+            switchSaveState(true);
+          }
         });
-    }).then((e) => {
-      if (e) {
-        setPopup(true);
-        setPopupText(
-          "The user could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(true);
+      } else {
+        alert("Dumbass");
       }
-    });
+    } else {
+      alert("Cannot delete system user.");
+    }
   };
 
   const handleChangeName = (id) => {
@@ -596,9 +657,42 @@ export default function UserConfig(props) {
     return document.getElementById(`inputEmail_${id}`).value;
   };
 
-  const handleChangeIsAdmin = (id) => {
-    setChangeIsAdmin(true);
-    return document.getElementById(`inputIsAdmin_${id}`).value;
+  const notifyUsers = async () => {
+    let notifyMsg = "This is a test message. 2";
+    let systemUser = (await USERSERVICE.fetchSystemUser()).data;
+    for (let u of document.getElementsByName("user-check")) {
+      if (u.checked) {
+        let uid = u.id.split("_")[1];
+        let chat_info;
+        try {
+          chat_info = await CHATSERVICE.fetchUserNotifsChat(uid);
+        } catch (err) {
+          let chat_id = await CHATSERVICE.createCompleteChat({
+            base: {
+              chat_name: "private_chat_system_" + uid,
+              isGroup: false,
+              isReadOnly: true,
+            },
+            participants: {
+              user_ids: [uid, systemUser.user.id],
+            },
+          });
+          chat_info = await CHATSERVICE.findChatById(chat_id);
+        }
+
+        await CHATSERVICE.createMessage({
+          chat_base_id: chat_info.data.id,
+          user_id: systemUser.user.id,
+          message: EncryptionUtils.encrypt(
+            notifyMsg,
+            atob(chat_info.data.public_key)
+          ),
+          send_date: new Date().toISOString(),
+        });
+        u.checked = false;
+        console.log("Sent notification.");
+      }
+    }
   };
 
   const filterUsersWithRole = (role, user) => {
@@ -626,41 +720,18 @@ export default function UserConfig(props) {
     }
   };
 
-  const selectAllUsers = () => {
-    if (selectedUsers.length === 0) {
-      users.map((user) => {
-        selectedUsers.push(user.user.id);
-        document.getElementById("select_user_" + user.user.id).checked = true;
-      });
-
-      document.getElementById("select_all_users").checked = true;
-    } else {
-      selectedUsers = [];
-      document.getElementById("select_all_users").checked = false;
-      users.map((user) => {
-        document.getElementById("select_user_" + user.user.id).checked = false;
-      });
-    }
-  };
-  const selectUser = (id) => {
-    console.log(" que cojones ");
-    if (document.getElementById("select_user_" + id).checked) {
-      selectedUsers.push(id);
-    } else {
-      selectedUsers = selectedUsers.filter((user) => {
-        return user !== id;
-      });
-    }
-  };
-
   useEffect(() => {
     setSearch(props.search);
   }, [props.search]);
+
   useEffect(() => {
     setUserRole(props.userRole);
   }, [props.userRole]);
+
   useEffect(() => {
     fetchUsers();
+    fetchRoles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -669,10 +740,10 @@ export default function UserConfig(props) {
         <table>
           <thead>
             <tr>
-              <th></th>
+              <th>{props.language.add}</th>
               <th>{props.language.email}</th>
               <th>{props.language.password}</th>
-              <th>{props.language.isAdmin}</th>
+              <th>{props.language.userRole}</th>
             </tr>
           </thead>
           <tbody>
@@ -728,54 +799,44 @@ export default function UserConfig(props) {
                 />
               </td>
               <td style={{ textAlign: "center" }}>
-                <input
-                  id="u_admin"
-                  type="checkbox"
-                  placeholder={props.language.name}
-                />
+                <select id="u_role">
+                  {userPermRoles.map((r) => {
+                    return (
+                      <option key={r.id} value={r.name}>
+                        {r.name}
+                      </option>
+                    );
+                  })}
+                </select>
               </td>
             </tr>
           </tbody>
         </table>
-
-        <table style={{ marginTop: "50px" }}>
+        <div className="notify-users">
+          <PageSelect
+            onPageChange={async (p) => fetchUserPage(p)}
+            maxPages={maxPages}
+          />
+          <button onClick={() => notifyUsers()}>Notify Selected Users</button>
+        </div>
+        <table style={{ marginTop: "25px" }}>
           <thead>
             <tr>
               <th>
-                <div className="sendMessages">
-                  <input
-                    type="checkbox"
-                    onClick={selectAllUsers}
-                    name="select_all_users"
-                    id={`select_all_users`}
-                  />
-                  <button
-                    className={selectedUsers.length > 0 && "disabled"}
-                    disabled={selectedUsers.length > 0 ? false : true}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      class="bi bi-send-plus-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 1.59 2.498C8 14 8 13 8 12.5a4.5 4.5 0 0 1 5.026-4.47L15.964.686Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" />
-                      <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0v-1h1a.5.5 0 0 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z" />
-                    </svg>
-                  </button>
-                </div>
+                <input type={"checkbox"} onChange={() => selectAll()} />
               </th>
+              <th>{props.language.userId}</th>
+              <th>{props.language.name}</th>
               <th>{props.language.email}</th>
-              <th>{props.language.isAdmin}</th>
+              <th>{props.language.userRole}</th>
               <th>{props.language.googleLinked}</th>
               <th>{props.language.actions}</th>
             </tr>
           </thead>
           <tbody>
             {users
-              ? users.map((u) => {
+              ? // eslint-disable-next-line array-callback-return
+                users.map((u) => {
                   if (search.length > 0) {
                     if (
                       (u.user_name.includes(search) ||
@@ -786,30 +847,33 @@ export default function UserConfig(props) {
                         <tr key={u.id}>
                           <td>
                             <input
-                              type="checkbox"
-                              name="select_user"
-                              onClick={() => {
-                                selectUser(u.user.id);
-                              }}
-                              id={`select_user_${u.user.id}`}
+                              id={`check_${u.user.id}`}
+                              type={"checkbox"}
+                              disabled={u.user_name === system_user_name}
+                              name={
+                                u.user_name === system_user_name
+                                  ? null
+                                  : "user-check"
+                              }
                             />
                           </td>
+                          <td>{shortUUID(u.user.id)}</td>
                           <td>
                             <input
-                              id={`inputName_${u.user_id}`}
+                              id={`inputName_${u.user.id}`}
                               type="text"
                               disabled
                               value={
                                 changeName === false ? u.user_name : newName
                               }
                               onChange={() => {
-                                handleChangeName(u.user_id);
+                                handleChangeName(u.user.id);
                               }}
                             />
                           </td>
                           <td>
                             <input
-                              id={`inputEmail_${u.user_id}`}
+                              id={`inputEmail_${u.user.id}`}
                               type="text"
                               disabled
                               value={
@@ -820,42 +884,12 @@ export default function UserConfig(props) {
                               }}
                             />
                           </td>
-                          <td style={{ textAlign: "center" }}>
-                            {changeIsAdmin === false ? (
-                              u.isAdmin ? (
-                                <input
-                                  id={`inputIsAdmin_${u.user.id}`}
-                                  type="checkbox"
-                                  disabled
-                                  checked
-                                  onChange={() => {
-                                    handleChangeIsAdmin(u.user.id);
-                                  }}
-                                />
-                              ) : (
-                                <input
-                                  id={`inputIsAdmin_${u.user.id}`}
-                                  type="checkbox"
-                                  disabled
-                                  onChange={() => {
-                                    handleChangeIsAdmin(u.user.id);
-                                  }}
-                                />
-                              )
-                            ) : newIsAdmin ? (
-                              <input
-                                id={`inputIsAdmin_${u.user.id}`}
-                                type="checkbox"
-                                disabled
-                                checked
-                              />
-                            ) : (
-                              <input
-                                id={`inputIsAdmin_${u.user.id}`}
-                                type="checkbox"
-                                disabled
-                              />
-                            )}
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              value={u.user_role.name}
+                            />
                           </td>
                           <td>
                             <input
@@ -959,15 +993,17 @@ export default function UserConfig(props) {
                       <tr key={u.id}>
                         <td>
                           <input
-                            type="checkbox"
-                            name="select_user"
-                            onClick={() => {
-                              selectUser(u.user.id);
-                            }}
-                            id={`select_user_${u.user.id}`}
+                            id={`check_${u.user.id}`}
+                            type={"checkbox"}
+                            disabled={u.user_name === system_user_name}
+                            name={
+                              u.user_name === system_user_name
+                                ? null
+                                : "user-check"
+                            }
                           />
                         </td>
-
+                        <td>{shortUUID(u.user.id)}</td>
                         <td>
                           <input
                             id={`inputName_${u.user.id}`}
@@ -992,42 +1028,12 @@ export default function UserConfig(props) {
                             }}
                           />
                         </td>
-                        <td style={{ textAlign: "center" }}>
-                          {changeIsAdmin === false ? (
-                            u.isAdmin ? (
-                              <input
-                                id={`inputIsAdmin_${u.user.id}`}
-                                type="checkbox"
-                                disabled
-                                checked
-                                onChange={() => {
-                                  handleChangeIsAdmin(u.user.id);
-                                }}
-                              />
-                            ) : (
-                              <input
-                                id={`inputIsAdmin_${u.user.id}`}
-                                type="checkbox"
-                                disabled
-                                onChange={() => {
-                                  handleChangeIsAdmin(u.user.id);
-                                }}
-                              />
-                            )
-                          ) : newIsAdmin ? (
-                            <input
-                              id={`inputIsAdmin_${u.user.id}`}
-                              type="checkbox"
-                              disabled
-                              checked
-                            />
-                          ) : (
-                            <input
-                              id={`inputIsAdmin_${u.user.id}`}
-                              type="checkbox"
-                              disabled
-                            />
-                          )}
+                        <td>
+                          <input
+                            type="text"
+                            disabled
+                            value={u.user_role.name}
+                          />
                         </td>
                         <td>
                           <input
@@ -1137,10 +1143,21 @@ export default function UserConfig(props) {
                         <tr key={u.id}>
                           <td>
                             <input
-                              type="checkbox"
+                              id={`check_${u.user.id}`}
+                              type={"checkbox"}
+                              disabled={u.user_name === system_user_name}
+                              name={
+                                u.user_name === system_user_name
+                                  ? null
+                                  : "user-check"
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
                               disabled
-                              name="select_user"
-                              id={`select_user_${u.user.id}`}
+                              value={shortUUID(u.user.id)}
                             />
                           </td>
                           <td>
@@ -1149,12 +1166,12 @@ export default function UserConfig(props) {
                           <td>
                             <input type="text" disabled value={u.user.email} />
                           </td>
-                          <td style={{ textAlign: "center" }}>
-                            {u.isAdmin ? (
-                              <input type="checkbox" disabled checked />
-                            ) : (
-                              <input type="checkbox" disabled />
-                            )}
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              value={u.user_role.name}
+                            />
                           </td>
                           <td>
                             <input
@@ -1195,10 +1212,21 @@ export default function UserConfig(props) {
                       <tr key={u.id}>
                         <td>
                           <input
-                            type="checkbox"
-                            name="select_user"
+                            id={`check_${u.user.id}`}
+                            type={"checkbox"}
+                            disabled={u.user_name === system_user_name}
+                            name={
+                              u.user_name === system_user_name
+                                ? null
+                                : "user-check"
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
                             disabled
-                            id={`select_user_${u.user.id}`}
+                            value={shortUUID(u.user.id)}
                           />
                         </td>
                         <td>
@@ -1208,11 +1236,7 @@ export default function UserConfig(props) {
                           <input type="text" disabled value={u.user.email} />
                         </td>
                         <td style={{ textAlign: "center" }}>
-                          {u.isAdmin ? (
-                            <input type="checkbox" disabled checked />
-                          ) : (
-                            <input type="checkbox" disabled />
-                          )}
+                          <input type="checkbox" disabled checked={u.isAdmin} />
                         </td>
                         <td>
                           <input
@@ -1272,11 +1296,11 @@ export default function UserConfig(props) {
                             <input type="text" disabled value={u.user.email} />
                           </td>
                           <td style={{ textAlign: "center" }}>
-                            {u.isAdmin ? (
-                              <input type="checkbox" disabled checked />
-                            ) : (
-                              <input type="checkbox" disabled />
-                            )}
+                            <input
+                              type="checkbox"
+                              disabled
+                              checked={u.isAdmin}
+                            />
                           </td>
                           <td>
                             <input
@@ -1330,11 +1354,7 @@ export default function UserConfig(props) {
                           <input type="text" disabled value={u.user.email} />
                         </td>
                         <td style={{ textAlign: "center" }}>
-                          {u.isAdmin ? (
-                            <input type="checkbox" disabled checked />
-                          ) : (
-                            <input type="checkbox" disabled />
-                          )}
+                          <input type="checkbox" disabled checked={u.isAdmin} />
                         </td>
                         <td>
                           <input
@@ -1369,6 +1389,8 @@ export default function UserConfig(props) {
                         </td>
                       </tr>
                     );
+                  } else {
+                    return null;
                   }
                 })
               : null}
@@ -1384,12 +1406,14 @@ export default function UserConfig(props) {
         onYesAction={() => {
           setPopup(false);
           deleteUser(idDelete);
+          setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";
         }}
         onNoAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";
@@ -1397,6 +1421,7 @@ export default function UserConfig(props) {
         onCloseAction={() => {
           setPopup(false);
           switchSaveState();
+          setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";

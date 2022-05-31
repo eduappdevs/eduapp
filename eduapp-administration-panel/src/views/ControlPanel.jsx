@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Toolbar from "../components/toolbar";
 import Navbar from "../components/Navbar";
-import "../styles/users.css";
-import "../styles/controlPanel.css";
 import Schedulesessionslist from "../components/schedulesessionslist";
 import Scheduleeventslist from "../components/scheduleeventslist";
 import InstitutionConfig from "../components/institutionConfig";
@@ -10,7 +8,6 @@ import CourseConfig from "../components/courseConfig";
 import SubjectsConfig from "../components/subjectsConfig";
 import UserConfig from "../components/userConfig";
 import EnrollConfig from "../components/enrollConfig";
-import "../styles/controlPanel.css";
 import ChatConfig from "../components/ChatConfig";
 import ChatMessageConfig from "../components/ChatMessageConfig";
 import ChatParticipantConfig from "../components/ChatParticipantConfig";
@@ -20,18 +17,18 @@ import * as API from "../API";
 import LANGUAGES from "../constants/languages";
 import * as COURSESERVICE from "../services/course.service";
 import ResourcesConfig from "../components/ResourcesConfig";
+import "../styles/users.css";
+import "../styles/controlPanel.css";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
   const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
   const [language, setLanguage] = useState("en");
-  const changeToolbarLocation = (incoming) => {
-    console.log("click", incoming);
-    setLocation(incoming);
-  };
   const [subjects, setSubjects] = useState([]);
   const [courses, setCourses] = useState([]);
+
+  const changeToolbarLocation = (incoming) => setLocation(incoming);
 
   const fetchSubject = () => {
     API.asynchronizeRequest(function () {

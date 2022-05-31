@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function ChatMessageConfig() {
   const [message, setMessage] = useState([]);
@@ -38,42 +39,67 @@ export default function ChatMessageConfig() {
       eventJson[context[i]] = json[i];
     }
     API.asynchronizeRequest(function () {
-      CHATSERVICE.createMessage(eventJson).then(() => {
-        fetchMessage();
-        swapIcons(false);
-      });
+      CHATSERVICE.createMessage(eventJson)
+        .then(() => {
+          fetchMessage();
+          swapIcons(false);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchMessage = async () => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.fetchMessage().then((res) => {
-        setMessage(res);
-      });
+      CHATSERVICE.fetchMessage()
+        .then((res) => {
+          setMessage(res);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchChat = async () => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.fetchChat().then((res) => {
-        setChat(res);
-      });
+      CHATSERVICE.fetchChat()
+        .then((res) => {
+          setChat(res);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const fetchUser = async () => {
     API.asynchronizeRequest(function () {
-      USERSERVICE.fetchUserInfos().then((res) => {
-        setUser(res);
-      });
+      USERSERVICE.fetchUserInfos()
+        .then((res) => {
+          setUser(res);
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
   const deleteMessage = async (id) => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.deleteMessage(id).then(() => {
-        fetchMessage();
-      });
+      CHATSERVICE.deleteMessage(id)
+        .then(() => {
+          fetchMessage();
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
     });
   };
 
@@ -86,6 +112,7 @@ export default function ChatMessageConfig() {
       document.getElementById("ins-add-icon").style.display = "block";
     }
   };
+
   const swapIconsDelete = (state, button, id) => {
     let deleteIcon = button.childNodes[0];
     let deleteLoader = button.childNodes[1];

@@ -1,8 +1,8 @@
-import axios from "axios";
 import { React, useEffect, useState } from "react";
-import { CALENDAR, EDUAPP_SESSIONS } from "../../../config";
 import { asynchronizeRequest } from "../../../API";
+import * as SCHEDULE_SERVICE from "../../../services/schedule.service";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import { getOfflineUser } from "../../../utils/OfflineManager";
 import "./views.css";
 
 export default function EditView(props) {
@@ -92,8 +92,7 @@ export default function EditView(props) {
       editEndDate,
       editChat,
       editResources,
-      editStream,
-      editId;
+      editStream;
 
     if (titleValue !== "" && titleValue !== props.data.title) {
       editTitle = titleValue;
@@ -142,18 +141,17 @@ export default function EditView(props) {
 
     if (props.data.description !== undefined) {
       var editEvent = {
-        id: editId,
+        id: props.data.id,
         annotation_start_date: editStartDate,
         annotation_end_date: editEndDate,
         annotation_title: editTitle,
         annotation_description: editDescription,
         isGlobal: props.data.isGlobal,
-        user_id: localStorage.userId,
+        user_id: getOfflineUser().user.id,
       };
-      asynchronizeRequest(function () {
-        axios.put(CALENDAR + "/" + props.data.id, editEvent).then(() => {
-          window.location.reload();
-        });
+      asynchronizeRequest(async function () {
+        await SCHEDULE_SERVICE.editEvent(editEvent);
+        window.location.reload();
       }).then((error) => {
         if (error) {
           showUpdateError();
@@ -162,6 +160,7 @@ export default function EditView(props) {
       });
     } else {
       var editEventSession = {
+        id: props.data.id,
         session_name: editTitle,
         session_start_date: editStartDate,
         session_end_date: editEndDate,
@@ -169,12 +168,9 @@ export default function EditView(props) {
         resources_platform: editResources,
         session_chat_id: editChat,
       };
-      asynchronizeRequest(function () {
-        axios
-          .put(EDUAPP_SESSIONS + "/" + props.data.id, editEventSession)
-          .then(() => {
-            window.location.reload();
-          });
+      asynchronizeRequest(async function () {
+        await SCHEDULE_SERVICE.editSession(editEventSession);
+        window.location.reload();
       }).then((error) => {
         if (error) {
           showUpdateError();
@@ -186,18 +182,16 @@ export default function EditView(props) {
 
   const deleteEvent = async () => {
     if (props.data.description !== undefined) {
-      asynchronizeRequest(function () {
-        axios.delete(CALENDAR + "/" + props.data.id).then(() => {
-          window.location.reload();
-        });
+      asynchronizeRequest(async function () {
+        await SCHEDULE_SERVICE.deleteEvent(props.data.id);
+        window.location.reload();
       }).then((error) => {
         if (error) showDeleteError();
       });
     } else {
-      asynchronizeRequest(function () {
-        axios.delete(EDUAPP_SESSIONS + "/" + props.data.id).then(() => {
-          window.location.reload();
-        });
+      asynchronizeRequest(async function () {
+        await SCHEDULE_SERVICE.deleteSession(props.data.id);
+        window.location.reload();
       }).then((error) => {
         if (error) showDeleteError();
       });

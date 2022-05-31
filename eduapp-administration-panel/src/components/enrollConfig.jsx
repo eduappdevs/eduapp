@@ -4,6 +4,7 @@ import * as TUITIONSSERVICE from "../services/enrollConfig.service";
 import * as USERSSERVICE from "../services/user.service";
 import * as COURSESERVICE from "../services/course.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function EnrollConfig(props) {
   const [tuitions, setTuitions] = useState(null);
@@ -34,8 +35,9 @@ export default function EnrollConfig(props) {
         setTuitions(ts.data);
         enrollment_filter.enroll = ts.data;
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The tuitions not be showed, check if you have an internet connection."
@@ -66,8 +68,9 @@ export default function EnrollConfig(props) {
       USERSSERVICE.fetchUserInfos().then((us) => {
         setUsers(us.data);
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The users could not be showed, check if you have an internet connection."
@@ -102,8 +105,9 @@ export default function EnrollConfig(props) {
         setCourses(cs.data);
         enrollment_filter.couses = cs.data;
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The courses could not be showed, check if you have an internet connection."
@@ -140,8 +144,8 @@ export default function EnrollConfig(props) {
     if (valid) {
       API.asynchronizeRequest(function () {
         const payload = new FormData();
-        payload.append("course_id", parseInt(course));
-        payload.append("user_id", parseInt(user));
+        payload.append("course_id", course);
+        payload.append("user_id", user);
 
         TUITIONSSERVICE.createTuition(payload).then(() => {
           fetchAll();
@@ -150,8 +154,9 @@ export default function EnrollConfig(props) {
           setPopupText("The tuition was created successfully.");
           switchSaveState(false);
         });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
             "The enrollment could not be published, check if you have an internet connection."
@@ -170,7 +175,7 @@ export default function EnrollConfig(props) {
     setPopupText("Required information is missing.");
     setPopupType("error");
     setPopup(true);
-    isConfirmDelete(false);
+    setIsConfirmDelete(false);
   };
 
   const deleteTuition = (id) => {
@@ -179,11 +184,13 @@ export default function EnrollConfig(props) {
         .then(() => {
           fetchAll();
         })
-        .catch(() => {
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
           showDeleteError();
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The enrollment could not be deleted, check if you have an internet connection."
@@ -327,8 +334,9 @@ export default function EnrollConfig(props) {
             switchSaveState(false);
             setIsConfirmDelete(false);
           })
-          .catch((e) => {
+          .catch(async (e) => {
             if (e) {
+              await interceptExpiredToken(e);
               setPopupText(
                 "The enrollment could not be edited, check if you entered the correct fields."
               );
@@ -338,8 +346,9 @@ export default function EnrollConfig(props) {
               setIsConfirmDelete(false);
             }
           });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
             "The enrollment could not be edited, check if you have an internet connection."
@@ -415,8 +424,9 @@ export default function EnrollConfig(props) {
                 setPopup(true);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The enrollment could not be edited, check if you have an internet connection."
@@ -473,8 +483,9 @@ export default function EnrollConfig(props) {
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setPopupText(
                   "The enrollment could not be edited, check if you entered the correct fields."
                 );
@@ -484,8 +495,9 @@ export default function EnrollConfig(props) {
                 setPopup(true);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The enrollment could not be edited, check if you have an internet connection."
@@ -597,7 +609,7 @@ export default function EnrollConfig(props) {
         <table>
           <thead>
             <tr>
-              <th></th>
+              <th>{props.language.add}</th>
               <th>{props.language.user}</th>
               <th>{props.language.course}</th>
             </tr>
@@ -649,7 +661,7 @@ export default function EnrollConfig(props) {
                   {users
                     ? users.map((u) => {
                         return (
-                          <option key={u.id} value={u.user_id}>
+                          <option key={u.id} value={u.user.id}>
                             {u.user.email}
                           </option>
                         );

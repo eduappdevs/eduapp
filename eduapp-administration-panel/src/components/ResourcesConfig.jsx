@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import asynchronizeRequest from "../API";
 import * as USER_SERVICE from "../services/user.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
-import "../styles/resourcesConfig.css";
 import ResourcesModal from "./modals/resources-modal/ResourcesModal";
 import * as RESOURCESERVICES from "../services/resource.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import "../styles/resourcesConfig.css";
 
 export default function ResourcesConfig(props) {
   const [users, setUsers] = useState([]);
@@ -34,6 +34,8 @@ export default function ResourcesConfig(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const fetchUsers = () => {
     asynchronizeRequest(function () {
       USER_SERVICE.fetchUserInfos().then((res) => {
@@ -50,7 +52,7 @@ export default function ResourcesConfig(props) {
     });
   };
 
-  const fetchResources = () => {
+  const fetchResources = async () => {
     asynchronizeRequest(function () {
       RESOURCESERVICES.fetchResources().then((res) => {
         setResources(res.data);
@@ -126,6 +128,10 @@ export default function ResourcesConfig(props) {
     setPopupText("The resources was created successfully.");
     document.getElementById("controlPanelContentContainer").style.overflow =
       "scroll";
+    document.getElementById("btn-delete-resources").style.display = "block";
+    document.getElementById("show-edit-option").style.display = "block";
+    document.getElementById("btn-edit").style.display = "none";
+    document.getElementById("btn-cancel-resources").style.display = "none";
   };
   const confirmModalEdit = async () => {
     setShowModal(false);
@@ -134,7 +140,7 @@ export default function ResourcesConfig(props) {
     fetchResources();
     setPopup(true);
     setPopupType("info");
-    setPopupText("The resources was edit successfully.");
+    setPopupText("The resources was edited successfully.");
     document.getElementById("controlPanelContentContainer").style.overflow =
       "scroll";
   };
@@ -170,17 +176,17 @@ export default function ResourcesConfig(props) {
     } else {
       editDescription = res.description;
     }
-    if (subject_id !== "" && subject_id !== res.subject_id) {
+    if (subject_id !== "" && subject_id !== res.subject.id) {
       editSubject = subject_id;
     } else {
-      editSubject = res.subject_id;
+      editSubject = res.subject.id;
     }
 
     if (editName !== null && editDescription !== null && editSubject !== null) {
       setResourceName(name);
-      setResourceSubject(subject_id);
+      setResourceSubject(subject.find((s) => s.id === editSubject));
       setResourceDescription(description);
-      setResourceAuthor(author);
+      setResourceAuthor(users.find((u) => u.user.email === author));
       setInfo(res);
       setShowModal(true);
       setShowModalEdit(true);
@@ -197,20 +203,13 @@ export default function ResourcesConfig(props) {
     let description = document.getElementById("i_description").value;
     let author = document.getElementById("i_author").value;
 
-    if (
-      name !== null &&
-      name !== "" &&
-      description !== null &&
-      author !== null &&
-      author !== props.language.chooseAuthor &&
-      subject_id !== null &&
-      subject_id !== props.language.chooseSubject
-    ) {
+    if (name.length > 0 && author !== "--" && subject_id !== "--") {
       setResourceName(name);
       setResourceSubject(subject_id);
       setResourceDescription(description);
-      setResourceAuthor(author);
+      setResourceAuthor(users.find((u) => u.user.id === author));
       setShowModal(true);
+      setShowCreateModal(true);
     } else {
       alertCreate();
     }
@@ -324,7 +323,7 @@ export default function ResourcesConfig(props) {
       checkButton.style.display = "block";
       let cancelButton = e.target.parentNode.parentNode.childNodes[3];
       cancelButton.style.display = "block";
-      listSubject(subject.value.split("_")[1]);
+      listSubject(subject.value);
     } else {
       if (e.target.tagName === "path") {
         let name =
@@ -354,7 +353,7 @@ export default function ResourcesConfig(props) {
         let cancelButton =
           e.target.parentNode.parentNode.parentNode.childNodes[3];
         cancelButton.style.display = "block";
-        listSubject(subject.value.split("_")[1]);
+        listSubject(subject.value);
       } else {
         let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
         let description =
@@ -373,7 +372,7 @@ export default function ResourcesConfig(props) {
         checkButton.style.display = "block";
         let cancelButton = e.target.parentNode.childNodes[3];
         cancelButton.style.display = "block";
-        listSubject(subject.value.split("_")[1]);
+        listSubject(subject.value);
       }
     }
   };
@@ -381,7 +380,7 @@ export default function ResourcesConfig(props) {
   const listSubject = (sub) => {
     let list_subject = [];
     subject.map((s) => {
-      if (s.id !== parseInt(sub)) {
+      if (s.id !== sub) {
         list_subject.push(s);
       }
       return true;
@@ -436,11 +435,9 @@ export default function ResourcesConfig(props) {
               </td>
               <td>
                 <select id="i_author">
-                  <option defaultValue="--">
-                    {props.language.chooseAuthor}
-                  </option>
+                  <option value="--">{props.language.chooseAuthor}</option>
                   {users.map((u) => (
-                    <option key={u.id} value={u.user.email}>
+                    <option key={u.id} value={u.user.id}>
                       {u.user.email}
                     </option>
                   ))}
@@ -448,9 +445,7 @@ export default function ResourcesConfig(props) {
               </td>
               <td>
                 <select id="i_subject">
-                  <option defaultValue={props.language.chooseSubject}>
-                    {props.language.chooseSubject}
-                  </option>
+                  <option value="--">{props.language.chooseSubject}</option>
                   {subject.map((s) => (
                     <option key={s.id} value={`${s.name}_${s.id}`}>
                       {s.name}
@@ -462,7 +457,6 @@ export default function ResourcesConfig(props) {
                 <button
                   onClick={() => {
                     showModals();
-                    setShowCreateModal(true);
                   }}
                 >
                   <svg
@@ -496,12 +490,18 @@ export default function ResourcesConfig(props) {
                   <th>{props.language.actions}</th>
                 </tr>
               </thead>
-
               <tbody>
                 {resources.map((r) => {
                   return (
                     <tr key={r.id}>
-                      <td>{r.id}</td>
+                      <td>
+                        <input
+                          type="text"
+                          id={`inputName_${r.id}`}
+                          disabled
+                          value={shortUUID(r.id)}
+                        />
+                      </td>
                       <td>
                         <input
                           type="text"
@@ -533,17 +533,12 @@ export default function ResourcesConfig(props) {
                           type="text"
                           id={`inputAuthor_${r.id}`}
                           disabled
-                          value={r.createdBy}
+                          value={r.user.email}
                         />
                       </td>
                       <td>
                         <select id={`inputSubjectID_${r.id}`} disabled>
-                          <option
-                            defaultValue={r.subject_id}
-                            value={`${r.subject.name}_${r.subject_id}`}
-                          >
-                            {r.subject.name}
-                          </option>
+                          <option value={r.subject.id}>{r.subject.name}</option>
                           {subjectEdit.map((s) => (
                             <option key={s.id} value={s.id}>
                               {s.name}
@@ -559,6 +554,7 @@ export default function ResourcesConfig(props) {
                         }}
                       >
                         <button
+                          id="btn-delete-resources"
                           style={{ marginRight: "5px" }}
                           onClick={() => {
                             confirmDeleteResource(r.id);
@@ -576,6 +572,7 @@ export default function ResourcesConfig(props) {
                           </svg>
                         </button>
                         <button
+                          id="show-edit-option"
                           style={{ marginRight: "5px" }}
                           onClick={(e) => {
                             showEditOptionResource(e);
@@ -597,6 +594,7 @@ export default function ResourcesConfig(props) {
                           </svg>
                         </button>
                         <button
+                          id="btn-edit"
                           style={{ marginRight: "5px", display: "none" }}
                           onClick={() => {
                             showModalsEdit(r);
@@ -614,6 +612,7 @@ export default function ResourcesConfig(props) {
                           </svg>
                         </button>
                         <button
+                          id="btn-cancel-resources"
                           style={{ display: "none" }}
                           onClick={(e) => {
                             closeEditResource(e, r);

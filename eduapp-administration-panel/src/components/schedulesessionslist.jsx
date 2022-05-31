@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-
 import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
-
 import Input from "./Input";
-
 import StandardModal from "./modals/standard-modal/StandardModal";
 import SessionsModal from "./modals/sessions-modal/SessionsModal";
-
+import { interceptExpiredToken } from "../utils/OfflineManager";
 import "../styles/schedulesessionslist.css";
 
 export default function Schedulesessionslist(props) {
@@ -44,18 +41,24 @@ export default function Schedulesessionslist(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
   const [idBatch, setIdBatch] = useState();
-  const [selectedAll, setSelectedAll] = useState(false);
 
   let sessions_filter = {};
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const fetchSessions = async () => {
     await API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.fetchSessions().then((e) => {
-        setSessions(e.data);
-        sessions_filter.sessions = e.data;
-      });
-    }).then((e) => {
+      SCHEDULESERVICE.fetchSessions()
+        .then((e) => {
+          setSessions(e.data);
+          sessions_filter.sessions = e.data;
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The calendar sessions could not be showed, check if you have an internet connection."
@@ -68,12 +71,17 @@ export default function Schedulesessionslist(props) {
 
   const fetchSubjects = async () => {
     await API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubjects().then((res) => {
-        res.data.shift();
-        setSubject(res.data);
-      });
-    }).then((e) => {
+      SUBJECTSERVICE.fetchSubjects()
+        .then((res) => {
+          res.data.shift();
+          setSubject(res.data);
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The subjects could not be showed, check if you have an internet connection."
@@ -130,26 +138,35 @@ export default function Schedulesessionslist(props) {
     } else {
       alertCreate();
       switchSaveState(false);
+      return;
     }
 
     let SessionJson = {};
     for (let i = 0; i <= context.length - 1; i++) {
       SessionJson[context[i]] = json[i];
     }
+    console.log(SessionJson);
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.createSession(SessionJson).then(() => {
-        fetchSessions();
-        setPopup(true);
-        setPopupType("info");
-        setPopupText("The calendar events was created successfully.");
-        switchSaveState(true);
-      });
-    }).then((e) => {
+      SCHEDULESERVICE.createSession(SessionJson)
+        .then(() => {
+          fetchSessions();
+          setPopup(true);
+          setPopupType("info");
+          setPopupText("The calendar events was created successfully.");
+          setIsConfirmDelete(false);
+          switchSaveState(true);
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The calendar session could not be published, check if you have an internet connection."
         );
+        setIsConfirmDelete(false);
         setPopupIcon("error");
         switchSaveState(false);
       }
@@ -181,11 +198,13 @@ export default function Schedulesessionslist(props) {
           .then(() => {
             fetchSessions();
           })
-          .catch(() => {
+          .catch(async (e) => {
+            await interceptExpiredToken(e);
             showDeleteError();
           });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
             "The calendar session could not be deleted, check if you have an internet connection."
@@ -364,30 +383,30 @@ export default function Schedulesessionslist(props) {
               resources.disabled = true;
               chat.disabled = true;
               subject.disabled = true;
-
               setPopup(true);
               setPopupType("info");
               setPopupText("The calendar session was edited successfully.");
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setPopupText(
                   "The calendar session could not be edited, check if you entered the correct fields."
                 );
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
-                setIsConfirmDelete(false);
               }
             });
         } else {
           setSelectType(true);
           setSelectTypeModal(true);
         }
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
             "The calendar session could not be edited, check if you have an internet connection."
@@ -541,15 +560,14 @@ export default function Schedulesessionslist(props) {
                 resources.disabled = true;
                 chat.disabled = true;
                 subject.disabled = true;
-
-                switchSaveState(false);
-                setPopup(true);
                 setPopupType("info");
                 setPopupText("The calendar session was edited successfully.");
                 setIsConfirmDelete(false);
+                setPopup(true);
               })
-              .catch((e) => {
+              .catch(async (e) => {
                 if (e) {
+                  await interceptExpiredToken(e);
                   setPopupText(
                     "The calendar session could not be edited, check if you entered the correct fields."
                   );
@@ -563,8 +581,9 @@ export default function Schedulesessionslist(props) {
             setSelectType(true);
             setSelectTypeModal(true);
           }
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The calendar session could not be edited, check if you have an internet connection."
@@ -705,14 +724,15 @@ export default function Schedulesessionslist(props) {
                 resources.disabled = true;
                 chat.disabled = true;
                 subject.disabled = true;
-                setPopup(true);
                 setPopupType("info");
                 setPopupText("The calendar session was edited successfully.");
                 switchSaveState(false);
                 setIsConfirmDelete(false);
+                setPopup(true);
               })
-              .catch((e) => {
+              .catch(async (e) => {
                 if (e) {
+                  await interceptExpiredToken(e);
                   setPopupText(
                     "The calendar session could not be edited, check if you entered the correct fields."
                   );
@@ -726,8 +746,9 @@ export default function Schedulesessionslist(props) {
             setSelectType(true);
             setSelectTypeModal(true);
           }
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The calendar session could not be edited, check if you have an internet connection."
@@ -1147,6 +1168,7 @@ export default function Schedulesessionslist(props) {
         e.detail === props.language.chooseSubject ? -1 : e.detail.split("_")[0];
       sessionFilter(sessions_filter.sessions);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -1495,7 +1517,7 @@ export default function Schedulesessionslist(props) {
                 } else {
                   return (
                     <tr key={s.id}>
-                      <td>{s.id}</td>
+                      <td>{shortUUID(s.id)}</td>
                       <td>
                         <input
                           id={`inputName_${s.id}`}
@@ -1691,6 +1713,8 @@ export default function Schedulesessionslist(props) {
                     </tr>
                   );
                 }
+
+                return true;
               })}
             </tbody>
           </table>
@@ -1727,7 +1751,6 @@ export default function Schedulesessionslist(props) {
                     selectTypeModal
                       ? () => {
                           editSingleSession();
-                          setSelectedAll(false);
                         }
                       : () => {
                           console.log("first");

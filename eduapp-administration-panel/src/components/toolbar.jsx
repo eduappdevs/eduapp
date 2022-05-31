@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import "../styles/scheduletoolbar.css";
+import React, { useState } from "react";
 import Batcher from "./Batcher";
 import Input from "./Input";
 import SessionCSVModal from "./modals/sessionCSV-batch-modal/SessionCSVModal";
+import "../styles/scheduletoolbar.css";
+
 export default function Toolbar(props) {
   const [modalOpen, setModalOpen] = useState(false);
-  const [sessionType, setSessionType] = useState("");
 
   const handleChangeFilterSession = (event) => {
     document.dispatchEvent(
@@ -45,9 +45,7 @@ export default function Toolbar(props) {
     let value = event.target.value;
     props.userRole(value);
   };
-  useEffect(() => {
-    if (props.location === "sessions") setSessionType("");
-  }, [props.location]);
+
   return (
     <div className="scheduletoolbar-container">
       {props.location === "sessions" ? (
@@ -121,8 +119,7 @@ export default function Toolbar(props) {
                   "controlPanelContentContainer"
                 ).style.overflow = "scroll";
               }}
-              type={(x) => {
-                setSessionType(x);
+              type={() => {
                 document.getElementById(
                   "controlPanelContentContainer"
                 ).style.overflow = "scroll";

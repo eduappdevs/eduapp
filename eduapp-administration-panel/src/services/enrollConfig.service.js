@@ -1,8 +1,7 @@
 import axios from "axios";
-import { API_URL, token } from "../API";
+import { API_URL, TOKEN } from "../API";
 export const TUITIONS = `${API_URL}/tuitions`;
-
-const requestHeader = { Authorization: token };
+const requestHeader = { eduauth: TOKEN };
 
 export const fetchTuitions = async () => {
   return await axios.get(TUITIONS, { headers: requestHeader });
@@ -17,5 +16,7 @@ export const deleteTuition = async (id) => {
 };
 
 export const editTuition = async (body) => {
-  return await axios.put(`${TUITIONS}/${body.id}`, body, { headers: requestHeader });
+  return await axios.put(`${TUITIONS}/${body.id}`, body, {
+    headers: requestHeader,
+  });
 };

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as API from "../API";
+import { interceptExpiredToken } from "../utils/OfflineManager";
+
 export default function BatchPreviewTable(props) {
   const [data, setData] = useState(null);
 
@@ -23,9 +25,9 @@ export default function BatchPreviewTable(props) {
         default:
           break;
       }
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 2000);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     });
   };
 
@@ -161,11 +163,10 @@ export default function BatchPreviewTable(props) {
       SessionJson[context[i]] = json[i];
     }
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.createSession(SessionJson)
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        });
+      SCHEDULESERVICE.createSession(SessionJson).catch(async (err) => {
+        await interceptExpiredToken(err);
+        console.error(err);
+      });
     });
   };
 
@@ -180,32 +181,45 @@ export default function BatchPreviewTable(props) {
       payload.append("user[password]", pass);
 
       API.asynchronizeRequest(function () {
-        API.default.createUser(payload).then((res) => {
-          const payload = new FormData();
-          API.default.createInfo(payload);
-          payload.delete("user[email]");
-          payload.delete("user[password]");
-          payload.append("user_id", res.data.message.id);
-          payload.append("user_name", res.data.message.email.split("@")[0]);
-          payload.append("isAdmin", isAdmin);
+        API.default
+          .createUser(payload)
+          .then((res) => {
+            const payload = new FormData();
+            API.default.createInfo(payload);
+            payload.delete("user[email]");
+            payload.delete("user[password]");
+            payload.append("user_id", res.data.message.id);
+            payload.append("user_name", res.data.message.email.split("@")[0]);
+            payload.append("isAdmin", isAdmin);
 
-          API.default.createInfo(payload).then(() => {
-            userEnroll(res.data.message.id);
+            API.default
+              .createInfo(payload)
+              .then(() => {
+                userEnroll(res.data.message.id);
+              })
+              .catch(async (err) => {
+                await interceptExpiredToken(err);
+                console.error(err);
+              });
+          })
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
           });
-        });
       });
     }
   };
+
   const userEnroll = (uId) => {
     const payload = new FormData();
     payload.append("course_id", 1);
     payload.append("user_id", uId);
-    payload.append("isTeacher", false);
 
     API.default.enrollUser(payload).then(() => {
       console.log("User tuition has been completed successfully!");
     });
   };
+
   const postEvent = (event) => {
     const context = [
       "annotation_title",
@@ -256,8 +270,9 @@ export default function BatchPreviewTable(props) {
       .then(() => {
         window.location.reload();
       })
-      .catch((e) => {
-        console.log(e);
+      .catch(async (err) => {
+        await interceptExpiredToken(err);
+        console.error(err);
       });
   };
 
