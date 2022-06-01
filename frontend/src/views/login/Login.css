@@ -4,6 +4,7 @@
 	width: 100vw;
 	overflow-y: hidden;
 	position: fixed;
+	font-family: Consolas;
 }
 
 .accessPageSvg {
@@ -95,6 +96,7 @@
 .registration_form>h1,
 .login_form>h1 {
 	color: white;
+	padding-right: 5px;
 }
 
 .login_form>img {
@@ -160,6 +162,7 @@
 	-webkit-box-shadow: inset 0 0 4px #74747456;
 	box-shadow: inset 0 2px 4px #74747456;
 	width: 50%;
+	font-family: Consolas;
 }
 
 .password__wrapper {
@@ -233,6 +236,7 @@
 	padding: 10px 20px;
 	margin-top: 10px;
 	cursor: pointer;
+	font-family: Consolas;
 }
 
 .loginDiv>form>button {
@@ -282,17 +286,20 @@
 	cursor: pointer;
 	padding: 15px 20px;
 }
-.mailer-form-group{
+
+.mailer-form-group {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
 }
-.mailer-form-group > *{
+
+.mailer-form-group>* {
 	margin: 10px 0;
 }
-.mailer-form-group > input {
+
+.mailer-form-group>input {
 	border: none;
 	padding: 3% 12%;
 	border-radius: 5px;
@@ -300,8 +307,10 @@
 	-webkit-box-shadow: inset 0 0 4px #74747456;
 	box-shadow: inset 0 2px 4px #74747456;
 	width: 100%;
+	font-family: Consolas;
 }
-.mailer-button{
+
+.mailer-button {
 	width: 50%;
 	height: 30px;
 	background-color: var(--orange);
@@ -313,6 +322,7 @@
 	justify-content: center;
 	align-items: center;
 }
+
 @keyframes zoomInOut {
 	0% {
 		transform: scale(1);

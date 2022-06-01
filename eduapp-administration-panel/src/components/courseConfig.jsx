@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as API from "../API";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 import * as INSTITUTIONSERVICES from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
@@ -18,6 +19,8 @@ export default function CourseConfig(props) {
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
+
+  const shortUUID = (uuid) => uuid.substring(0, 8);
 
   const showEditOptionCourse = async (e, id) => {
     if (e.target.tagName === "svg") {
@@ -203,8 +206,9 @@ export default function CourseConfig(props) {
                   setPopupType("info");
                   setPopupText("The course was edited successfully.");
                 })
-                .catch((error) => {
+                .catch(async (error) => {
                   if (error) {
+                    await interceptExpiredToken(error);
                     setPopupText(
                       "The course could not be edited, check if you entered the correct fields."
                     );
@@ -213,8 +217,9 @@ export default function CourseConfig(props) {
                     setIsConfirmDelete(false);
                   }
                 });
-            }).then((e) => {
+            }).then(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setPopup(true);
                 setPopupText(
                   "The course could not be edited, check if you have an internet connection."
@@ -265,8 +270,9 @@ export default function CourseConfig(props) {
                     setPopupType("info");
                     setPopupText("The course was edited successfully.");
                   })
-                  .catch((error) => {
+                  .catch(async (error) => {
                     if (error) {
+                      await interceptExpiredToken(error);
                       setPopupText(
                         "The course could not be edited, check if you entered the correct fields."
                       );
@@ -275,8 +281,9 @@ export default function CourseConfig(props) {
                       setPopup(true);
                     }
                   });
-              }).then((e) => {
+              }).then(async (e) => {
                 if (e) {
+                  await interceptExpiredToken(e);
                   setPopup(true);
                   setIsConfirmDelete(false);
                   setPopupText(
@@ -320,8 +327,9 @@ export default function CourseConfig(props) {
                     setPopupText("The course was edited successfully.");
                     setIsConfirmDelete(false);
                   })
-                  .catch((error) => {
+                  .catch(async (error) => {
                     if (error) {
+                      await interceptExpiredToken(error);
                       setPopupText(
                         "The course could not be edited, check if you entered the correct fields."
                       );
@@ -330,8 +338,9 @@ export default function CourseConfig(props) {
                       setIsConfirmDelete(false);
                     }
                   });
-              }).then((e) => {
+              }).then(async (e) => {
                 if (e) {
+                  await interceptExpiredToken(e);
                   setPopup(true);
                   setIsConfirmDelete(false);
                   setPopupText(
@@ -349,11 +358,16 @@ export default function CourseConfig(props) {
 
   const fetchInstitutions = () => {
     API.asynchronizeRequest(function () {
-      INSTITUTIONSERVICES.fetchInstitutions().then((i) => {
-        setInstitutions(i.data);
-      });
-    }).then((e) => {
+      INSTITUTIONSERVICES.fetchInstitutions()
+        .then((i) => {
+          setInstitutions(i.data);
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The institution could not be showed, check if you have an internet connection."
@@ -366,11 +380,16 @@ export default function CourseConfig(props) {
 
   const fetchCourses = () => {
     API.asynchronizeRequest(function () {
-      COURSESERVICE.fetchCourses().then((i) => {
-        setCourses(i.data);
-      });
-    }).then((e) => {
+      COURSESERVICE.fetchCourses()
+        .then((i) => {
+          setCourses(i.data);
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The courses could not be showed, check if you have an internet connection."
@@ -394,34 +413,34 @@ export default function CourseConfig(props) {
       API.asynchronizeRequest(function () {
         COURSESERVICE.createCourse({
           name: cName,
-          institution_id: parseInt(cInst),
+          institution_id: cInst,
         })
           .then((x) => {
             if (courses.length === 0) {
               let instTemp = null;
               for (let inst of institutions) {
-                if (inst.id === parseInt(cInst)) {
+                if (inst.id === cInst) {
                   instTemp = inst.name;
                 }
               }
               SUBJECTSERVICE.createSubject({
                 name: "General",
-                teacherInCharge: instTemp,
-                description: "Automated subject " + instTemp,
+                description: "Automated subject for " + instTemp,
                 color: "#96ffb2",
-                course_id: parseInt(x.data.id),
+                course_id: x.data.id,
               })
                 .then(() => {
                   fetchCourses();
                   setPopup(true);
                   setPopupType("info");
-                  setPopupText("The subject was created successfully.");
+                  setPopupText("The course was created successfully.");
                   switchSaveState(false);
                 })
-                .catch((e) => {
+                .catch(async (e) => {
                   if (e) {
+                    await interceptExpiredToken(e);
                     setPopupText(
-                      "The subject could not be created, check if you entered the correct fields."
+                      "The course could not be created, check if you entered the correct fields."
                     );
                     setPopupIcon("error");
                     switchSaveState(false);
@@ -433,24 +452,26 @@ export default function CourseConfig(props) {
               fetchCourses();
               setPopup(true);
               setPopupType("info");
-              setPopupText("The subject was created successfully.");
+              setPopupText("The course was created successfully.");
               switchSaveState(false);
             }
           })
-          .catch((e) => {
+          .catch(async (e) => {
             if (e) {
+              await interceptExpiredToken(e);
               setPopupText(
-                "The subject could not be created, check if you entered the correct fields."
+                "The course could not be created, check if you entered the correct fields."
               );
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
             }
           });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopupText(
-            "The calendar session could not be created, check if you have an internet connection."
+            "The course could not be created, check if you have an internet connection."
           );
           setPopupIcon("error");
           switchSaveState(false);
@@ -488,8 +509,9 @@ export default function CourseConfig(props) {
             .then(() => {
               fetchCourses();
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 showDeleteError();
               }
             });
@@ -500,15 +522,17 @@ export default function CourseConfig(props) {
             .then(() => {
               fetchCourses();
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 showDeleteError();
               }
             });
         });
       }
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The course could not be deleted, check if you have an internet connection."
@@ -618,7 +642,11 @@ export default function CourseConfig(props) {
                       return (
                         <tr key={c.id}>
                           <td>
-                            <input disabled type="text" value={c.id} />
+                            <input
+                              disabled
+                              type="text"
+                              value={shortUUID(c.id)}
+                            />
                           </td>
                           <td>
                             <input
@@ -856,6 +884,7 @@ export default function CourseConfig(props) {
         isQuestion={isConfirmDelete}
         onYesAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           deleteCourse(idDelete);
           document.getElementById(
             "controlPanelContentContainer"
@@ -863,11 +892,13 @@ export default function CourseConfig(props) {
         }}
         onNoAction={() => {
           setPopup(false);
+          setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"
           ).style.overflow = "scroll";
         }}
         onCloseAction={() => {
+          setIsConfirmDelete(false);
           setPopup(false);
           document.getElementById(
             "controlPanelContentContainer"

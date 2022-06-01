@@ -2,7 +2,7 @@ import axios from "axios";
 import { API_URL, TOKEN } from "../API";
 export const SUBJECTS = `${API_URL}/subjects`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 //subject
 export const fetchSubjects = async () => {
@@ -10,7 +10,19 @@ export const fetchSubjects = async () => {
 };
 
 export const fetchSubject = async (id) => {
-  return await axios.get(`${SUBJECTS}?subject_id=${id}`, {
+  return await axios.get(`${SUBJECTS}/${id}`, {
+    headers: requestHeader,
+  });
+};
+
+export const fetchUserSubjects = async (uId) => {
+  return await axios.get(`${SUBJECTS}?user_id=${uId}`, {
+    headers: requestHeader,
+  });
+};
+
+export const fetchUserVariantSubjects = async (uId) => {
+  return await axios.get(`${SUBJECTS}?user=${uId}`, {
     headers: requestHeader,
   });
 };

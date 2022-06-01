@@ -151,26 +151,31 @@
 	animation: spin 1.5s linear infinite;
 }
 
-form{
+.standard-modal-form {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
 }
-form > input {
+
+.standard-modal-form>input {
 	width: 80%;
-	height: 1.7em;
-	border-radius: 10px;
-	border: 1px solid var(--textColor);
-	margin-bottom: 1em;
-	padding-left: 0.5em;
+	height: 30px;
+	border-radius: 5px;
+	margin: 1.5em 0;
+	padding: 0.5em 0.25em;
+	border: none;
+	font-family: Consolas;
+	font-size: 1.1rem;
 }
-form > input:focus {
+
+.standard-modal-form>input:focus {
 	outline: none;
 }
 
-form > button {
+.standard-modal-form>button {
+	font-family: Consolas;
 	width: 50%;
 	height: 2.5em;
 	border-radius: 10px;
@@ -182,6 +187,7 @@ form > button {
 	cursor: pointer;
 	margin-bottom: 1em;
 }
+
 @-webkit-keyframes spin {
 	0% {
 		-webkit-transform: rotate(0deg);

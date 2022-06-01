@@ -2,7 +2,6 @@ class Users::PasswordsController < Devise::PasswordsController
   # When the auth is implemented use this
   # before_action :authenticate_user! , only: [:get_reset_password_token,:do_reset_password]
 
-
   # Function to send confirmation code to user
   def send_change_password_instructions
     old_password = params[:old_password]
@@ -12,14 +11,13 @@ class Users::PasswordsController < Devise::PasswordsController
     if @user.present?
       if @user.valid_password?(old_password)
         PasswordMailer.with(user: @user).send_confirmation_email.deliver_now
-        render json: {status: 'success' , message: 'email sent to '+ @user.email}
+        render json: { status: "success", message: "email sent to " + @user.email }
       else
-        render json: {status: 'failure', message: 'Invalid old password'}
+        render json: { status: "failure", message: "Invalid old password" }
       end
     else
-      render json: {status: 'failure', message: 'User not found'}
+      render json: { status: "failure", message: "User not found" }
     end
-
   end
 
   # Function to change password using confirmation code
@@ -28,17 +26,17 @@ class Users::PasswordsController < Devise::PasswordsController
     # user = current_user
     # Instead use this, but you should pass the user email in the params
     user = User.find_by(email: params[:email])
-    new_password = params[:new_password]
-    confirm_password = params[:confirm_password]
+    new_password = Base64.decode64(params[:new_password])
+    confirm_password = Base64.decode64(params[:confirm_password])
     confirmation_code = params[:confirmation_code]
     if user.present?
       if new_password == confirm_password && user.confirmation_code == confirmation_code
         if user.confirmation_code_exp_time > DateTime.now
           user.password = new_password
           user.save
-          render json: {status: "success" ,message: "Password changed successfully." }
+          render json: { status: "success", message: "Password changed successfully." }
         else
-          render json: {status: "failure", message: "Expired code" }
+          render json: { status: "failure", message: "Expired code" }
         end
       else
         render json: { message: "Password change failed." }, status: :unprocessable_entity
@@ -49,30 +47,33 @@ class Users::PasswordsController < Devise::PasswordsController
   end
 
   def do_reset_password
-    user = User.find_by(email: params[:email]);
+    user = User.find_by(email: params[:email])
     if user.reset_password_token == params[:token]
-      user.reset_password(params[:password],params[:password_confirmation])
-      render json: {status: 'success', message: 'Password changed successfully.'}
+      user.reset_password(params[:password], params[:password_confirmation])
+      render json: { status: "success", message: "Password changed successfully." }
     else
-      render json: {status: 'failure', message: 'Invalid token'}
+      render json: { status: "failure", message: "Invalid token" }
     end
   end
 
   def send_reset_password_link
     user = User.find_by(email: params[:email])
     if user.present?
+<<<<<<< HEAD
       user.send(:set_reset_password_token) 
+=======
+      user.send(:set_reset_password_token)
+>>>>>>> b64257ef013cdb2d174dae1a0c05e34be878e42c
       user.save
       @token = user.reset_password_token
       if @token.present?
         PasswordMailer.with(user: user).send_reset_email.deliver_now
-        render json: {message: 'email sent to '+ user.email,status: 'success', expires_in: 15.minutes.from_now}
+        render json: { message: "email sent to " + user.email, status: "success", expires_in: 15.minutes.from_now } and return
       else
-        render json: {message: 'email not sent',status: 'failure, no token'}
+        render json: { message: "email not sent", status: "failure, no token" } and return
       end
     else
-      render json: {status: 'failure', message: 'User not found'}
+      render json: { status: "failure", message: "User not found" } and return
     end
   end
-
 end

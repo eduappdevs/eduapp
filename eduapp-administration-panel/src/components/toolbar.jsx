@@ -1,7 +1,8 @@
 import React from "react";
-import "../styles/scheduletoolbar.css";
 import Batcher from "./Batcher";
 import Input from "./Input";
+import "../styles/scheduletoolbar.css";
+
 export default function Toolbar(props) {
   const handleChangeFilterSession = (event) => {
     document.dispatchEvent(

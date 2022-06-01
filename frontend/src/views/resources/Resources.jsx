@@ -1,12 +1,15 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import ResourcesModal from "../../components/modals/ResourcesModal";
-import axios from "axios";
-import { RESOURCES } from "../../config";
 import Loader from "../../components/loader/Loader";
 import SubjectDropdown from "../../components/subjectSelector/SubjectDropdown";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { GetSubjects } from "../../hooks/GetSubjects";
+import { getOfflineUser } from "../../utils/OfflineManager";
+import * as RESOURCE_SERVICE from "../../services/resource.service";
+import RequireAuth from "../../components/auth/RequireAuth";
+import useViewsPermissions from "../../hooks/useViewsPermissions";
+import useRole from "../../hooks/useRole";
 import "./Resources.css";
 
 export default function Resources() {
@@ -15,11 +18,12 @@ export default function Resources() {
   const [resources, setResources] = useState([]);
   const [subjectSelected, setSubjectSelected] = useState("");
   const [currentSubject, setCurrentSubject] = useState("");
-  const [isTeacher, setIsTeacher] = useState(false);
   const [showResources, setShowResources] = useState(true);
 
-  let userInfo = FetchUserInfo(localStorage.userId);
-  let subjects = GetSubjects(localStorage.userId);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let subjects = GetSubjects(getOfflineUser().user.id);
+  let isTeacher = useRole(userInfo, "eduapp-teacher");
+  let isAdmin = useRole(userInfo, "eduapp-admin");
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -32,22 +36,20 @@ export default function Resources() {
   };
 
   const getResources = async (id) => {
-    await axios.get(RESOURCES + `?subject_id=${id}`).then((res) => {
-      console.log(res.data);
-      res.data.map((x) => {
-        if (x.firstfile != null) {
-          x.firstfile = x.firstfile.url;
-        }
-        if (x.secondfile != null) {
-          x.secondfile = x.secondfile.url;
-        }
-        if (x.thirdfile != null) {
-          x.thirdfile = x.thirdfile.url;
-        }
-        return true;
-      });
-      setResources(res.data);
+    let resources = await RESOURCE_SERVICE.fetchSubjectResources(id);
+    resources.data.map((x) => {
+      if (x.firstfile != null) {
+        x.firstfile = x.firstfile.url;
+      }
+      if (x.secondfile != null) {
+        x.secondfile = x.secondfile.url;
+      }
+      if (x.thirdfile != null) {
+        x.thirdfile = x.thirdfile.url;
+      }
+      return true;
     });
+    setResources(resources.data);
   };
 
   const createResource = () => {
@@ -74,13 +76,14 @@ export default function Resources() {
   };
 
   const handleChangeSelector = (id) => {
-    setIsTeacher(userInfo.teaching_list.includes(id));
     setSubjectSelected(id);
     setResources([]);
     getResources(id);
   };
 
+  useViewsPermissions(userInfo, "resources");
   useEffect(() => {
+    RequireAuth();
     checkMediaQueries();
 
     //First check
@@ -96,8 +99,8 @@ export default function Resources() {
       <SubjectDropdown
         dropdown={showResources}
         onSubjectClick={(e) => {
-          handleChangeSelector(parseInt(e.split("-")[1]));
-          setCurrentSubject(e.split("-")[2]);
+          handleChangeSelector(e.split("_")[1]);
+          setCurrentSubject(e.split("_")[2]);
           setShowResources(false);
         }}
         closeAction={() => {
@@ -136,7 +139,10 @@ export default function Resources() {
                 </div>
               </form>
             </div>
-            {subjectSelected && (isTeacher || userInfo.isAdmin) ? (
+            {subjectSelected &&
+            (isAdmin ||
+              (isTeacher &&
+                userInfo.teaching_list.includes(subjectSelected))) ? (
               <div
                 className="resources__addNewResource"
                 onClick={createResource}
@@ -222,7 +228,7 @@ export default function Resources() {
                                 </svg>
                               </div>
                               <div className="resourceInfo__createdBy__content">
-                                {data.createdBy}
+                                {data.user.email}
                               </div>
                             </div>
                           </div>

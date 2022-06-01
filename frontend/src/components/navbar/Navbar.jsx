@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import Menu from "../../views/menu/Menu";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import "./Navbar.css";
@@ -14,7 +13,7 @@ export default function Navbar({ mobile, badgeCount }) {
   const [inManagement, setInManagement] = useState(false);
   const loc = useLocation();
 
-  let userInfo = FetchUserInfo(localStorage.userId);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
   const [userImage, setUserImage] = useState(null);
 
   const changeLocation = () => {
@@ -115,11 +114,7 @@ export default function Navbar({ mobile, badgeCount }) {
   });
 
   useEffect(() => {
-    if (!localStorage.offline_user) {
-      setUserImage(userInfo.profile_image);
-    } else {
-      setUserImage(getOfflineUser().profile_image);
-    }
+    setUserImage(getOfflineUser().profile_image);
   }, [userInfo]);
 
   return (

@@ -4,11 +4,21 @@ export const CHAT_MESSAGES = `${API_URL}/chat_messages`;
 export const CHAT = `${API_URL}/chat_bases`;
 export const CHAT_PARTICIPANT = `${API_URL}/chat_participants`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 //chat
 export const fetchChat = async () => {
   return await axios.get(`${CHAT}`, { headers: requestHeader });
+};
+
+export const fetchChatInfo = async (id) => {
+  return await axios.get(`${CHAT}?complete_chat_for=${id}`, {
+    headers: requestHeader,
+  });
+};
+
+export const findChatById = async (id) => {
+  return await axios.get(`${CHAT}/${id}`, { headers: requestHeader });
 };
 
 export const deleteChat = async (id) => {
@@ -30,6 +40,12 @@ export const editChat = async (data) => {
 //chat Participant
 export const fetchChatParticipants = async () => {
   return await axios.get(`${CHAT_PARTICIPANT}`, { headers: requestHeader });
+};
+
+export const fetchChatUsers = async (cId) => {
+  return await axios.get(`${CHAT_PARTICIPANT}?chat_id=${cId}`, {
+    headers: requestHeader,
+  });
 };
 
 export const deleteParticipant = async (id) => {
@@ -61,12 +77,16 @@ export const createCompleteChat = async (chat_info) => {
 };
 
 export const fetchPersonalChats = async (userId) => {
-  return await axios.get(CHAT_PARTICIPANT + "?user_id=" + userId);
+  return await axios.get(CHAT_PARTICIPANT + "?chats_for=" + userId, {
+    headers: requestHeader,
+  });
 };
 
 //Message
-export const fetchMessage = async () => {
-  return await axios.get(`${CHAT_MESSAGES}`, { headers: requestHeader });
+export const fetchChatMessages = async (cId) => {
+  return await axios.get(`${CHAT_MESSAGES}?chat_base_id=${cId}`, {
+    headers: requestHeader,
+  });
 };
 
 export const deleteMessage = async (id) => {

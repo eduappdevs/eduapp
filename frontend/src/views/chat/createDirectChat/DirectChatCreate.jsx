@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import { asynchronizeRequest } from "../../../API.js";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import { getOfflineUser } from "../../../utils/OfflineManager";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
+import useViewsPermissions from "../../../hooks/useViewsPermissions";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import useRole from "../../../hooks/useRole";
 import "./DirectChatCreate.css";
 
 export default function DirectChatCreate() {
@@ -15,6 +19,11 @@ export default function DirectChatCreate() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
 
+  let canCreate = useRole(FetchUserInfo(getOfflineUser().user.id), [
+    "eduapp-admin",
+    "eduapp-teacher",
+  ]);
+
   const matchUsers = (nameInput) => {
     if (nameInput.length > 0) {
       asynchronizeRequest(async () => {
@@ -22,7 +31,7 @@ export default function DirectChatCreate() {
 
         let filteredUsers = [];
         for (let u of match.data) {
-          if (u.user.id === parseInt(localStorage.userId)) continue;
+          if (u.user.id === parseInt(getOfflineUser().user.id)) continue;
           if (participant !== null) {
             if (u.user.id === participant.user.id) continue;
           }
@@ -46,11 +55,13 @@ export default function DirectChatCreate() {
         try {
           let connectionId = await CHAT_SERVICE.createCompleteChat({
             base: {
-              chat_name: `private_chat_${localStorage.userId}_${participant.user.id}`,
+              chat_name: `private_chat_${getOfflineUser().user.id}_${
+                participant.user.id
+              }`,
               isGroup: false,
             },
             participants: {
-              user_ids: [localStorage.userId, participant.user.id],
+              user_ids: [getOfflineUser().user.id, participant.user.id],
             },
           });
           window.location.href = "/chat/p" + connectionId;
@@ -68,6 +79,14 @@ export default function DirectChatCreate() {
       });
     }
   };
+
+  useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
+
+  useEffect(() => {
+    if (canCreate !== null) {
+      if (!canCreate) window.location.href = "/chat";
+    }
+  }, [canCreate]);
 
   useEffect(() => {
     const searchTimeout = setTimeout(() => matchUsers(userQuery), 500);

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { asynchronizeRequest } from "../API";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 import * as SUBJECT_SERVICE from "../services/subject.service";
 import * as USER_SERVICE from "../services/user.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
@@ -22,15 +23,24 @@ export default function TeacherConfig(props) {
 
   const fetchUsers = async () => {
     return await asynchronizeRequest(async function () {
-      let users = await USER_SERVICE.fetchUserInfos();
-      return users.data;
+      let rawUsers = await USER_SERVICE.fetchUserInfos();
+      await interceptExpiredToken(rawUsers);
+      rawUsers = rawUsers.data.filter((user) =>
+        ["eduapp-teacher", "eduapp-admin"].includes(user.user_role.name)
+      );
+      let sysUserI = rawUsers.indexOf(
+        rawUsers.find((u) => u.user_name === "eduapp_system")
+      );
+      rawUsers.splice(sysUserI, 1);
+      return rawUsers;
     });
   };
 
   const fetchSubjects = async () => {
     return await asynchronizeRequest(async function () {
-      let subjects = await SUBJECT_SERVICE.fetchSubjects();
-      return subjects.data;
+      let rawSubjects = await SUBJECT_SERVICE.fetchSubjects();
+      await interceptExpiredToken(rawSubjects);
+      return rawSubjects.data;
     });
   };
 
@@ -69,6 +79,8 @@ export default function TeacherConfig(props) {
     const user = document.getElementById("user_select").value;
     const subject = document.getElementById("subject_select").value;
 
+    if (user === "-" || subject === "-") return alertCreate();
+
     asynchronizeRequest(async () => {
       switchSaveState(true);
 
@@ -78,22 +90,24 @@ export default function TeacherConfig(props) {
             refreshTeachers();
             setPopup(true);
             setPopupType("info");
-            setPopupText("The calendar events was created successfully.");
+            setPopupText("The teacher was enrolled successfully.");
             switchSaveState(true);
             setIsConfirmDelete(false);
           }
         })
-        .catch((e) => {
+        .catch(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             alertCreate();
             switchSaveState(false);
           }
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
-          "The teacher could not be published, check if you have an internet connection."
+          "The teacher could not be enrolled, check if you have an internet connection."
         );
         setPopupIcon("error");
         switchSaveState(false);
@@ -118,13 +132,23 @@ export default function TeacherConfig(props) {
   };
 
   const refreshTeachers = () => {
-    fetchUsers().then((users) => {
-      fetchSubjects().then((subjects) => {
-        formatTeachers(users, subjects);
-        setUsers(users);
-        setSubjects(subjects);
+    fetchUsers()
+      .then((users) => {
+        fetchSubjects()
+          .then((subjects) => {
+            formatTeachers(users, subjects);
+            setUsers(users);
+            setSubjects(subjects);
+          })
+          .catch(async (err) => {
+            await interceptExpiredToken(err);
+            console.error(err);
+          });
+      })
+      .catch(async (err) => {
+        await interceptExpiredToken(err);
+        console.error(err);
       });
-    });
     document.addEventListener("filter_subject_teacher", (e) => {
       e.stopImmediatePropagation();
       teacher_filter.filter =
@@ -136,39 +160,39 @@ export default function TeacherConfig(props) {
   const confirmDeleteTeacher = async (userId, subjId) => {
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this teacher?");
+    setPopupText("Are you sure you want to remove this teacher?");
     setIsConfirmDelete(true);
     setPopup(true);
     setUserIdDelete(userId);
     setSubjectIdDelete(subjId);
-
-    console.log(idDelete);
   };
 
   const showDeleteError = () => {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The teacher could not be deleted.");
+    setPopupText("The teacher could not be removed.");
     setIsConfirmDelete(false);
   };
 
   const deleteTeacher = async (uId, sId) => {
     asynchronizeRequest(async () => {
-      await USER_SERVICE.delist_teacher(uId, sId)
+      USER_SERVICE.delist_teacher(uId, sId)
         .then(() => {
           refreshTeachers();
         })
-        .catch((e) => {
+        .catch(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             showDeleteError();
           }
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
-          "The teacher could not be deleted, check if you have an internet connection."
+          "The teacher could not be removed, check if you have an internet connection."
         );
         setPopupIcon("error");
         switchSaveState(true);
@@ -257,7 +281,7 @@ export default function TeacherConfig(props) {
                   {users
                     ? users.map((u) => {
                         return (
-                          <option key={u.id} value={u.user_id}>
+                          <option key={u.id} value={u.user.id}>
                             {u.user_name}
                           </option>
                         );
@@ -300,7 +324,7 @@ export default function TeacherConfig(props) {
                       .includes(search.toLowerCase())
                   ) {
                     return (
-                      <tr key={t.id}>
+                      <tr key={t.user.user.id}>
                         <td>
                           <input
                             type="text"
@@ -320,7 +344,10 @@ export default function TeacherConfig(props) {
                         >
                           <button
                             onClick={() => {
-                              confirmDeleteTeacher(t.user.id, t.subject.id);
+                              confirmDeleteTeacher(
+                                t.user.user.id,
+                                t.subject.id
+                              );
                             }}
                           >
                             <svg
@@ -356,7 +383,7 @@ export default function TeacherConfig(props) {
                       >
                         <button
                           onClick={() => {
-                            confirmDeleteTeacher(t.user.id, t.subject.id);
+                            confirmDeleteTeacher(t.user.user.id, t.subject.id);
                           }}
                         >
                           <svg

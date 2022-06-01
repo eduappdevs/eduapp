@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
-import StandarModal from "./modals/standard-modal/StandardModal";
-
 import Input from "./Input";
 import "../styles/schedulesessionslist.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import SessionsModal from "./modals/event-modal/SessionsModal";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function Schedulesessionslist(props) {
   const [sessions, setSessions] = useState(null);
@@ -41,14 +40,21 @@ export default function Schedulesessionslist(props) {
 
   let sessions_filter = {};
 
+  const shortUUID = (uuid) => uuid.substring(0, 8);
+
   const fetchSessions = async () => {
     await API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.fetchSessions().then((e) => {
-        setSessions(e.data);
-        sessions_filter.sessions = e.data;
-      });
-    }).then((e) => {
+      SCHEDULESERVICE.fetchSessions()
+        .then((e) => {
+          setSessions(e.data);
+          sessions_filter.sessions = e.data;
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The calendar sessions could not be showed, check if you have an internet connection."
@@ -61,12 +67,17 @@ export default function Schedulesessionslist(props) {
 
   const fetchSubjects = async () => {
     await API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubjects().then((res) => {
-        res.data.shift();
-        setSubject(res.data);
-      });
-    }).then((e) => {
+      SUBJECTSERVICE.fetchSubjects()
+        .then((res) => {
+          res.data.shift();
+          setSubject(res.data);
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The subjects could not be showed, check if you have an internet connection."
@@ -99,7 +110,7 @@ export default function Schedulesessionslist(props) {
     let streaming = document.getElementById("s_streaming").value;
     let chat = 1;
     let subject = document.getElementById("s_subjectId").value;
-    let subject_id = subject.split("_")[0];
+    let subject_id = subject.split("_")[1];
     if (
       name !== "" &&
       start_date !== "" &&
@@ -122,26 +133,35 @@ export default function Schedulesessionslist(props) {
     } else {
       alertCreate();
       switchSaveState(false);
+      return;
     }
 
     let SessionJson = {};
     for (let i = 0; i <= context.length - 1; i++) {
       SessionJson[context[i]] = json[i];
     }
+    console.log(SessionJson);
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.createSession(SessionJson).then(() => {
-        fetchSessions();
-        setPopup(true);
-        setPopupType("info");
-        setPopupText("The calendar events was created successfully.");
-        switchSaveState(true);
-      });
-    }).then((e) => {
+      SCHEDULESERVICE.createSession(SessionJson)
+        .then(() => {
+          fetchSessions();
+          setPopup(true);
+          setPopupType("info");
+          setPopupText("The calendar events was created successfully.");
+          setIsConfirmDelete(false);
+          switchSaveState(true);
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The calendar session could not be published, check if you have an internet connection."
         );
+        setIsConfirmDelete(false);
         setPopupIcon("error");
         switchSaveState(false);
       }
@@ -171,11 +191,13 @@ export default function Schedulesessionslist(props) {
         .then(() => {
           fetchSessions();
         })
-        .catch(() => {
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
           showDeleteError();
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
+        await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
           "The calendar session could not be deleted, check if you have an internet connection."
@@ -345,8 +367,9 @@ export default function Schedulesessionslist(props) {
             switchSaveState(false);
             setIsConfirmDelete(false);
           })
-          .catch((e) => {
+          .catch(async (e) => {
             if (e) {
+              await interceptExpiredToken(e);
               setPopupText(
                 "The calendar session could not be edited, check if you entered the correct fields."
               );
@@ -356,8 +379,9 @@ export default function Schedulesessionslist(props) {
               setIsConfirmDelete(false);
             }
           });
-      }).then((e) => {
+      }).then(async (e) => {
         if (e) {
+          await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
             "The calendar session could not be edited, check if you have an internet connection."
@@ -506,8 +530,9 @@ export default function Schedulesessionslist(props) {
               setPopupText("The calendar session was edited successfully.");
               setIsConfirmDelete(false);
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setPopupText(
                   "The calendar session could not be edited, check if you entered the correct fields."
                 );
@@ -517,8 +542,9 @@ export default function Schedulesessionslist(props) {
                 setPopup(true);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The calendar session could not be edited, check if you have an internet connection."
@@ -653,8 +679,9 @@ export default function Schedulesessionslist(props) {
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
-            .catch((e) => {
+            .catch(async (e) => {
               if (e) {
+                await interceptExpiredToken(e);
                 setPopupText(
                   "The calendar session could not be edited, check if you entered the correct fields."
                 );
@@ -664,8 +691,9 @@ export default function Schedulesessionslist(props) {
                 setIsConfirmDelete(false);
               }
             });
-        }).then((e) => {
+        }).then(async (e) => {
           if (e) {
+            await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
               "The calendar session could not be edited, check if you have an internet connection."
@@ -969,7 +997,6 @@ export default function Schedulesessionslist(props) {
     };
     setShowModalSession(true);
     setSessionInfo(info);
-    console.log(info);
   };
 
   useEffect(() => {
@@ -1330,7 +1357,7 @@ export default function Schedulesessionslist(props) {
                 } else {
                   return (
                     <tr key={s.id}>
-                      <td>{s.id}</td>
+                      <td>{shortUUID(s.id)}</td>
                       <td>
                         <input
                           id={`inputName_${s.id}`}

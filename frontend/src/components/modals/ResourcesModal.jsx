@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import API, { asynchronizeRequest } from "../../API";
 import * as RESOURCESERVICE from "../../services/resource.service";
-import "./ResourcesModal.css";
+import { asynchronizeRequest } from "../../API";
 import StandardModal from "./standard-modal/StandardModal";
-let finalData = new FormData();
+import { interceptExpiredToken } from "../../utils/OfflineManager";
+import "./ResourcesModal.css";
 
-export default function ResourcesModal(props) {
+let finalData = new FormData();
+export default function ResourcesModal({ userInfo, subject }) {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [firstFile, setFirstFile] = useState(true);
 
@@ -53,7 +54,6 @@ export default function ResourcesModal(props) {
 
   const handleFileSelect = (e) => {
     e.preventDefault();
-    console.log(e);
     if (e.target.files.length > 10) {
       setPopup(true);
       setPopupText("Only 10 files are allowed");
@@ -137,11 +137,11 @@ export default function ResourcesModal(props) {
       for (let i = 0; i < filesToUpload.length; i++)
         finalData.append("file_" + i, filesToUpload[i]);
     }
-    finalData.append("createdBy", props.userInfo.user_name);
-    finalData.append("subject_id", parseInt(props.subject));
+    finalData.append("user_id", userInfo.user.id);
+    finalData.append("subject_id", subject);
 
     asynchronizeRequest(async function () {
-      RESOURCESERVICE.createResources(finalData).then((e) => {
+      RESOURCESERVICE.createResource(finalData).then((e) => {
         if (e) {
           document.getElementsByClassName(
             "resources__createResourceModal"
@@ -150,7 +150,8 @@ export default function ResourcesModal(props) {
           window.location.reload();
         }
       });
-    }).then((error) => {
+    }).then(async (error) => {
+      await interceptExpiredToken(error);
       if (error) {
         setPopup(true);
         setIsConfirmDelete(false);
@@ -256,85 +257,85 @@ export default function ResourcesModal(props) {
             id="resources_modal_show_files"
             className="resources-modal-show-files"
           >
-            <ul>
-              {filesToUpload !== undefined &&
-              filesToUpload.length > 0 &&
-              filesToUpload !== null &&
-              firstFile !== false
-                ? filesToUpload.map((e) => {
-                    return (
-                      <>
-                        <li className="file-media-resource-modal">
-                          <div
-                            id={e.name}
-                            onClick={() => {
-                              deletefile(e);
-                            }}
-                            className="modal-button-delete-file"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                              id="ins-delete-icon"
+            {filesToUpload.length > 0 ? (
+              <ul>
+                {filesToUpload !== undefined &&
+                filesToUpload !== null &&
+                firstFile !== false
+                  ? filesToUpload.map((e, i) => {
+                      return (
+                        <>
+                          <li key={i} className="file-media-resource-modal">
+                            <div
+                              id={e.name}
+                              onClick={() => {
+                                deletefile(e);
+                              }}
+                              className="modal-button-delete-file"
                             >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </div>
-                          <p>{e.name}</p>
-                        </li>
-                      </>
-                    );
-                  })
-                : filesToUpload !== undefined &&
-                  filesToUpload.length > 0 &&
-                  filesToUpload !==
-                    null(
-                      filesToUpload.map((e) => {
-                        return (
-                          <>
-                            <li className="file-media-resource-modal">
-                              <div
-                                id={e.name}
-                                onClick={() => {
-                                  deleteFirstfile(e);
-                                }}
-                                className="modal-button-delete-file"
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                                id="ins-delete-icon"
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-trash3"
-                                  viewBox="0 0 16 16"
-                                  id="ins-delete-icon"
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </div>
+                            <p>{e.name}</p>
+                          </li>
+                        </>
+                      );
+                    })
+                  : filesToUpload !== undefined &&
+                    filesToUpload.length > 0 &&
+                    filesToUpload !==
+                      null(
+                        filesToUpload.map((e, i) => {
+                          return (
+                            <>
+                              <li key={i} className="file-media-resource-modal">
+                                <div
+                                  id={e.name}
+                                  onClick={() => {
+                                    deleteFirstfile(e);
+                                  }}
+                                  className="modal-button-delete-file"
                                 >
-                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                                </svg>
-                              </div>
-                              <p>{e.name}</p>
-                            </li>
-                          </>
-                        );
-                      })
-                    )}
-            </ul>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    fill="currentColor"
+                                    className="bi bi-trash3"
+                                    viewBox="0 0 16 16"
+                                    id="ins-delete-icon"
+                                  >
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                  </svg>
+                                </div>
+                                <p>{e.name}</p>
+                              </li>
+                            </>
+                          );
+                        })
+                      )}
+              </ul>
+            ) : null}
           </div>
           <div className="submit-action">
             <button type="submit">SUBMIT</button>
             <div id="submit-loader" className="loader">
               Loading...
             </div>
+            <button id="resources__closeResourceModal" onClick={closeModal}>
+              CANCEL
+            </button>
           </div>
         </form>
-
-        <button id="resources__closeResourceModal" onClick={closeModal}>
-          CANCEL
-        </button>
       </div>
       <div className="resourcesModal-outside" onClick={closeModal}></div>
     </div>

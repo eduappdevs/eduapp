@@ -20,6 +20,7 @@
 }
 
 .MenuSettings__main-container>ul>li {
+	font-family: Consolas;
 	flex: 1;
 	display: flex;
 	justify-content: center;

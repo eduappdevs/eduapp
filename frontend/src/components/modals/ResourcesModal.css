@@ -81,7 +81,7 @@
 	position: absolute;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	height: 100%;
+	height: 111%;
 	padding: 0;
 	display: flex;
 	flex-direction: column;
@@ -97,6 +97,10 @@
 	flex-direction: row;
 	margin-left: .2em;
 	margin-bottom: 1em;
+}
+
+.resources-modal-show-files>ul>li:last-child {
+	margin-bottom: 0;
 }
 
 
@@ -190,7 +194,7 @@
 
 .submit-action {
 	position: absolute;
-	transform: translate(2em, 10em);
+	transform: translate(5px, 11.5em);
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -205,7 +209,6 @@
 
 .resources__createResourceModal>form>div>button {
 	background-color: white;
-	padding: 5.47px;
 	border-radius: 5px;
 	border: none;
 	font-weight: bold;
@@ -213,18 +216,19 @@
 	cursor: pointer;
 	font-family: Consolas;
 	font-size: 1em;
+	padding: 8px;
+	transform: translateX(4vw);
 }
 
 #resources__closeResourceModal {
 	position: absolute;
-	bottom: 14%;
-	left: 6px;
 	border: none;
 	border-radius: 5px;
 	background-color: rgb(255, 64, 64);
 	color: white;
 	padding: 8px;
 	cursor: pointer;
+	transform: translateX(calc(100% - 77vw));
 }
 
 @media (max-width: 750px) {

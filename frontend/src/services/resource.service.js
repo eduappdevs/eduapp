@@ -2,22 +2,30 @@ import axios from "axios";
 import { API_URL, TOKEN } from "../API";
 export const RESOURCE = `${API_URL}/resources`;
 
-const requestHeader = { Authorization: TOKEN };
+const requestHeader = { eduauth: TOKEN };
 
 export const fetchResources = async () => {
   return await axios.get(RESOURCE, { headers: requestHeader });
 };
 
-export const createResources = async (body) => {
-  return await axios.post(RESOURCE, body, { headers: requestHeader });
+export const findById = async (id) => {
+  return axios.get(`${RESOURCE}/${id}`, { headers: requestHeader });
 };
 
-export const editResources = async (body) => {
-  return await axios.put(`${RESOURCE}/${body.id}`, body, { headers: requestHeader });
+export const fetchSubjectResources = async (sId) => {
+  return axios.get(`${RESOURCE}?subject_id=${sId}`, { headers: requestHeader });
 };
 
-export const deleteResources = async (body) => {
-  return await axios.delete(`${RESOURCE}/${body.id}`, { headers: requestHeader });
+export const createResource = async (body) => {
+  return axios.post(RESOURCE, body, { headers: requestHeader });
+};
+
+export const editResource = async (body) => {
+  return axios.put(`${RESOURCE}/${body.id}`, body, { headers: requestHeader });
+};
+
+export const deleteResource = async (rId) => {
+  return axios.delete(`${RESOURCE}/${rId}`, { headers: requestHeader });
 };
 
 export const fetchResourcesJson = async () => {

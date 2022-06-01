@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as AUTH_SERVICE from "../services/auth.service";
 
 const blobToBase64 = (blob) => {
   return new Promise((resolve, reject) => {
@@ -31,5 +32,27 @@ export const updateUserImageOffline = async (newImgUrl) => {
 export const getOfflineUser = () => {
   let user = JSON.parse(localStorage.getItem("offline_user"));
 
-  return user === null ? { profile_image: null } : user;
+  if (user === null) {
+    user = {
+      user: null,
+      profile_image: null,
+      id: null,
+      user_name: null,
+    };
+  }
+
+  return user;
+};
+
+export const interceptExpiredToken = async (error) => {
+  if (error.data) return;
+  console.log(error);
+  if (
+    error.message.includes("428") ||
+    error.message.includes("406") ||
+    error.message.includes("403")
+  ) {
+    await AUTH_SERVICE.logout();
+    window.location.reload();
+  }
 };

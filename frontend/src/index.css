@@ -13,7 +13,7 @@ body {
 	src: url("fonts/Consolas.ttf") format("ttf");
 	/* Safari */
 	src: url("fonts/Consolas.woff") format("woff");
-	
+
 }
 
 code {
@@ -31,7 +31,7 @@ code {
 	overflow-y: auto;
 }
 
-.button{
+.button {
 	border: none;
 	border-radius: 10px;
 	padding: 10px 20px;
@@ -41,7 +41,9 @@ code {
 	margin-top: 10px;
 	margin-bottom: 10px;
 	cursor: pointer;
+	font-family: Consolas;
 }
+
 #wip {
 	font-weight: bold;
 	color: var(--textColor);
