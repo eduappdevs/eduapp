@@ -61,11 +61,9 @@ class Users::PasswordsController < Devise::PasswordsController
   def send_reset_password_link
     user = User.find_by(email: params[:email])
     if user.present?
+      user.send(:set_reset_password_token) 
+      user.save
       @token = user.reset_password_token
-      unless @token.present?
-        user.send(:set_reset_password_token) 
-        user.save
-      end
       if @token.present?
         PasswordMailer.with(user: user).send_reset_email.deliver_now
         render json: {message: 'email sent to '+ user.email,status: 'success', expires_in: 15.minutes.from_now}

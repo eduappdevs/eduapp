@@ -3,7 +3,10 @@ import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import ExtraFields from "./ExtraFields";
 export default function UserConfig(props) {
+
+
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
@@ -672,13 +675,14 @@ export default function UserConfig(props) {
   return (
     <>
       <div className="schedulesesionslist-main-container">
-        <table>
+        <table id='users_table_header'>
           <thead>
             <tr>
               <th></th>
               <th>{props.language.email}</th>
               <th>{props.language.password}</th>
               <th>{props.language.isAdmin}</th>
+              <ExtraFields table='users'/>
             </tr>
           </thead>
           <tbody>

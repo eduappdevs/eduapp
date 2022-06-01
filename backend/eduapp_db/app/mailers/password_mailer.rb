@@ -2,7 +2,6 @@ class PasswordMailer < ApplicationMailer
   layout 'mailer'
   def send_reset_email
     @user = params[:user]
-    @url
     if @user.present? 
       token = @user.reset_password_token
       @url = ENV.fetch("REACT_APP_FRONTEND_ENDPOINT") + "/password/reset?email="+ @user.email + "&token="+token
