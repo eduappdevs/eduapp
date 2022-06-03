@@ -3,6 +3,6 @@ services:
   web:
     build: 
       context: .
-    image: eduapp/eduapp_web
+    image: eduapp/web
     ports:
-      - "3001:3001"
+      - "8000:80"

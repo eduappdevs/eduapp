@@ -1,39 +1,36 @@
 version: '3.1'
+
+volumes:
+  eduapp_db_data:
+
 services:
   db:
     image: postgres:14
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_PASSWORD=1234
-      - POSTGRES_USER=postgres
-      - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      - ./backend/eduapp_db/postgres.production.env
     volumes:
       - eduapp_db_data:/var/lib/postgresql/data/pgdata
-    ports:
-      - "5432:5432"
+    restart: unless-stopped
   api:
     build:
       context: ./backend/eduapp_db
-    image: eduapp/eduapp_db
+    image: eduapp/api:latest 
+    env_file:
+      - ./backend/eduapp_db/production.env
+    restart: unless-stopped
     depends_on:
       - db
-    ports:
-      - "3000:3000"
-  web:
-    build: 
-      context: ./frontend
-    image: eduapp/eduapp_web
-    depends_on: 
-      - api
-    ports:
-      - "3001:3001"
-  web_admin:
-    build: 
-      context: ./eduapp-administration-panel
-    image: eduapp/eduapp_web_admin
+    links:
+      - "db:db"
+  nginx:
+    build:
+      context: .
+    image: eduapp/nginx:latest
+    extra_hosts:
+      - "eduapp.local:0.0.0.0"
+      - "admin.local:127.0.0.1"
+    ports: 
+      - "7979:80"
+    # restart: unless-stopped
     depends_on:
       - api
-    ports:
-      - "3002:3002"
-volumes:
-  eduapp_db_data:

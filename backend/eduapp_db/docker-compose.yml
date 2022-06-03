@@ -2,19 +2,18 @@ version: '3.1'
 services:
   db:
     image: postgres:14
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_PASSWORD=1234
-      - POSTGRES_USER=postgres
-      - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      - postgres.production.env
     volumes:
       - eduapp_db_data:/var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "5433:5432"
   api:
     build:
       context: .
-    image: eduapp/eduapp_db
+    image: eduapp_project:api
+    env_file:
+      - production.env
     depends_on:
       - db
     ports:
