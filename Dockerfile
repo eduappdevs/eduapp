@@ -1,6 +1,6 @@
 # BUILD WEB 
 
-FROM node:latest as eduapp-web-stage
+FROM node:alpine as eduapp-web-stage
 
 WORKDIR /frontend
 
@@ -53,7 +53,7 @@ FROM nginx:alpine as nginx-server
 COPY --from=eduapp-web-stage /frontend/build /usr/share/nginx/html/eduapp/frontend
 COPY --from=eduapp-admin-stage /eduapp-administration-panel/build /usr/share/nginx/html/eduapp/admin
 
-RUN rm /etc/nginx/conf.d/default.conf
+# RUN rm /etc/nginx/conf.d/default.conf
 
 RUN mkdir /etc/nginx/sites-enabled
 RUN mkdir /etc/nginx/sites-available

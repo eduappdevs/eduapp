@@ -19,6 +19,6 @@ test:
 production:
   <<: *default
   database: eduapp_db_production
-  username: <%= ENV.fetch("PROD_DB_USER") { null } %>
-  password: <%= ENV.fetch("PROD_DB_PSWD") { null } %>
+  username: <%= ENV.fetch("PROD_DB_USER") { "" } %>
+  password: <%= ENV.fetch("PROD_DB_PSWD") { "" } %>
   port: <%= ENV.fetch("PROD_DB_PORT") { 5432 } %>
