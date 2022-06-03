@@ -53,17 +53,8 @@ FROM nginx:alpine as nginx-server
 COPY --from=eduapp-web-stage /frontend/build /usr/share/nginx/html/eduapp/frontend
 COPY --from=eduapp-admin-stage /eduapp-administration-panel/build /usr/share/nginx/html/eduapp/admin
 
-# RUN rm /etc/nginx/conf.d/default.conf
+COPY ./nginx.conf /etc/nginx/nginx.conf
 
-RUN mkdir /etc/nginx/sites-enabled
-RUN mkdir /etc/nginx/sites-available
-# COPY ./nginx.conf /etc/nginx/conf.d
-
-COPY ./frontend/nginx/nginx.conf /etc/nginx/sites-available/frontend.conf
-COPY ./eduapp-administration-panel/nginx/nginx.conf /etc/nginx/sites-available/admin.conf
-
-RUN ln -s /etc/nginx/sites-available/frontend.conf /etc/nginx/sites-enabled/frontend.conf 
-RUN ln -s /etc/nginx/sites-available/admin.conf /etc/nginx/sites-enabled/admin.conf
 
 EXPOSE 80
 
