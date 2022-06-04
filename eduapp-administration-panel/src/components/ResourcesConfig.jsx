@@ -6,11 +6,16 @@ import ResourcesModal from "./modals/resources-modal/ResourcesModal";
 import * as RESOURCESERVICES from "../services/resource.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import "../styles/resourcesConfig.css";
+import PageSelect from "./pagination/PageSelect";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function ResourcesConfig(props) {
   const [users, setUsers] = useState([]);
   const [subject, setSubject] = useState([]);
   const [resources, setResources] = useState([]);
+
+  const [maxPages, setMaxPages] = useState(1);
+  const [search, setSearch] = useState("");
 
   const [resourceName, setResourceName] = useState();
   const [resourceSubject, setResourceSubject] = useState();
@@ -52,24 +57,6 @@ export default function ResourcesConfig(props) {
     });
   };
 
-  const fetchResources = async () => {
-    asynchronizeRequest(function () {
-      RESOURCESERVICES.fetchResources().then((res) => {
-        setResources(res.data);
-        fetchSubjects();
-        fetchUsers();
-      });
-    }).then((e) => {
-      if (e) {
-        setPopup(true);
-        setPopupText(
-          "The resources could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-      }
-    });
-  };
-
   const fetchSubjects = async () => {
     await asynchronizeRequest(function () {
       SUBJECTSERVICE.fetchSubjects().then((res) => {
@@ -99,7 +86,7 @@ export default function ResourcesConfig(props) {
       RESOURCESERVICES.deleteResources(id)
         .then((e) => {
           if (e) {
-            fetchResources();
+            fetchResourcesPage(1);
           }
         })
         .catch((e) => {
@@ -119,30 +106,23 @@ export default function ResourcesConfig(props) {
   };
 
   const confirmModalCreate = async () => {
+    fetchResourcesPage(1);
+
     setShowModal(false);
     setShowCreateModal(false);
     setShowModalEdit(false);
-    fetchResources();
     setPopup(true);
     setPopupType("info");
     setPopupText("The resources was created successfully.");
-    document.getElementById("controlPanelContentContainer").style.overflow =
-      "scroll";
-    document.getElementById("btn-delete-resources").style.display = "block";
-    document.getElementById("show-edit-option").style.display = "block";
-    document.getElementById("btn-edit").style.display = "none";
-    document.getElementById("btn-cancel-resources").style.display = "none";
   };
   const confirmModalEdit = async () => {
     setShowModal(false);
     setShowCreateModal(false);
     setShowModalEdit(false);
-    fetchResources();
+    fetchResourcesPage(1);
     setPopup(true);
     setPopupType("info");
     setPopupText("The resources was edited successfully.");
-    document.getElementById("controlPanelContentContainer").style.overflow =
-      "scroll";
   };
 
   const alertCreate = async () => {
@@ -152,11 +132,6 @@ export default function ResourcesConfig(props) {
   };
 
   const showModalsEdit = async (res) => {
-    // document.body.scrollTop = 0;
-    // document.documentElement.scrollTop = 0;
-    // window.screenTo(0, 0);
-    document.getElementById("controlPanelContentContainer").style.overflow =
-      "hidden";
     let subject_id = document.getElementById(`inputSubjectID_${res.id}`).value;
     let name = document.getElementById(`inputName_${res.id}`).value;
     let description = document.getElementById(
@@ -187,6 +162,7 @@ export default function ResourcesConfig(props) {
       setResourceSubject(subject.find((s) => s.id === editSubject));
       setResourceDescription(description);
       setResourceAuthor(users.find((u) => u.user.email === author));
+
       setInfo(res);
       setShowModal(true);
       setShowModalEdit(true);
@@ -196,8 +172,6 @@ export default function ResourcesConfig(props) {
   };
 
   const showModals = async () => {
-    document.getElementById("controlPanelContentContainer").style.overflow =
-      "hidden";
     let subject_id = document.getElementById("i_subject").value;
     let name = document.getElementById("i_name").value;
     let description = document.getElementById("i_description").value;
@@ -332,7 +306,6 @@ export default function ResourcesConfig(props) {
         let description =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
             .childNodes[0];
-
         let subject =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
             .childNodes[0];
@@ -377,6 +350,22 @@ export default function ResourcesConfig(props) {
     }
   };
 
+  const fetchResourcesPage = async (page) => {
+    asynchronizeRequest(function () {
+      RESOURCESERVICES.pagedResources(page)
+        .then((us) => {
+          setMaxPages(us.data.total_pages);
+          setResources(us.data.current_page);
+          fetchSubjects();
+          fetchUsers();
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          console.error(err);
+        });
+    });
+  };
+
   const listSubject = (sub) => {
     let list_subject = [];
     subject.map((s) => {
@@ -399,8 +388,12 @@ export default function ResourcesConfig(props) {
   };
 
   useEffect(() => {
-    fetchResources();
+    fetchResourcesPage(1);
   }, []);
+
+  useEffect(() => {
+    setSearch(props.search);
+  }, [props.search]);
 
   return (
     <>
@@ -477,9 +470,15 @@ export default function ResourcesConfig(props) {
             </tr>
           </tbody>
         </table>
+        <div className="notify-users">
+          <PageSelect
+            onPageChange={async (p) => fetchResourcesPage(p)}
+            maxPages={maxPages}
+          />
+        </div>
         <div className="resources-table-info">
           {resources && resources.length !== 0 ? (
-            <table style={{ marginTop: "50px" }} id="resources-config">
+            <table style={{ marginTop: "15px" }} id="resources-config">
               <thead>
                 <tr>
                   <th>{props.language.code}</th>
@@ -490,155 +489,312 @@ export default function ResourcesConfig(props) {
                   <th>{props.language.actions}</th>
                 </tr>
               </thead>
+
               <tbody>
                 {resources.map((r) => {
-                  return (
-                    <tr key={r.id}>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputName_${r.id}`}
-                          disabled
-                          value={shortUUID(r.id)}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputName_${r.id}`}
-                          disabled
-                          value={changeName === false ? r.name : newName}
-                          onChange={() => {
-                            handleChangeName(r.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputDescription_${r.id}`}
-                          disabled
-                          value={
-                            changeDescription === false
-                              ? r.description
-                              : newDescription
-                          }
-                          onChange={() => {
-                            handleChangeDescription(r.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputAuthor_${r.id}`}
-                          disabled
-                          value={r.user.email}
-                        />
-                      </td>
-                      <td>
-                        <select id={`inputSubjectID_${r.id}`} disabled>
-                          <option value={r.subject.id}>{r.subject.name}</option>
-                          {subjectEdit.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.name}
+                  if (search.length > 0) {
+                    if (r.name.toLowerCase().includes(search.toLowerCase())) {
+                      return (
+                        <tr key={r.id}>
+                          <td>
+                            <input
+                              type="text"
+                              id={`inputID_${r.id}`}
+                              disabled
+                              value={shortUUID(r.id)}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              id={`inputName_${r.id}`}
+                              disabled
+                              value={changeName === false ? r.name : newName}
+                              onChange={() => {
+                                handleChangeName(r.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              id={`inputDescription_${r.id}`}
+                              disabled
+                              value={
+                                changeDescription === false
+                                  ? r.description
+                                  : newDescription
+                              }
+                              onChange={() => {
+                                handleChangeDescription(r.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              id={`inputAuthor_${r.id}`}
+                              disabled
+                              value={r.user.email}
+                            />
+                          </td>
+                          <td>
+                            <select id={`inputSubjectID_${r.id}`} disabled>
+                              <option value={r.subject.id}>
+                                {r.subject.name}
+                              </option>
+                              {subjectEdit.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <button
+                              id="btn-delete-resources"
+                              style={{ marginRight: "5px" }}
+                              onClick={() => {
+                                confirmDeleteResource(r.id);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                            <button
+                              id="show-edit-option"
+                              style={{ marginRight: "5px" }}
+                              onClick={(e) => {
+                                showEditOptionResource(e);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-pencil-square"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              id="btn-edit"
+                              style={{ marginRight: "5px", display: "none" }}
+                              onClick={() => {
+                                showModalsEdit(r);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-check2"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                              </svg>
+                            </button>
+                            <button
+                              id="btn-cancel-resources"
+                              style={{ display: "none" }}
+                              onClick={(e) => {
+                                closeEditResource(e, r);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-x-lg"
+                                viewBox="0 0 16 16"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                                />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                                />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  } else {
+                    return (
+                      <tr key={r.id}>
+                        <td>
+                          <input
+                            type="text"
+                            id={`inputID_${r.id}`}
+                            disabled
+                            value={shortUUID(r.id)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            id={`inputName_${r.id}`}
+                            disabled
+                            value={changeName === false ? r.name : newName}
+                            onChange={() => {
+                              handleChangeName(r.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            id={`inputDescription_${r.id}`}
+                            disabled
+                            value={
+                              changeDescription === false
+                                ? r.description
+                                : newDescription
+                            }
+                            onChange={() => {
+                              handleChangeDescription(r.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            id={`inputAuthor_${r.id}`}
+                            disabled
+                            value={r.user.email}
+                          />
+                        </td>
+                        <td>
+                          <select id={`inputSubjectID_${r.id}`} disabled>
+                            <option value={r.subject.id}>
+                              {r.subject.name}
                             </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <button
-                          id="btn-delete-resources"
-                          style={{ marginRight: "5px" }}
-                          onClick={() => {
-                            confirmDeleteResource(r.id);
+                            {subjectEdit.map((s) => (
+                              <option key={s.id} value={s.id}>
+                                {s.name}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
+                          <button
+                            id="btn-delete-resources"
+                            style={{ marginRight: "5px" }}
+                            onClick={() => {
+                              confirmDeleteResource(r.id);
+                            }}
                           >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>
-                        <button
-                          id="show-edit-option"
-                          style={{ marginRight: "5px" }}
-                          onClick={(e) => {
-                            showEditOptionResource(e);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                          <button
+                            id="show-edit-option"
+                            style={{ marginRight: "5px" }}
+                            onClick={(e) => {
+                              showEditOptionResource(e);
+                            }}
                           >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          id="btn-edit"
-                          style={{ marginRight: "5px", display: "none" }}
-                          onClick={() => {
-                            showModalsEdit(r);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-check2"
-                            viewBox="0 0 16 16"
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-pencil-square"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            id="btn-edit"
+                            style={{ marginRight: "5px", display: "none" }}
+                            onClick={() => {
+                              showModalsEdit(r);
+                            }}
                           >
-                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                          </svg>
-                        </button>
-                        <button
-                          id="btn-cancel-resources"
-                          style={{ display: "none" }}
-                          onClick={(e) => {
-                            closeEditResource(e, r);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-x-lg"
-                            viewBox="0 0 16 16"
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-check2"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                            </svg>
+                          </button>
+                          <button
+                            id="btn-cancel-resources"
+                            style={{ display: "none" }}
+                            onClick={(e) => {
+                              closeEditResource(e, r);
+                            }}
                           >
-                            <path
-                              fillRule="evenodd"
-                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                            />
-                            <path
-                              fillRule="evenodd"
-                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                            />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-x-lg"
+                              viewBox="0 0 16 16"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                              />
+                              <path
+                                fillRule="evenodd"
+                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                              />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  }
                 })}
               </tbody>
             </table>
@@ -653,9 +809,6 @@ export default function ResourcesConfig(props) {
           setShowModal(false);
           setShowCreateModal(false);
           setShowModalEdit(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onAddModal={(c) => {
           if (c === "create") {
@@ -682,23 +835,14 @@ export default function ResourcesConfig(props) {
           setPopup(false);
           deleteResources(idDelete);
           setIsConfirmDelete(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onNoAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onCloseAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         hasIconAnimation
         hasTransition

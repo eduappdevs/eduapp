@@ -7,6 +7,12 @@ export const fetchTuitions = async () => {
   return await axios.get(TUITIONS, { headers: requestHeader });
 };
 
+export const pagedTuitions = async (page) => {
+  return await axios.get(`${TUITIONS}?page=${page}`, {
+    headers: requestHeader,
+  });
+};
+
 export const createTuition = async (body) => {
   return await axios.post(TUITIONS, body, { headers: requestHeader });
 };
@@ -16,6 +22,7 @@ export const deleteTuition = async (id) => {
 };
 
 export const editTuition = async (body) => {
+  console.log(body)
   return await axios.put(`${TUITIONS}/${body.id}`, body, {
     headers: requestHeader,
   });

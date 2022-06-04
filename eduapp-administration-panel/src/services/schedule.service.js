@@ -9,6 +9,13 @@ export const fetchEvents = async () => {
   return await axios.get(EVENTS, { headers: requestHeader });
 };
 
+export const pagedEvents = async (page) => {
+  return await axios.get(`${EVENTS}?page=${page}`, {
+    headers: requestHeader,
+  });
+};
+
+
 export const createEvent = async (body) => {
   return await axios.post(EVENTS, body, { headers: requestHeader });
 };
@@ -25,6 +32,12 @@ export const editEvent = async (body) => {
 
 export const fetchSessions = async () => {
   return await axios.get(SESSIONS, { headers: requestHeader });
+};
+
+export const pagedSessions = async (page) => {
+  return await axios.get(`${SESSIONS}?page=${page}`, {
+    headers: requestHeader,
+  });
 };
 
 export const createSession = async (body) => {

@@ -94,18 +94,22 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
             numberRepeat < 1 ? 0 : numberRepeat < 2 ? 2 : numberRepeat,
         };
         asynchronizeRequest(function () {
-          SCHEDULESERVICE.createSessionBatch(session).then((response) => {
-            if (response.status === 201) {
-              setPopupText("Session created successfully.");
-              setPopupType("success");
-              setPopup(true);
-              onCloseModal();
-            } else {
-              setPopupText("Error creating session.");
-              setPopupType("error");
-              setPopup(true);
-            }
-          });
+          SCHEDULESERVICE.createSessionBatch(session)
+            .then((response) => {
+              if (response) {
+                setPopupText("Session created successfully.");
+                setPopupType("success");
+                setPopup(true);
+                onCloseModal();
+              }
+            })
+            .catch((Error) => {
+              if (Error) {
+                setPopupText("Error creating session.");
+                setPopupType("error");
+                setPopup(true);
+              }
+            });
         }).then((e) => {
           if (e) {
             setPopup(true);
@@ -278,9 +282,6 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
         isQuestion={isConfirmDelete}
         onCloseAction={() => {
           setPopup(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         hasIconAnimation
         hasTransition

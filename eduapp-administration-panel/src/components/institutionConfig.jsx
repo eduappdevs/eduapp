@@ -64,8 +64,6 @@ export default function InstitutionConfig(props) {
     setPopup(true);
     setPopupType("info");
     setPopupText("The institution was created successfully.");
-    document.getElementById("controlPanelContentContainer").style.overflow =
-      "scroll";
   };
 
   const createInstitution = () => {
@@ -378,15 +376,11 @@ export default function InstitutionConfig(props) {
 
   const switchSaveState = (state) => {
     if (state) {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "scroll";
       document
         .getElementById("commit-loader-2")
         .classList.remove("commit-loader-hide");
       document.getElementById("add-svg").classList.add("commit-loader-hide");
     } else {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
       if (document.getElementById("add-svg") !== null)
         document
           .getElementById("add-svg")
@@ -566,9 +560,6 @@ export default function InstitutionConfig(props) {
         onCloseAction={() => {
           setPopup(false);
           switchSaveState();
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         hasIconAnimation
         hasTransition

@@ -12,6 +12,8 @@ class TuitionsController < ApplicationController
 
     if params[:page]
       @tuitions = query_paginate(@tuitions, params[:page])
+      @tuitions[:current_page] = serialize_each(@tuitions[:current_page], [:created_at, :updated_at, :course, :user_id], [ :course, :user])
+
     end
 
     render json: @tuitions
@@ -44,8 +46,9 @@ class TuitionsController < ApplicationController
     if !check_perms_update!(get_user_roles.perms_tuitions, false, :null)
       return
     end
+    puts "tuition_params: #{tuition_params}"
 
-    if @tuition.update(tuition_params)
+    if @tuition.update(course_id: params[:course_id], user_id: params[:user_id])
       render json: @tuition
     else
       render json: @tuition.errors, status: :unprocessable_entity
@@ -70,6 +73,6 @@ class TuitionsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def tuition_params
-    params.permit(:course_id, :user_id)
+    params.require(:tuition).permit(:course_id, :user_id, :id)
   end
 end

@@ -12,6 +12,12 @@ export const fetchChat = async () => {
   return await axios.get(`${CHAT}`, { headers: requestHeader });
 };
 
+export const pagedChat = async (page) => {
+  return await axios.get(`${CHAT}?page=${page}`, {
+    headers: requestHeader,
+  });
+};
+
 export const findChatById = async (id) => {
   return await axios.get(`${CHAT}/${id}`, { headers: requestHeader });
 };
@@ -42,6 +48,13 @@ export const fetchUserNotifsChat = async (uid) => {
 export const fetchChatParticipants = async () => {
   return await axios.get(`${CHAT_PARTICIPANT}`, { headers: requestHeader });
 };
+
+export const pagedChatParticipants = async (page) => {
+  return await axios.get(`${CHAT_PARTICIPANT}?page=${page}`, {
+    headers: requestHeader,
+  });
+};
+
 
 export const deleteParticipant = async (id) => {
   return await axios.delete(`${CHAT_PARTICIPANT}/${id}`, {
@@ -74,6 +87,12 @@ export const createCompleteChat = async (chat_info) => {
 //Message
 export const fetchMessage = async () => {
   return await axios.get(`${CHAT_MESSAGES}`, { headers: requestHeader });
+};
+
+export const pagedMessageChat = async (page) => {
+  return await axios.get(`${CHAT_MESSAGES}?page=${page}`, {
+    headers: requestHeader,
+  });
 };
 
 export const deleteMessage = async (id) => {

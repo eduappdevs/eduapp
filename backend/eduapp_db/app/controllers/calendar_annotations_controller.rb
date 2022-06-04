@@ -36,6 +36,7 @@ class CalendarAnnotationsController < ApplicationController
 
     if params[:page]
       @calendar_annotations = query_paginate(@calendar_annotations, params[:page])
+      @calendar_annotations[:current_page] = serialize_each(@calendar_annotations[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [ :subject, :user,])
     end
 
     render json: @calendar_annotations

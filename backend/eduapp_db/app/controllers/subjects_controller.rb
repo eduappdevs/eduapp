@@ -53,6 +53,7 @@ class SubjectsController < ApplicationController
 
     if params[:page]
       @subjects = query_paginate(@subjects, params[:page])
+      @subjects[:current_page] = serialize_each(@subjects[:current_page], [:created_at, :updated_at, :course], [ :course])
     end
 
     render json: @subjects

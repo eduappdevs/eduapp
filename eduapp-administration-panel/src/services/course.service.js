@@ -28,3 +28,9 @@ export const editCourse = async (body) => {
     headers: requestHeader,
   });
 };
+
+export const pagedCourses = async (page) => {
+  return await axios.get(`${COURSES}?page=${page}`, {
+    headers: requestHeader,
+  });
+}

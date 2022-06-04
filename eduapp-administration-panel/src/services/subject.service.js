@@ -33,3 +33,9 @@ export const editSubject = async (body) => {
     headers: requestHeader,
   });
 };
+
+export const pagedSubjects = async (page) => {
+  return await axios.get(`${SUBJECTS}?page=${page}`, {
+    headers: requestHeader,
+  });
+}

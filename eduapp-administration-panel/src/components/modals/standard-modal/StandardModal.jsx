@@ -18,6 +18,7 @@ export default function StandardModal({
   // TYPES = ['success', 'error', 'warning', 'info']
   return (
     <div
+      id="standard-modal"
       className={`standard-modal-container ${
         hasTransition ? "standard-modal-transition-bg" : ""
       }`}

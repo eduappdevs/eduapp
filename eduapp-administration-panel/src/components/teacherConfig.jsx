@@ -4,12 +4,16 @@ import { interceptExpiredToken } from "../utils/OfflineManager";
 import * as SUBJECT_SERVICE from "../services/subject.service";
 import * as USER_SERVICE from "../services/user.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import PageSelect from "./pagination/PageSelect";
 
 export default function TeacherConfig(props) {
   const [users, setUsers] = useState(null);
-  const [search, setSearch] = useState("");
   const [subjects, setSubjects] = useState(null);
   const [teachers, setTeachers] = useState(null);
+
+  const [search, setSearch] = useState("");
+  const [maxPages, setMaxPages] = useState(1);
+  const [teacherPages, setTeacherPages] = useState();
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -53,7 +57,6 @@ export default function TeacherConfig(props) {
       }
       return ids;
     };
-
     for (let u of users) {
       for (let subject_id of u.teaching_list) {
         if (allSubjectIds().includes(subject_id)) {
@@ -64,8 +67,51 @@ export default function TeacherConfig(props) {
         }
       }
     }
+    let pages = 0;
+    let max = 0;
+    let teacher = [];
+    let listAllTeacher = [];
+    for (var i = 0; i < allTeachers.length; i++) {
+      if (max === 9) {
+        pages += 1;
+        max = 0;
+        teacher.push(allTeachers[i]);
+        listAllTeacher.push(teacher);
+        teacher = [];
+      } else {
+        max += 1;
+        teacher.push(allTeachers[i]);
+      }
+    }
+
+    if (max < 10) {
+      for (let i = 10; i > allTeachers.length; i++) {
+        teacher.push(allTeachers[i]);
+      }
+      listAllTeacher.push(teacher);
+      teacher = [];
+      pages += 1;
+    }
+    setMaxPages(pages);
+    setTeacherPages(listAllTeacher);
     teacher_filter.teacher = allTeachers;
     setTeachers(allTeachers);
+  };
+
+  const fetchTeacherPages = async (pages) => {
+    let teacherFilter = [];
+    if (maxPages === pages) {
+      teacherPages[pages - 1].forEach((t) => {
+        teacherFilter.push(t);
+      });
+    } else {
+      teacherPages[pages - 1].forEach((t) => {
+        teacherFilter.push(t);
+      });
+    }
+    console.log(teacherFilter);
+    console.log(teachers);
+    setTeachers(teacherFilter);
   };
 
   const alertCreate = async () => {
@@ -93,6 +139,7 @@ export default function TeacherConfig(props) {
             setPopupText("The teacher was enrolled successfully.");
             switchSaveState(true);
             setIsConfirmDelete(false);
+            fetchTeacherPages(1);
           }
         })
         .catch(async (e) => {
@@ -180,6 +227,12 @@ export default function TeacherConfig(props) {
       USER_SERVICE.delist_teacher(uId, sId)
         .then(() => {
           refreshTeachers();
+          fetchTeacherPages(1);
+          setPopup(true);
+          setPopupType("info");
+          setPopupText("The teacher was deleted successfully.");
+          switchSaveState(false);
+          setIsConfirmDelete(false);
         })
         .catch(async (e) => {
           if (e) {
@@ -307,103 +360,128 @@ export default function TeacherConfig(props) {
           </tbody>
         </table>
         {teachers && teachers.length !== 0 ? (
-          <table style={{ marginTop: "50px" }}>
-            <thead>
-              <tr>
-                <th>{props.language.teacherName}</th>
-                <th>{props.language.subjectName}</th>
-                <th>{props.language.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teachers.map((t) => {
-                if (search.length > 0) {
-                  if (
-                    t.user.user_name
-                      .toLowerCase()
-                      .includes(search.toLowerCase())
-                  ) {
-                    return (
-                      <tr key={t.user.user.id}>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            value={t.user.user_name}
-                          />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={t.subject.name} />
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              confirmDeleteTeacher(
-                                t.user.user.id,
-                                t.subject.id
-                              );
+          <>
+            <div className="notify-users">
+              <PageSelect
+                onPageChange={async (p) => fetchTeacherPages(p)}
+                maxPages={maxPages}
+              />
+            </div>
+            <div className="courses-table-info">
+              <table style={{ marginTop: "15px" }}>
+                <thead>
+                  <tr>
+                    <th>{props.language.teacherName}</th>
+                    <th>{props.language.subjectName}</th>
+                    <th>{props.language.actions}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {teachers.map((t) => {
+                    if (search.length > 0) {
+                      if (
+                        t.user.user_name
+                          .toLowerCase()
+                          .includes(search.toLowerCase())
+                      ) {
+                        return (
+                          <tr key={t.user.user.id}>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                value={t.user.user_name}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                value={t.subject.name}
+                              />
+                            </td>
+                            <td
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <button
+                                onClick={() => {
+                                  confirmDeleteTeacher(
+                                    t.user.user.id,
+                                    t.subject.id
+                                  );
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-trash3"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    } else {
+                      return (
+                        <tr key={t.id}>
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              value={t.user.user_name}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              disabled
+                              value={t.subject.name}
+                            />
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
                             }}
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
+                            <button
+                              onClick={() => {
+                                confirmDeleteTeacher(
+                                  t.user.user.id,
+                                  t.subject.id
+                                );
+                              }}
                             >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-                } else {
-                  return (
-                    <tr key={t.id}>
-                      <td>
-                        <input type="text" disabled value={t.user.user_name} />
-                      </td>
-                      <td>
-                        <input type="text" disabled value={t.subject.name} />
-                      </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <button
-                          onClick={() => {
-                            confirmDeleteTeacher(t.user.user.id, t.subject.id);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                }
-              })}
-            </tbody>
-          </table>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : null}
       </div>
       <StandardModal
@@ -415,22 +493,13 @@ export default function TeacherConfig(props) {
         onYesAction={() => {
           setPopup(false);
           deleteTeacher(idDelete, subjectDelete);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onNoAction={() => {
           setPopup(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onCloseAction={() => {
           setPopup(false);
           switchSaveState();
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         hasIconAnimation
         hasTransition

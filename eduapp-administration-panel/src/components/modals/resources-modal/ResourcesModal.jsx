@@ -131,10 +131,14 @@ export default function ResourcesModal({
       RESOURCESERVICE.createResources(finalData)
         .then(() => onAddModal("create"))
         .catch((e) => {
-          setPopupText("An error ocurred while trying to create the resource.");
-          setPopupIcon("error");
-          setPopup(true);
-          setIsConfirmDelete(false);
+          if (e) {
+            setPopupText(
+              "An error ocurred while trying to create the resource."
+            );
+            setPopupIcon("error");
+            setPopup(true);
+            setIsConfirmDelete(false);
+          }
         });
     }).then((e) => {
       if (e) {
@@ -221,9 +225,6 @@ export default function ResourcesModal({
   };
 
   const editResource = async (r) => {
-    document.getElementById("controlPanelContentContainer").style.overflow =
-      "scroll";
-
     let inputName = document.getElementById("inputName_" + r.id).value;
     let inputDescription = document.getElementById(
       "inputDescription_" + r.id

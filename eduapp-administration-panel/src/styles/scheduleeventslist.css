@@ -10,6 +10,7 @@ th {
   border: 1px solid #dddddd76;
   text-align: left;
   padding: 8px;
+  width: 180px;
 }
 
 tr:nth-child(even) {
@@ -19,10 +20,52 @@ tr:nth-child(even) {
 .eventList {
   font-family: arial, sans-serif;
   border-collapse: collapse;
-  width: 75vw;
   overflow-y: scroll;
 }
 
 tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.schedule-table-info {
+  height: auto;
+}
+
+.schedule-table-info>table>thead {
+  display: block;
+  flex-direction: row;
+
+}
+
+.schedule-table-info>table>thead>tr {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #dddddd76;
+  text-align: left;
+}
+
+.schedule-table-info>table>thead>tr>th {
+  flex: 1;
+}
+
+.schedule-table-info>table>tbody {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  height: 350px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.schedule-table-info>table>tbody>tr {
+  display: flex;
+  flex-direction: row;
+}
+
+.schedule-table-info>table>tbody>tr>td {
+  flex: 1;
+}
+
+.schedule-table-info>table>tbody>tr:nth-child(even) {
   background-color: #dddddd;
 }

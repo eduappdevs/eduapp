@@ -1,6 +1,6 @@
 .standard-modal-container {
-	width: 100vw;
-	height: 100vh;
+	width: 100%;
+	height: 100%;
 	font-family: Consolas;
 	font-size: 18px;
 	position: fixed;
@@ -11,6 +11,7 @@
 	justify-content: center;
 	background-color: rgba(0, 0, 0, 0.5);
 	z-index: 9999999999999999999999;
+	overflow: hidden;
 }
 
 .standard-modal-transition-bg {
@@ -58,7 +59,6 @@
 
 .standard-modal {
 	background-color: var(--backgroundColor);
-	padding: 0.1em 0.1em 0.1em 0.1em;
 	color: var(--textColor);
 	position: fixed;
 	display: flex;
@@ -66,11 +66,14 @@
 	justify-content: center;
 	flex-direction: column;
 	align-items: center;
-	border: 1px solid var(--textColor);
-	bottom: 0;
-	margin-bottom: 7em;
-	border-radius: 15px;
 	max-width: 40%;
+	padding: 0.1em 0.1em 0.1em 0.1em;
+	bottom: 0;
+	right: 0;
+	margin-bottom: 7em;
+	margin-right: 30%;
+	border: 1px solid var(--textColor);
+	border-radius: 15px;
 }
 
 

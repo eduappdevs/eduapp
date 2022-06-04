@@ -79,7 +79,11 @@
     "fri": "FRI",
     "sat": "SAT",
     "sun": "SUN",
-    "userRole": "User Role"
+    "userRole": "User Role",
+    "all": "All",
+    "justOne": "Just one",
+    "selectedModalEdi": "Do you want to modify all or just one?",
+    "selectedModalDel": "Do you want to delete all or just one?"
   },
   "es": {
     "title": "Titulo",
@@ -161,7 +165,11 @@
     "fri": "VIE",
     "sat": "SAB",
     "sun": "DOM",
-    "userRole": "Rol de usuario"
+    "userRole": "Rol de usuario",
+    "all": "Todos",
+    "justOne": "Solo uno",
+    "selectedModalEdi": "¿Quiere modificar todos o solo uno?",
+    "selectedModalDel": "¿Quiere eliminar todos o solo uno?"
   },
   "pt": {
     "title": "Título",
@@ -243,6 +251,10 @@
     "fri": "SX",
     "sat": "SA",
     "sun": "DO",
-    "userRole": "Papel do usuário"
+    "userRole": "Papel do usuário",
+    "all": "Todos",
+    "justOne": "Só um",
+    "selectedModalEdi": "Você quer editar todos ou só um?",
+    "selectedModalDel": "Você quer excluir todos ou só um?"
   }
 }

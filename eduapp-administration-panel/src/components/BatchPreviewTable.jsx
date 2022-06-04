@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as SCHEDULESERVICE from "../services/schedule.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
 import * as API from "../API";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function BatchPreviewTable(props) {
   const [data, setData] = useState(null);
+  const [subject, setSubject] = useState();
 
   const confirmAndUpload = () => {
     data.map((x) => {
+      console.log(props.type);
       switch (props.type) {
         case "users":
           createUser(x);
@@ -26,7 +29,7 @@ export default function BatchPreviewTable(props) {
           break;
       }
       setTimeout(() => {
-        window.location.reload();
+        // window.location.reload();
       }, 2000);
     });
   };
@@ -75,6 +78,15 @@ export default function BatchPreviewTable(props) {
       let diff_days = parseInt(days);
       let week_repeat = parseInt(session[7]);
 
+      SUBJECTSERVICE.fetchSubject()
+        .then((res) => {
+          res.data.shift();
+          setSubject(res.data);
+        })
+        .catch(async (e) => {
+          await interceptExpiredToken(e);
+        });
+
       if (
         name !== "" &&
         start_date !== "" &&
@@ -100,11 +112,12 @@ export default function BatchPreviewTable(props) {
           diff_days: diff_days,
           week_repeat: week_repeat < 1 ? 0 : week_repeat < 2 ? 2 : week_repeat,
         };
-        console.log(week_repeat < 1 ? 0 : week_repeat < 2 ? 2 : week_repeat);
         API.asynchronizeRequest(function () {
           SCHEDULESERVICE.createSessionBatch(sessionJson)
-            .then(() => {
-              props.close();
+            .then((e) => {
+              if (e) {
+                props.close();
+              }
             })
             .catch((e) => {
               console.log(e);

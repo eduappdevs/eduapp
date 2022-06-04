@@ -5,12 +5,15 @@ import * as USERSSERVICE from "../services/user.service";
 import * as COURSESERVICE from "../services/course.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import PageSelect from "./pagination/PageSelect";
 
 export default function EnrollConfig(props) {
   const [tuitions, setTuitions] = useState(null);
   const [users, setUsers] = useState(null);
   const [courses, setCourses] = useState(null);
+
   const [search, setSearch] = useState("");
+  const [maxPages, setMaxPages] = useState(1);
 
   const [courseEdit, setCourseEdit] = useState([]);
   const [emailEdit, setEmailEdit] = useState([]);
@@ -29,12 +32,17 @@ export default function EnrollConfig(props) {
 
   let enrollment_filter = {};
 
-  const fetchTuitions = () => {
+  const fetchTuitions = (pages) => {
     API.asynchronizeRequest(function () {
-      TUITIONSSERVICE.fetchTuitions().then((ts) => {
-        setTuitions(ts.data);
-        enrollment_filter.enroll = ts.data;
-      });
+      TUITIONSSERVICE.pagedTuitions(pages)
+        .then((ts) => {
+          setTuitions(ts.data.current_page);
+          setMaxPages(ts.data.total_pages);
+          enrollment_filter.enroll = ts.data.current_page;
+        })
+        .catch(async (err) => {
+          interceptExpiredToken(err);
+        });
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
@@ -83,15 +91,11 @@ export default function EnrollConfig(props) {
 
   const switchSaveState = (state) => {
     if (state) {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "scroll";
       document
         .getElementById("commit-loader-2")
         .classList.remove("commit-loader-hide");
       document.getElementById("add-svg").classList.add("commit-loader-hide");
     } else {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
       document.getElementById("add-svg").classList.remove("commit-loader-hide");
       document
         .getElementById("commit-loader-2")
@@ -120,7 +124,7 @@ export default function EnrollConfig(props) {
 
   const fetchAll = () => {
     fetchCourses();
-    fetchTuitions();
+    fetchTuitions(1);
     fetchUsers();
 
     document.addEventListener("filter_subject_enroll", (e) => {
@@ -183,6 +187,11 @@ export default function EnrollConfig(props) {
       TUITIONSSERVICE.deleteTuition(id)
         .then(() => {
           fetchAll();
+          setPopup(true);
+          setPopupType("info");
+          setPopupText("The enrollment was deleted successfully.");
+          switchSaveState(false);
+          setIsConfirmDelete(false);
         })
         .catch(async (e) => {
           await interceptExpiredToken(e);
@@ -314,25 +323,26 @@ export default function EnrollConfig(props) {
           course_id: editCourse,
           user_id: editEmail,
         })
-          .then(() => {
-            fetchAll();
+          .then((error) => {
+            if (error) {
+              fetchAll();
+              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+              buttonDelete.style.display = "block";
+              let button = e.target.parentNode.parentNode.childNodes[1];
+              button.style.display = "block";
+              let checkButton = e.target.parentNode.parentNode.childNodes[2];
+              checkButton.style.display = "none";
+              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+              cancelButton.style.display = "none";
+              email.disabled = true;
+              course.disabled = true;
 
-            let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-            buttonDelete.style.display = "block";
-            let button = e.target.parentNode.parentNode.childNodes[1];
-            button.style.display = "block";
-            let checkButton = e.target.parentNode.parentNode.childNodes[2];
-            checkButton.style.display = "none";
-            let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-            cancelButton.style.display = "none";
-            email.disabled = true;
-            course.disabled = true;
-
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The enrollment was edited successfully.");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText("The enrollment was edited successfully.");
+              switchSaveState(false);
+              setIsConfirmDelete(false);
+            }
           })
           .catch(async (e) => {
             if (e) {
@@ -390,28 +400,30 @@ export default function EnrollConfig(props) {
             course_id: editCourse,
             user_id: editEmail,
           })
-            .then(() => {
-              fetchAll();
-              let buttonDelete =
-                e.target.parentNode.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button =
-                e.target.parentNode.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              course.disabled = true;
-              email.disabled = true;
+            .then((error) => {
+              if (error) {
+                fetchAll();
+                let buttonDelete =
+                  e.target.parentNode.parentNode.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button =
+                  e.target.parentNode.parentNode.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                course.disabled = true;
+                email.disabled = true;
 
-              switchSaveState(false);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The enrollment was edited successfully.");
-              setIsConfirmDelete(false);
+                switchSaveState(false);
+                setPopup(true);
+                setPopupType("info");
+                setPopupText("The enrollment was edited successfully.");
+                setIsConfirmDelete(false);
+              }
             })
             .catch((e) => {
               if (e) {
@@ -457,34 +469,37 @@ export default function EnrollConfig(props) {
           editCourse = s.session_start_date;
         }
 
+        console.log(editEmail, editCourse);
         API.asynchronizeRequest(function () {
           TUITIONSSERVICE.editTuition({
             id: s.id,
             course_id: editCourse,
             user_id: editEmail,
           })
-            .then(() => {
-              fetchAll();
+            .then((error) => {
+              if (error) {
+                fetchAll();
+                let buttonDelete = e.target.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button = e.target.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton = e.target.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton = e.target.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                email.disabled = true;
+                course.disabled = true;
 
-              let buttonDelete = e.target.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              email.disabled = true;
-              course.disabled = true;
-
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The enrollment was edited successfully.");
-              switchSaveState(false);
-              setIsConfirmDelete(false);
+                setPopup(true);
+                setPopupType("info");
+                setPopupText("The enrollment was edited successfully.");
+                switchSaveState(false);
+                setIsConfirmDelete(false);
+              }
             })
             .catch(async (e) => {
               if (e) {
+                console.log(e);
                 await interceptExpiredToken(e);
                 setPopupText(
                   "The enrollment could not be edited, check if you entered the correct fields."
@@ -687,272 +702,290 @@ export default function EnrollConfig(props) {
           </tbody>
         </table>
         {tuitions && tuitions.length !== 0 ? (
-          <table style={{ marginTop: "50px" }}>
-            <thead>
-              <tr>
-                <th>{props.language.user}</th>
-                <th>{props.language.course}</th>
-                <th>{props.language.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tuitions.map((t) => {
-                if (search.length > 0) {
-                  if (
-                    t.user.email.toLowerCase().includes(search.toLowerCase())
-                  ) {
-                    return (
-                      <tr key={t.id}>
-                        <td>
-                          <select id={`inputEmail_${t.id}`} disabled>
-                            <option value={t.user_id} defaultValue={t.user_id}>
-                              {t.user.email}
-                            </option>
-                            {emailEdit.map((e) => {
-                              return (
-                                <option key={e.id} value={e.id}>
-                                  {e.user.email}
+          <>
+            <div className="notify-users">
+              <PageSelect
+                onPageChange={async (p) => fetchTuitions(p)}
+                maxPages={maxPages}
+              />
+            </div>
+            <div className="subjects-table-info">
+              <table style={{ marginTop: "15px" }}>
+                <thead>
+                  <tr>
+                    <th>{props.language.user}</th>
+                    <th>{props.language.course}</th>
+                    <th>{props.language.actions}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tuitions.map((t) => {
+                    if (search.length > 0) {
+                      if (
+                        t.user.email
+                          .toLowerCase()
+                          .includes(search.toLowerCase())
+                      ) {
+                        return (
+                          <tr key={t.id}>
+                            <td>
+                              <select id={`inputEmail_${t.id}`} disabled>
+                                <option
+                                  value={t.user.id}
+                                  defaultValue={t.user.id}
+                                >
+                                  {t.user.email}
                                 </option>
-                              );
-                            })}
-                            {}
-                          </select>
-                        </td>
-                        <td>
-                          <select id={`inputCourse_${t.id}`} disabled>
-                            <option
-                              defaultValue={t.course_id}
-                              value={t.course_id}
-                            >
-                              {t.course.name}
-                            </option>
-                            {courseEdit.map((c) => {
-                              return (
-                                <option key={c.id} value={c.id}>
-                                  {c.name}
+                                {emailEdit.map((e) => {
+                                  return (
+                                    <option key={e.id} value={e.id}>
+                                      {e.user.email}
+                                    </option>
+                                  );
+                                })}
+                                {}
+                              </select>
+                            </td>
+                            <td>
+                              <select id={`inputCourse_${t.id}`} disabled>
+                                <option
+                                  defaultValue={t.course_id}
+                                  value={t.course_id}
+                                >
+                                  {t.course.name}
                                 </option>
-                              );
-                            })}
-                          </select>
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={() => {
-                              confirmDeleteEvent(t.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
+                                {courseEdit.map((c) => {
+                                  return (
+                                    <option key={c.id} value={c.id}>
+                                      {c.name}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            </td>
+                            <td
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
                             >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionSession(e, t);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-pencil-square"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px", display: "none" }}
-                            onClick={(e) => {
-                              editSession(e, t);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-check2"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditSession(e, t);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-x-lg"
-                              viewBox="0 0 16 16"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                              />
-                              <path
-                                fillRule="evenodd"
-                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                              />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-                } else {
-                  return (
-                    <tr key={t.id}>
-                      <td>
-                        <select id={`inputEmail_${t.id}`} disabled>
-                          <option value={t.user_id} defaultValue={t.user_id}>
-                            {t.user.email}
-                          </option>
-                          {emailEdit.map((e) => {
-                            return (
-                              <option key={e.id} value={e.id}>
-                                {e.user.email}
+                              <button
+                                style={{ marginRight: "5px" }}
+                                onClick={() => {
+                                  confirmDeleteEvent(t.id);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-trash3"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ marginRight: "5px" }}
+                                onClick={(e) => {
+                                  showEditOptionSession(e, t);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-pencil-square"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ marginRight: "5px", display: "none" }}
+                                onClick={(e) => {
+                                  editSession(e, t);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-check2"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ display: "none" }}
+                                onClick={(e) => {
+                                  closeEditSession(e, t);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-x-lg"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                                  />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                                  />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    } else {
+                      return (
+                        <tr key={t.id}>
+                          <td>
+                            <select id={`inputEmail_${t.id}`} disabled>
+                              <option
+                                value={t.user.id}
+                                defaultValue={t.user.id}
+                              >
+                                {t.user.email}
                               </option>
-                            );
-                          })}
-                          {}
-                        </select>
-                      </td>
-                      <td>
-                        <select id={`inputCourse_${t.id}`} disabled>
-                          <option
-                            defaultValue={t.course_id}
-                            value={t.course_id}
-                          >
-                            {t.course.name}
-                          </option>
-                          {courseEdit.map((c) => {
-                            return (
-                              <option key={c.id} value={c.id}>
-                                {c.name}
+                              {emailEdit.map((e) => {
+                                return (
+                                  <option key={e.id} value={e.id}>
+                                    {e.user.email}
+                                  </option>
+                                );
+                              })}
+                              {}
+                            </select>
+                          </td>
+                          <td>
+                            <select id={`inputCourse_${t.id}`} disabled>
+                              <option
+                                defaultValue={t.course_id}
+                                value={t.course_id}
+                              >
+                                {t.course.name}
                               </option>
-                            );
-                          })}
-                        </select>
-                      </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={() => {
-                            confirmDeleteEvent(t.id);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
+                              {courseEdit.map((c) => {
+                                return (
+                                  <option key={c.id} value={c.id}>
+                                    {c.name}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
                           >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={(e) => {
-                            showEditOptionSession(e, t);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px", display: "none" }}
-                          onClick={(e) => {
-                            editSession(e, t);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-check2"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ display: "none" }}
-                          onClick={(e) => {
-                            closeEditSession(e, t);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-x-lg"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                            />
-                            <path
-                              fillRule="evenodd"
-                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                            />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                }
-              })}
-            </tbody>
-          </table>
+                            <button
+                              style={{ marginRight: "5px" }}
+                              onClick={() => {
+                                confirmDeleteEvent(t.id);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ marginRight: "5px" }}
+                              onClick={(e) => {
+                                showEditOptionSession(e, t);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-pencil-square"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ marginRight: "5px", display: "none" }}
+                              onClick={(e) => {
+                                editSession(e, t);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-check2"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ display: "none" }}
+                              onClick={(e) => {
+                                closeEditSession(e, t);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-x-lg"
+                                viewBox="0 0 16 16"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                                />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                                />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : null}
       </div>
       <StandardModal
@@ -964,22 +997,13 @@ export default function EnrollConfig(props) {
         onYesAction={() => {
           setPopup(false);
           deleteTuition(idDelete);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onNoAction={() => {
           setPopup(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onCloseAction={() => {
           setPopup(false);
           switchSaveState();
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         hasIconAnimation
         hasTransition

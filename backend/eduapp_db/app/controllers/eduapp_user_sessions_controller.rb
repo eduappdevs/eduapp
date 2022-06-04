@@ -22,6 +22,7 @@ class EduappUserSessionsController < ApplicationController
 
     if params[:page]
       @eduapp_user_sessions = query_paginate(@eduapp_user_sessions, params[:page])
+      @eduapp_user_sessions[:current_page] = serialize_each(@eduapp_user_sessions[:current_page], [:created_at, :updated_at, :subject_id], [ :subject])
     end
 
     render json: @eduapp_user_sessions
@@ -141,6 +142,7 @@ class EduappUserSessionsController < ApplicationController
     session_start_time = params[:session_start_date].split("T")[1]
     session_end_time = params[:session_end_date].split("T")[1]
     batch_id = SecureRandom.uuid
+    subjectId = Subject.where(name: params[:subject_id]).first.id
 
     new_session_days.each do |day|
       @eduapp_user_session = EduappUserSession.new(
@@ -150,7 +152,7 @@ class EduappUserSessionsController < ApplicationController
         resources_platform: params[:resources_platform],
         streaming_platform: params[:streaming_platform],
         session_chat_id: params[:session_chat_id],
-        subject_id: params[:subject_id],
+        subject_id: subjectId,
         batch_id: batch_id,
       )
 
@@ -179,7 +181,7 @@ class EduappUserSessionsController < ApplicationController
       resources_platform: params[:resources_platform],
       streaming_platform: params[:streaming_platform],
       session_chat_id: params[:session_chat_id],
-      subject_id: params[:subject_id].to_i,
+      subject_id: params[:subject_id],
     )
       render json: { message: "Successfully updated sessions" }
     else

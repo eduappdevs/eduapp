@@ -4,12 +4,16 @@ import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import PageSelect from "./pagination/PageSelect";
+import "../styles/chatParticipant.css";
 
 export default function ChatParticipantConfig(props) {
   const [participant, setParticipant] = useState([]);
   const [users, setUsers] = useState([]);
   const [chat, setChat] = useState([]);
-  const [participantId, setParticipantId] = useState();
+
+  const [maxPages, setMaxPages] = useState(1);
+  const [search, setSearch] = useState("");
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -20,15 +24,11 @@ export default function ChatParticipantConfig(props) {
 
   const switchSaveState = (state) => {
     if (state) {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "scroll";
       document
         .getElementById("commit-loader-2")
         .classList.remove("commit-loader-hide");
       document.getElementById("add-svg").classList.add("commit-loader-hide");
     } else {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
       document.getElementById("add-svg").classList.remove("commit-loader-hide");
       document
         .getElementById("commit-loader-2")
@@ -36,16 +36,28 @@ export default function ChatParticipantConfig(props) {
     }
   };
 
-  const fetchParticipants = async () => {
+  const fetchParticipantsPage = async (page) => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.fetchChatParticipants()
+      CHATSERVICE.pagedChatParticipants(page)
         .then((res) => {
-          setParticipant(res.data);
+          setParticipant(res.data.current_page);
+          setMaxPages(res.data.total_pages);
+          fetchUser();
+          fetchChat();
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
-          console.error(err);
         });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        setPopup(true);
+        setPopupText(
+          "The chat participant not be showed, check if you have an internet connection."
+        );
+        setPopupIcon("error");
+        switchSaveState(false);
+      }
     });
   };
 
@@ -109,7 +121,7 @@ export default function ChatParticipantConfig(props) {
     API.asynchronizeRequest(function () {
       CHATSERVICE.createParticipant(eventJson)
         .then(() => {
-          fetchParticipants();
+          fetchParticipantsPage(1);
           setIsConfirmDelete(false);
           setPopup(true);
           setPopupType("info");
@@ -143,7 +155,12 @@ export default function ChatParticipantConfig(props) {
     API.asynchronizeRequest(function () {
       CHATSERVICE.deleteParticipant(id)
         .then(() => {
-          fetchParticipants();
+          fetchParticipantsPage(1);
+          setPopup(true);
+          setPopupType("info");
+          setPopupText("The participants was deleted successfully.");
+          switchSaveState(false);
+          setIsConfirmDelete(false);
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
@@ -162,14 +179,12 @@ export default function ChatParticipantConfig(props) {
   };
 
   useEffect(() => {
-    fetchParticipants();
-    fetchUser();
-    fetchChat();
+    fetchParticipantsPage(1);
   }, []);
 
   return (
     <>
-      <div className="chatParticipant-main-container">
+      <div className="schedulesesionslist-main-container">
         <table className="createTable">
           <thead>
             <tr>
@@ -245,57 +260,67 @@ export default function ChatParticipantConfig(props) {
           </tbody>
         </table>
         {participant && participant.length !== 0 ? (
-          <table className="eventList" style={{ marginTop: "50px" }}>
-            <thead>
-              <tr>
-                <th>{props.language.participantName}</th>
-                <th>{props.language.chatName}</th>
-                <th>{props.language.admin}</th>
-                <th>{props.language.admin}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {participant.map((e) => {
-                return (
-                  <tr key={e.id}>
-                    <td>{e.user.email}</td>
-                    <td>{e.chat_base.chat_name}</td>
-                    <td style={{ textAlign: "center" }}>
-                      {e.isChatAdmin ? (
-                        <input type="checkbox" defaultChecked disabled />
-                      ) : (
-                        <input type="checkbox" disabled />
-                      )}
-                    </td>
-                    <td
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <button
-                        onClick={() => {
-                          confirmDeleteParticipant(e.id);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-trash3"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                        </svg>
-                      </button>
-                    </td>
+          <>
+            <div className="notify-users">
+              <PageSelect
+                onPageChange={async (p) => fetchParticipantsPage(p)}
+                maxPages={maxPages}
+              />
+            </div>
+            <div className="participants-table-info">
+              <table className="eventList" style={{ marginTop: "15px" }}>
+                <thead>
+                  <tr>
+                    <th>{props.language.participantName}</th>
+                    <th>{props.language.chatName}</th>
+                    <th>{props.language.admin}</th>
+                    <th>{props.language.admin}</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {participant.map((e) => {
+                    return (
+                      <tr key={e.id}>
+                        <td>{e.user.email}</td>
+                        <td>{e.chat_base.chat_name}</td>
+                        <td style={{ textAlign: "center" }}>
+                          {e.isChatAdmin ? (
+                            <input type="checkbox" defaultChecked disabled />
+                          ) : (
+                            <input type="checkbox" disabled />
+                          )}
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              confirmDeleteParticipant(e.id);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : null}
       </div>
 
@@ -309,23 +334,14 @@ export default function ChatParticipantConfig(props) {
           setPopup(false);
           setIsConfirmDelete(false);
           deleteParticipant(idDelete);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onNoAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onCloseAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         hasIconAnimation
         hasTransition
