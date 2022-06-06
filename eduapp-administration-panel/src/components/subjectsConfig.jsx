@@ -15,7 +15,13 @@ export default function SubjectsConfig(props) {
   const [search, setSearch] = useState("");
 
   const [changeColor, setChangeColor] = useState(false);
-  const [newColor] = useState();
+  const [newColor, setNewColor] = useState();
+  const [newCode, setNewCode] = useState();
+  const [changeCode, setChangeCode] = useState(false);
+  const [newName, setNewName] = useState();
+  const [changeName, setChangeName] = useState(false);
+  const [newDescription, setNewDescription] = useState();
+  const [changeDescription, setChangeDescription] = useState(false);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -27,6 +33,19 @@ export default function SubjectsConfig(props) {
   let course_filter = {};
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
+
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "scroll";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
 
   const switchSaveState = (state) => {
     if (state) {
@@ -66,16 +85,18 @@ export default function SubjectsConfig(props) {
   };
 
   const createSubject = () => {
+    switchEditState(false);
+    let subject_code = document.getElementById("sj_subjectCode").value;
     let name = document.getElementById("sj_name").value;
     let desc = document.getElementById("sj_desc").value;
     let color = document.getElementById("sj_color").value;
     let sel_course = document.getElementById("course_chooser").value;
 
-    let info = [name, desc, color, sel_course];
+    let info = [subject_code, name, desc, color, sel_course];
 
     let valid = true;
     for (let i of info) {
-      if (i.length < 2 && i === "-") {
+      if (i.length < 2 && i === "-" && i === "") {
         valid = false;
         break;
       }
@@ -84,22 +105,30 @@ export default function SubjectsConfig(props) {
     if (valid) {
       API.asynchronizeRequest(function () {
         SUBJECTSERVICE.createSubject({
+          subject_code: subject_code,
           name: name,
           description: desc,
           color: color,
           course_id: sel_course,
         })
-          .then(() => {
-            fetchSubjectPage(1);
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The calendar events was created successfully.");
-            switchSaveState(true);
+          .then((e) => {
+            if (e) {
+              fetchSubjectPage(1);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText("The subject was created successfully.");
+              switchSaveState(true);
+            }
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              alertCreate();
+              setPopup(true);
+              setPopupText(
+                "The subject could not be created, check if you entered correct fields."
+              );
+              setPopupType("error");
+              switchSaveState(true);
             }
           });
       }).then(async (e) => {
@@ -112,10 +141,14 @@ export default function SubjectsConfig(props) {
           setPopupIcon("error");
         }
       });
-    } else alertCreate();
+    } else {
+      alertCreate();
+      switchEditState(false);
+    }
   };
 
   const confirmDeleteEvent = async (id) => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
     setPopupText("Are you sure you want to delete this subject?");
@@ -137,6 +170,7 @@ export default function SubjectsConfig(props) {
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.deleteSubject(id)
         .then(() => {
+          switchEditState(true);
           fetchSubjectPage(1);
           setPopup(true);
           setPopupType("info");
@@ -148,10 +182,12 @@ export default function SubjectsConfig(props) {
           if (e) {
             await interceptExpiredToken(e);
             showDeleteError();
+            switchEditState(true);
           }
         });
     }).then(async (e) => {
       if (e) {
+        switchEditState(true);
         await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
@@ -165,13 +201,16 @@ export default function SubjectsConfig(props) {
 
   const showEditOptionSubject = (e) => {
     if (e.target.tagName === "svg") {
-      let name =
+      let subject_code =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
+      let name =
         e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let color =
+      let description =
         e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+      let color =
+        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
 
+      subject_code.disabled = false;
       name.disabled = false;
       description.disabled = false;
       color.disabled = false;
@@ -186,15 +225,20 @@ export default function SubjectsConfig(props) {
       cancelButton.style.display = "block";
     } else {
       if (e.target.tagName === "path") {
-        let name =
+        let subject_code =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
             .childNodes[0];
-        let description =
+        let name =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
             .childNodes[0];
-        let color =
+        let description =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
             .childNodes[0];
+        let color =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
+            .childNodes[0];
+
+        subject_code.disabled = false;
         name.disabled = false;
         description.disabled = false;
         color.disabled = false;
@@ -212,11 +256,13 @@ export default function SubjectsConfig(props) {
           e.target.parentNode.parentNode.parentNode.childNodes[3];
         cancelButton.style.display = "block";
       } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let code = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let name = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
         let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let color = e.target.parentNode.parentNode.childNodes[3].childNodes[0];
+          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
+        let color = e.target.parentNode.parentNode.childNodes[4].childNodes[0];
 
+        code.disabled = false;
         name.disabled = false;
         description.disabled = false;
         color.disabled = false;
@@ -233,21 +279,29 @@ export default function SubjectsConfig(props) {
   };
 
   const editSubject = (e, s) => {
+    switchEditState(false);
     if (e.target.tagName === "svg") {
-      let name =
+      let subject_code =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
+      let name =
         e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
+      let description =
+        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
       let color =
         e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
 
+      let inputCode = document.getElementById("inputSubjectCode_" + s.id).value;
       let inputName = document.getElementById("inputName_" + s.id).value;
       let inputDescription = document.getElementById(
         "inputDescription_" + s.id
       ).value;
       let inputColor = document.getElementById("inputColor_" + s.id).value;
 
-      let editTitle, editColor, editDescription;
+      let editCode, editTitle, editColor, editDescription;
+
+      if (inputCode !== "" && inputCode !== s.code) {
+        editCode = inputCode;
+      } else editCode = s.code;
 
       if (inputName !== "" && inputName !== s.name) {
         editTitle = inputName;
@@ -273,33 +327,38 @@ export default function SubjectsConfig(props) {
       API.asynchronizeRequest(function () {
         SUBJECTSERVICE.editSubject({
           id: s.id,
+          subject_code: editCode,
           name: editTitle,
           description: editDescription,
           color: editColor,
           course_id: s.course_id,
         })
-          .then(() => {
-            fetchSubjectPage(1);
-            let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-            buttonDelete.style.display = "block";
-            let button = e.target.parentNode.parentNode.childNodes[1];
-            button.style.display = "block";
-            let checkButton = e.target.parentNode.parentNode.childNodes[2];
-            checkButton.style.display = "none";
-            let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-            cancelButton.style.display = "none";
-            name.disabled = true;
-            color.disabled = true;
-            description.disabled = true;
+          .then((error) => {
+            if (error) {
+              switchEditState(false);
+              fetchSubjectPage(1);
+              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+              buttonDelete.style.display = "block";
+              let button = e.target.parentNode.parentNode.childNodes[1];
+              button.style.display = "block";
+              let checkButton = e.target.parentNode.parentNode.childNodes[2];
+              checkButton.style.display = "none";
+              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+              subject_code.disabled = true;
+              cancelButton.style.display = "none";
+              name.disabled = true;
+              color.disabled = true;
+              description.disabled = true;
 
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The subject was edited successfully.");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText("The subject was edited successfully.");
+              switchSaveState(false);
+              setIsConfirmDelete(false);
+            }
           })
-          .catch(async (e) => {
-            if (e) {
+          .catch(async (error) => {
+            if (error) {
               await interceptExpiredToken(e);
               setPopupText(
                 "The subject could not be edited, check if you entered the correct fields."
@@ -310,8 +369,8 @@ export default function SubjectsConfig(props) {
               setIsConfirmDelete(false);
             }
           });
-      }).then(async (e) => {
-        if (e) {
+      }).then(async (error) => {
+        if (error) {
           await interceptExpiredToken(e);
           setPopup(true);
           setPopupText(
@@ -325,23 +384,35 @@ export default function SubjectsConfig(props) {
       });
     } else {
       if (e.target.tagName === "path") {
-        let name =
+        let code =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
             .childNodes[0];
-        let description =
+        let name =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
             .childNodes[0];
-        let color =
+        let description =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
             .childNodes[0];
+        let color =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
+            .childNodes[0];
 
+        let inputSubjectCode = document.getElementById(
+          "inputSubjectCode_" + s.id
+        ).value;
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputDescription = document.getElementById(
           "inputDescription_" + s.id
         ).value;
         let inputColor = document.getElementById("inputColor_" + s.id).value;
 
-        let editTitle, editColor, editDescription;
+        let editCode, editTitle, editColor, editDescription;
+
+        if (inputSubjectCode !== "" && inputSubjectCode !== s.subject_code) {
+          editCode = inputSubjectCode;
+        } else {
+          editCode = s.subject_code;
+        }
 
         if (inputName !== "" && inputName !== s.name) {
           editTitle = inputName;
@@ -367,37 +438,41 @@ export default function SubjectsConfig(props) {
         API.asynchronizeRequest(function () {
           SUBJECTSERVICE.editSubject({
             id: s.id,
+            subject_code: editCode,
             name: editTitle,
             description: editDescription,
             color: editColor,
             course_id: s.course_id,
           })
-            .then(() => {
-              fetchSubjectPage(1);
-
-              let buttonDelete =
-                e.target.parentNode.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button =
-                e.target.parentNode.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              description.disabled = true;
-              color.disabled = true;
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The subject was edited successfully.");
-              switchSaveState(false);
-              setIsConfirmDelete(false);
+            .then((error) => {
+              if (error) {
+                fetchSubjectPage(1);
+                switchEditState(false);
+                let buttonDelete =
+                  e.target.parentNode.parentNode.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button =
+                  e.target.parentNode.parentNode.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                code.disabled = true;
+                name.disabled = true;
+                description.disabled = true;
+                color.disabled = true;
+                setPopup(true);
+                setPopupType("info");
+                setPopupText("The subject was edited successfully.");
+                switchSaveState(false);
+                setIsConfirmDelete(false);
+              }
             })
-            .catch(async (e) => {
-              if (e) {
+            .catch(async (error) => {
+              if (error) {
                 await interceptExpiredToken(e);
                 setPopupText(
                   "The subject could not be edited, check if you entered the correct fields."
@@ -408,8 +483,8 @@ export default function SubjectsConfig(props) {
                 setIsConfirmDelete(false);
               }
             });
-        }).then(async (e) => {
-          if (e) {
+        }).then(async (error) => {
+          if (error) {
             await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
@@ -421,18 +496,28 @@ export default function SubjectsConfig(props) {
           }
         });
       } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let subject_code =
+          e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let name = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
         let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let color = e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-
+          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
+        let color = e.target.parentNode.parentNode.childNodes[4].childNodes[0];
+        let inputCode = document.getElementById(
+          "inputSubjectCode_" + s.id
+        ).value;
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputDescription = document.getElementById(
           "inputDescription_" + s.id
         ).value;
         let inputColor = document.getElementById("inputColor_" + s.id).value;
 
-        let editTitle, editColor, editDescription;
+        let editCode, editTitle, editColor, editDescription;
+
+        if (inputCode !== "" && inputCode !== s.subject_code) {
+          editCode = inputCode;
+        } else {
+          editCode = s.subject_code;
+        }
 
         if (inputName !== "" && inputName !== s.name) {
           editTitle = inputName;
@@ -458,32 +543,37 @@ export default function SubjectsConfig(props) {
         API.asynchronizeRequest(function () {
           SUBJECTSERVICE.editSubject({
             id: s.id,
+            subject_code: editCode,
             name: editTitle,
             description: editDescription,
             color: editColor,
             course_id: s.course_id,
           })
-            .then(() => {
-              fetchSubjectPage(1);
-              let buttonDelete = e.target.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              description.disabled = true;
-              color.disabled = true;
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The subject was edited successfully.");
-              switchSaveState(false);
-              setIsConfirmDelete(false);
+            .then((error) => {
+              if (error) {
+                fetchSubjectPage(1);
+                console.log(e.target.parentNode);
+                let buttonDelete = e.target.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button = e.target.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton = e.target.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton = e.target.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                subject_code.disabled = true;
+                name.disabled = true;
+                description.disabled = true;
+                color.disabled = true;
+                setPopup(true);
+                setPopupType("info");
+                setPopupText("The subject was edited successfully.");
+                switchSaveState(false);
+                setIsConfirmDelete(false);
+              }
             })
-            .catch(async (e) => {
-              if (e) {
+            .catch(async (error) => {
+              if (error) {
                 await interceptExpiredToken(e);
                 setPopupText(
                   "The subject could not be edited, check if you entered the correct fields."
@@ -494,12 +584,12 @@ export default function SubjectsConfig(props) {
                 setIsConfirmDelete(false);
               }
             });
-        }).then(async (e) => {
-          if (e) {
+        }).then(async (error) => {
+          if (error) {
             await interceptExpiredToken(e);
             setPopup(true);
             setPopupText(
-              "The calendar session could not be edited, check if you have an internet connection."
+              "The subejcts could not be edited, check if you have an internet connection."
             );
             setPopupIcon("error");
             switchSaveState(false);
@@ -512,12 +602,15 @@ export default function SubjectsConfig(props) {
 
   const closeEditSubject = (e) => {
     if (e.target.tagName === "svg") {
-      let name =
+      let subejct_code =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
+      let name =
         e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
+      let description =
+        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
       let color =
         e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+      subejct_code.disabled = true;
       name.disabled = true;
       description.disabled = true;
       color.disabled = true;
@@ -532,16 +625,19 @@ export default function SubjectsConfig(props) {
       cancelButton.style.display = "none";
     } else {
       if (e.target.tagName === "path") {
-        let name =
+        let subject_code =
           e.target.parentNode.parentNode.parentNode.parentNode.parentNode
             .childNodes[0].childNodes[1].childNodes[0];
-        let color =
+        let name =
           e.target.parentNode.parentNode.parentNode.parentNode.parentNode
             .childNodes[0].childNodes[2].childNodes[0];
         let description =
           e.target.parentNode.parentNode.parentNode.parentNode.parentNode
             .childNodes[0].childNodes[3].childNodes[0];
-
+        let color =
+          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            .childNodes[0].childNodes[4].childNodes[0];
+        subject_code.disable = true;
         name.disabled = true;
         description.disabled = true;
         color.disabled = true;
@@ -558,11 +654,14 @@ export default function SubjectsConfig(props) {
           e.target.parentNode.parentNode.parentNode.childNodes[3];
         cancelButton.style.display = "none";
       } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let subject_code =
+          e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let name = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
         let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
+          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
         let color = e.target.parentNode.parentNode.childNodes[3].childNodes[0];
 
+        subject_code.disable = true;
         name.disabled = true;
         description.disabled = true;
         color.disabled = true;
@@ -609,6 +708,24 @@ export default function SubjectsConfig(props) {
     return content.value;
   };
 
+  const handleChangeName = (id) => {
+    var content = document.getElementById("inputName_" + id);
+    setChangeName(true);
+    return content.value;
+  };
+
+  const handleChangeDescription = (id) => {
+    var content = document.getElementById("inputDescription_" + id);
+    setChangeDescription(true);
+    return content.value;
+  };
+
+  const handleChangeCode = (id) => {
+    var content = document.getElementById("inputSubjectCode_" + id);
+    setChangeCode(true);
+    return content.value;
+  };
+
   const courseFilter = (courseList) => {
     let filter = [];
     courseList.map((s) => {
@@ -641,11 +758,12 @@ export default function SubjectsConfig(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container">
+      <div className="schedulesesionslist-main-container" id="scroll">
         <table className="createTable">
           <thead>
             <tr>
               <th></th>
+              <th>{props.language.subjectCode}</th>
               <th>{props.language.name}</th>
               <th>{props.language.description}</th>
               <th>{props.language.color}</th>
@@ -695,6 +813,13 @@ export default function SubjectsConfig(props) {
                 </button>
               </td>
               <td>
+                <input
+                  type="text"
+                  id="sj_subjectCode"
+                  placeholder="Subject Code"
+                />
+              </td>
+              <td>
                 <input id="sj_name" type="text" placeholder="Name" />
               </td>
               <td>
@@ -734,6 +859,7 @@ export default function SubjectsConfig(props) {
                 <thead>
                   <tr>
                     <th>{props.language.code}</th>
+                    <th>{props.language.subjectCode}</th>
                     <th>{props.language.name}</th>
                     <th>{props.language.description}</th>
                     <th>{props.language.color}</th>
@@ -754,10 +880,25 @@ export default function SubjectsConfig(props) {
                             </td>
                             <td>
                               <input
+                                id={`inputSubjectCode_${sj.id}`}
+                                disabled
+                                type="text"
+                                value={changeCode ? newCode : sj.subject_code}
+                                onChange={() => {
+                                  handleChangeCode(sj.id);
+                                }}
+                              />
+                            </td>
+
+                            <td>
+                              <input
                                 id={`inputName_${sj.id}`}
                                 disabled
                                 type="text"
-                                placeholder={sj.name}
+                                value={changeName ? newName : sj.name}
+                                onChange={() => {
+                                  handleChangeName(sj.id);
+                                }}
                               />
                             </td>
                             <td>
@@ -765,7 +906,14 @@ export default function SubjectsConfig(props) {
                                 id={`inputDescription_${sj.id}`}
                                 disabled
                                 type="text"
-                                placeholder={sj.description}
+                                value={
+                                  changeDescription
+                                    ? newDescription
+                                    : sj.description
+                                }
+                                onChange={() => {
+                                  handleChangeDescription(sj.id);
+                                }}
                               />
                             </td>
                             <td>
@@ -773,10 +921,10 @@ export default function SubjectsConfig(props) {
                                 id={`inputColor_${sj.id}`}
                                 disabled
                                 type="color"
-                                value={
-                                  changeColor === false ? sj.color : newColor
-                                }
-                                onChange={(e) => handleChangeColor(e, sj.id)}
+                                value={changeColor ? newColor : sj.color}
+                                onChange={(e) => {
+                                  handleChangeColor(e, sj.id);
+                                }}
                               />
                             </td>
                             <td>
@@ -888,10 +1036,25 @@ export default function SubjectsConfig(props) {
                           </td>
                           <td>
                             <input
+                              id={`inputSubjectCode_${sj.id}`}
+                              disabled
+                              type="text"
+                              value={changeCode ? newCode : sj.subject_code}
+                              onChange={() => {
+                                handleChangeCode(sj.id);
+                              }}
+                            />
+                          </td>
+
+                          <td>
+                            <input
                               id={`inputName_${sj.id}`}
                               disabled
                               type="text"
-                              placeholder={sj.name}
+                              value={changeName ? newName : sj.name}
+                              onChange={() => {
+                                handleChangeName(sj.id);
+                              }}
                             />
                           </td>
                           <td>
@@ -899,7 +1062,14 @@ export default function SubjectsConfig(props) {
                               id={`inputDescription_${sj.id}`}
                               disabled
                               type="text"
-                              placeholder={sj.description}
+                              value={
+                                changeDescription
+                                  ? newDescription
+                                  : sj.description
+                              }
+                              onChange={() => {
+                                handleChangeDescription(sj.id);
+                              }}
                             />
                           </td>
                           <td>
@@ -907,10 +1077,10 @@ export default function SubjectsConfig(props) {
                               id={`inputColor_${sj.id}`}
                               disabled
                               type="color"
-                              value={
-                                changeColor === false ? sj.color : newColor
-                              }
-                              onChange={(e) => handleChangeColor(e, sj.id)}
+                              value={changeColor ? newColor : sj.color}
+                              onChange={(e) => {
+                                handleChangeColor(e, sj.id);
+                              }}
                             />
                           </td>
                           <td>
@@ -1031,11 +1201,13 @@ export default function SubjectsConfig(props) {
         onNoAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
+          switchEditState(true);
         }}
         onCloseAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
           switchSaveState();
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

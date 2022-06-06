@@ -830,6 +830,7 @@ export default function UserConfig(props) {
               <th>{props.language.email}</th>
               <th>{props.language.userRole}</th>
               <th>{props.language.googleLinked}</th>
+              <th>{props.language.lastConnection}</th>
               <th>{props.language.actions}</th>
             </tr>
           </thead>
@@ -837,6 +838,7 @@ export default function UserConfig(props) {
             {users
               ? // eslint-disable-next-line array-callback-return
                 users.map((u) => {
+                  let user = u.user.last_sign_in_at;
                   if (search.length > 0) {
                     if (
                       (u.user_name.includes(search) ||
@@ -896,6 +898,13 @@ export default function UserConfig(props) {
                               type="text"
                               disabled
                               placeholder="=> Link in App"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="datetime"
+                              disabled
+                              value={user.split(".")[0]}
                             />
                           </td>
                           <td
@@ -1040,6 +1049,13 @@ export default function UserConfig(props) {
                             type="text"
                             disabled
                             placeholder="=> Link in App"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="datetime-local"
+                            disabled
+                            value={user.split(".")[0]}
                           />
                         </td>
                         <td

@@ -23,6 +23,9 @@ class UserInfosController < ApplicationController
     if params[:page]
       @user_infos = query_paginate(@user_infos, params[:page])
       @user_infos[:current_page] = serialize_each(@user_infos[:current_page], [:created_at, :updated_at, :user_id, :user_role_id], [:user, :user_role])
+      @user_infos[:current_page].each do |user_info|
+        user_info["user"]["last_sign_in_at"] = User.find(user_info["user"]["id"]).last_sign_in_at
+      end
     end
 
     render json: @user_infos

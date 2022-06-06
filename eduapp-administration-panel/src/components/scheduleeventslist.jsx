@@ -14,6 +14,7 @@ export default function Scheduleeventslist(props) {
   const [events, setEvents] = useState([]);
   const [users, setUsers] = useState([]);
   const [isGlobal, setIsGlobal] = useState(false);
+  const [isPop, setIsPop] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
 
@@ -236,6 +237,11 @@ export default function Scheduleeventslist(props) {
   const isGlobalEvent = () => {
     let checkbox = document.getElementById("e_isGlobal").checked;
     setIsGlobal(checkbox);
+  };
+
+  const isPopEvent = () => {
+    let checkbox = document.getElementById("e_isPop").checked;
+    setIsPop(checkbox);
   };
 
   const confirmDeleteEvent = async (id) => {
@@ -973,6 +979,7 @@ export default function Scheduleeventslist(props) {
               <th>{props.language.endDate}</th>
               <th>{props.language.isGlobal}</th>
               {isGlobal ? console.log() : <th>{props.language.subjects}</th>}
+              <th>Is a event pop</th>
             </tr>
           </thead>
           <tbody>
@@ -1070,6 +1077,9 @@ export default function Scheduleeventslist(props) {
                   </select>
                 </td>
               )}
+              <td style={{ textAlign: "center" }}>
+                <input id="e_isPop" type="checkbox" onClick={isPopEvent} />
+              </td>
             </tr>
           </tbody>
         </table>

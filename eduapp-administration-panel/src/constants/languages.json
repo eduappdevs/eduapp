@@ -83,7 +83,9 @@
     "all": "All",
     "justOne": "Just one",
     "selectedModalEdi": "Do you want to modify all or just one?",
-    "selectedModalDel": "Do you want to delete all or just one?"
+    "selectedModalDel": "Do you want to delete all or just one?",
+    "subjectCode": "Subject Code",
+    "lastConnection": "Last Connection"
   },
   "es": {
     "title": "Titulo",
@@ -169,7 +171,9 @@
     "all": "Todos",
     "justOne": "Solo uno",
     "selectedModalEdi": "¿Quiere modificar todos o solo uno?",
-    "selectedModalDel": "¿Quiere eliminar todos o solo uno?"
+    "selectedModalDel": "¿Quiere eliminar todos o solo uno?",
+    "subjectCode": "Código de la materia",
+    "lastConnection": "Última conexión"
   },
   "pt": {
     "title": "Título",
@@ -255,6 +259,8 @@
     "all": "Todos",
     "justOne": "Só um",
     "selectedModalEdi": "Você quer editar todos ou só um?",
-    "selectedModalDel": "Você quer excluir todos ou só um?"
+    "selectedModalDel": "Você quer excluir todos ou só um?",
+    "subjectCode": "Código da disciplina",
+    "lastConnection": "Última conexão"
   }
 }

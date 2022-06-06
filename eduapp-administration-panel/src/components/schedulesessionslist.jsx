@@ -129,6 +129,7 @@ export default function Schedulesessionslist(props) {
       "resources_platform",
       "session_chat_id",
       "subject_id",
+      "subject_code",
     ];
 
     let json = [];
@@ -140,16 +141,18 @@ export default function Schedulesessionslist(props) {
     let chat = 1;
     let subject = document.getElementById("s_subjectId").value;
     let subject_id = subject.split("_")[1];
+    let subject_code = subject.split("_")[0];
 
     if (
-      name !== "" &&
-      start_date !== "" &&
-      end_date !== "" &&
-      resources !== "" &&
-      streaming !== "" &&
-      chat !== "" &&
-      subject_id !== `${props.language.chooseSubject}` &&
-      subject_id !== ""
+      (name !== "" &&
+        start_date !== "" &&
+        end_date !== "" &&
+        resources !== "" &&
+        streaming !== "" &&
+        chat !== "" &&
+        subject_id !== `${props.language.chooseSubject}` &&
+        subject_id !== "",
+      subject_code !== `${props.language.chooseSubject}` && subject_code !== "")
     ) {
       json.push(
         name,
@@ -158,7 +161,8 @@ export default function Schedulesessionslist(props) {
         streaming,
         resources,
         chat,
-        subject_id
+        subject_id,
+        subject_code
       );
     } else {
       alertCreate();
@@ -357,7 +361,8 @@ export default function Schedulesessionslist(props) {
         editChat,
         editResources,
         editStream,
-        editSubject;
+        editSubject,
+        editCode;
 
       if (inputName !== "" && inputName !== s.session_name) {
         editTitle = inputName;
@@ -401,10 +406,22 @@ export default function Schedulesessionslist(props) {
         editStream = s.streaming_platform;
       }
 
-      if (inputSubject !== "" && inputSubject !== s.subject.id) {
-        editSubject = inputSubject;
+      if (
+        inputSubject.split("_")[0] !== "" &&
+        inputSubject.split("_")[0] !== s.subject.id
+      ) {
+        editSubject = inputSubject.split("_")[0];
       } else {
         editSubject = s.subject.id;
+      }
+
+      if (
+        inputSubject.split("_")[1] !== "" &&
+        inputSubject.split("_")[1] !== s.subject.subject_code
+      ) {
+        editCode = inputSubject.split("_")[1];
+      } else {
+        editCode = s.subject.subject_code;
       }
 
       API.asynchronizeRequest(function () {
@@ -417,6 +434,7 @@ export default function Schedulesessionslist(props) {
           resources_platform: editResources,
           session_chat_id: editChat,
           subject_id: editSubject,
+          subject_code: editCode,
           batch_id: s.batch_id,
         });
         if (s.batch_id === null) {
@@ -533,7 +551,8 @@ export default function Schedulesessionslist(props) {
           editChat,
           editResources,
           editStream,
-          editSubject;
+          editSubject,
+          editCode;
 
         if (inputName !== "" && inputName !== s.session_name) {
           editTitle = inputName;
@@ -577,10 +596,22 @@ export default function Schedulesessionslist(props) {
           editStream = s.streaming_platform;
         }
 
-        if (inputSubject !== "" && inputSubject !== s.subject.id) {
-          editSubject = inputSubject;
+        if (
+          inputSubject.split("_")[0] !== "" &&
+          inputSubject.split("_")[0] !== s.subject.id
+        ) {
+          editSubject = inputSubject.split("_")[0];
         } else {
           editSubject = s.subject.id;
+        }
+
+        if (
+          inputSubject.split("_")[1] !== "" &&
+          inputSubject.split("_")[1] !== s.subject.subject_code
+        ) {
+          editCode = inputSubject.split("_")[1];
+        } else {
+          editCode = s.subject.subject_code;
         }
 
         API.asynchronizeRequest(function () {
@@ -593,6 +624,7 @@ export default function Schedulesessionslist(props) {
             resources_platform: editResources,
             session_chat_id: editChat,
             subject_id: editSubject,
+            subject_code: editCode,
             batch_id: s.batch_id,
           });
           if (s.batch_id === null) {
@@ -703,7 +735,8 @@ export default function Schedulesessionslist(props) {
           editChat,
           editResources,
           editStream,
-          editSubject;
+          editSubject,
+          editCode;
 
         if (inputName !== "" && inputName !== s.session_name) {
           editTitle = inputName;
@@ -752,6 +785,23 @@ export default function Schedulesessionslist(props) {
         } else {
           editSubject = s.subject.id;
         }
+        if (
+          inputSubject.split("_")[0] !== "" &&
+          inputSubject.split("_")[0] !== s.subject.id
+        ) {
+          editSubject = inputSubject.split("_")[0];
+        } else {
+          editSubject = s.subject.id;
+        }
+
+        if (
+          inputSubject.split("_")[1] !== "" &&
+          inputSubject.split("_")[1] !== s.subject.subject_code
+        ) {
+          editCode = inputSubject.split("_")[1];
+        } else {
+          editCode = s.subject.subject_code;
+        }
 
         API.asynchronizeRequest(function () {
           setSelectInfo({
@@ -763,6 +813,7 @@ export default function Schedulesessionslist(props) {
             resources_platform: editResources,
             session_chat_id: editChat,
             subject_id: editSubject,
+            subject_code: editCode,
             batch_id: s.batch_id,
           });
           if (s.batch_id === null) {
@@ -1351,7 +1402,7 @@ export default function Schedulesessionslist(props) {
                     {props.language.chooseSubject}
                   </option>
                   {subject.map((s) => (
-                    <option key={s.id} value={`${s.name}_${s.id}`}>
+                    <option key={s.id} value={`${s.subject_code}_${s.id}`}>
                       {s.name}
                     </option>
                   ))}
@@ -1517,7 +1568,9 @@ export default function Schedulesessionslist(props) {
                               <select id={`inputSubjectID_${s.id}`} disabled>
                                 <option
                                   defaultValue={s.subject.id}
-                                  value={s.subject.id}
+                                  value={
+                                    s.subject.id + "_" + s.subject.subject_code
+                                  }
                                 >
                                   {s.subject.name}
                                 </option>
@@ -1716,7 +1769,9 @@ export default function Schedulesessionslist(props) {
                             <select id={`inputSubjectID_${s.id}`} disabled>
                               <option
                                 defaultValue={s.subject.id}
-                                value={s.subject.id}
+                                value={
+                                  s.subject.id + "_" + s.subject.subject_code
+                                }
                               >
                                 {s.subject.name}
                               </option>

@@ -76,6 +76,7 @@ export default function InstitutionConfig(props) {
           institution_id: new_i.data.id,
         });
         await SUBJECTSERVICE.createSubject({
+          subject_code: "GEN",
           name: "General",
           description: "Automated resource tab for all users in " + name,
           color: "#96ffb2",

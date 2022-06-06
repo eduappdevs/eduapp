@@ -72,7 +72,7 @@ export default function BatchPreviewTable(props) {
       let streaming = session[3];
       let resources = session[4];
       let chat = session[5];
-      let subject_id = session[6];
+      let subject_code = session[6];
       let total_weeks = weeks;
       let check_week_days = checkDays;
       let diff_days = parseInt(days);
@@ -94,7 +94,7 @@ export default function BatchPreviewTable(props) {
         resources !== "" &&
         streaming !== "" &&
         chat !== "" &&
-        subject_id !== "" &&
+        subject_code !== "" &&
         total_weeks !== 0 &&
         diff_days !== 0 &&
         check_week_days !== null
@@ -106,7 +106,7 @@ export default function BatchPreviewTable(props) {
           streaming_platform: streaming,
           resources_platform: resources,
           session_chat_id: chat,
-          subject_id: subject_id,
+          subject_code: subject_code,
           total_weeks: total_weeks,
           check_week_days: check_week_days,
           diff_days: diff_days,
