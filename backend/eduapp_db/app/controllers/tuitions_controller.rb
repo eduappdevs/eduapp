@@ -32,12 +32,17 @@ class TuitionsController < ApplicationController
     if !check_perms_write!(get_user_roles.perms_tuitions)
       return
     end
-    @tuition = Tuition.new(tuition_params)
 
-    if @tuition.save
-      render json: @tuition, status: :created, location: @tuition
-    else
+    @tuition = Tuition.new(course_id: params[:course_id], user_id: params[:user_id])
+    puts "Tuition count: #{Tuition.where(user_id: params[:user_id], course_id: params[:course_id]).count}"
+    if Tuition.where(user_id: params[:user_id], course_id: params[:course_id]).count > 0
       render json: @tuition.errors, status: :unprocessable_entity
+    else
+      if @tuition.save
+        render json: @tuition, status: :created, location: @tuition
+      else
+        render json: @tuition.errors, status: :unprocessable_entity
+      end
     end
   end
 

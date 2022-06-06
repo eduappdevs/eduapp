@@ -146,18 +146,35 @@ export default function EnrollConfig(props) {
     if (user === "-" && course === "-") valid = false;
 
     if (valid) {
-      API.asynchronizeRequest(function () {
-        const payload = new FormData();
-        payload.append("course_id", course);
-        payload.append("user_id", user);
-
-        TUITIONSSERVICE.createTuition(payload).then(() => {
-          fetchAll();
-          setPopup(true);
-          setPopupType("info");
-          setPopupText("The tuition was created successfully.");
-          switchSaveState(false);
-        });
+      API.asynchronizeRequest(function (er) {
+        if (er) {
+          switchSaveState(true);
+          const payload = new FormData();
+          payload.append("course_id", course);
+          payload.append("user_id", user);
+          switchSaveState(true);
+          TUITIONSSERVICE.createTuition(payload)
+            .then((e) => {
+              if (e) {
+                fetchAll();
+                setPopup(true);
+                setPopupType("info");
+                setPopupText("The tuition was created successfully.");
+                switchSaveState(false);
+              }
+            })
+            .catch((e) => {
+              if (e) {
+                interceptExpiredToken(e);
+                setPopup(true);
+                setPopupType("info");
+                setPopupText(
+                  "The tuition could not be created, check if you entered the correct fields."
+                );
+                switchSaveState(false);
+              }
+            });
+        }
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
