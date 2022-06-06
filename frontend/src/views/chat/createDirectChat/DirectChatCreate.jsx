@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import { asynchronizeRequest } from "../../../API.js";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
@@ -11,6 +12,7 @@ import useRole from "../../../hooks/useRole";
 import "./DirectChatCreate.css";
 
 export default function DirectChatCreate() {
+  const navigate = useNavigate();
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [userQuery, setUserQuery] = useState("");
   const [participant, setParticipant] = useState(null);
@@ -64,7 +66,7 @@ export default function DirectChatCreate() {
               user_ids: [getOfflineUser().user.id, participant.user.id],
             },
           });
-          window.location.href = "/chat/p" + connectionId;
+          navigate("/chat/p" + connectionId);
         } catch (err) {
           setPopupMessage("Chat already exists!");
           setCreateButton("Create");
@@ -84,7 +86,7 @@ export default function DirectChatCreate() {
 
   useEffect(() => {
     if (canCreate !== null) {
-      if (!canCreate) window.location.href = "/chat";
+      if (!canCreate) navigate("/chat");
     }
   }, [canCreate]);
 
@@ -97,7 +99,7 @@ export default function DirectChatCreate() {
     <>
       <AppHeader
         closeHandler={() => {
-          window.location.href = "/chat";
+          navigate("/chat");
         }}
         tabName="Create Direct Chat"
       />
@@ -148,7 +150,7 @@ export default function DirectChatCreate() {
                 <h2>Chat Preview</h2>
                 <li
                   onClick={() => {
-                    window.location.href = `/chat/`;
+                    navigate("/chat");
                   }}
                   id={"p"}
                 >

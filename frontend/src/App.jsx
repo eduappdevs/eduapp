@@ -108,7 +108,7 @@ export default function App() {
 
   return userinfo ? (
     <>
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.REACT_APP_BASENAME}>
         <WebTitle />
         <React.Fragment>
           <div style={{ display: needsLoader ? "flex" : "none" }}>

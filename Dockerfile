@@ -4,11 +4,11 @@ FROM node:alpine as eduapp-web-stage
 
 WORKDIR /frontend
 
-COPY ../frontend/package*.json ./
+COPY ./frontend/package*.json ./
 
 RUN npm install
 
-COPY ../frontend .
+COPY ./frontend .
 
 ENV REACT_APP_BACKEND_ENDPOINT=http://localhost:3000 \
 	REACT_APP_WEBSOCKET_ENDPOINT=ws://$REACT_APP_BACKEND_DOMAIN/chat \
@@ -38,11 +38,11 @@ FROM node:alpine as eduapp-admin-stage
 
 WORKDIR /eduapp-administration-panel
 
-COPY ../eduapp-administration-panel/package*.json ./
+COPY ./eduapp-administration-panel/package*.json ./
 
 RUN npm install
 
-COPY ../eduapp-administration-panel .
+COPY ./eduapp-administration-panel .
 
 ENV REACT_APP_BASENAME="/admin" \
 	REACT_APP_BACKEND_ENDPOINT=http://localhost:8000/api
@@ -53,10 +53,13 @@ RUN npm run build
 
 FROM nginx:alpine as nginx-server
 
-COPY --from=eduapp-web-stage /frontend/build /usr/share/nginx/html/eduapp/frontend
+COPY --from=eduapp-web-stage /frontend/build /usr/share/nginx/html/eduapp/app
 COPY --from=eduapp-admin-stage /eduapp-administration-panel/build /usr/share/nginx/html/eduapp/admin
 
-COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY ./server-config/nginx.conf /etc/nginx/nginx.conf
+
+COPY ./server-config/eduapp-404.html /usr/share/nginx/html/eduapp/eduapp-404.html
+COPY ./server-config/eduapp.html /usr/share/nginx/html/eduapp/eduapp.html
 
 EXPOSE 80
 

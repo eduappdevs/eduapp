@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import { asynchronizeRequest } from "../../../API.js";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
@@ -11,6 +12,7 @@ import useRole from "../../../hooks/useRole";
 import "./GroupChatCreate.css";
 
 export default function GroupChatCreate() {
+  const navigate = useNavigate();
   const [displayImageWarning, setWarnDisplay] = useState("none");
   const [changeImage, setChangeImage] = useState(null);
   const [imageWarningText, setWarningText] = useState(
@@ -112,7 +114,7 @@ export default function GroupChatCreate() {
             user_ids: [getOfflineUser().user.id, ...finalParticipants],
           },
         });
-        window.location.href = "/chat/g" + chat_id;
+        navigate("/chat/g" + chat_id);
         setCreateButton("Create");
       }).then((err) => {
         if (err) {
@@ -131,7 +133,7 @@ export default function GroupChatCreate() {
 
   useEffect(() => {
     if (canCreate !== null) {
-      if (!canCreate) window.location.href = "/chat";
+      if (!canCreate) navigate("/chat");
     }
   }, [canCreate]);
 
@@ -144,7 +146,7 @@ export default function GroupChatCreate() {
     <>
       <AppHeader
         closeHandler={() => {
-          window.location.href = "/chat";
+          navigate("/chat");
         }}
         tabName="Create Group Chat"
       />
