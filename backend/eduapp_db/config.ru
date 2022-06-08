@@ -2,5 +2,7 @@
 
 require_relative "config/environment"
 
-run Rails.application
-Rails.application.load_server
+map "/api/#{ENV.fetch("API_VERSION")}" do
+  run Rails.application
+  Rails.application.load_server
+end
