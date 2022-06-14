@@ -14,6 +14,14 @@
   "session_chat": "Chat da Sessão",
   "description": "Descrição",
   "subject": "Matéria",
+  "courses": "Cursos",
+  "users": "Usuários",
+  "enrollments": "Inscrições",
+  "institutions": "Instituições",
+  "sessions": "Sessões",
+  "submit": "Enviar",
+  "delete": "Excluir",
+  "enroll": "Inscrever",
   "email": "Email",
   "author": "Autor",
   "links": "Links",
@@ -57,5 +65,13 @@
   "chat_group_min_2": "Grupo deve ter no mínimo 2 usuários.",
   "chat_new_group": "Novo Grupo",
   "chat_participants": "Participantes",
-  "chat_no_participants": "Nenhum participante."
+  "chat_no_participants": "Nenhum participante.",
+
+  "mgmt_institution_cap": "Não é permitido mais de 1 instituição.",
+  "mgmt_delete_institution": "Excluir Instituição",
+  "mgmt_delete_course": "Excluir Curso",
+  "mgmt_register_user": "Registrar Usuário",
+  "mgmt_streaming_link": "Link de Streaming",
+  "mgmt_resources_link": "Link de Recursos",
+  "mgmt_chat_link": "Link de Chat"
 }

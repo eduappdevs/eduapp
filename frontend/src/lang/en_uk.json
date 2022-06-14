@@ -14,6 +14,14 @@
   "session_chat": "Session Chat",
   "description": "Description",
   "subject": "Subject",
+  "courses": "Courses",
+  "users": "Users",
+  "enrollments": "Enrollments",
+  "institutions": "Institutions",
+  "sessions": "Sessions",
+  "submit": "Submit",
+  "delete": "Delete",
+  "enroll": "Enroll",
   "email": "Email",
   "author": "Author",
   "links": "Links",
@@ -57,5 +65,13 @@
   "chat_group_min_2": "Please enter at least 2 users.",
   "chat_new_group": "New Group",
   "chat_participants": "Participants",
-  "chat_no_participants": "No participants"
+  "chat_no_participants": "No participants",
+
+  "mgmt_institution_cap": "No more than 1 institution is allowed.",
+  "mgmt_delete_institution": "Delete an Institution",
+  "mgmt_delete_course": "Delete a Course",
+  "mgmt_register_user": "Register User",
+  "mgmt_streaming_link": "Streaming Link",
+  "mgmt_resources_link": "Resources Link",
+  "mgmt_chat_link": "Chat Link"
 }

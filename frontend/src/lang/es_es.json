@@ -14,6 +14,14 @@
   "session_chat": "Chat de la Sesión",
   "description": "Descripción",
   "subject": "Asignatura",
+  "courses": "Cursos",
+  "users": "Usuarios",
+  "enrollments": "Inscripciones",
+  "institutions": "Instituciones",
+  "sessions": "Sesiones",
+  "submit": "Enviar",
+  "delete": "Eliminar",
+  "enroll": "Inscribir",
   "email": "Correo eléctronico",
   "author": "Autor",
   "links": "Enlaces",
@@ -57,5 +65,13 @@
   "chat_group_min_2": "El grupo debe tener al menos 2 usuarios.",
   "chat_new_group": "Nuevo Grupo",
   "chat_participants": "Participantes",
-  "chat_no_participants": "No hay participantes."
+  "chat_no_participants": "No hay participantes.",
+
+  "mgmt_institution_cap": "No se permiten mas de 1 institución.",
+  "mgmt_delete_institution": "Borrar institución",
+  "mgmt_delete_course": "Borrar curso",
+  "mgmt_register_user": "Registrar usuario",
+  "mgmt_streaming_link": "Enlace de Streaming",
+  "mgmt_resources_link": "Enlace de Recursos",
+  "mgmt_chat_link": "Enlace al Chat"
 }
