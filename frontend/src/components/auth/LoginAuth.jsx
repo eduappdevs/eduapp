@@ -79,7 +79,6 @@ export default function LoginAuth() {
             sendEmail={sendEmail}
           />
         }
-        language={language}
         show={forgotModalShow}
         onCloseAction={() => {
           setForgotModalShow(false);
@@ -97,7 +96,6 @@ export default function LoginAuth() {
         text={language.recovery_sent_success}
         hasIconAnimation
         hasTransition
-        language={language}
         show={emailSentModalShow}
         onCloseAction={() => {
           setEmailSentModalShow(false);

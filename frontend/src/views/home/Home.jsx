@@ -1,15 +1,16 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SessionAdd from "../../components/modals/modals-home/SessionAdd";
 import SessionEdit from "../../components/modals/modals-home/SessionEdit";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import CourseSelector from "../../components/courseSelector/CourseSelector";
 import * as SUBJECT_SERVICE from "../../services/subject.service";
 import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import { asynchronizeRequest } from "../../API";
 import { getOfflineUser } from "../../utils/OfflineManager";
-import "./Home.css";
 import RequireAuth from "../../components/auth/RequireAuth";
+import useLanguage from "../../hooks/useLanguage";
+import "./Home.css";
 
 export default function Home() {
   const [editFields, setFields] = useState([]);
@@ -21,6 +22,9 @@ export default function Home() {
   const sessionsPreSorted = [];
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let sessionsSorted;
+
+  const language = useLanguage();
+  const navigate = useNavigate();
 
   const openSessionAdd = () => {
     document
@@ -198,6 +202,7 @@ export default function Home() {
     } else {
       setIsMobile(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -254,7 +259,7 @@ export default function Home() {
               </div>
               {sessions.length > 0 ? (
                 <div className="sessions">
-                  <p id="home__nextSession">Next session</p>
+                  <p id="home__nextSession">{language.home_next_session}</p>
                   {sessions.map((data) => {
                     return (
                       <>
@@ -292,8 +297,7 @@ export default function Home() {
                                     className="bi bi-mortarboard"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
-                                      window.location.href =
-                                        data.resources_platform;
+                                      navigate(data.resources_platform);
                                     }}
                                   >
                                     <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5ZM8 8.46 1.758 5.965 8 3.052l6.242 2.913L8 8.46Z" />
@@ -309,8 +313,7 @@ export default function Home() {
                                     className="bi bi-camera-video"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
-                                      window.location.href =
-                                        data.streaming_platform;
+                                      navigate(data.streaming_platform);
                                     }}
                                   >
                                     <path
@@ -328,8 +331,7 @@ export default function Home() {
                                     className="bi bi-chat-dots"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
-                                      window.location.href =
-                                        data.session_chat_id;
+                                      navigate(data.session_chat_id);
                                     }}
                                   >
                                     <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
@@ -414,7 +416,7 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="select-subject">
-                  <h3>There are no more sessions today.</h3>
+                  <h3>{language.home_nosessions}</h3>
                 </div>
               )}
             </div>

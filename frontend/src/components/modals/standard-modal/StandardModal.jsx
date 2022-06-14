@@ -1,3 +1,4 @@
+import useLanguage from "../../../hooks/useLanguage";
 import "./StandardModal.css";
 
 export default function StandardModal({
@@ -20,8 +21,8 @@ export default function StandardModal({
   hasIconAnimation,
   showLoader,
   form,
-  language,
 }) {
+  const language = useLanguage();
   iconFill = localStorage.darkMode === "1" ? true : iconFill || false;
   // TYPES = ['success', 'error', 'warning', 'info']
   return (

@@ -11,5 +11,7 @@
   "login_google": "Iniciar Sesión con Google",
   "login_or": "O",
   "recovery_askemail": "Ingrese su correo electrónico para mandar un enlace de recuperación",
-  "recovery_sent_success": "Se ha enviado un enlace de recuperación a su correo electrónico"
+  "recovery_sent_success": "Se ha enviado un enlace de recuperación a su correo electrónico",
+  "home_next_session": "Próxima Sesión",
+  "home_nosessions": "No hay sesiones disponibles."
 }

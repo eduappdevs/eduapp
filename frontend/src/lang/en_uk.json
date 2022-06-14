@@ -11,5 +11,7 @@
   "login_google": "Login with Google",
   "login_or": "or",
   "recovery_askemail": "To what email shall we send the recovery link to?",
-  "recovery_sent_success": "We have sent you an email with a recovery link."
+  "recovery_sent_success": "We have sent you an email with a recovery link.",
+  "home_next_session": "Next Session",
+  "home_nosessions": "There are no more sessions."
 }

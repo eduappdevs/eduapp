@@ -11,5 +11,7 @@
   "login_google": "Login com Google",
   "login_or": "Ou",
   "recovery_askemail": "Digite seu e-mail para recuperar a senha",
-  "recovery_sent_success": "Um e-mail foi enviado para você com instruções para recuperar sua senha."
+  "recovery_sent_success": "Um e-mail foi enviado para você com instruções para recuperar sua senha.",
+  "home_next_session": "Próxima Sessão",
+  "home_nosessions": "Nenhuma sessão disponível."
 }
