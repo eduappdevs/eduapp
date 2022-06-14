@@ -3,15 +3,35 @@
   "modal_cancel": "Cancel",
   "modal_yes": "Sim",
   "modal_no": "Não",
+  "title": "Título",
+  "date": "Data",
+  "save": "Salvar",
+  "resources": "Recursos",
+  "streaming_platform": "Plataforma de Streaming",
+  "session_chat": "Chat da Sessão",
+  "description": "Descrição",
+  "subject": "Matéria",
   "email": "Email",
+  "author": "Autor",
+  "links": "Links",
   "password": "Senha",
   "language": "Linguagem",
   "forgot_password": "Esqueceu sua senha?",
+  "missing_info": "Informação requerida ausente.",
+
   "login_title": "Iniciar Sessão",
   "login_google": "Login com Google",
   "login_or": "Ou",
+
   "recovery_askemail": "Digite seu e-mail para recuperar a senha",
   "recovery_sent_success": "Um e-mail foi enviado para você com instruções para recuperar sua senha.",
+
   "home_next_session": "Próxima Sessão",
-  "home_nosessions": "Nenhuma sessão disponível."
+  "home_nosessions": "Nenhuma sessão disponível.",
+
+  "calendar_choose_subject": "Escolha uma matéria",
+  "calendar_publish_error": "Erro ao publicar evento",
+  "calendar_delete_confirm": "Você tem certeza que deseja excluir este evento?",
+  "calendar_delete_unknown": "Erro desconhecido ao excluir evento.",
+  "calendar_update_unknown": "Erro desconhecido ao atualizar evento."
 }

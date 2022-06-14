@@ -3,15 +3,35 @@
   "modal_cancel": "Cancel",
   "modal_yes": "Yes",
   "modal_no": "No",
+  "title": "Title",
+  "date": "Date",
+  "save": "Save",
+  "resources": "Resources",
+  "streaming_platform": "Streaming Platform",
+  "session_chat": "Session Chat",
+  "description": "Description",
+  "subject": "Subject",
   "email": "Email",
+  "author": "Author",
+  "links": "Links",
   "password": "Password",
   "language": "Language",
   "forgot_password": "Forgot Password?",
+  "missing_info": "Required information is missing.",
+
   "login_title": "Login",
   "login_google": "Login with Google",
   "login_or": "or",
+
   "recovery_askemail": "To what email shall we send the recovery link to?",
   "recovery_sent_success": "We have sent you an email with a recovery link.",
+
   "home_next_session": "Next Session",
-  "home_nosessions": "There are no more sessions."
+  "home_nosessions": "There are no more sessions.",
+
+  "calendar_choose_subject": "Choose a subject",
+  "calendar_publish_error": "The calendar event could not be published.",
+  "calendar_delete_confirm": "Are you sure you want to delete this event?",
+  "calendar_delete_unknown": "The event could not be deleted.",
+  "calendar_update_unknown": "The event could not be updated."
 }

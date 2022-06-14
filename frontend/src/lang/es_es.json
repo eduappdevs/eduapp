@@ -3,15 +3,35 @@
   "modal_cancel": "Cancelar",
   "modal_yes": "Si",
   "modal_no": "No",
+  "title": "Título",
+  "date": "Fecha",
+  "save": "Guardar",
+  "resources": "Recursos",
+  "streaming_platform": "Plataforma de Streaming",
+  "session_chat": "Chat de la Sesión",
+  "description": "Descripción",
+  "subject": "Asignatura",
   "email": "Correo eléctronico",
+  "author": "Autor",
+  "links": "Enlaces",
   "password": "Contraseña",
   "language": "Idioma",
   "forgot_password": "Olvidé mi contraseña",
+  "missing_info": "Falta información requerida.",
+
   "login_title": "Iniciar Sesión",
   "login_google": "Iniciar Sesión con Google",
   "login_or": "O",
+
   "recovery_askemail": "Ingrese su correo electrónico para mandar un enlace de recuperación",
   "recovery_sent_success": "Se ha enviado un enlace de recuperación a su correo electrónico",
+
   "home_next_session": "Próxima Sesión",
-  "home_nosessions": "No hay sesiones disponibles."
+  "home_nosessions": "No hay sesiones disponibles.",
+
+  "calendar_choose_subject": "Elige una asignatura",
+  "calendar_publish_error": "Error al publicar el evento.",
+  "calendar_delete_confirm": "¿Estás seguro de que deseas eliminar este evento?",
+  "calendar_delete_unknown": "Error desconocido al borrar el evento.",
+  "calendar_update_unknown": "Error desconocido al actualizar el evento."
 }
