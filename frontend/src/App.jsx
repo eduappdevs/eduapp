@@ -50,6 +50,10 @@ export default function App() {
   };
 
   useEffect(() => {
+    if (localStorage.eduapp_language === undefined) {
+      localStorage.setItem("eduapp_language", "en_uk");
+    }
+
     instanceBadge();
 
     setNeedsExtras(

@@ -2,7 +2,7 @@ import React from "react";
 import { GoogleLogin } from "react-google-login";
 import API, { asynchronizeRequest } from "../../API";
 
-export default function BasicGoogleLogin() {
+export default function BasicGoogleLogin({ language }) {
   const responseGoogle = async (response) => {
     try {
       const google = await API.chechToken(response.accessToken);
@@ -74,7 +74,7 @@ export default function BasicGoogleLogin() {
     <div className="googleButton">
       <GoogleLogin
         clientId="34244826007-ute01mc8d42e8hc89bgsiv73njfj9kbe.apps.googleusercontent.com"
-        buttonText={"Login with google"}
+        buttonText={language.login_google}
         onSuccess={responseGoogle}
         onFailure={responseGoogle}
         cookiePolicy={"single_host_origin"}

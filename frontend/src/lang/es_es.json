@@ -1,3 +1,15 @@
 {
-  "menu_language": "Idioma"
+  "modal_okay": "Aceptar",
+  "modal_cancel": "Cancelar",
+  "modal_yes": "Si",
+  "modal_no": "No",
+  "email": "Correo eléctronico",
+  "password": "Contraseña",
+  "language": "Idioma",
+  "forgot_password": "Olvidé mi contraseña",
+  "login_title": "Iniciar Sesión",
+  "login_google": "Iniciar Sesión con Google",
+  "login_or": "O",
+  "recovery_askemail": "Ingrese su correo electrónico para mandar un enlace de recuperación",
+  "recovery_sent_success": "Se ha enviado un enlace de recuperación a su correo electrónico"
 }

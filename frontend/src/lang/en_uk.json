@@ -1,3 +1,15 @@
 {
-  "menu_language": "Language"
+  "modal_okay": "Okay",
+  "modal_cancel": "Cancel",
+  "modal_yes": "Yes",
+  "modal_no": "No",
+  "email": "Email",
+  "password": "Password",
+  "language": "Language",
+  "forgot_password": "Forgot Password?",
+  "login_title": "Login",
+  "login_google": "Login with Google",
+  "login_or": "or",
+  "recovery_askemail": "To what email shall we send the recovery link to?",
+  "recovery_sent_success": "We have sent you an email with a recovery link."
 }

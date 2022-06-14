@@ -1,3 +1,15 @@
 {
-  "menu_language": "Linguagem"
+  "modal_okay": "Aceitar",
+  "modal_cancel": "Cancel",
+  "modal_yes": "Sim",
+  "modal_no": "Não",
+  "email": "Email",
+  "password": "Senha",
+  "language": "Linguagem",
+  "forgot_password": "Esqueceu sua senha?",
+  "login_title": "Iniciar Sessão",
+  "login_google": "Login com Google",
+  "login_or": "Ou",
+  "recovery_askemail": "Digite seu e-mail para recuperar a senha",
+  "recovery_sent_success": "Um e-mail foi enviado para você com instruções para recuperar sua senha."
 }
