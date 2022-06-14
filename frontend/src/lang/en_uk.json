@@ -1,4 +1,5 @@
 {
+  "wip": "Option Under Development",
   "modal_okay": "Okay",
   "modal_cancel": "Cancel",
   "modal_yes": "Yes",
@@ -6,6 +7,8 @@
   "title": "Title",
   "date": "Date",
   "save": "Save",
+  "create": "Create",
+  "creating": "Creating...",
   "resources": "Resources",
   "streaming_platform": "Streaming Platform",
   "session_chat": "Session Chat",
@@ -14,8 +17,11 @@
   "email": "Email",
   "author": "Author",
   "links": "Links",
+  "chats": "Chats",
   "password": "Password",
   "language": "Language",
+  "image_too_big": "Image size is larger than 2MB",
+  "file_not_image": "File is not an image.",
   "forgot_password": "Forgot Password?",
   "missing_info": "Required information is missing.",
 
@@ -33,5 +39,23 @@
   "calendar_publish_error": "The calendar event could not be published.",
   "calendar_delete_confirm": "Are you sure you want to delete this event?",
   "calendar_delete_unknown": "The event could not be deleted.",
-  "calendar_update_unknown": "The event could not be updated."
+  "calendar_update_unknown": "The event could not be updated.",
+
+  "chat_type_create": "What type of chat do you wish to create?",
+  "chat_type_direct": "Direct",
+  "chat_type-group": "Group",
+  "chat_title_direct": "Create Direct Chat",
+  "chat_title_group": "Create Group Chat",
+  "chat_search_users": "Search users",
+  "chat_search_names": "Search by name",
+  "chat_preview": "Chat Preview",
+  "chat_welcome": "Nice to meet you!",
+  "chat_exists": "This chat already exists.",
+  "chat_create_unknown": "An error ocurred while creating the chat.",
+  "chat_no_image": "No image provided.",
+  "chat_no_groupname": "Please enter a group name.",
+  "chat_group_min_2": "Please enter at least 2 users.",
+  "chat_new_group": "New Group",
+  "chat_participants": "Participants",
+  "chat_no_participants": "No participants"
 }

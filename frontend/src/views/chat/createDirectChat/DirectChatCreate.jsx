@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../../../components/appHeader/AppHeader";
@@ -9,14 +10,17 @@ import * as USER_SERVICE from "../../../services/user.service";
 import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import useRole from "../../../hooks/useRole";
+import useLanguage from "../../../hooks/useLanguage";
 import "./DirectChatCreate.css";
 
 export default function DirectChatCreate() {
   const navigate = useNavigate();
+  const language = useLanguage();
+
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [userQuery, setUserQuery] = useState("");
   const [participant, setParticipant] = useState(null);
-  const [createButton, setCreateButton] = useState("Create");
+  const [createButton, setCreateButton] = useState(language.create);
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
@@ -51,8 +55,8 @@ export default function DirectChatCreate() {
   };
 
   const createChat = () => {
-    if (createButton === "Create") {
-      setCreateButton("Creating...");
+    if (createButton === language.create) {
+      setCreateButton(language.creating);
       asynchronizeRequest(async () => {
         try {
           let connectionId = await CHAT_SERVICE.createCompleteChat({
@@ -68,15 +72,15 @@ export default function DirectChatCreate() {
           });
           navigate("/chat/p" + connectionId);
         } catch (err) {
-          setPopupMessage("Chat already exists!");
-          setCreateButton("Create");
+          setPopupMessage(language.chat_exists);
+          setCreateButton(language.create);
           setShowPopup(true);
         }
       }).then((err) => {
         if (err) {
-          setPopupMessage("An error ocurred while creating the chat.");
+          setPopupMessage(language.chat_create_unknown);
           setShowPopup(true);
-          setCreateButton("Create");
+          setCreateButton(language.create);
         }
       });
     }
@@ -86,7 +90,8 @@ export default function DirectChatCreate() {
 
   useEffect(() => {
     if (canCreate !== null) {
-      if (!canCreate) navigate("/chat");
+      if (!canCreate) window.location.href = "/chat";
+      setCreateButton(language.create);
     }
   }, [canCreate]);
 
@@ -99,9 +104,9 @@ export default function DirectChatCreate() {
     <>
       <AppHeader
         closeHandler={() => {
-          navigate("/chat");
+          window.location.href = "/chat";
         }}
-        tabName="Create Direct Chat"
+        tabName={language.chat_title_direct}
       />
 
       <div className="direct-chat-container">
@@ -114,7 +119,7 @@ export default function DirectChatCreate() {
           onCloseAction={() => setShowPopup(false)}
         />
         <div className="user-search-bar">
-          <h2>Search Users</h2>
+          <h2>{language.chat_search_users}</h2>
           <input
             type="text"
             className="user-search"
@@ -122,7 +127,7 @@ export default function DirectChatCreate() {
             onChange={(e) => {
               setUserQuery(e.target.value);
             }}
-            placeholder="Search by Name"
+            placeholder={language.chat_search_names}
           />
           {suggestedUsers.length > 0 && (
             <ul className="suggested-users">
@@ -147,7 +152,7 @@ export default function DirectChatCreate() {
           <>
             <div className="chats-container direct-chat-preview">
               <ul>
-                <h2>Chat Preview</h2>
+                <h2>{language.chat_preview}</h2>
                 <li
                   onClick={() => {
                     navigate("/chat");
@@ -166,7 +171,7 @@ export default function DirectChatCreate() {
                   />
                   <div className="chat-info chat-writing-state">
                     <h2 className="chat-name">{participant.user_name}</h2>
-                    <p className="chat-writing">Nice to meet you!</p>
+                    <p className="chat-writing">{language.chat_welcome}</p>
                   </div>
                 </li>
               </ul>

@@ -160,3 +160,7 @@ ul.suggested-users li a:hover {
 	margin-right: 10vw;
 	margin-bottom: 15px;
 }
+
+.chat-create:hover {
+	cursor: pointer;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ChatsAC from "../../utils/websockets/actioncable/ChatsAC";
 import Loader from "../../components/loader/Loader";
 import StandardModal from "../../components/modals/standard-modal/StandardModal";
@@ -8,6 +8,7 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useRole from "../../hooks/useRole";
+import useLanguage from "../../hooks/useLanguage";
 import "./ChatMenu.css";
 
 let acManager = new ChatsAC();
@@ -16,6 +17,7 @@ export default function ChatMenu() {
 
   const [showPopup, setShowPopup] = useState(false);
 
+  const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let canCreate = useRole(userInfo, ["eduapp-admin", "eduapp-teacher"]);
 
@@ -50,13 +52,13 @@ export default function ChatMenu() {
       <StandardModal
         show={showPopup}
         type={"info"}
-        text={"What type of chat do you wish to create?"}
+        text={language.chat_type_create}
         isQuestion
         hasCancel
         hasTransition
         hasIconAnimation
-        customYes={"Direct"}
-        customNo={"Group"}
+        customYes={language.chat_type_direct}
+        customNo={language.chat_type_group}
         onYesAction={() => {
           window.location.href = "/chat/create/direct";
         }}
@@ -89,7 +91,7 @@ export default function ChatMenu() {
         <div className="chats-container">
           {chats.length !== 0 ? (
             <>
-              <h2>Chats</h2>
+              <h2>{language.chats}</h2>
               <ul>
                 {chats.map((chat) => {
                   let connectionId =

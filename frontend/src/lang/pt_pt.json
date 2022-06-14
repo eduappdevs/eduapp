@@ -1,4 +1,5 @@
 {
+  "wip": "Opção Em Desenvolvimento",
   "modal_okay": "Aceitar",
   "modal_cancel": "Cancel",
   "modal_yes": "Sim",
@@ -6,6 +7,8 @@
   "title": "Título",
   "date": "Data",
   "save": "Salvar",
+  "create": "Criar",
+  "creating": "Criando...",
   "resources": "Recursos",
   "streaming_platform": "Plataforma de Streaming",
   "session_chat": "Chat da Sessão",
@@ -14,8 +17,11 @@
   "email": "Email",
   "author": "Autor",
   "links": "Links",
+  "chats": "Chats",
   "password": "Senha",
   "language": "Linguagem",
+  "image_too_big": "A imagem é muito grande. Máximo 2MB",
+  "file_not_image": "Arquivo não é uma imagem.",
   "forgot_password": "Esqueceu sua senha?",
   "missing_info": "Informação requerida ausente.",
 
@@ -33,5 +39,23 @@
   "calendar_publish_error": "Erro ao publicar evento",
   "calendar_delete_confirm": "Você tem certeza que deseja excluir este evento?",
   "calendar_delete_unknown": "Erro desconhecido ao excluir evento.",
-  "calendar_update_unknown": "Erro desconhecido ao atualizar evento."
+  "calendar_update_unknown": "Erro desconhecido ao atualizar evento.",
+
+  "chat_type_create": "Que tipo de chat deseja criar?",
+  "chat_type_direct": "Direto",
+  "chat_type_group": "Grupo",
+  "chat_title_direct": "Criar Chat Direto",
+  "chat_title_group": "Criar Chat em Grupo",
+  "chat_search_users": "Buscar usuários",
+  "chat_search_names": "Buscar por nome",
+  "chat_preview": "Pré-visualização",
+  "chat_welcome": "Bem-vindo!",
+  "chat_exists": "O chat já existe.",
+  "chat_create_unknown": "Erro desconhecido ao criar chat.",
+  "chat_no_image": "Nenhuma imagem foi selecionada.",
+  "chat_no_groupname": "Nenhum nome de grupo foi informado.",
+  "chat_group_min_2": "Grupo deve ter no mínimo 2 usuários.",
+  "chat_new_group": "Novo Grupo",
+  "chat_participants": "Participantes",
+  "chat_no_participants": "Nenhum participante."
 }
