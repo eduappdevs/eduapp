@@ -2,7 +2,7 @@ source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "2.6.8"
-# ruby "2.6.9" # // Only to be used when build a docker image
+# ruby "2.6.9" # // Only to be used when building a docker image
 
 gem "rails", "~> 6.1.4", ">= 6.1.4.1"
 gem "pg", "~> 1.1"
@@ -27,8 +27,6 @@ group :development, :test do
 end
 group :test do
   gem "rspec-rails"
-end
-group :development do
 end
 
 gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]

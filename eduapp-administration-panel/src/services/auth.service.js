@@ -1,6 +1,7 @@
 import axios from "axios";
 import { API_URL, TOKEN } from "../API";
 import { saveUserOffline } from "../utils/OfflineManager";
+import prefixUrl from "../utils/UrlPrefixer";
 export const USERS = `${API_URL}/users`;
 
 export const saveInLocalStorage = (userDetails) => {
@@ -33,19 +34,14 @@ export const logout = async () => {
   return await axios
     .delete(`${USERS}/sign_out`, {
       headers: { eduauth: TOKEN },
-      data: { device: navigator.userAgent },
-    })
-    .then(() => {
-      localStorage.removeItem("eduapp_auth");
-      localStorage.removeItem("offline_user");
-
-      window.location.href = "/login";
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
       localStorage.removeItem("eduapp_auth");
       localStorage.removeItem("offline_user");
 
-      window.location.href = "/login";
+      window.location.href = prefixUrl("/login");
     });
 };

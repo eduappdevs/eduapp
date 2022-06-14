@@ -2,7 +2,6 @@
   "name": "eduapp-frontend",
   "version": "0.5.0",
   "private": true,
-  "homepage": "http://localhost:8000/app",
   "dependencies": {
     "@devexpress/dx-react-core": "^2.7.6",
     "@devexpress/dx-react-scheduler": "^2.7.6",
@@ -31,7 +30,7 @@
     "react-google-login": "^5.2.2",
     "react-player": "^2.9.0",
     "react-router-dom": "^6.0.2",
-    "react-scripts": "^5.0.0",
+    "react-scripts": "^5.0.1",
     "react-service-worker": "^0.1.1",
     "serve": "^13.0.2",
     "web-vitals": "^1.0.1",

@@ -7,7 +7,7 @@ default: &default
 development:
   <<: *default
   database: eduapp_db_development
-  username: <%= ENV.fetch("DEV_DB_USER") { postgres } %>
+  username: <%= ENV.fetch("DEV_DB_USER") { "postgres" } %>
   password: <%= ENV.fetch("DEV_DB_PSWD") { "1234" } %>
 
 test:
