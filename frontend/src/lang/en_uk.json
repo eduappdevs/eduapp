@@ -32,6 +32,8 @@
   "password": "Password",
   "language": "Language",
   "image_too_big": "Image size is larger than 2MB",
+  "video_too_big": "Video size is larger than 15MB",
+  "file_too_big": "File size is larger than 3MB",
   "file_not_image": "File is not an image.",
   "forgot_password": "Forgot Password?",
   "missing_info": "Required information is missing.",
@@ -39,6 +41,10 @@
   "change_password": "Change Password",
   "next": "Next",
   "reset": "Reset",
+  "other": "Other",
+  "close": "Close",
+  "open": "Open",
+  "download": "Download",
 
   "login_title": "Login",
   "login_google": "Login with Google",
@@ -105,5 +111,13 @@
 
   "menu_profile": "Profile",
   "menu_settings": "Settings",
-  "menu_profile_error": "The profile information could not be saved."
+  "menu_profile_error": "The profile information could not be saved.",
+
+  "resources_all_resources": "All Resources",
+  "resources_new_resource": "New Resource",
+  "resources_select_subject": "You must select a subject",
+  "resources_max": "Maximum of 10 resources allowed.",
+  "resources_failed_upload": "Failed to upload the resource.",
+  "resources_files": "Files",
+  "resources_no_files_attached": "No files attached."
 }

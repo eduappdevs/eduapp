@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { GetSubjects } from "../../hooks/GetSubjects";
 import { getOfflineUser } from "../../utils/OfflineManager";
@@ -7,6 +8,7 @@ export default function SubjectDropdown({
   dropdown,
   closeAction,
   onSubjectClick,
+  language,
 }) {
   const [showDropdown, setShowDropdown] = useState(true);
   const [hasDoneFirstAppearance, setHasDoneFirstAppearance] = useState(false);
@@ -59,7 +61,7 @@ export default function SubjectDropdown({
     >
       {subjects.length > 1 && (
         <>
-          <li className="drpdwn-subtitle">Subjects</li>
+          <li className="drpdwn-subtitle">{language.subjects}</li>
           {subjects.map((subject, index) => {
             if (index > 0) {
               return (
@@ -79,7 +81,7 @@ export default function SubjectDropdown({
           })}
         </>
       )}
-      <li className="drpdwn-subtitle">Other</li>
+      <li className="drpdwn-subtitle">{language.other}</li>
       <li
         onClick={(e) => {
           onSubjectClick(e.target.id);
@@ -92,7 +94,7 @@ export default function SubjectDropdown({
         {subjects.length > 0 ? subjects[0].name : ""}
       </li>
       <li className="drpdwn-subtitle drpdwn-close" onClick={closeAction}>
-        Close
+        {language.close}
       </li>
     </ul>
   );
