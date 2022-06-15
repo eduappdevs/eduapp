@@ -14,7 +14,7 @@ export default function MenuSettings() {
         backTo={() => {
           window.location.href = "/menu";
         }}
-        location={"SETTINGS"}
+        location={language.menu_settings}
       />
       <ul>
         <li className="language-switcher">

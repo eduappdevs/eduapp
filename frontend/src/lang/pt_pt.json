@@ -7,6 +7,7 @@
   "title": "Título",
   "date": "Data",
   "save": "Salvar",
+  "saving": "Salvando...",
   "create": "Criar",
   "creating": "Criando...",
   "resources": "Recursos",
@@ -25,6 +26,8 @@
   "email": "Email",
   "author": "Autor",
   "links": "Links",
+  "link": "Link",
+  "unlink": "Desvincular",
   "chats": "Chats",
   "password": "Senha",
   "language": "Linguagem",
@@ -32,13 +35,30 @@
   "file_not_image": "Arquivo não é uma imagem.",
   "forgot_password": "Esqueceu sua senha?",
   "missing_info": "Informação requerida ausente.",
+  "logout": "Sair",
+  "change_password": "Alterar Senha",
+  "next": "Próximo",
 
   "login_title": "Iniciar Sessão",
   "login_google": "Login com Google",
   "login_or": "Ou",
 
+  "recovery_old_pswd": "Senha antiga",
+  "recovery_old_invalid": "Senha antiga inválida",
+  "recovery_incorrect_pswd": "Senha incorreta",
+  "recovery_new_pswd": "Nova senha",
+  "recovery_confirm_pswd": "Confirmar senha",
+  "recovery_confirm_code": "Código de confirmação",
+  "recovery_invalid_code": "Código de confirmaçao inválido",
+  "recovery_change_pswd_success": "Senha alterada com sucesso.",
+  "recovery_change_pswd_error": "Erro ao alterar senha.",
+  "recovery_check_pswd_error": "Erro ao verificar senha.",
   "recovery_askemail": "Digite seu e-mail para recuperar a senha",
   "recovery_sent_success": "Um e-mail foi enviado para você com instruções para recuperar sua senha.",
+  "recovery_code_sent_success": "Um e-mail foi enviado para você com o código de confirmação.",
+  "recovery_unknown_error_occurred": "Ocorreu um erro desconhecido.",
+  "recovery_first_step": "Primeiro passo",
+  "recovery_second_step": "Segundo passo",
 
   "home_next_session": "Próxima Sessão",
   "home_nosessions": "Nenhuma sessão disponível.",
@@ -73,5 +93,9 @@
   "mgmt_register_user": "Registrar Usuário",
   "mgmt_streaming_link": "Link de Streaming",
   "mgmt_resources_link": "Link de Recursos",
-  "mgmt_chat_link": "Link de Chat"
+  "mgmt_chat_link": "Link de Chat",
+
+  "menu_profile": "Perfil",
+  "menu_settings": "Configuração",
+  "menu_profile_error": "Erro ao salvar perfil."
 }

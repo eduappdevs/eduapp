@@ -7,6 +7,7 @@
   "title": "Title",
   "date": "Date",
   "save": "Save",
+  "saving": "Saving...",
   "create": "Create",
   "creating": "Creating...",
   "resources": "Resources",
@@ -25,6 +26,8 @@
   "email": "Email",
   "author": "Author",
   "links": "Links",
+  "link": "Link",
+  "unlink": "Unlink",
   "chats": "Chats",
   "password": "Password",
   "language": "Language",
@@ -32,13 +35,30 @@
   "file_not_image": "File is not an image.",
   "forgot_password": "Forgot Password?",
   "missing_info": "Required information is missing.",
+  "logout": "Log out",
+  "change_password": "Change Password",
+  "next": "Next",
 
   "login_title": "Login",
   "login_google": "Login with Google",
   "login_or": "or",
 
+  "recovery_old_pswd": "Old password",
+  "recovery_old_invalid": "Old password is invalid",
+  "recovery_incorrect_pswd": "Incorrect password",
+  "recovery_new_pswd": "New password",
+  "recovery_confirm_pswd": "Confirm password",
+  "recovery_confirm_code": "Confirmation code",
+  "recovery_invalid_code": "Invalid confirmation code",
+  "recovery_change_pswd_success": "Password changed successfully.",
+  "recovery_change_pswd_error": "Error changing password.",
+  "recovery_check_pswd_error": "Error checking password.",
   "recovery_askemail": "To what email shall we send the recovery link to?",
   "recovery_sent_success": "We have sent you an email with a recovery link.",
+  "recovery_code_sent_success": "We have sent you an email with a confirmation code.",
+  "recovery_unknown_error_ocurred": "An unknown error occurred.",
+  "recovery_first_step": "1st step",
+  "recovery_second_step": "2nd step",
 
   "home_next_session": "Next Session",
   "home_nosessions": "There are no more sessions.",
@@ -73,5 +93,9 @@
   "mgmt_register_user": "Register User",
   "mgmt_streaming_link": "Streaming Link",
   "mgmt_resources_link": "Resources Link",
-  "mgmt_chat_link": "Chat Link"
+  "mgmt_chat_link": "Chat Link",
+
+  "menu_profile": "Profile",
+  "menu_settings": "Settings",
+  "menu_profile_error": "The profile information could not be saved."
 }
