@@ -27,6 +27,27 @@ export default function CourseConfig(props) {
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vh";
+
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
+
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
   const showEditOptionCourse = async (e, id) => {
     if (e.target.tagName === "svg") {
       let name =
@@ -134,7 +155,22 @@ export default function CourseConfig(props) {
     }
   };
 
+  const editCompleted = () => {
+    setIsConfirmDelete(false);
+    setPopup(true);
+    setPopupType("info");
+    setPopupText(props.language.editAlertCompleted);
+  };
+  const editFailed = () => {
+    setPopupText(props.language.editAlertFailed);
+    setPopupIcon("error");
+    switchSaveState(false);
+    setPopup(true);
+    setIsConfirmDelete(false);
+  };
+
   const editCourse = async (e, c) => {
+    switchEditState(false);
     if (e.target.tagName === "svg") {
       let name =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -146,44 +182,32 @@ export default function CourseConfig(props) {
             name: value.value,
             institutions_id: c.institution_id,
           })
-            .then(() => {
-              fetchInstitutions();
-              fetchCoursePage(1);
-
-              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              setIsConfirmDelete(false);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The course was edited successfully.");
+            .then((err) => {
+              if (err) {
+                fetchInstitutions();
+                fetchCoursePage(1);
+                let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button = e.target.parentNode.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton = e.target.parentNode.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                name.disabled = true;
+                editCompleted();
+              }
             })
             .catch(async (error) => {
               if (error) {
                 await interceptExpiredToken(error);
-                setPopupText(
-                  "The course could not be edited, check if you entered the correct fields."
-                );
-                setPopupIcon("error");
-                setPopup(true);
-                setIsConfirmDelete(false);
+                editFailed();
               }
             });
         }).then(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The course could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            setIsConfirmDelete(false);
+            connectionAlert();
           }
         });
       }
@@ -217,31 +241,18 @@ export default function CourseConfig(props) {
                   e.target.parentNode.parentNode.parentNode.childNodes[3];
                 cancelButton.style.display = "none";
                 name.disabled = true;
-                setIsConfirmDelete(false);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText("The course was edited successfully.");
+                editCompleted();
               })
               .catch(async (error) => {
                 if (error) {
                   await interceptExpiredToken(error);
-                  setPopupText(
-                    "The course could not be edited, check if you entered the correct fields."
-                  );
-                  setPopupIcon("error");
-                  setIsConfirmDelete(false);
-                  setPopup(true);
+                  editFailed();
                 }
               });
           }).then(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopup(true);
-              setIsConfirmDelete(false);
-              setPopupText(
-                "The course could not be edited, check if you have an internet connection."
-              );
-              setPopupIcon("error");
+              connectionAlert();
             }
           });
         }
@@ -268,31 +279,18 @@ export default function CourseConfig(props) {
 
                 fetchInstitutions();
                 fetchCoursePage(1);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText("The course was edited successfully.");
-                setIsConfirmDelete(false);
+                editCompleted();
               })
               .catch(async (error) => {
                 if (error) {
                   await interceptExpiredToken(error);
-                  setPopupText(
-                    "The course could not be edited, check if you entered the correct fields."
-                  );
-                  setPopupIcon("error");
-                  setPopup(true);
-                  setIsConfirmDelete(false);
+                  editFailed();
                 }
               });
           }).then(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopup(true);
-              setIsConfirmDelete(false);
-              setPopupText(
-                "The course could not be edited, check if you have an internet connection."
-              );
-              setPopupIcon("error");
+              connectionAlert();
             }
           });
         }
@@ -312,12 +310,7 @@ export default function CourseConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The institution could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -336,23 +329,21 @@ export default function CourseConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The courses could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
 
-  const createCourse = () => {
+  const createCourse = (e) => {
+    e.preventDefault();
+    switchEditState(false);
     let cName = document.getElementById("c_name").value;
     let cInst = document.getElementById("institution_chooser").value;
     console.log(cInst, cName);
@@ -380,15 +371,13 @@ export default function CourseConfig(props) {
                   fetchCoursePage(1);
                   setPopup(true);
                   setPopupType("info");
-                  setPopupText("The course was created successfully.");
+                  setPopupText(props.language.creationCompleted);
                   switchSaveState(false);
                 })
                 .catch(async (e) => {
                   if (e) {
                     await interceptExpiredToken(e);
-                    setPopupText(
-                      "The course could not be created, check if you entered the correct fields."
-                    );
+                    setPopupText(props.language.creationFailed);
                     setPopupIcon("error");
                     switchSaveState(false);
                     setPopup(true);
@@ -399,16 +388,14 @@ export default function CourseConfig(props) {
               fetchCoursePage(1);
               setPopup(true);
               setPopupType("info");
-              setPopupText("The course was created successfully.");
+              setPopupText(props.language.creationCompleted);
               switchSaveState(false);
             }
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopupText(
-                "The course could not be created, check if you entered the correct fields."
-              );
+              setPopupText(props.language.creationFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -417,9 +404,7 @@ export default function CourseConfig(props) {
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setPopupText(
-            "The course could not be created, check if you have an internet connection."
-          );
+          setPopupText(props.language.connectionAlert);
           setPopupIcon("error");
           switchSaveState(false);
           setPopup(true);
@@ -432,23 +417,26 @@ export default function CourseConfig(props) {
   };
 
   const confirmDeleteEvent = async (id) => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this course?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
   };
 
   const showDeleteError = () => {
+    switchEditState(false);
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The course could not be deleted.");
+    setPopupText(props.language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
   const deleteCourse = (id) => {
+    switchEditState(true);
     API.asynchronizeRequest(function () {
       if (courses.length === 1) {
         API.asynchronizeRequest(function () {
@@ -457,7 +445,7 @@ export default function CourseConfig(props) {
               fetchCoursePage(1);
               setPopup(true);
               setPopupType("info");
-              setPopupText("The course was deleted successfully.");
+              setPopupText(props.language.deleteAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
@@ -485,12 +473,7 @@ export default function CourseConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The course could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -510,7 +493,7 @@ export default function CourseConfig(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container">
+      <div className="schedulesesionslist-main-container" id="scroll">
         <table className="createTable">
           <thead>
             <tr>
@@ -855,10 +838,12 @@ export default function CourseConfig(props) {
         onNoAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
+          switchEditState(true);
         }}
         onCloseAction={() => {
           setIsConfirmDelete(false);
           setPopup(false);
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

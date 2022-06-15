@@ -53,6 +53,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
         user_role_id: UserRole.where(name: createParams[:user_role]).first.id,
       )
 
+      calendar_annotation = CalendarAnnotation.where(isPop: true)
+
+      if calendar_annotation.count > 0
+        respective_userinfo.calendar_event = calendar_annotation.pluck(:id)
+      end
+
       if respective_userinfo.save
         return [respective_userinfo, 200]
       else

@@ -37,7 +37,7 @@ export default function SubjectsConfig(props) {
   const switchEditState = (state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
-        "scroll";
+        "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
       document.getElementById("standard-modal").style.width = "100vw";
@@ -61,6 +61,13 @@ export default function SubjectsConfig(props) {
     }
   };
 
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
   const fetchCourses = () => {
     API.asynchronizeRequest(function () {
       COURSESERVICE.fetchCourses().then((cs) => {
@@ -69,17 +76,14 @@ export default function SubjectsConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The courses could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
+        connectionAlert();
       }
     });
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -116,7 +120,7 @@ export default function SubjectsConfig(props) {
               fetchSubjectPage(1);
               setPopup(true);
               setPopupType("info");
-              setPopupText("The subject was created successfully.");
+              setPopupText(props.language.creationCompleted);
               switchSaveState(true);
             }
           })
@@ -124,9 +128,7 @@ export default function SubjectsConfig(props) {
             if (e) {
               await interceptExpiredToken(e);
               setPopup(true);
-              setPopupText(
-                "The subject could not be created, check if you entered correct fields."
-              );
+              setPopupText(props.language.creationFailed);
               setPopupType("error");
               switchSaveState(true);
             }
@@ -134,16 +136,11 @@ export default function SubjectsConfig(props) {
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The subject could not be published, check if you have an internet connection."
-          );
-          setPopupIcon("error");
+          connectionAlert();
         }
       });
     } else {
       alertCreate();
-      switchEditState(false);
     }
   };
 
@@ -151,30 +148,31 @@ export default function SubjectsConfig(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this subject?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
   };
 
   const showDeleteError = () => {
+    switchEditState(false);
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The subject could not be deleted.");
+    setPopupText(props.language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
   const deleteSubject = (id) => {
+    switchEditState(false);
     //eliminar sessiones + modal de aviso y mostrar las sessiones que se eliminarán
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.deleteSubject(id)
         .then(() => {
-          switchEditState(true);
           fetchSubjectPage(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText("The subject was deleted successfully.");
+          setPopupText(props.language.deleteAlertCompleted);
           switchSaveState(false);
           setIsConfirmDelete(false);
         })
@@ -182,12 +180,10 @@ export default function SubjectsConfig(props) {
           if (e) {
             await interceptExpiredToken(e);
             showDeleteError();
-            switchEditState(true);
           }
         });
     }).then(async (e) => {
       if (e) {
-        switchEditState(true);
         await interceptExpiredToken(e);
         setPopup(true);
         setPopupText(
@@ -335,7 +331,6 @@ export default function SubjectsConfig(props) {
         })
           .then((error) => {
             if (error) {
-              switchEditState(false);
               fetchSubjectPage(1);
               let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
               buttonDelete.style.display = "block";
@@ -352,7 +347,7 @@ export default function SubjectsConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText("The subject was edited successfully.");
+              setPopupText(props.language.editAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             }
@@ -360,9 +355,7 @@ export default function SubjectsConfig(props) {
           .catch(async (error) => {
             if (error) {
               await interceptExpiredToken(e);
-              setPopupText(
-                "The subject could not be edited, check if you entered the correct fields."
-              );
+              setPopupText(props.language.editAlertFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -372,14 +365,7 @@ export default function SubjectsConfig(props) {
       }).then(async (error) => {
         if (error) {
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The calendar session could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          setIsConfirmDelete(false);
-
-          switchSaveState(false);
+          connectionAlert();
         }
       });
     } else {
@@ -447,7 +433,6 @@ export default function SubjectsConfig(props) {
             .then((error) => {
               if (error) {
                 fetchSubjectPage(1);
-                switchEditState(false);
                 let buttonDelete =
                   e.target.parentNode.parentNode.parentNode.childNodes[0];
                 buttonDelete.style.display = "block";
@@ -466,7 +451,7 @@ export default function SubjectsConfig(props) {
                 color.disabled = true;
                 setPopup(true);
                 setPopupType("info");
-                setPopupText("The subject was edited successfully.");
+                setPopupText(props.language.editAlertCompleted);
                 switchSaveState(false);
                 setIsConfirmDelete(false);
               }
@@ -474,9 +459,7 @@ export default function SubjectsConfig(props) {
             .catch(async (error) => {
               if (error) {
                 await interceptExpiredToken(e);
-                setPopupText(
-                  "The subject could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -486,13 +469,7 @@ export default function SubjectsConfig(props) {
         }).then(async (error) => {
           if (error) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The calendar session could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+            connectionAlert();
           }
         });
       } else {
@@ -567,7 +544,7 @@ export default function SubjectsConfig(props) {
                 color.disabled = true;
                 setPopup(true);
                 setPopupType("info");
-                setPopupText("The subject was edited successfully.");
+                setPopupText(props.language.editAlertCompleted);
                 switchSaveState(false);
                 setIsConfirmDelete(false);
               }
@@ -575,9 +552,7 @@ export default function SubjectsConfig(props) {
             .catch(async (error) => {
               if (error) {
                 await interceptExpiredToken(e);
-                setPopupText(
-                  "The subject could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -587,13 +562,7 @@ export default function SubjectsConfig(props) {
         }).then(async (error) => {
           if (error) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The subejcts could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+            connectionAlert();
           }
         });
       }
@@ -693,11 +662,7 @@ export default function SubjectsConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The subjects could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
+        connectionAlert();
       }
     });
   };

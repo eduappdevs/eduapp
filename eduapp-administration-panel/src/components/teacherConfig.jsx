@@ -24,7 +24,18 @@ export default function TeacherConfig(props) {
   const [subjectDelete, setSubjectIdDelete] = useState();
 
   let teacher_filter = {};
-
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "hidden";
+    }
+  };
   const fetchUsers = async () => {
     return await asynchronizeRequest(async function () {
       let rawUsers = await USER_SERVICE.fetchUserInfos();
@@ -38,6 +49,13 @@ export default function TeacherConfig(props) {
       rawUsers.splice(sysUserI, 1);
       return rawUsers;
     });
+  };
+
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
   };
 
   const fetchSubjects = async () => {
@@ -57,6 +75,7 @@ export default function TeacherConfig(props) {
       }
       return ids;
     };
+
     for (let u of users) {
       for (let subject_id of u.teaching_list) {
         if (allSubjectIds().includes(subject_id)) {
@@ -69,29 +88,33 @@ export default function TeacherConfig(props) {
     }
     let pages = 0;
     let max = 0;
-    let teacher = [];
     let listAllTeacher = [];
+    let teacher = [];
     for (var i = 0; i < allTeachers.length; i++) {
+      console.log(i);
       if (max === 9) {
         pages += 1;
         max = 0;
         teacher.push(allTeachers[i]);
         listAllTeacher.push(teacher);
         teacher = [];
-      } else {
+      }
+      if (max < 9) {
+        console.log("first");
         max += 1;
         teacher.push(allTeachers[i]);
       }
     }
-
-    if (max < 10) {
+    if (pages > 1) {
       for (let i = 10; i > allTeachers.length; i++) {
+        console.log(i);
         teacher.push(allTeachers[i]);
       }
-      listAllTeacher.push(teacher);
-      teacher = [];
-      pages += 1;
     }
+    listAllTeacher.push(teacher);
+    teacher = [];
+    pages += 1;
+
     setMaxPages(pages);
     setTeacherPages(listAllTeacher);
     teacher_filter.teacher = allTeachers;
@@ -109,56 +132,48 @@ export default function TeacherConfig(props) {
         teacherFilter.push(t);
       });
     }
-    console.log(teacherFilter);
-    console.log(teachers);
     setTeachers(teacherFilter);
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
     setIsConfirmDelete(false);
   };
 
   const createTeacher = async () => {
+    switchEditState(false);
+
     const user = document.getElementById("user_select").value;
     const subject = document.getElementById("subject_select").value;
 
     if (user === "-" || subject === "-") return alertCreate();
 
     asynchronizeRequest(async () => {
-      switchSaveState(true);
-
       await USER_SERVICE.enroll_teacher(user, subject)
         .then((e) => {
           if (e) {
-            refreshTeachers();
             setPopup(true);
             setPopupType("info");
-            setPopupText("The teacher was enrolled successfully.");
+            setPopupText(props.language.creationCompleted);
             switchSaveState(true);
             setIsConfirmDelete(false);
             fetchTeacherPages(1);
+            refreshTeachers();
           }
         })
         .catch(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
             alertCreate();
-            switchSaveState(false);
           }
         });
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The teacher could not be enrolled, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
-        setIsConfirmDelete(false);
+        connectionAlert();
       }
     });
   };
@@ -181,16 +196,13 @@ export default function TeacherConfig(props) {
   const refreshTeachers = () => {
     fetchUsers()
       .then((users) => {
-        fetchSubjects()
-          .then((subjects) => {
+        fetchSubjects().then((subjects) => {
+          setUsers(users);
+          setSubjects(subjects);
+          if (subjects && users) {
             formatTeachers(users, subjects);
-            setUsers(users);
-            setSubjects(subjects);
-          })
-          .catch(async (err) => {
-            await interceptExpiredToken(err);
-            console.error(err);
-          });
+          }
+        });
       })
       .catch(async (err) => {
         await interceptExpiredToken(err);
@@ -205,9 +217,10 @@ export default function TeacherConfig(props) {
   };
 
   const confirmDeleteTeacher = async (userId, subjId) => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to remove this teacher?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setUserIdDelete(userId);
@@ -215,14 +228,17 @@ export default function TeacherConfig(props) {
   };
 
   const showDeleteError = () => {
+    switchEditState(false);
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The teacher could not be removed.");
+    setPopupText(props.language.deleteError);
     setIsConfirmDelete(false);
   };
 
   const deleteTeacher = async (uId, sId) => {
+    switchEditState(false);
+
     asynchronizeRequest(async () => {
       USER_SERVICE.delist_teacher(uId, sId)
         .then(() => {
@@ -230,7 +246,7 @@ export default function TeacherConfig(props) {
           fetchTeacherPages(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText("The teacher was deleted successfully.");
+          setPopupText(props.language.deleteAlertCompleted);
           switchSaveState(false);
           setIsConfirmDelete(false);
         })
@@ -243,12 +259,7 @@ export default function TeacherConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The teacher could not be removed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(true);
+        connectionAlert();
       }
     });
   };
@@ -281,7 +292,7 @@ export default function TeacherConfig(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container">
+      <div className="schedulesesionslist-main-container" id="scroll">
         <table>
           <thead>
             <tr>
@@ -496,10 +507,12 @@ export default function TeacherConfig(props) {
         }}
         onNoAction={() => {
           setPopup(false);
+          switchEditState(true);
         }}
         onCloseAction={() => {
           setPopup(false);
           switchSaveState();
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

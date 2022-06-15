@@ -22,6 +22,26 @@ export default function InstitutionConfig(props) {
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "hidden";
+    }
+  };
+
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
   const fetchInstitutions = () => {
     asynchronizeRequest(function () {
       INSTITUTIONSERVICE.fetchInstitutions().then((i) => {
@@ -30,12 +50,7 @@ export default function InstitutionConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The institution not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -63,10 +78,11 @@ export default function InstitutionConfig(props) {
   const confirmModalCreate = async () => {
     setPopup(true);
     setPopupType("info");
-    setPopupText("The institution was created successfully.");
+    setPopupText(props.language.creationCompleted);
   };
 
   const createInstitution = () => {
+    switchEditState(false);
     let name = document.getElementById("i_name").value;
     if (name) {
       asynchronizeRequest(async () => {
@@ -98,12 +114,7 @@ export default function InstitutionConfig(props) {
         .then(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The institution not be created, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
+            connectionAlert();
           }
         })
         .catch(async (err) => {
@@ -157,6 +168,7 @@ export default function InstitutionConfig(props) {
   };
 
   const editInstitution = async (e, s) => {
+    switchEditState(false);
     if (e.target.tagName === "svg") {
       let name =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -188,14 +200,12 @@ export default function InstitutionConfig(props) {
 
             setPopup(true);
             setPopupType("info");
-            setPopupText("The institution was edited successfully.");
+            setPopupText(props.language.creationCompleted);
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopupText(
-                "The institution could not be edited, check if you entered the correct fields."
-              );
+              setPopupText(props.language.creationAlert);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -204,12 +214,7 @@ export default function InstitutionConfig(props) {
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The institution could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
+          connectionAlert();
         }
       });
     } else {
@@ -249,14 +254,12 @@ export default function InstitutionConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText("The institution was edited successfully.");
+              setPopupText(props.language.editAlertCompleted);
             })
             .catch(async (e) => {
               if (e) {
                 await interceptExpiredToken(e);
-                setPopupText(
-                  "The institution could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 setPopup(true);
               }
@@ -264,12 +267,7 @@ export default function InstitutionConfig(props) {
         }).then(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The institution could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
+            connectionAlert();
           }
         });
       } else {
@@ -305,14 +303,12 @@ export default function InstitutionConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText("The institution was edited successfully.");
+              setPopupText(props.language.editAlertCompleted);
             })
             .catch(async (e) => {
               if (e) {
                 await interceptExpiredToken(e);
-                setPopupText(
-                  "The institution could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 setPopup(true);
               }
@@ -320,11 +316,7 @@ export default function InstitutionConfig(props) {
         }).then(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The institution could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
+            connectionAlert();
           }
         });
       }
@@ -399,7 +391,7 @@ export default function InstitutionConfig(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container">
+      <div className="schedulesesionslist-main-container" id="scroll">
         <table>
           <thead>
             <tr>
@@ -561,6 +553,12 @@ export default function InstitutionConfig(props) {
         onCloseAction={() => {
           setPopup(false);
           switchSaveState();
+          switchEditState(true);
+        }}
+        onNoAction={() => {
+          setPopup(false);
+          switchSaveState();
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

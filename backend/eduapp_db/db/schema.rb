@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 15) do
     t.string "annotation_title"
     t.string "annotation_description"
     t.boolean "isGlobal"
+    t.boolean "isPop"
     t.uuid "user_id", null: false
     t.uuid "subject_id"
     t.datetime "created_at", precision: 6, null: false
@@ -166,6 +167,7 @@ ActiveRecord::Schema.define(version: 15) do
     t.string "user_name"
     t.string "profile_image"
     t.uuid "teaching_list", default: [], array: true
+    t.uuid "calendar_event", default: [], array: true
     t.uuid "user_id"
     t.string "googleid"
     t.boolean "isLoggedWithGoogle", default: false

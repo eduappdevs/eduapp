@@ -42,6 +42,14 @@ class CalendarAnnotationsController < ApplicationController
     render json: @calendar_annotations
   end
 
+  def calendar_info
+    if !check_perms_query!(get_user_roles.perms_events)
+      return
+    end
+    @calendar_annotations = CalendarAnnotation.where(isGlobal: true, isPop: true).order(:annotation_start_date)
+    render json: @calendar_annotations
+  end
+
   # GET /calendar_annotations/1
   def show
     if !check_perms_query!(get_user_roles.perms_events)
@@ -93,6 +101,6 @@ class CalendarAnnotationsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def calendar_annotation_params
-    params.require(:calendar_annotation).permit(:annotation_start_date, :annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :user_id, :subject_id)
+    params.require(:calendar_annotation).permit(:annotation_start_date, :annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :isPop,  :user_id, :subject_id)
   end
 end

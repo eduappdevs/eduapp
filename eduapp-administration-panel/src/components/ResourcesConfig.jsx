@@ -41,18 +41,39 @@ export default function ResourcesConfig(props) {
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vh";
+      document.getElementById("resources-modal-container").style.width =
+        "100vw";
+      document.getElementById("resources-modal-container").style.height =
+        "100vh";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
+
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
   const fetchUsers = () => {
     asynchronizeRequest(function () {
       USER_SERVICE.fetchUserInfos().then((res) => {
         setUsers(res.data);
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
-        setPopup(true);
-        setPopupText(
-          "The users could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
+        await interceptExpiredToken(e);
+        connectionAlert();
       }
     });
   };
@@ -62,22 +83,20 @@ export default function ResourcesConfig(props) {
       SUBJECTSERVICE.fetchSubjects().then((res) => {
         setSubject(res.data);
       });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
-        setPopup(true);
-        setPopupText(
-          "The subjects could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
+        await interceptExpiredToken(e);
+        connectionAlert();
       }
     });
   };
 
   const showDeleteError = () => {
+    switchEditState(false);
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The session could not be deleted.");
+    setPopupText(props.language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
@@ -87,6 +106,10 @@ export default function ResourcesConfig(props) {
         .then((e) => {
           if (e) {
             fetchResourcesPage(1);
+            setPopup(true);
+            setPopupType("info");
+            setPopupText(props.language.deleteAlertCompleted);
+            setIsConfirmDelete(false);
           }
         })
         .catch((e) => {
@@ -94,44 +117,44 @@ export default function ResourcesConfig(props) {
             showDeleteError();
           }
         });
-    }).then((e) => {
+    }).then(async (e) => {
       if (e) {
-        setPopup(true);
-        setPopupText(
-          "The resources could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
+        await interceptExpiredToken(e);
+        connectionAlert();
       }
     });
   };
 
   const confirmModalCreate = async () => {
+    switchEditState(false);
     fetchResourcesPage(1);
-
     setShowModal(false);
     setShowCreateModal(false);
     setShowModalEdit(false);
     setPopup(true);
     setPopupType("info");
-    setPopupText("The resources was created successfully.");
+    setPopupText(props.language.creationCompleted);
   };
   const confirmModalEdit = async () => {
+    switchEditState(false);
     setShowModal(false);
     setShowCreateModal(false);
     setShowModalEdit(false);
     fetchResourcesPage(1);
     setPopup(true);
     setPopupType("info");
-    setPopupText("The resources was edited successfully.");
+    setPopupText(props.language.editAlertCompleted);
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
 
   const showModalsEdit = async (res) => {
+    switchEditState(false);
     let subject_id = document.getElementById(`inputSubjectID_${res.id}`).value;
     let name = document.getElementById(`inputName_${res.id}`).value;
     let description = document.getElementById(
@@ -190,9 +213,10 @@ export default function ResourcesConfig(props) {
   };
 
   const confirmDeleteResource = (id) => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this resources?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
@@ -363,6 +387,11 @@ export default function ResourcesConfig(props) {
           await interceptExpiredToken(err);
           console.error(err);
         });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
     });
   };
 
@@ -397,7 +426,7 @@ export default function ResourcesConfig(props) {
 
   return (
     <>
-      <div className="resources-main-container">
+      <div className="resources-main-container" id="scroll">
         <table>
           <thead>
             <tr>
@@ -809,13 +838,16 @@ export default function ResourcesConfig(props) {
           setShowModal(false);
           setShowCreateModal(false);
           setShowModalEdit(false);
+          switchEditState(true);
         }}
         onAddModal={(c) => {
           if (c === "create") {
             confirmModalCreate();
+            switchEditState(true);
           }
           if (c === "edit") {
             confirmModalEdit();
+            switchEditState(true);
           }
         }}
         language={props.language}
@@ -839,10 +871,12 @@ export default function ResourcesConfig(props) {
         onNoAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
+          switchEditState(true);
         }}
         onCloseAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

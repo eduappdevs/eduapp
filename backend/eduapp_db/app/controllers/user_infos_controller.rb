@@ -27,7 +27,6 @@ class UserInfosController < ApplicationController
         user_info["user"]["last_sign_in_at"] = User.find(user_info["user"]["id"]).last_sign_in_at
       end
     end
-
     render json: @user_infos
   end
 
@@ -49,7 +48,6 @@ class UserInfosController < ApplicationController
       return
     end
     @user_info = UserInfo.new(user_info_params)
-
     if @user_info.save
       render json: @user_info, status: :created, location: @user_info
     else
@@ -68,6 +66,37 @@ class UserInfosController < ApplicationController
     @user_info.teaching_list << Subject.find(params[:subject_id]).id
     @user_info.save
     render json: @user_info
+  end
+
+  def add_events
+    if !check_perms_write!(get_user_roles.perms_users)
+      return
+    end
+    @user_info = UserInfo.all
+    calendar_annotation = CalendarAnnotation.where(isPop: true)
+
+    @user_info.each do |user_info|
+      calendar_annotation.each do |annotation|
+        if user_info.calendar_event.include?(annotation.id.to_s)
+          puts "already added"
+        else
+          user_info.calendar_event << annotation.id
+        end
+      end
+      user_info.save
+    end
+     render json: @user_info
+  end
+
+  def remove_event
+    if !check_perms_write!(get_user_roles.perms_users)
+      return
+    end
+    @user_info = UserInfo.where(user_id: params[:user_id]).first
+    puts "userInfo: #{@user_info}"
+    @user_info.calendar_event.delete(CalendarAnnotation.find(params[:calendar_event]).id)
+    @user_info.save
+    render json:@user_info
   end
 
   def remove_subject
@@ -152,6 +181,6 @@ class UserInfosController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def user_info_params
-    params.permit(:user_name, :user_id, :user_role, :profile_image, :teaching_list, :googleid, :isLoggedWithGoogle)
+    params.permit(:user_name, :user_id, :user_role, :calendar_event, :profile_image, :teaching_list, :googleid, :isLoggedWithGoogle)
   end
 end

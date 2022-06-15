@@ -54,7 +54,7 @@ export default function Schedulesessionslist(props) {
   const switchEditState = (state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
-        "scroll";
+        "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
       document.getElementById("standard-modal").style.width = "100vw";
@@ -62,6 +62,13 @@ export default function Schedulesessionslist(props) {
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
+  };
+
+  const connectionAlert = async () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
   };
 
   const fetchSessions = async (pages) => {
@@ -78,12 +85,7 @@ export default function Schedulesessionslist(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The calendar sessions could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -101,18 +103,14 @@ export default function Schedulesessionslist(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The subjects could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -181,23 +179,22 @@ export default function Schedulesessionslist(props) {
             fetchSessions(1);
             setPopup(true);
             setPopupType("info");
-            setPopupText("The calendar events was created successfully.");
+            setPopupText(props.language.creationCompleted);
             setIsConfirmDelete(false);
           }
         })
         .catch(async (error) => {
           await interceptExpiredToken(error);
+          setPopup(true);
+          setPopupText(props.language.creationFailed);
+          setIsConfirmDelete(false);
+          setPopupIcon("error");
+          switchSaveState(false);
         });
     }).then(async (error) => {
       if (error) {
         await interceptExpiredToken(error);
-        setPopup(true);
-        setPopupText(
-          "The calendar session could not be published, check if you have an internet connection."
-        );
-        setIsConfirmDelete(false);
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -206,53 +203,43 @@ export default function Schedulesessionslist(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this session?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(s.id);
     setIdBatch(s.batch_id);
   };
 
-  const showDeleteError = () => {
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText("The session could not be deleted.");
-    setIsConfirmDelete(false);
-  };
-
   const deleteSession = async (id, batch_id) => {
+    switchEditState(false);
     if (batch_id === null) {
       API.asynchronizeRequest(function () {
         SCHEDULESERVICE.deleteSession(id)
-          .then(() => {
-            switchEditState(true);
-            fetchSessions(1);
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The calendar session was deleted successfully.");
-            setIsConfirmDelete(false);
-            switchSaveState(false);
+          .then((del) => {
+            if (del) {
+              fetchSessions(1);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(props.language.deleteAlertCompleted);
+              setIsConfirmDelete(false);
+              switchSaveState(false);
+            }
           })
           .catch(async (e) => {
             await interceptExpiredToken(e);
-            showDeleteError();
-            switchEditState(true);
+            setPopupType("error");
+            popupIcon(false);
+            setPopup(false);
+            setPopupText(props.language.deleteFailed);
+            setIsConfirmDelete(false);
           });
       }).then(async (e) => {
-        switchEditState(true);
         if (e) {
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The calendar session could not be deleted, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(true);
+          connectionAlert();
         }
       });
     } else {
-      switchEditState(false);
       setSelectType(true);
       setSelectTypeModal(false);
       setSelectInfo({
@@ -262,32 +249,29 @@ export default function Schedulesessionslist(props) {
   };
 
   const deleteOneSession = async () => {
+    switchEditState(false);
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.deleteSession(selectInfo.id)
         .then(() => {
-          switchEditState(true);
           fetchSessions(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText("The calendar session was deleted successfully.");
+          setPopupText(props.language.deleteAlertCompleted);
           setIsConfirmDelete(false);
           switchSaveState(false);
         })
         .catch(async (e) => {
           await interceptExpiredToken(e);
-          showDeleteError();
-          switchEditState(true);
+          setPopupType("error");
+          popupIcon(false);
+          setPopup(false);
+          setPopupText(props.language.deleteFailed);
+          setIsConfirmDelete(false);
         });
     }).then(async (e) => {
-      switchEditState(true);
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The calendar session could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(true);
+        connectionAlert();
       }
     });
   };
@@ -467,19 +451,16 @@ export default function Schedulesessionslist(props) {
                 subject.disabled = true;
                 setPopup(true);
                 setPopupType("info");
-                setPopupText("The calendar session was edited successfully.");
+                setPopupText(props.language.editAlertCompleted);
                 switchSaveState(false);
                 setIsConfirmDelete(false);
-                switchEditState(false);
                 fetchSessions(1);
               }
             })
             .catch(async (error) => {
               if (error) {
                 await interceptExpiredToken(error);
-                setPopupText(
-                  "The calendar session could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -488,18 +469,11 @@ export default function Schedulesessionslist(props) {
         } else {
           setSelectType(true);
           setSelectTypeModal(true);
-          switchEditState(false);
         }
       }).then(async (error) => {
         if (error) {
           await interceptExpiredToken(error);
-          setPopup(true);
-          setPopupText(
-            "The calendar session could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+          connectionAlert();
         }
       });
     } else {
@@ -660,7 +634,7 @@ export default function Schedulesessionslist(props) {
                   chat.disabled = true;
                   subject.disabled = true;
                   setPopupType("info");
-                  setPopupText("The calendar session was edited successfully.");
+                  setPopupText(props.language.editAlertCompleted);
                   setIsConfirmDelete(false);
                   setPopup(true);
                   fetchSessions(1);
@@ -669,9 +643,7 @@ export default function Schedulesessionslist(props) {
               .catch(async (error) => {
                 if (error) {
                   await interceptExpiredToken(error);
-                  setPopupText(
-                    "The calendar session could not be edited, check if you entered the correct fields."
-                  );
+                  setPopupText(props.language.editAlertFailed);
                   setPopupIcon("error");
                   switchSaveState(false);
                   setIsConfirmDelete(false);
@@ -681,18 +653,11 @@ export default function Schedulesessionslist(props) {
           } else {
             setSelectType(true);
             setSelectTypeModal(true);
-            switchEditState(false);
           }
         }).then(async (error) => {
           if (error) {
             await interceptExpiredToken(error);
-            setPopup(true);
-            setPopupText(
-              "The calendar session could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+            connectionAlert();
           }
         });
       } else {
@@ -847,7 +812,7 @@ export default function Schedulesessionslist(props) {
                   chat.disabled = true;
                   subject.disabled = true;
                   setPopupType("info");
-                  setPopupText("The calendar session was edited successfully.");
+                  setPopupText(props.language.editAlertCompleted);
                   switchSaveState(false);
                   setIsConfirmDelete(false);
                   setPopup(true);
@@ -856,10 +821,7 @@ export default function Schedulesessionslist(props) {
               .catch(async (error) => {
                 if (error) {
                   await interceptExpiredToken(error);
-                  setPopupText(
-                    "The calendar session could not be edited, check if you entered the correct fields."
-                  );
-                  console.log(e);
+                  setPopupText(props.language.editAlertFailed);
                   setPopupIcon("error");
                   switchSaveState(false);
                   setPopup(true);
@@ -869,18 +831,11 @@ export default function Schedulesessionslist(props) {
           } else {
             setSelectType(true);
             setSelectTypeModal(true);
-            switchEditState(false);
           }
         }).then(async (error) => {
           if (error) {
             await interceptExpiredToken(error);
-            setPopup(true);
-            setPopupText(
-              "The calendar session could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            setIsConfirmDelete(false);
-            switchSaveState(false);
+            connectionAlert();
           }
         });
       }
@@ -888,38 +843,43 @@ export default function Schedulesessionslist(props) {
   };
 
   const editGlobalSession = () => {
-    SCHEDULESERVICE.editSessionBatch({
-      id: selectInfo.id,
-      session_name: selectInfo.session_name,
-      session_start_date: selectInfo.session_start_date,
-      session_end_date: selectInfo.session_end_date,
-      streaming_platform: selectInfo.streaming_platform,
-      resources_platform: selectInfo.resources_platform,
-      session_chat_id: selectInfo.session_chat_id,
-      subject_id: selectInfo.subject_id,
-      batch_id: selectInfo.batch_id,
-    })
-      .then((e) => {
-        if (e) {
-          setPopup(true);
-          setPopupType("info");
-          setPopupText("The calendar session was edited successfully.");
-          switchSaveState(false);
-          setIsConfirmDelete(false);
-          fetchSessions(1);
-        }
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.editSessionBatch({
+        id: selectInfo.id,
+        session_name: selectInfo.session_name,
+        session_start_date: selectInfo.session_start_date,
+        session_end_date: selectInfo.session_end_date,
+        streaming_platform: selectInfo.streaming_platform,
+        resources_platform: selectInfo.resources_platform,
+        session_chat_id: selectInfo.session_chat_id,
+        subject_id: selectInfo.subject_id,
+        batch_id: selectInfo.batch_id,
       })
-      .catch((e) => {
-        if (e) {
-          setPopupText(
-            "The calendar session could not be edited, check if you entered the correct fields."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
-          setPopup(true);
-          setIsConfirmDelete(false);
-        }
-      });
+        .then((e) => {
+          if (e) {
+            setPopup(true);
+            setPopupType("info");
+            setPopupText(props.language.editAlertCompleted);
+            switchSaveState(false);
+            setIsConfirmDelete(false);
+            fetchSessions(1);
+          }
+        })
+        .catch((e) => {
+          if (e) {
+            setPopupText(props.language.editAlertFailed);
+            setPopupIcon("error");
+            switchSaveState(false);
+            setPopup(true);
+            setIsConfirmDelete(false);
+          }
+        });
+    }).then(async (error) => {
+      if (error) {
+        await interceptExpiredToken(error);
+        connectionAlert();
+      }
+    });
   };
 
   const editOneSession = () => {
@@ -939,15 +899,13 @@ export default function Schedulesessionslist(props) {
           fetchSessions(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText("The calendar session was edited successfully.");
+          setPopupText(props.language.editAlertCompleted);
           switchSaveState(false);
           setIsConfirmDelete(false);
         })
         .catch((e) => {
           if (e) {
-            setPopupText(
-              "The calendar session could not be edited, check if you entered the correct fields."
-            );
+            setPopupText(props.language.editAlertFailed);
             setPopupIcon("error");
             switchSaveState(false);
             setPopup(true);
@@ -957,13 +915,7 @@ export default function Schedulesessionslist(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The calendar session could not be edited, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        setIsConfirmDelete(false);
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -1201,7 +1153,7 @@ export default function Schedulesessionslist(props) {
             fetchSessions(1);
             setPopup(true);
             setPopupType("info");
-            setPopupText("The calendar session was deleted successfully.");
+            setPopupText(props.language.deleteAlertCompleted);
             switchSaveState(false);
             setSelectType(false);
             fetchSessions(1);
@@ -1209,7 +1161,7 @@ export default function Schedulesessionslist(props) {
         })
         .catch((e) => {
           if (e) {
-            setPopupText("The calendar session could not be deleted.");
+            setPopupText(props.language.deleteFailed);
             setPopupIcon("error");
             switchSaveState(false);
             setPopup(true);
@@ -1218,13 +1170,7 @@ export default function Schedulesessionslist(props) {
         });
     }).then((e) => {
       if (e) {
-        setPopupText(
-          "The calendar session could not be edited, check if you entered the correct fields."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
-        setPopup(true);
-        setIsConfirmDelete(false);
+        connectionAlert();
       }
     });
   };
@@ -1443,7 +1389,7 @@ export default function Schedulesessionslist(props) {
               />
             </div>
             <div className="schedule-table-info">
-              <table style={{ marginTop: "15px" }}>
+              <table style={{ marginTop: "10px" }}>
                 <thead>
                   <tr>
                     <th>{props.language.code}</th>

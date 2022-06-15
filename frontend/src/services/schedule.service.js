@@ -15,6 +15,10 @@ export const fetchUserEvents = async (userId) => {
   });
 };
 
+export const fetchEventsById = async () => {
+  return await axios.get(`${EVENTS}/all_id`, { headers: requestHeader });
+};
+
 export const createEvent = async (body) => {
   return await axios.post(EVENTS, body, { headers: requestHeader });
 };

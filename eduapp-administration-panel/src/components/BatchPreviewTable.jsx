@@ -112,6 +112,7 @@ export default function BatchPreviewTable(props) {
           diff_days: diff_days,
           week_repeat: week_repeat < 1 ? 0 : week_repeat < 2 ? 2 : week_repeat,
         };
+        console.log(sessionJson);
         API.asynchronizeRequest(function () {
           SCHEDULESERVICE.createSessionBatch(sessionJson)
             .then((e) => {

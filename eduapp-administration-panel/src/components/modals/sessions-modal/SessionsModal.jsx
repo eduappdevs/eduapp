@@ -15,12 +15,24 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
   const [popupIcon, setPopupIcon] = useState("");
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
-  const [idDelete, setIdDelete] = useState();
 
   const alertCreate = async () => {
     setPopupText("Required information is missing.");
     setPopupType("error");
     setPopup(true);
+  };
+
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
   };
 
   const submitSessionModal = (e) => {
@@ -127,6 +139,7 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
 
   useEffect(() => {
     if (info) {
+      switchEditState(false);
       setChangeName(info.name);
       setChangeStreamingLink(info.streaming);
       setChangeChatLink(info.chat);
@@ -138,6 +151,7 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
     <>
       <div
         className="session-modal-container-main"
+        id="scroll"
         style={{ display: show ? "flex" : "none" }}
       >
         {show ? (
@@ -147,6 +161,7 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
                 <button
                   className="modal-button-close"
                   onClick={() => {
+                    switchEditState(true);
                     onCloseModal();
                   }}
                 >
@@ -282,6 +297,7 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
         isQuestion={isConfirmDelete}
         onCloseAction={() => {
           setPopup(false);
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

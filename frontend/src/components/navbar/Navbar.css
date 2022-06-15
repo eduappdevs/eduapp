@@ -56,7 +56,7 @@ nav>.nav-locations>ul>li {
 	background-color: var(--blue);
 	border-radius: 20px;
 	box-shadow: 0 3px 1px rgb(69, 119, 255);
-	height: 90%;
+	height: 80%;
 	color: white;
 	width: 90%;
 }
@@ -115,6 +115,32 @@ header>nav>.profile-button>.profile-button-box>.profile-pic>img {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
+}
+
+header>nav>.notifications-button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+header>nav>.notifications-button>.notifications-button-box {
+	height: 80%;
+	width: 80%;
+	border-radius: 20px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 5px 10px;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+
+header>nav>.notifications-button>.notifications-button-box:hover>.notifications-button>svg {
+	transform: rotate(20deg);
+}
+
+header>nav>.notifications-button {
+	color: var(--textColor);
 }
 
 /* Desktop menu */

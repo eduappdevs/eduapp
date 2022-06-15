@@ -10,7 +10,6 @@ th {
   border: 1px solid #dddddd76;
   text-align: left;
   padding: 8px;
-  width: 180px;
 }
 
 tr:nth-child(even) {
@@ -45,15 +44,17 @@ tr:nth-child(even) {
 }
 
 .schedule-table-info>table>thead>tr>th {
-  flex: 1;
+  width: 180px;
 }
 
 .schedule-table-info>table>tbody {
-  display: flex;
+  display: block;
   flex-direction: column;
-  justify-content: left;
-  height: 350px;
+  justify-content: center;
+  align-items: center;
   overflow-y: auto;
+  height: 45vh;
+  overflow-x: hidden;
   flex: 1;
 }
 
@@ -63,7 +64,7 @@ tr:nth-child(even) {
 }
 
 .schedule-table-info>table>tbody>tr>td {
-  flex: 1;
+  width: 180px;
 }
 
 .schedule-table-info>table>tbody>tr:nth-child(even) {

@@ -22,6 +22,26 @@ export default function ChatConfig(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vh";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
+
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
   const switchSaveState = (state) => {
     if (state) {
       document
@@ -131,6 +151,7 @@ export default function ChatConfig(props) {
   };
 
   const editChat = async (e, data) => {
+    switchEditState(false);
     if (e.target.tagName === "svg") {
       let name =
         e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
@@ -156,7 +177,7 @@ export default function ChatConfig(props) {
               setIsConfirmDelete(false);
               setPopup(true);
               setPopupType("info");
-              setPopupText("The chat group was edited successfully.");
+              setPopupText(props.language.editAlertCompleted);
               fetchChatPage(1);
               setChangeName(false);
               let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
@@ -174,9 +195,7 @@ export default function ChatConfig(props) {
             if (e) {
               await interceptExpiredToken(e);
               setIsConfirmDelete(false);
-              setPopupText(
-                "The chat group could not be edited, check if you entered the correct fields."
-              );
+              setPopupText(props.language.editAlertFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -185,13 +204,7 @@ export default function ChatConfig(props) {
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setIsConfirmDelete(false);
-          setPopup(true);
-          setPopupText(
-            "The chat group could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
+          connectionAlert();
         }
       });
     } else {
@@ -220,7 +233,7 @@ export default function ChatConfig(props) {
                 setIsConfirmDelete(false);
                 setPopup(true);
                 setPopupType("info");
-                setPopupText("The chat group was edited successfully.");
+                setPopupText(props.language.editAlertCompleted);
                 fetchChatPage(1);
                 setChangeName(false);
 
@@ -243,9 +256,7 @@ export default function ChatConfig(props) {
               if (e) {
                 await interceptExpiredToken(e);
                 setIsConfirmDelete(false);
-                setPopupText(
-                  "The chat group could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -254,13 +265,7 @@ export default function ChatConfig(props) {
         }).then(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
-            setIsConfirmDelete(false);
-            setPopup(true);
-            setPopupText(
-              "The chat group could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
+            connectionAlert();
           }
         });
       } else {
@@ -295,7 +300,7 @@ export default function ChatConfig(props) {
                 setIsConfirmDelete(false);
                 setPopup(true);
                 setPopupType("info");
-                setPopupText("The chat group was edited successfully.");
+                setPopupText(props.language.editAlertCompleted);
                 fetchChatPage(1);
                 setChangeName(false);
               }
@@ -304,9 +309,7 @@ export default function ChatConfig(props) {
               if (e) {
                 await interceptExpiredToken(e);
                 setIsConfirmDelete(false);
-                setPopupText(
-                  "The chat group could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -315,13 +318,7 @@ export default function ChatConfig(props) {
         }).then(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
-            setIsConfirmDelete(false);
-            setPopup(true);
-            setPopupText(
-              "The chat group could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
+            connectionAlert();
           }
         });
       }
@@ -343,24 +340,20 @@ export default function ChatConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The chats groups could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
 
   const addChat = async (e) => {
-    switchSaveState(true);
+    switchSaveState(false);
 
     e.preventDefault();
     const context = ["chat_name", "isGroup"];
@@ -386,7 +379,7 @@ export default function ChatConfig(props) {
           fetchChatPage(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText("The chat group was created successfully.");
+          setPopupText(props.language.creationCompleted);
           switchSaveState(false);
         })
         .catch(async (e) => {
@@ -399,32 +392,28 @@ export default function ChatConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopupText(
-          "The chat group could not be created, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
-        setPopup(true);
-        switchSaveState(false);
+        connectionAlert();
       }
     });
     return;
   };
 
   const confirmDeleteEvent = async (id) => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this chat group?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
   };
 
   const showDeleteError = () => {
+    switchEditState(false);
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The chat group could not be deleted.");
+    setPopupText(props.language.deleteAlertFailed);
     setIsConfirmDelete(false);
   };
 
@@ -435,7 +424,7 @@ export default function ChatConfig(props) {
           fetchChatPage(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText("The chat group was deleted successfully.");
+          setPopupText(props.language.deleteAlertCompleted);
           setIsConfirmDelete(false);
         })
         .catch(async (e) => {
@@ -447,12 +436,7 @@ export default function ChatConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The chat group could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -472,7 +456,7 @@ export default function ChatConfig(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container">
+      <div className="schedulesesionslist-main-container" id="scroll">
         <table className="createTable">
           <thead>
             <tr>
@@ -798,14 +782,17 @@ export default function ChatConfig(props) {
           setPopup(false);
           setIsConfirmDelete(false);
           deleteChat(idDelete);
+          switchEditState(true);
         }}
         onNoAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
+          switchEditState(true);
         }}
         onCloseAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

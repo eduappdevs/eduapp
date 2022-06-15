@@ -61,6 +61,26 @@ export default function UserConfig(props) {
     }
   };
 
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
+
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
   const fetchUsers = () => {
     asynchronizeRequest(function () {
       USERSERVICE.pagedUserInfos(1)
@@ -70,17 +90,11 @@ export default function UserConfig(props) {
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
-          console.error(err);
         });
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The users could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -94,8 +108,12 @@ export default function UserConfig(props) {
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
-          console.error(err);
         });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
     });
   };
 
@@ -109,33 +127,42 @@ export default function UserConfig(props) {
           await interceptExpiredToken(err);
           console.error(err);
         });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
     });
   };
 
   const confirmDeleteUser = async (id) => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this user?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
   };
 
   const showDeleteError = () => {
+    switchEditState(false);
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The user could not be deleted.");
+    setPopupText(props.language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
 
   const editUser = (e, s) => {
+    switchEditState(false);
     if (e.target.tagName === "svg") {
       let name =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -146,11 +173,8 @@ export default function UserConfig(props) {
 
       let inputName = document.getElementById("inputName_" + s.user.id).value;
       let inputEmail = document.getElementById("inputEmail_" + s.user.id).value;
-      let inputIsAdmin = document.getElementById(
-        "inputIsAdmin_" + s.user.id
-      ).value;
 
-      let editTitle, editEmail, editisAdmin;
+      let editTitle, editEmail;
 
       if (inputName !== "" && inputName !== s.session_name) {
         editTitle = inputName;
@@ -164,17 +188,10 @@ export default function UserConfig(props) {
         editEmail = s.session_start_date;
       }
 
-      if (inputIsAdmin !== "" && inputIsAdmin !== s.session_end_date) {
-        editisAdmin = inputIsAdmin;
-      } else {
-        editisAdmin = s.session_end_date;
-      }
-
       API.asynchronizeRequest(function () {
         USERSERVICE.editUser({
           id: s.id,
           user_name: editTitle,
-          isAdmin: editisAdmin,
           isLoggedWithGoogle: s.isLoggedWithGoogle,
           googleid: s.googleid,
           user: {
@@ -198,14 +215,12 @@ export default function UserConfig(props) {
             setIsConfirmDelete(false);
             setPopup(true);
             setPopupType("info");
-            setPopupText("The user was edited successfully.");
+            setPopupText(props.language.editAlertCompleted);
             switchSaveState(false);
           })
           .catch((e) => {
             if (e) {
-              setPopupText(
-                "The user could not be edited, check if you entered the correct fields."
-              );
+              setPopupText(props.language.editAlertFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -214,13 +229,7 @@ export default function UserConfig(props) {
           });
       }).then((e) => {
         if (e) {
-          setPopup(true);
-          setPopupText(
-            "The user could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+          connectionAlert();
         }
       });
     } else {
@@ -237,9 +246,6 @@ export default function UserConfig(props) {
 
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-        let inputIsAdmin = document.getElementById(
-          "inputIsAdmin_" + s.id
-        ).value;
 
         let editTitle, editEmail, editisAdmin;
 
@@ -255,17 +261,10 @@ export default function UserConfig(props) {
           editEmail = s.session_start_date;
         }
 
-        if (inputIsAdmin !== "" && inputIsAdmin !== s.session_end_date) {
-          editisAdmin = inputIsAdmin;
-        } else {
-          editisAdmin = s.session_end_date;
-        }
-
         API.asynchronizeRequest(function () {
           USERSERVICE.editUser({
             id: s.id,
             user_name: editTitle,
-            isAdmin: editisAdmin,
             isLoggedWithGoogle: s.isLoggedWithGoogle,
             googleid: s.googleid,
             user: {
@@ -293,15 +292,13 @@ export default function UserConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText("The user was edited successfully.");
+              setPopupText(props.language.editAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
             .catch((e) => {
               if (e) {
-                setPopupText(
-                  "The user could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -310,13 +307,7 @@ export default function UserConfig(props) {
             });
         }).then((e) => {
           if (e) {
-            setPopup(true);
-            setPopupText(
-              "The user could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+            connectionAlert();
           }
         });
       } else {
@@ -329,11 +320,8 @@ export default function UserConfig(props) {
         let inputEmail = document.getElementById(
           "inputEmail_" + s.user.id
         ).value;
-        let inputIsAdmin = document.getElementById(
-          "inputIsAdmin_" + s.user.id
-        ).checked;
 
-        let editTitle, editEmail, editisAdmin;
+        let editTitle, editEmail;
 
         if (inputName !== "" && inputName !== s.session_name) {
           editTitle = inputName;
@@ -347,18 +335,11 @@ export default function UserConfig(props) {
           editEmail = s.session_start_date;
         }
 
-        if (inputIsAdmin !== "" && inputIsAdmin !== s.session_end_date) {
-          editisAdmin = inputIsAdmin;
-        } else {
-          editisAdmin = s.session_end_date;
-        }
-
         API.asynchronizeRequest(function () {
           USERSERVICE.editUser({
             id: s.id,
             user_id: s.user.id,
             user_name: editTitle,
-            isAdmin: editisAdmin,
             profile_image: s.profile_image,
             teaching_list: s.teaching_list,
             isLoggedWithGoogle: s.isLoggedWithGoogle,
@@ -366,6 +347,7 @@ export default function UserConfig(props) {
           })
             .then(() => {
               fetchUsers();
+              switchEditState(false);
               let buttonDelete = e.target.parentNode.childNodes[0];
               buttonDelete.style.display = "block";
               let button = e.target.parentNode.childNodes[1];
@@ -380,16 +362,13 @@ export default function UserConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText("The user was edited successfully.");
+              setPopupText(props.language.editAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
             .catch((e) => {
-              console.log(e);
               if (e) {
-                setPopupText(
-                  "The user could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setIsConfirmDelete(false);
@@ -398,14 +377,7 @@ export default function UserConfig(props) {
             });
         }).then((e) => {
           if (e) {
-            setPopup(true);
-            setIsConfirmDelete(false);
-
-            setPopupText(
-              "The user could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
+            connectionAlert();
           }
         });
       }
@@ -552,7 +524,10 @@ export default function UserConfig(props) {
     }
   };
 
-  const createUser = () => {
+  const createUser = (e) => {
+    e.preventDefault();
+    switchEditState(false);
+
     let email = document.getElementById("u_email").value;
     let pass = document.getElementById("u_pass").value;
     let role = document.getElementById("u_role").value;
@@ -564,25 +539,25 @@ export default function UserConfig(props) {
           email: email,
           password: pass,
           user_role: role,
-        }).then(async (res) => {
-          await userEnroll(res.data.user.id);
-          fetchUsers();
-          document.getElementById("u_email").value = null;
-          document.getElementById("u_pass").value = null;
-          setPopup(true);
-          setPopupType("info");
-          setPopupText("The new user was created successfully.");
-          switchSaveState(true);
-        });
+        })
+          .then(async (res) => {
+            await userEnroll(res.data.user.id);
+            fetchUsers();
+            document.getElementById("u_email").value = null;
+            document.getElementById("u_pass").value = null;
+            setPopup(true);
+            setPopupType("info");
+            setPopupText(props.language.creationCompleted);
+            switchSaveState(true);
+          })
+          .catch(async (error) => {
+            await interceptExpiredToken(error);
+            alertCreate();
+          });
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The new user could not be published, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
+          connectionAlert();
         }
       });
     } else {
@@ -591,6 +566,7 @@ export default function UserConfig(props) {
   };
 
   const userEnroll = async (uId) => {
+    switchEditState(false);
     const payload = new FormData();
     payload.append(
       "course_id",
@@ -605,24 +581,27 @@ export default function UserConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The new user could not be published, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
 
   const deleteUser = async (id) => {
+    switchEditState(false);
     let systemUser = (await USERSERVICE.fetchSystemUser()).data;
     if (id !== systemUser.user.id) {
       if (id !== getOfflineUser().user.id) {
         asynchronizeRequest(function () {
           USERSERVICE.deleteUser(id)
-            .then(() => {
-              fetchUsers();
+            .then((err) => {
+              if (err) {
+                setPopup(true);
+                setPopupType("info");
+                setPopupText(props.language.deleteAlertCompleted);
+                setIsConfirmDelete(false);
+                switchSaveState(false);
+                fetchUsers();
+              }
             })
             .catch(async (err) => {
               await interceptExpiredToken(err);
@@ -631,12 +610,7 @@ export default function UserConfig(props) {
         }).then(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The user could not be deleted, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(true);
+            connectionAlert();
           }
         });
       } else {
@@ -736,7 +710,7 @@ export default function UserConfig(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container">
+      <div className="schedulesesionslist-main-container" id="scroll">
         <table>
           <thead>
             <tr>
@@ -812,39 +786,201 @@ export default function UserConfig(props) {
             </tr>
           </tbody>
         </table>
-        <div className="notify-users">
-          <PageSelect
-            onPageChange={async (p) => fetchUserPage(p)}
-            maxPages={maxPages}
-          />
-          <button onClick={() => notifyUsers()}>Notify Selected Users</button>
-        </div>
-        <table style={{ marginTop: "25px" }}>
-          <thead>
-            <tr>
-              <th>
-                <input type={"checkbox"} onChange={() => selectAll()} />
-              </th>
-              <th>{props.language.userId}</th>
-              <th>{props.language.name}</th>
-              <th>{props.language.email}</th>
-              <th>{props.language.userRole}</th>
-              <th>{props.language.googleLinked}</th>
-              <th>{props.language.lastConnection}</th>
-              <th>{props.language.actions}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users
-              ? // eslint-disable-next-line array-callback-return
-                users.map((u) => {
-                  let user = u.user.last_sign_in_at;
-                  if (search.length > 0) {
-                    if (
-                      (u.user_name.includes(search) ||
-                        u.user.email.includes(search)) &
-                      filterUsersWithRole(userRole, u)
-                    ) {
+        {users && users.length !== 0 ? (
+          <>
+            <div className="notify-users">
+              <PageSelect
+                onPageChange={async (p) => fetchUserPage(p)}
+                maxPages={maxPages}
+              />
+              <button onClick={() => notifyUsers()}>
+                Notify Selected Users
+              </button>
+            </div>
+            <div className="schedule-table-info">
+              <table style={{ marginTop: "10px" }}>
+                <thead>
+                  <tr>
+                    <th>
+                      <input type={"checkbox"} onChange={() => selectAll()} />
+                    </th>
+                    <th>{props.language.userId}</th>
+                    <th>{props.language.name}</th>
+                    <th>{props.language.email}</th>
+                    <th>{props.language.userRole}</th>
+                    <th>{props.language.googleLinked}</th>
+                    <th>{props.language.lastConnection}</th>
+                    <th>{props.language.actions}</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {users.map((u) => {
+                    let user = u.user.last_sign_in_at;
+                    if (search.length > 0) {
+                      if (
+                        (u.user_name.includes(search) ||
+                          u.user.email.includes(search)) &
+                        filterUsersWithRole(userRole, u)
+                      ) {
+                        return (
+                          <tr key={u.id}>
+                            <td>
+                              <input
+                                id={`check_${u.user.id}`}
+                                type={"checkbox"}
+                                disabled={u.user_name === system_user_name}
+                                name={
+                                  u.user_name === system_user_name
+                                    ? null
+                                    : "user-check"
+                                }
+                              />
+                            </td>
+                            <td>{shortUUID(u.user.id)}</td>
+                            <td>
+                              <input
+                                id={`inputName_${u.user.id}`}
+                                type="text"
+                                disabled
+                                value={
+                                  changeName === false ? u.user_name : newName
+                                }
+                                onChange={() => {
+                                  handleChangeName(u.user.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                id={`inputEmail_${u.user.id}`}
+                                type="text"
+                                disabled
+                                value={
+                                  changeEmail === false
+                                    ? u.user.email
+                                    : newEmail
+                                }
+                                onChange={() => {
+                                  handleChangeEmail(u.user.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                value={u.user_role.name}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                placeholder="=> Link in App"
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="datetime"
+                                disabled
+                                value={user.split(".")[0]}
+                              />
+                            </td>
+                            <td
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <button
+                                style={{ marginRight: "5px" }}
+                                onClick={() => {
+                                  confirmDeleteUser(u.user.id);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-trash3"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ marginRight: "5px" }}
+                                onClick={(e) => {
+                                  showEditOptionUser(e, u);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-pencil-square"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                style={{
+                                  marginRight: "5px",
+                                  display: "none",
+                                }}
+                                onClick={(e) => {
+                                  editUser(e, u);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-check2"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ display: "none" }}
+                                onClick={(e) => {
+                                  closeEditUser(e, u);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-x-lg"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                                  />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                                  />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    } else if (filterUsersWithRole(userRole, u)) {
                       return (
                         <tr key={u.id}>
                           <td>
@@ -902,7 +1038,7 @@ export default function UserConfig(props) {
                           </td>
                           <td>
                             <input
-                              type="datetime"
+                              type="datetime-local"
                               disabled
                               value={user.split(".")[0]}
                             />
@@ -953,7 +1089,10 @@ export default function UserConfig(props) {
                               </svg>
                             </button>
                             <button
-                              style={{ marginRight: "5px", display: "none" }}
+                              style={{
+                                marginRight: "5px",
+                                display: "none",
+                              }}
                               onClick={(e) => {
                                 editUser(e, u);
                               }}
@@ -997,164 +1136,86 @@ export default function UserConfig(props) {
                         </tr>
                       );
                     }
-                  } else if (filterUsersWithRole(userRole, u)) {
-                    return (
-                      <tr key={u.id}>
-                        <td>
-                          <input
-                            id={`check_${u.user.id}`}
-                            type={"checkbox"}
-                            disabled={u.user_name === system_user_name}
-                            name={
-                              u.user_name === system_user_name
-                                ? null
-                                : "user-check"
-                            }
-                          />
-                        </td>
-                        <td>{shortUUID(u.user.id)}</td>
-                        <td>
-                          <input
-                            id={`inputName_${u.user.id}`}
-                            type="text"
-                            disabled
-                            value={changeName === false ? u.user_name : newName}
-                            onChange={() => {
-                              handleChangeName(u.user.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputEmail_${u.user.id}`}
-                            type="text"
-                            disabled
-                            value={
-                              changeEmail === false ? u.user.email : newEmail
-                            }
-                            onChange={() => {
-                              handleChangeEmail(u.user.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            value={u.user_role.name}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            placeholder="=> Link in App"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="datetime-local"
-                            disabled
-                            value={user.split(".")[0]}
-                          />
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={() => {
-                              confirmDeleteUser(u.user.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionUser(e, u);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-pencil-square"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px", display: "none" }}
-                            onClick={(e) => {
-                              editUser(e, u);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-check2"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditUser(e, u);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-x-lg"
-                              viewBox="0 0 16 16"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                              />
-                              <path
-                                fillRule="evenodd"
-                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                              />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
 
-                  if (search.length > 0) {
-                    if (
-                      (u.user_name.includes(search) ||
-                        u.user.email.includes(search)) &
-                      filterUsersWithRole(userRole, u)
-                    ) {
+                    if (search.length > 0) {
+                      if (
+                        (u.user_name.includes(search) ||
+                          u.user.email.includes(search)) &
+                        filterUsersWithRole(userRole, u)
+                      ) {
+                        return (
+                          <tr key={u.id}>
+                            <td>
+                              <input
+                                id={`check_${u.user.id}`}
+                                type={"checkbox"}
+                                disabled={u.user_name === system_user_name}
+                                name={
+                                  u.user_name === system_user_name
+                                    ? null
+                                    : "user-check"
+                                }
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                value={shortUUID(u.user.id)}
+                              />
+                            </td>
+                            <td>
+                              <input type="text" disabled value={u.user_name} />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                value={u.user.email}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                value={u.user_role.name}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                placeholder="=> Link in App"
+                              />
+                            </td>
+                            <td
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <button
+                                onClick={() => {
+                                  deleteUser(u.user.id);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-trash3"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    } else if (filterUsersWithRole(userRole, u)) {
                       return (
                         <tr key={u.id}>
                           <td>
@@ -1182,11 +1243,11 @@ export default function UserConfig(props) {
                           <td>
                             <input type="text" disabled value={u.user.email} />
                           </td>
-                          <td>
+                          <td style={{ textAlign: "center" }}>
                             <input
-                              type="text"
+                              type="checkbox"
                               disabled
-                              value={u.user_role.name}
+                              checked={u.isAdmin}
                             />
                           </td>
                           <td>
@@ -1223,78 +1284,75 @@ export default function UserConfig(props) {
                         </tr>
                       );
                     }
-                  } else if (filterUsersWithRole(userRole, u)) {
-                    return (
-                      <tr key={u.id}>
-                        <td>
-                          <input
-                            id={`check_${u.user.id}`}
-                            type={"checkbox"}
-                            disabled={u.user_name === system_user_name}
-                            name={
-                              u.user_name === system_user_name
-                                ? null
-                                : "user-check"
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            value={shortUUID(u.user.id)}
-                          />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user_name} />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user.email} />
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <input type="checkbox" disabled checked={u.isAdmin} />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            placeholder="=> Link in App"
-                          />
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              deleteUser(u.user.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
 
-                  if (search.length > 0) {
-                    if (
-                      (u.user_name.includes(search) ||
-                        u.user.email.includes(search)) &
-                      filterUsersWithRole(userRole, u)
-                    ) {
+                    if (search.length > 0) {
+                      if (
+                        (u.user_name.includes(search) ||
+                          u.user.email.includes(search)) &
+                        filterUsersWithRole(userRole, u)
+                      ) {
+                        return (
+                          <tr key={u.id}>
+                            <td>
+                              <input
+                                type="checkbox"
+                                name="select_user"
+                                disabled
+                                id={`select_user_${u.user.id}`}
+                              />
+                            </td>
+                            <td>
+                              <input type="text" disabled value={u.user_name} />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                value={u.user.email}
+                              />
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              <input
+                                type="checkbox"
+                                disabled
+                                checked={u.isAdmin}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                disabled
+                                placeholder="=> Link in App"
+                              />
+                            </td>
+                            <td
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <button
+                                onClick={() => {
+                                  deleteUser(u.user.id);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-trash3"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    } else if (filterUsersWithRole(userRole, u)) {
                       return (
                         <tr key={u.id}>
                           <td>
@@ -1351,67 +1409,16 @@ export default function UserConfig(props) {
                           </td>
                         </tr>
                       );
+                    } else {
+                      return null;
                     }
-                  } else if (filterUsersWithRole(userRole, u)) {
-                    return (
-                      <tr key={u.id}>
-                        <td>
-                          <input
-                            type="checkbox"
-                            name="select_user"
-                            disabled
-                            id={`select_user_${u.user.id}`}
-                          />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user_name} />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user.email} />
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <input type="checkbox" disabled checked={u.isAdmin} />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            placeholder="=> Link in App"
-                          />
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              deleteUser(u.user.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  } else {
-                    return null;
-                  }
-                })
-              : null}
-          </tbody>
-        </table>
+                    return true;
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : null}
       </div>
       <StandardModal
         show={showPopup}
@@ -1423,24 +1430,17 @@ export default function UserConfig(props) {
           setPopup(false);
           deleteUser(idDelete);
           setIsConfirmDelete(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onNoAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          switchEditState(true);
         }}
         onCloseAction={() => {
           setPopup(false);
           switchSaveState();
           setIsConfirmDelete(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

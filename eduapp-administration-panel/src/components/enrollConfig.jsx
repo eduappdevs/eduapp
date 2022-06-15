@@ -32,6 +32,40 @@ export default function EnrollConfig(props) {
 
   let enrollment_filter = {};
 
+  const switchSaveState = (state) => {
+    if (state) {
+      document
+        .getElementById("commit-loader-2")
+        .classList.remove("commit-loader-hide");
+      document.getElementById("add-svg").classList.add("commit-loader-hide");
+    } else {
+      document.getElementById("add-svg").classList.remove("commit-loader-hide");
+      document
+        .getElementById("commit-loader-2")
+        .classList.add("commit-loader-hide");
+    }
+  };
+
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
+
+  const connectionAlert = async () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
   const fetchTuitions = (pages) => {
     API.asynchronizeRequest(function () {
       TUITIONSSERVICE.pagedTuitions(pages)
@@ -46,12 +80,7 @@ export default function EnrollConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The tuitions not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -79,28 +108,9 @@ export default function EnrollConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The users could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
-  };
-
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
   };
 
   const fetchCourses = () => {
@@ -112,12 +122,7 @@ export default function EnrollConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The courses could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -137,7 +142,7 @@ export default function EnrollConfig(props) {
 
   const createTuition = (e) => {
     e.preventDefault();
-    switchSaveState(true);
+    switchEditState(true);
 
     let user = document.getElementById("user_select").value;
     let course = document.getElementById("course_select").value;
@@ -146,57 +151,45 @@ export default function EnrollConfig(props) {
     if (user === "-" && course === "-") valid = false;
 
     if (valid) {
-      API.asynchronizeRequest(function (er) {
-        if (er) {
-          switchSaveState(true);
-          const payload = new FormData();
-          payload.append("course_id", course);
-          payload.append("user_id", user);
-          switchSaveState(true);
-          TUITIONSSERVICE.createTuition(payload)
-            .then((e) => {
-              if (e) {
-                fetchAll();
-                setPopup(true);
-                setPopupType("info");
-                setPopupText("The tuition was created successfully.");
-                switchSaveState(false);
-              }
-            })
-            .catch((e) => {
-              if (e) {
-                interceptExpiredToken(e);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(
-                  "The tuition could not be created, check if you entered the correct fields."
-                );
-                switchSaveState(false);
-              }
-            });
-        }
+      API.asynchronizeRequest(function () {
+        const payload = new FormData();
+        payload.append("course_id", course);
+        payload.append("user_id", user);
+        TUITIONSSERVICE.createTuition(payload)
+          .then((e) => {
+            if (e) {
+              fetchAll();
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(props.language.creationCompleted);
+              switchSaveState(false);
+            }
+          })
+          .catch((e) => {
+            if (e) {
+              interceptExpiredToken(e);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(props.language.creationAlert);
+              switchSaveState(false);
+            }
+          });
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The enrollment could not be published, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
+          connectionAlert();
         }
       });
     } else {
       alertCreate();
-      switchSaveState(false);
     }
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
-    setIsConfirmDelete(false);
   };
 
   const deleteTuition = (id) => {
@@ -206,7 +199,7 @@ export default function EnrollConfig(props) {
           fetchAll();
           setPopup(true);
           setPopupType("info");
-          setPopupText("The enrollment was deleted successfully.");
+          setPopupText(props.language.deleteAlertCompleted);
           switchSaveState(false);
           setIsConfirmDelete(false);
         })
@@ -217,20 +210,16 @@ export default function EnrollConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The enrollment could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(true);
+        connectionAlert();
       }
     });
   };
 
   const confirmDeleteEvent = async (id) => {
+    switchEditState(true);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this enrollment?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
@@ -240,7 +229,7 @@ export default function EnrollConfig(props) {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The enrollment could not be deleted.");
+    setPopupText(props.language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
@@ -310,7 +299,8 @@ export default function EnrollConfig(props) {
     }
   };
 
-  const editSession = (e, s) => {
+  const editEnroll = (e, s) => {
+    switchEditState(false);
     if (e.target.tagName === "svg") {
       let email =
         e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
@@ -356,7 +346,7 @@ export default function EnrollConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText("The enrollment was edited successfully.");
+              setPopupText(props.language.editAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             }
@@ -364,9 +354,7 @@ export default function EnrollConfig(props) {
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopupText(
-                "The enrollment could not be edited, check if you entered the correct fields."
-              );
+              setPopupText(props.language.editAlertFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -376,13 +364,7 @@ export default function EnrollConfig(props) {
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The enrollment could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+          alertCreate();
         }
       });
     } else {
@@ -434,19 +416,16 @@ export default function EnrollConfig(props) {
                 cancelButton.style.display = "none";
                 course.disabled = true;
                 email.disabled = true;
-
                 switchSaveState(false);
                 setPopup(true);
                 setPopupType("info");
-                setPopupText("The enrollment was edited successfully.");
+                setPopupText(props.language.editAlertCompleted);
                 setIsConfirmDelete(false);
               }
             })
             .catch((e) => {
               if (e) {
-                setPopupText(
-                  "The enrollment could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setIsConfirmDelete(false);
@@ -456,13 +435,7 @@ export default function EnrollConfig(props) {
         }).then(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The enrollment could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+            alertCreate();
           }
         });
       } else {
@@ -509,7 +482,7 @@ export default function EnrollConfig(props) {
 
                 setPopup(true);
                 setPopupType("info");
-                setPopupText("The enrollment was edited successfully.");
+                setPopupText(props.language.editAlertCompleted);
                 switchSaveState(false);
                 setIsConfirmDelete(false);
               }
@@ -518,9 +491,7 @@ export default function EnrollConfig(props) {
               if (e) {
                 console.log(e);
                 await interceptExpiredToken(e);
-                setPopupText(
-                  "The enrollment could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setIsConfirmDelete(false);
@@ -530,13 +501,7 @@ export default function EnrollConfig(props) {
         }).then(async (e) => {
           if (e) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The enrollment could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+            alertCreate();
           }
         });
       }
@@ -606,7 +571,7 @@ export default function EnrollConfig(props) {
   const listCourse = (course) => {
     let list = [];
     courses.map((c) => {
-      if (c.id !== parseInt(course)) {
+      if (c.id !== course) {
         list.push(c);
       }
       return true;
@@ -637,7 +602,7 @@ export default function EnrollConfig(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container">
+      <div className="schedulesesionslist-main-container" id="scroll">
         <table>
           <thead>
             <tr>
@@ -772,6 +737,7 @@ export default function EnrollConfig(props) {
                                   {t.course.name}
                                 </option>
                                 {courseEdit.map((c) => {
+                                  console.log(c);
                                   return (
                                     <option key={c.id} value={c.id}>
                                       {c.name}
@@ -828,7 +794,7 @@ export default function EnrollConfig(props) {
                               <button
                                 style={{ marginRight: "5px", display: "none" }}
                                 onClick={(e) => {
-                                  editSession(e, t);
+                                  editEnroll(e, t);
                                 }}
                               >
                                 <svg
@@ -956,7 +922,7 @@ export default function EnrollConfig(props) {
                             <button
                               style={{ marginRight: "5px", display: "none" }}
                               onClick={(e) => {
-                                editSession(e, t);
+                                editEnroll(e, t);
                               }}
                             >
                               <svg
@@ -998,6 +964,7 @@ export default function EnrollConfig(props) {
                         </tr>
                       );
                     }
+                    return true;
                   })}
                 </tbody>
               </table>
@@ -1017,10 +984,12 @@ export default function EnrollConfig(props) {
         }}
         onNoAction={() => {
           setPopup(false);
+          switchEditState(true);
         }}
         onCloseAction={() => {
           setPopup(false);
-          switchSaveState();
+          switchSaveState(false);
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition
