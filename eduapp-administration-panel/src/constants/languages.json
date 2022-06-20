@@ -102,7 +102,9 @@
     "videoLargethan": "Video file size must be less than 15MB.",
     "imageLargeThan": "Image file size must be less than 2MB.",
     "fileLargeThan": "File size must be less than 3MB.",
-    "manyFiles": "There are too many files, only 10 are allowed."
+    "manyFiles": "There are too many files, only 10 are allowed.",
+    "management": "Management",
+    "userRoles": "User Permissions"
   },
   "es": {
     "title": "Titulo",
@@ -207,7 +209,9 @@
     "videoLargethan": "El tamaño del archivo de video debe ser menor a 15MB.",
     "imageLargeThan": "El tamaño del archivo de imagen debe ser menor a 2MB.",
     "fileLargeThan": "El tamaño del archivo debe ser menor a 3MB.",
-    "manyFiles": "Hay demasiados archivos, solo 10 son permitidos."
+    "manyFiles": "Hay demasiados archivos, solo 10 son permitidos.",
+    "management": "Administración",
+    "userRoles": "Permisos de Usuario"
   },
   "pt": {
     "title": "Título",
@@ -312,6 +316,8 @@
     "videoLargethan": "O tamanho do arquivo de vídeo deve ser menor a 15MB.",
     "imageLargeThan": "O tamanho do arquivo de imagem deve ser menor a 2MB.",
     "fileLargeThan": "O tamanho do arquivo deve ser menor a 3MB.",
-    "manyFiles": "Há muitos arquivos, somente 10 são permitidos."
+    "manyFiles": "Há muitos arquivos, somente 10 são permitidos.",
+    "management": "Administração",
+    "userRoles": "Permissões de usuário"
   }
 }
