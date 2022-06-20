@@ -6,7 +6,7 @@ import { interceptExpiredToken } from "../../utils/OfflineManager";
 import "./ResourcesModal.css";
 
 let finalData = new FormData();
-export default function ResourcesModal({ userInfo, subject }) {
+export default function ResourcesModal({ userInfo, subject, language }) {
   const [filesToUpload, setFilesToUpload] = useState([]);
   const [firstFile, setFirstFile] = useState(true);
 
@@ -56,7 +56,7 @@ export default function ResourcesModal({ userInfo, subject }) {
     e.preventDefault();
     if (e.target.files.length > 10) {
       setPopup(true);
-      setPopupText("Only 10 files are allowed");
+      setPopupText(language.resources_max);
       setPopupType("info");
       setFilesToUpload();
       document.getElementById("resources_modal_show_files").style.display =
@@ -69,7 +69,7 @@ export default function ResourcesModal({ userInfo, subject }) {
         if (videoRegex.test(f.name)) {
           if (f.size / 1000 / 1000 > 15) {
             setPopup(true);
-            setPopupText("Video is larger than 15MB");
+            setPopupText(language.video_too_big);
             setPopupType("info");
             setFilesToUpload();
             document.getElementById(
@@ -80,7 +80,7 @@ export default function ResourcesModal({ userInfo, subject }) {
         } else if (imageRegex.test(f.name)) {
           if (f.size / 1000 / 1000 > 2) {
             setPopup(true);
-            setPopupText("Image is larger than 2MB");
+            setPopupText(language.image_too_big);
             setPopupType("info");
             setFilesToUpload();
             document.getElementById(
@@ -91,7 +91,7 @@ export default function ResourcesModal({ userInfo, subject }) {
         } else {
           if (f.size / 1000 / 1000 > 5) {
             setPopup(true);
-            setPopupText("File is larger than 3MB");
+            setPopupText(language.file_too_big);
             setPopupType("info");
             setFilesToUpload();
             document.getElementById(
@@ -108,7 +108,7 @@ export default function ResourcesModal({ userInfo, subject }) {
           "block";
       } else {
         setPopup(true);
-        setPopupText("There are too many files, only 10 are allowed.");
+        setPopupText(language.resources_max);
         setPopupType("info");
         setFilesToUpload();
         document.getElementById("resources_modal_show_files").style.display =
@@ -155,9 +155,7 @@ export default function ResourcesModal({ userInfo, subject }) {
       if (error) {
         setPopup(true);
         setIsConfirmDelete(false);
-        setPopupText(
-          "The resource could not be published, check if you have an internet connection."
-        );
+        setPopupText(language.resources_failed_upload);
         setPopupIcon("error");
       }
     });
@@ -216,7 +214,7 @@ export default function ResourcesModal({ userInfo, subject }) {
         <div className="resources__logoModal">
           <img src="\assets\logo.png" alt="logo" />
         </div>
-        <h1>NEW RESOURCE</h1>
+        <h1>{language.resources_new_resource.toUpperCase()}</h1>
         <form action="submit" onSubmit={handleSubmit}>
           <div className="fileInputs">
             <div className="firstfile">
@@ -243,14 +241,14 @@ export default function ResourcesModal({ userInfo, subject }) {
           <input
             type="text"
             name="name"
-            placeholder={"Name"}
+            placeholder={language.title}
             autoComplete="off"
             required
           />
           <input
             type="text"
             name="description"
-            placeholder="Description"
+            placeholder={language.description}
             autoComplete="off"
           />
           <div
@@ -327,12 +325,12 @@ export default function ResourcesModal({ userInfo, subject }) {
             ) : null}
           </div>
           <div className="submit-action">
-            <button type="submit">SUBMIT</button>
+            <button type="submit">{language.submit}</button>
             <div id="submit-loader" className="loader">
-              Loading...
+              {language.saving}
             </div>
             <button id="resources__closeResourceModal" onClick={closeModal}>
-              CANCEL
+              {language.modal_cancel}
             </button>
           </div>
         </form>

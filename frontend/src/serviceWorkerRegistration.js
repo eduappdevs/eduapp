@@ -48,10 +48,15 @@ function registerValidSW(swUrl, config) {
                 "New content is available and will be used when all " +
                   "tabs for this page are closed. See https://cra.link/PWA."
               );
+              alert(
+                "There is an update to this app. The site app will refresh."
+              );
 
               if (config && config.onUpdate) {
                 config.onUpdate(registration);
               }
+
+              window.location.reload();
             } else {
               console.log("Content is cached for offline use.");
 

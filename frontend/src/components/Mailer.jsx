@@ -24,6 +24,7 @@ export const Mailer = (props) => {
 
   useEffect(() => {
     props.sendEmail && sendemail();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.sendEmail]);
 
   return (
@@ -35,7 +36,7 @@ export const Mailer = (props) => {
             className="form-control"
             id="email"
             name="email"
-            placeholder="Enter email"
+            placeholder={props.language.email}
             defaultValue={props.email && props.email}
             required
           />

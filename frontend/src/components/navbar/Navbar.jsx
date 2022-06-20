@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";
@@ -12,6 +12,7 @@ export default function Navbar({ mobile, badgeCount }) {
   const [inChat, setInChat] = useState(false);
   const [inManagement, setInManagement] = useState(false);
   const loc = useLocation();
+  const navigate = useNavigate();
 
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   const [userImage, setUserImage] = useState(null);
@@ -122,7 +123,7 @@ export default function Navbar({ mobile, badgeCount }) {
       <nav>
         <Link to="/">
           <div className="header-logo">
-            <img src="\assets\logo.png" alt="logo" />
+            <img src={process.env.PUBLIC_URL + "/assets/logo.png"} alt="logo" />
           </div>
         </Link>
         <div className={mobile ? "hidden" : "nav-locations"}>
@@ -143,7 +144,7 @@ export default function Navbar({ mobile, badgeCount }) {
                   )
                     document.getElementById("sectionCalendar").style.display =
                       "none";
-                  window.location.href = "/calendar";
+                  navigate("/calendar");
                 }}
               >
                 Calendar
@@ -192,7 +193,7 @@ export default function Navbar({ mobile, badgeCount }) {
             localStorage.previousMenuPage = window.location.href.substring(
               getPosition(window.location.href, "/", 3)
             );
-            window.location.href = "/menu";
+            navigate("/menu");
           }}
         >
           <div className="profile-button-box">

@@ -1,39 +1,45 @@
 version: '3.1'
+
+volumes:
+  eduapp_db_data:
+  nginx_data:
+
+networks:
+  db-rails:
+    driver: bridge
+
 services:
   db:
     image: postgres:14
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_PASSWORD=1234
-      - POSTGRES_USER=postgres
-      - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      - ./backend/eduapp_db/postgres.production.env
     volumes:
       - eduapp_db_data:/var/lib/postgresql/data/pgdata
-    ports:
-      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - db-rails
   api:
     build:
       context: ./backend/eduapp_db
-    image: eduapp/eduapp_db
+    image: eduapp/api:latest 
+    env_file:
+      - ./backend/eduapp_db/production.env
+    restart: unless-stopped
     depends_on:
       - db
-    ports:
-      - "3000:3000"
-  web:
-    build: 
-      context: ./frontend
-    image: eduapp/eduapp_web
-    depends_on: 
-      - api
-    ports:
-      - "3001:3001"
-  web_admin:
-    build: 
-      context: ./eduapp-administration-panel
-    image: eduapp/eduapp_web_admin
+    links:
+      - "db:db"
+    networks:
+      - db-rails
+  nginx:
+    build:
+      context: .
+    image: eduapp/nginx:latest
+    ports: 
+      - "8000:80"
     depends_on:
       - api
-    ports:
-      - "3002:3002"
-volumes:
-  eduapp_db_data:
+    volumes:
+      - nginx_data:/etc/nginx/conf.d
+    networks:
+      - db-rails

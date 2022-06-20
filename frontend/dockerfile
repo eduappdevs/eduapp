@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:alpine as builder
 
 WORKDIR /frontend
 
@@ -8,12 +8,35 @@ RUN npm install
 
 COPY . .
 
-ENV REACT_APP_BACKEND_ENDPOINT=http://somosbluecity.es:3010 \
-	REACT_APP_WEBSOCKET_ENDPOINT=ws://somosbluecity.es:3010 \
-	REACT_APP_PORT=4010 \
-	REACT_APP_DOMAIN="somosbluecity.es" \
-	REACT_APP_SUPPORT_ENDPOINT=http://localhost:3003 
+ENV REACT_APP_BACKEND_ENDPOINT=http://localhost:8000/api \
+	REACT_APP_WEBSOCKET_ENDPOINT=ws://$REACT_APP_BACKEND_DOMAIN/chat \
+	REACT_APP_PORT=3001 \
+	REACT_APP_DOMAIN=localhost \
+	REACT_APP_BACKEND_DOMAIN=localhost:8000/api\
+	REACT_APP_FRONTEND_DOMAIN=localhost:3001\
+	REACT_APP_ENCRYPTION_PATTERN="#_::_#"\
+	# FRONTEND ENDPOINT
+	REACT_APP_SUPPORT_ENDPOINT=http://localhost:3003\
+	# FIREBASE
+	REACT_APP_FB_API_KEY=AIzaSyAfeQYCIWSjxMluOfGWNvLXOYOinUEFMFA\
+	REACT_APP_FB_AUTH_DOMAIN=eduapp-online.firebaseapp.com\
+	REACT_APP_FB_PROJECT_ID=eduapp-online\
+	REACT_APP_FB_STORAGE_BUCKET=eduapp-online.appspot.com\
+	REACT_APP_FB_SENDER_ID=414829647907\
+	REACT_APP_FB_ID="1:414829647907:web:853b6c6101317d4a5ab996"
 
-EXPOSE 4010
+RUN npm run build
 
-CMD [ "npm", "run", "start-unix" ]
+# NGINX CONFIG
+
+FROM nginx:alpine
+
+COPY --from=builder /frontend/build /usr/share/nginx/html/eduapp/frontend
+
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY nginx/nginx.conf /etc/nginx/conf.d
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,4 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import { asynchronizeRequest } from "../../../API.js";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
@@ -9,13 +11,15 @@ import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import useRole from "../../../hooks/useRole";
 import "./GroupChatCreate.css";
+import useLanguage from "../../../hooks/useLanguage";
 
 export default function GroupChatCreate() {
+  const navigate = useNavigate();
+  const language = useLanguage();
+
   const [displayImageWarning, setWarnDisplay] = useState("none");
   const [changeImage, setChangeImage] = useState(null);
-  const [imageWarningText, setWarningText] = useState(
-    "Image size is larger than 2MB"
-  );
+  const [imageWarningText, setWarningText] = useState(language.image_too_big);
   const [groupName, setGroupName] = useState("");
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [userQuery, setUserQuery] = useState("");
@@ -23,7 +27,7 @@ export default function GroupChatCreate() {
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
-  const [createButton, setCreateButton] = useState("Create");
+  const [createButton, setCreateButton] = useState(language.create);
 
   let canCreate = useRole(FetchUserInfo(getOfflineUser().user.id), [
     "eduapp-admin",
@@ -52,9 +56,9 @@ export default function GroupChatCreate() {
             );
           setWarnDisplay("none");
           setChangeImage(newPreview.target.files[0]);
-        } else displayWarning("Image size is larger than 2MB");
-      } else displayWarning("No provided image");
-    } else displayWarning("File is not an image");
+        } else displayWarning(language.image_too_big);
+      } else displayWarning(language.chat_no_image);
+    } else displayWarning(language.file_not_image);
   };
 
   const matchUsers = (nameInput) => {
@@ -86,19 +90,19 @@ export default function GroupChatCreate() {
 
   const createChat = () => {
     if (groupName.length < 1) {
-      setPopupText("Please enter a group name");
+      setPopupText(language.chat_no_groupname);
       setShowPopup(true);
       return;
     }
 
     if (participants.length < 2) {
-      setPopupText("Please add at least 2 participants");
+      setPopupText(language.chat_group_min_2);
       setShowPopup(true);
       return;
     }
 
-    if (createButton === "Create") {
-      setCreateButton("Creating...");
+    if (createButton === language.create) {
+      setCreateButton(language.creating);
       let finalParticipants = [];
       console.log(participants);
       for (let p of participants) finalParticipants.push(p.user.id);
@@ -112,14 +116,12 @@ export default function GroupChatCreate() {
             user_ids: [getOfflineUser().user.id, ...finalParticipants],
           },
         });
-        window.location.href = "/chat/g" + chat_id;
-        setCreateButton("Create");
+        navigate("/chat/g" + chat_id);
+        setCreateButton(language.create);
       }).then((err) => {
         if (err) {
-          setCreateButton("Create");
-          setPopupText(
-            "Something went wrong when trying to create the group chat."
-          );
+          setCreateButton(language.create);
+          setPopupText(language.chat_create_unknown);
           setShowPopup(true);
           console.log("create error");
         }
@@ -132,6 +134,7 @@ export default function GroupChatCreate() {
   useEffect(() => {
     if (canCreate !== null) {
       if (!canCreate) window.location.href = "/chat";
+      setCreateButton(language.create);
     }
   }, [canCreate]);
 
@@ -146,7 +149,7 @@ export default function GroupChatCreate() {
         closeHandler={() => {
           window.location.href = "/chat";
         }}
-        tabName="Create Group Chat"
+        tabName={language.chat_title_group}
       />
 
       <div className="chat-create-container">
@@ -196,13 +199,13 @@ export default function GroupChatCreate() {
             onChange={(e) => {
               setGroupName(e.target.value);
             }}
-            placeholder="New Group"
+            placeholder={language.chat_new_group}
             maxLength={25}
           />
         </div>
         <div className="group-participants">
           <div className="user-search-bar">
-            <h2>Participants</h2>
+            <h2>{language.chat_participants}</h2>
             <input
               type="text"
               className="user-search"
@@ -210,7 +213,7 @@ export default function GroupChatCreate() {
               onChange={(e) => {
                 setUserQuery(e.target.value);
               }}
-              placeholder="Search by Name"
+              placeholder={language.chat_search_names}
             />
             {suggestedUsers.length > 0 && (
               <ul className="suggested-users">
@@ -283,7 +286,7 @@ export default function GroupChatCreate() {
                         alt={"participant profile"}
                       />
                     </td>
-                    <td>No participants</td>
+                    <td>{language.chat_no_participants}</td>
                   </tr>
                 )}
               </tbody>

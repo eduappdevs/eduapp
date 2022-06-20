@@ -2,9 +2,11 @@
 import React from "react";
 import MenuHeader from "./menuHeader/MenuHeader";
 import * as AUTH_SERVICE from "../../services/auth.service";
+import useLanguage from "../../hooks/useLanguage";
 import "./Menu.css";
 
 export default function Menu() {
+  const language = useLanguage();
   return (
     <div
       className={
@@ -27,7 +29,7 @@ export default function Menu() {
               window.location.href = "/menu/profile";
             }}
           >
-            PROFILE
+            {language.menu_profile.toUpperCase()}
           </a>
         </li>
         <li>
@@ -36,11 +38,11 @@ export default function Menu() {
               window.location.href = "/menu/settings";
             }}
           >
-            Settings
+            {language.menu_settings.toUpperCase()}
           </a>
         </li>
         <li>
-          <a onClick={AUTH_SERVICE.logout}>Log out</a>
+          <a onClick={AUTH_SERVICE.logout}>{language.logout.toUpperCase()}</a>
         </li>
       </ul>
     </div>

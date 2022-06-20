@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  default_url_options :host => "localhost:3000"
+  default_url_options :host => ENV.fetch("HOST_DOMAIN") { "/api/#{ENV.fetch("API_VERSION")}" }
   mount ActionCable.server => "/chat"
   resources :user_roles
   resources :chat_messages

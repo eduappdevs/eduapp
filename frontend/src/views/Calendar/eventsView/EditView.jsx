@@ -3,12 +3,15 @@ import { asynchronizeRequest } from "../../../API";
 import * as SCHEDULE_SERVICE from "../../../services/schedule.service";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 import { getOfflineUser } from "../../../utils/OfflineManager";
+import useLanguage from "../../../hooks/useLanguage";
 import "./views.css";
 
 export default function EditView(props) {
+  const language = useLanguage();
+
   const [editStartDate, setEditStart] = useState("");
   const [editEndDate, setEditEnd] = useState("");
-  const [saveText, setSaveText] = useState("Save");
+  const [saveText, setSaveText] = useState(language.save);
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupType, setPopupType] = useState("");
@@ -20,7 +23,7 @@ export default function EditView(props) {
   const confirmDeleteEvent = async () => {
     setPopupType("warning");
     setHasIconFill(true);
-    setPopupMessage("Are you sure you want to delete this event?");
+    setPopupMessage(language.calendar_delete_confirm);
     setIsConfirmDelete(true);
     setShowPopup(true);
   };
@@ -30,7 +33,7 @@ export default function EditView(props) {
     setPopupType("error");
     setHasIconFill(false);
     setShowLoader(false);
-    setPopupMessage("The event could not be deleted.");
+    setPopupMessage(language.calendar_delete_unknown);
     setIsConfirmDelete(false);
     setShowPopup(true);
   };
@@ -40,7 +43,7 @@ export default function EditView(props) {
     setPopupType("error");
     setHasIconFill(false);
     setShowLoader(false);
-    setPopupMessage("The event could not be updated.");
+    setPopupMessage(language.calendar_update_unknown);
     setIsConfirmDelete(false);
     setShowPopup(true);
   };
@@ -52,7 +55,7 @@ export default function EditView(props) {
         .getElementById("commit-loader")
         .classList.remove("commit-loader-hide");
     } else {
-      setSaveText("Save");
+      setSaveText(language.save);
       document
         .getElementById("commit-loader")
         .classList.add("commit-loader-hide");
@@ -241,7 +244,7 @@ export default function EditView(props) {
         <div className="calendar-view-edit-contents">
           <form action="submit" onSubmit={updateEvent}>
             <div className="calendar-view-edit-title">
-              <h3>Title</h3>
+              <h3>{language.title}</h3>
               <input
                 id="editTitle"
                 placeholder={props.data.title}
@@ -250,7 +253,7 @@ export default function EditView(props) {
               ></input>
             </div>
             <div className="calendar-view-edit-hour">
-              <h3>Hour</h3>
+              <h3>{language.date}</h3>
               <div className="calendar-view-edit-hour-input">
                 <input
                   id="editStartDate"
@@ -273,7 +276,7 @@ export default function EditView(props) {
               </div>
             </div>
             <div className="calendar-view-edit-description">
-              <h3>Description</h3>
+              <h3>{language.description}</h3>
               <textarea
                 id="editDescription"
                 placeholder={props.data.description}
@@ -283,21 +286,21 @@ export default function EditView(props) {
               />
             </div>
             <div className="calendar-view-edit-session-information">
-              <h3>Resources</h3>
+              <h3>{language.resources}</h3>
               <input
                 placeholder={props.data.resources}
                 id="editResources"
                 name="editResources"
                 type="text"
               />
-              <h3>Platform stream</h3>
+              <h3>{language.streaming_platform}</h3>
               <input
                 id="editStream"
                 placeholder={props.data.stream}
                 name="editStream"
                 type="text"
               />
-              <h3>Session Chat</h3>
+              <h3>{language.session_chat}</h3>
               <input
                 type="text"
                 placeholder={props.data.chat}
