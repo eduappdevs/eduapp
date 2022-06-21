@@ -56,7 +56,7 @@ class UserRolesController < ApplicationController
       perms_chat: params[:user_role][:perms_chat],
       perms_chat_participants: params[:user_role][:perms_chat_participants],
       perms_message: params[:user_role][:perms_message],
-      perms_app_views: params[:user_role][:perms_app_views]
+      perms_app_views: params[:user_role][:perms_app_views],
     })
 
     if @user_role.save
@@ -68,11 +68,27 @@ class UserRolesController < ApplicationController
 
   # PATCH/PUT /user_roles/1
   def update
-    if !check_perms_update!(get_user_roles.perms_roles, false, :null)
-      return
-    end
+    return if !check_perms_update!(get_user_roles.perms_roles, false, :null)
 
-    if @user_role.update(user_role_params)
+    if @user_role.update({
+      name: params[:user_role][:name],
+      description: params[:user_role][:description],
+      perms_institution: params[:user_role][:perms_institution],
+      perms_course: params[:user_role][:perms_course],
+      perms_subjects: params[:user_role][:perms_subjects],
+      perms_resources: params[:user_role][:perms_resources],
+      perms_sessions: params[:user_role][:perms_sessions],
+      perms_events: params[:user_role][:perms_events],
+      perms_teachers: params[:user_role][:perms_teachers],
+      perms_users: params[:user_role][:perms_users],
+      perms_roles: params[:user_role][:perms_roles],
+      perms_tuitions: params[:user_role][:perms_tuitions],
+      perms_jti_matchlist: params[:user_role][:perms_jti_matchlist],
+      perms_chat: params[:user_role][:perms_chat],
+      perms_chat_participants: params[:user_role][:perms_chat_participants],
+      perms_message: params[:user_role][:perms_message],
+      perms_app_views: params[:user_role][:perms_app_views],
+    })
       render json: @user_role
     else
       render json: @user_role.errors, status: :unprocessable_entity

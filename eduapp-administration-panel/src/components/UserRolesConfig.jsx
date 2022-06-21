@@ -1,13 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import PageSelect from "./pagination/PageSelect";
 import * as ROLE_SERVICE from "../services/role.service";
+import asynchronizeRequest from "../API";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 import "../styles/userRoles.css";
 
 export default function UserRolesConfig({ language }) {
   const [showPerms, setShowPerms] = useState(false);
   const [roles, setRoles] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const [newPermsName, setNewPermsName] = useState("");
   const [newPermsDesc, setNewPermsDesc] = useState("");
@@ -18,6 +22,11 @@ export default function UserRolesConfig({ language }) {
   const [currentPermissions, setCurrentPermissions] = useState(null);
   const [justOpened, setJustOpened] = useState(false);
 
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupIcon, setPopupIcon] = useState("info");
+  const [popupText, setPopupText] = useState("");
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+
   const fetchRoles = async (page) => {
     const roles = await ROLE_SERVICE.pagedUserRoles(page);
     setMaxPages(roles.total_pages);
@@ -25,30 +34,37 @@ export default function UserRolesConfig({ language }) {
   };
 
   const FIELDS = [
-    "institution",
-    "course",
-    "subjects",
-    "resources",
-    "sessions",
-    "events",
-    "teachers",
-    "users",
-    "roles",
-    "tuitions",
-    "jti_matchlist",
-    "chat",
-    "chat_participants",
-    "message",
+    ["institution", language.institution],
+    ["course", language.courses],
+    ["subjects", language.subjects],
+    ["resources", language.resources],
+    ["sessions", language.sessions],
+    ["events", language.events],
+    ["teachers", language.teachers],
+    ["users", language.users],
+    ["roles", language.roles],
+    ["tuitions", language.enrollment],
+    ["jti_matchlist", null],
+    ["chat", language.chat],
+    ["chat_participants", language.chatParticipants],
+    ["message", language.chatMessages],
   ];
 
+  const manageSaveText = () => {
+    if (isEditing !== null) {
+      if (isEditing) {
+        if (changesSaved) return `(${language.dataSaved})`;
+        else return `(${language.dataSaving})`;
+      } else return `(${language.close2Discard})`;
+    } else return `(${language.dataSaveError})`;
+  };
+
   const formatNameField = (field) => {
-    switch (field) {
+    switch (field[0]) {
       case "jti_matchlist":
         return "JTI Matchlist";
-      case "chat_participants":
-        return "Chat Participants";
       default:
-        return field.charAt(0).toUpperCase() + field.slice(1);
+        return field[1];
     }
   };
 
@@ -83,27 +99,21 @@ export default function UserRolesConfig({ language }) {
             >
               <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
             </svg>
-            <span>
-              {isEditing
-                ? changesSaved
-                  ? "(Data saved.)"
-                  : "(Saving, please don't close...)"
-                : "Close To Discard Changes"}
-            </span>
+            <span>{manageSaveText()}</span>
           </span>
           <table id="nice" className="permission-table">
             <thead>
               <tr>
                 <th>
-                  Permissions for{" "}
+                  {language.permissionsFor}&nbsp;
                   {isEditing ? currentPermissions.name : newPermsName}
                 </th>
-                <th>Read All</th>
-                <th>Query</th>
-                <th>View Self</th>
-                <th>Write</th>
-                <th>Update</th>
-                <th>Delete</th>
+                <th>{language.readAll}</th>
+                <th>{language.query}</th>
+                <th>{language.viewSelf}</th>
+                <th>{language.write}</th>
+                <th>{language.update}</th>
+                <th>{language.delete}</th>
               </tr>
             </thead>
             {isEditing ? (
@@ -111,30 +121,34 @@ export default function UserRolesConfig({ language }) {
                 {FIELDS.map((field) => {
                   return (
                     <>
-                      <tr key={field}>
+                      <tr key={field[0]}>
                         <td>{formatNameField(field)}</td>
-                        {currentPermissions[`perms_${field}`].map((perm, i) => (
-                          <td key={i}>
-                            <input
-                              type="checkbox"
-                              checked={perm}
-                              onChange={(e) => handleDynamicUpdate(e, field, i)}
-                            />
-                          </td>
-                        ))}
+                        {currentPermissions[`perms_${field[0]}`].map(
+                          (perm, i) => (
+                            <td key={i}>
+                              <input
+                                type="checkbox"
+                                checked={perm}
+                                onChange={(e) =>
+                                  handleDynamicUpdate(e, field[0], i)
+                                }
+                              />
+                            </td>
+                          )
+                        )}
                       </tr>
                     </>
                   );
                 })}
                 <tr>
-                  <td>App Views</td>
+                  <td>{language.appViews}</td>
                   <td>
                     <input
                       type="checkbox"
                       checked={currentPermissions.perms_app_views[0]}
                       onChange={(e) => handleDynamicUpdate(e, "app_views", 0)}
                     />
-                    (Calendar)
+                    ({language.calendar})
                   </td>
                   <td>
                     <input
@@ -142,7 +156,7 @@ export default function UserRolesConfig({ language }) {
                       checked={currentPermissions.perms_app_views[1]}
                       onChange={(e) => handleDynamicUpdate(e, "app_views", 1)}
                     />
-                    (Resources)
+                    ({language.resources})
                   </td>
                   <td>
                     <input
@@ -150,7 +164,7 @@ export default function UserRolesConfig({ language }) {
                       checked={currentPermissions.perms_app_views[2]}
                       onChange={(e) => handleDynamicUpdate(e, "app_views", 2)}
                     />
-                    (Chat)
+                    ({language.chat})
                   </td>
                 </tr>
               </tbody>
@@ -159,13 +173,13 @@ export default function UserRolesConfig({ language }) {
                 {FIELDS.map((field) => {
                   return (
                     <>
-                      <tr key={field}>
+                      <tr key={field[0]}>
                         <td>{formatNameField(field)}</td>
                         {[0, 1, 2, 3, 4, 5].map((i) => (
                           <td key={i}>
                             <input
                               type="checkbox"
-                              id={`add_perm_${field}_${i}`}
+                              id={`add_perm_${field[0]}_${i}`}
                             />
                           </td>
                         ))}
@@ -174,18 +188,18 @@ export default function UserRolesConfig({ language }) {
                   );
                 })}
                 <tr>
-                  <td>App Views</td>
+                  <td>{language.appViews}</td>
                   <td>
-                    <input type="checkbox" id="add_perm_view_cal" />
-                    (Calendar)
+                    <input type="checkbox" id="add_perm_view_cal" />(
+                    {language.calendar})
                   </td>
                   <td>
-                    <input type="checkbox" id="add_perm_view_res" />
-                    (Resources)
+                    <input type="checkbox" id="add_perm_view_res" />(
+                    {language.resources})
                   </td>
                   <td>
-                    <input type="checkbox" id="add_perm_view_chat" />
-                    (Chat)
+                    <input type="checkbox" id="add_perm_view_chat" />(
+                    {language.chat})
                   </td>
                 </tr>
               </tbody>
@@ -196,6 +210,65 @@ export default function UserRolesConfig({ language }) {
     } else {
       return <div></div>;
     }
+  };
+
+  const prepareDialog = () => {
+    document.getElementsByClassName(
+      "controlPanel-content-container"
+    )[0].scrollTop = 0;
+    document.getElementsByClassName(
+      "controlPanel-content-container"
+    )[0].style.overflowY = "hidden";
+  };
+
+  const showConfirmDelete = (id) => {
+    setDeleteId(id);
+    setIsConfirmDelete(true);
+    setPopupIcon("warning");
+    setPopupText(language.confirmDeleteRole);
+    prepareDialog();
+    setShowPopup(true);
+  };
+
+  const showDeleteDialog = () => {
+    setIsConfirmDelete(false);
+    setPopupIcon("info");
+    setPopupText(language.roleDeleted);
+    prepareDialog();
+    setShowPopup(true);
+  };
+
+  const showDeleteError = () => {
+    setDeleteId(null);
+    setIsConfirmDelete(false);
+    setPopupIcon("error");
+    setPopupText(language.deleteAlertFailed);
+    prepareDialog();
+    setShowPopup(true);
+  };
+
+  const showCreationError = () => {
+    setIsConfirmDelete(false);
+    setPopupIcon("error");
+    setPopupText(language.creationAlert);
+    prepareDialog();
+    setShowPopup(true);
+  };
+
+  const showCreationDialog = () => {
+    setIsConfirmDelete(false);
+    setPopupIcon("info");
+    setPopupText(language.creationCompleted);
+    prepareDialog();
+    setShowPopup(true);
+  };
+
+  const showConnectionError = () => {
+    setIsConfirmDelete(false);
+    setPopupIcon("error");
+    setPopupText(language.connectionError);
+    prepareDialog();
+    setShowPopup(true);
   };
 
   const getPermsChecked = (field) => {
@@ -220,47 +293,77 @@ export default function UserRolesConfig({ language }) {
   };
 
   const createRole = async () => {
-    if (newPermsName === "") return console.log("No name given");
-    await ROLE_SERVICE.createRole({
-      name: newPermsName,
-      desc: newPermsDesc,
-      perms_app_views: getPermsAppViews(),
-      perms_chat: getPermsChecked("add_perm_chat"),
-      perms_chat_participants: getPermsChecked("add_perm_chat_participants"),
-      perms_course: getPermsChecked("add_perm_course"),
-      perms_events: getPermsChecked("add_perm_events"),
-      perms_institution: getPermsChecked("add_perm_institution"),
-      perms_jti_matchlist: getPermsChecked("add_perm_jti_matchlist"),
-      perms_message: getPermsChecked("add_perm_message"),
-      perms_resources: getPermsChecked("add_perm_resources"),
-      perms_roles: getPermsChecked("add_perm_roles"),
-      perms_sessions: getPermsChecked("add_perm_sessions"),
-      perms_subjects: getPermsChecked("add_perm_subjects"),
-      perms_teachers: getPermsChecked("add_perm_teachers"),
-      perms_tuitions: getPermsChecked("add_perm_tuitions"),
-      perms_users: getPermsChecked("add_perm_users"),
+    if (newPermsName === "") return showCreationError();
+    asynchronizeRequest(async () => {
+      try {
+        await ROLE_SERVICE.createRole({
+          name: newPermsName,
+          desc: newPermsDesc,
+          perms_app_views: getPermsAppViews(),
+          perms_chat: getPermsChecked("add_perm_chat"),
+          perms_chat_participants: getPermsChecked(
+            "add_perm_chat_participants"
+          ),
+          perms_course: getPermsChecked("add_perm_course"),
+          perms_events: getPermsChecked("add_perm_events"),
+          perms_institution: getPermsChecked("add_perm_institution"),
+          perms_jti_matchlist: getPermsChecked("add_perm_jti_matchlist"),
+          perms_message: getPermsChecked("add_perm_message"),
+          perms_resources: getPermsChecked("add_perm_resources"),
+          perms_roles: getPermsChecked("add_perm_roles"),
+          perms_sessions: getPermsChecked("add_perm_sessions"),
+          perms_subjects: getPermsChecked("add_perm_subjects"),
+          perms_teachers: getPermsChecked("add_perm_teachers"),
+          perms_tuitions: getPermsChecked("add_perm_tuitions"),
+          perms_users: getPermsChecked("add_perm_users"),
+        });
+        fetchRoles(1);
+        setShowPerms(false);
+        showCreationDialog();
+      } catch (err) {
+        await interceptExpiredToken(err);
+      }
+    }).then((err) => {
+      if (err) showConnectionError();
     });
-    fetchRoles(1);
-    setShowPerms(false);
   };
 
   const sendPermissionUpdate = async () => {
     if (!justOpened) {
-      setChangesSaved(true);
+      asynchronizeRequest(async () => {
+        try {
+          await ROLE_SERVICE.updateRole(currentPermissions);
+          setChangesSaved(true);
+        } catch (err) {
+          await interceptExpiredToken(err);
+          setIsEditing(null);
+        }
+      });
     } else {
       setJustOpened(false);
     }
   };
 
-  const deleteRole = async (id) => {
-    await ROLE_SERVICE.deleteRole(id);
-    fetchRoles(1);
+  const deleteRole = async () => {
+    if (deleteId === null) return;
+    asynchronizeRequest(async () => {
+      try {
+        await ROLE_SERVICE.deleteRole(deleteId);
+        fetchRoles(1);
+        setDeleteId(null);
+        showDeleteDialog();
+      } catch (err) {
+        await interceptExpiredToken(err);
+        showDeleteError();
+      }
+    }).then((err) => {
+      if (err) showConnectionError();
+    });
   };
 
   const displayPermissions = (edit, id) => {
     setIsEditing(edit);
     setJustOpened(true);
-    console.log(roles.find((role) => role.id === id));
     if (edit) setCurrentPermissions(roles.find((role) => role.id === id));
     else setCurrentPermissions([]);
     setShowPerms(true);
@@ -281,10 +384,10 @@ export default function UserRolesConfig({ language }) {
   }, []);
 
   useEffect(() => {
-    if (isEditing) {
+    if (isEditing && currentPermissions !== null) {
       const searchTimeout = setTimeout(() => {
         sendPermissionUpdate(currentPermissions);
-      }, 1250);
+      }, 1500);
       return () => clearTimeout(searchTimeout);
     }
   }, [currentPermissions]);
@@ -342,14 +445,14 @@ export default function UserRolesConfig({ language }) {
               <td>
                 <input
                   type="text"
-                  placeholder={"Eduapp Owner"}
+                  placeholder={language.name}
                   onChange={(e) => setNewPermsName(e.target.value)}
                 />
               </td>
               <td>
                 <input
                   type="text"
-                  placeholder={"Role Description"}
+                  placeholder={language.description}
                   onChange={(e) => setNewPermsDesc(e.target.value)}
                 />
               </td>
@@ -421,7 +524,7 @@ export default function UserRolesConfig({ language }) {
                         </button>
                         <button
                           style={{ marginRight: "5px" }}
-                          onClick={() => deleteRole(role.id)}
+                          onClick={() => showConfirmDelete(role.id)}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -444,24 +547,26 @@ export default function UserRolesConfig({ language }) {
         ) : null}
       </div>
       <StandardModal
-        // show={showPopup}
-        // iconFill={popupIcon}
-        // type={popupType}
-        // text={popupText}
-        // isQuestion={isConfirmDelete}
-        // onYesAction={() => {
-        //   setPopup(false);
-        //   deleteTeacher(idDelete, subjectDelete);
-        // }}
-        // onNoAction={() => {
-        //   setPopup(false);
-        //   switchEditState(true);
-        // }}
-        // onCloseAction={() => {
-        //   setPopup(false);
-        //   switchSaveState();
-        //   switchEditState(true);
-        // }}
+        show={showPopup}
+        type={popupIcon}
+        text={popupText}
+        isQuestion={isConfirmDelete}
+        onYesAction={() => {
+          setShowPopup(false);
+          deleteRole();
+        }}
+        onNoAction={() => {
+          setShowPopup(false);
+          document.getElementsByClassName(
+            "controlPanel-content-container"
+          )[0].style.overflowY = "scroll";
+        }}
+        onCloseAction={() => {
+          setShowPopup(false);
+          document.getElementsByClassName(
+            "controlPanel-content-container"
+          )[0].style.overflowY = "scroll";
+        }}
         hasIconAnimation
         hasTransition
       />

@@ -47,7 +47,7 @@ export const getOfflineUser = () => {
 };
 
 export const interceptExpiredToken = async (error) => {
-  if (typeof error === "boolean") return
+  if (typeof error === "boolean") return;
   if (error.data) return;
   if (
     error.message.includes("428") ||

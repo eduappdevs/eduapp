@@ -460,7 +460,7 @@ export default function Toolbar(props) {
           </ul>
         </>
       ) : (
-        <h1>Configuration</h1>
+        <h1>{props.language.configuration}</h1>
       )}{" "}
     </div>
   );

@@ -17,6 +17,10 @@ export const createRole = async (role) => {
   return await axios.post(ROLES, role, { headers: requestHeader });
 };
 
+export const updateRole = async (role) => {
+	return await axios.put(`${ROLES}/${role.id}`, role, { headers: requestHeader });
+}
+
 export const deleteRole = async (id) => {
   return await axios.delete(`${ROLES}/${id}`, { headers: requestHeader });
 };
