@@ -104,7 +104,9 @@
     "fileLargeThan": "File size must be less than 3MB.",
     "manyFiles": "There are too many files, only 10 are allowed.",
     "management": "Management",
-    "userRoles": "User Permissions"
+    "userRoles": "User Permissions",
+    "roleSettings": "Role Settings",
+    "roleName": "Role Name"
   },
   "es": {
     "title": "Titulo",
@@ -211,7 +213,9 @@
     "fileLargeThan": "El tamaño del archivo debe ser menor a 3MB.",
     "manyFiles": "Hay demasiados archivos, solo 10 son permitidos.",
     "management": "Administración",
-    "userRoles": "Permisos de Usuario"
+    "userRoles": "Permisos de Usuario",
+    "roleName": "Nombre del Rol",
+    "roleSettings": "Configuración de Rol"
   },
   "pt": {
     "title": "Título",
@@ -318,6 +322,8 @@
     "fileLargeThan": "O tamanho do arquivo deve ser menor a 3MB.",
     "manyFiles": "Há muitos arquivos, somente 10 são permitidos.",
     "management": "Administração",
-    "userRoles": "Permissões de usuário"
+    "userRoles": "Permissões de usuário",
+    "roleName": "Nome do Papel",
+    "roleSettings": "Configuração de Permissões"
   }
 }
