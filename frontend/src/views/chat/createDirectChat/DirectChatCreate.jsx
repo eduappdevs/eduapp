@@ -37,10 +37,9 @@ export default function DirectChatCreate() {
 
         let filteredUsers = [];
         for (let u of match.data) {
-          if (u.user.id === parseInt(getOfflineUser().user.id)) continue;
-          if (participant !== null) {
+          if (u.user.id === getOfflineUser().user.id) continue;
+          if (participant !== null)
             if (u.user.id === participant.user.id) continue;
-          }
 
           filteredUsers.push(u);
         }

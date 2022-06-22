@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   @api_path = "/api/#{ENV.fetch("API_VERSION")}"
 
   default_url_options :host => @api_path
-  mount ActionCable.server => "/chat"
+  mount ActionCable.server => "#{@api_path}/websocket"
 
   resources :user_roles, :path => "#{@api_path}/user_roles"
   resources :chat_messages, :path => "#{@api_path}/chat_messages"

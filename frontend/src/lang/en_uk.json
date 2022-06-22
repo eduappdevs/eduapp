@@ -85,7 +85,7 @@
 
   "chat_type_create": "What type of chat do you wish to create?",
   "chat_type_direct": "Direct",
-  "chat_type-group": "Group",
+  "chat_type_group": "Group",
   "chat_title_direct": "Create Direct Chat",
   "chat_title_group": "Create Group Chat",
   "chat_search_users": "Search users",

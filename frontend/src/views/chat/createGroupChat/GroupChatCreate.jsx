@@ -73,7 +73,7 @@ export default function GroupChatCreate() {
         for (let u of match.data) {
           if (
             currentParticipants.includes(u.id) ||
-            u.id === parseInt(getOfflineUser().user.id)
+            u.id === getOfflineUser().user.id
           )
             continue;
           filteredUsers.push(u);
