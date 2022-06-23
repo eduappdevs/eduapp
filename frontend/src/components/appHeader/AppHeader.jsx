@@ -95,6 +95,19 @@ export default function AppHeader({
         <>
           <div className="ChatHeader">
             <div
+              id="main-chat-extras"
+              className="main-chat-info-menu main-chat-info-menu-hide"
+            >
+              <ul
+                id="main-chat-extras-list"
+                className="main-chat-info-list-hide"
+              >
+                <li>Chat Info</li>
+                <hr />
+                <li className="main-chat-leave">Leave</li>
+              </ul>
+            </div>
+            <div
               onClick={() => {
                 closeHandler();
               }}

@@ -124,6 +124,23 @@ export default function MainChat() {
     });
   }, []);
 
+  const managerExtrasMenu = () => {
+    let extras = document.getElementById("main-chat-extras").classList;
+    let extrasList = document.getElementById("main-chat-extras-list").classList;
+
+    if (extras.contains("main-chat-info-menu-hide")) {
+      extras.remove("main-chat-info-menu-hide");
+      extrasList.remove("main-chat-info-list-hide");
+      extras.add("main-chat-info-menu-show");
+      extrasList.add("main-chat-info-list-show");
+    } else {
+      extras.remove("main-chat-info-menu-show");
+      extrasList.remove("main-chat-info-list-show");
+      extrasList.add("main-chat-info-list-hide");
+      extras.add("main-chat-info-menu-hide");
+    }
+  };
+
   useEffect(() => {
     document.addEventListener("new_msg", (e) => {
       e.stopImmediatePropagation();
@@ -149,9 +166,7 @@ export default function MainChat() {
             acInstance.closeConnection();
             window.location.href = "/chat";
           }}
-          extrasHandler={() => {
-            setPopup(true);
-          }}
+          extrasHandler={() => managerExtrasMenu()}
           chatImage={
             chat.chatInfo
               ? chat.chatInfo.image
