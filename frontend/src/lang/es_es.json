@@ -47,7 +47,7 @@
   "download": "Descargar",
 
   "login_title": "Iniciar Sesión",
-  "login_google": "Iniciar Sesión con Google",
+  "login_google": "Iniciar con Google",
   "login_or": "O",
 
   "recovery_title": "Recuperación de Contraseña",
@@ -100,6 +100,11 @@
   "chat_new_group": "Nuevo Grupo",
   "chat_participants": "Participantes",
   "chat_no_participants": "No hay participantes.",
+  "chat_information": "Info de Chat",
+  "chat_leave": "Salir",
+  "chat_want_leave": "Estas seguro que quieres salir del chat?",
+  "chat_want_remove": "Quieres expulsar a %1s del chat?",
+	"chat_removed": "%1s fue expulsado.",
 
   "mgmt_institution_cap": "No se permiten mas de 1 institución.",
   "mgmt_delete_institution": "Borrar institución",

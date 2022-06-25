@@ -100,6 +100,11 @@
   "chat_new_group": "Novo Grupo",
   "chat_participants": "Participantes",
   "chat_no_participants": "Nenhum participante.",
+  "chat_information": "Info do Chat",
+  "chat_leave": "Sair",
+  "chat_want_leave": "Tem certeza de que deseja sair deste chat?",
+	"chat_want_remove": "Deseja remover a %1s do chat?",
+	"chat_removed": "%1s foi removido.",
 
   "mgmt_institution_cap": "Não é permitido mais de 1 instituição.",
   "mgmt_delete_institution": "Excluir Instituição",

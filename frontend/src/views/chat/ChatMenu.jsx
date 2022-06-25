@@ -9,6 +9,7 @@ import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useRole from "../../hooks/useRole";
 import useLanguage from "../../hooks/useLanguage";
+import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
 import "./ChatMenu.css";
 
 let acManager = new ChatsAC();
@@ -110,8 +111,8 @@ export default function ChatMenu() {
                           chat.chat_info.image !== undefined
                             ? chat.chat_info.image
                             : chat.chat_info.isGroup
-                            ? "https://d22r54gnmuhwmk.cloudfront.net/rendr-fe/img/default-organization-logo-6aecc771.gif"
-                            : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                            ? IMG_FLBK_GROUP
+                            : IMG_FLBK_USER
                         }
                         alt="Chat User Icon"
                       />

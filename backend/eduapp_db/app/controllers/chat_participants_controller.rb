@@ -21,6 +21,17 @@ class ChatParticipantsController < ApplicationController
         chat = ChatBase.find(chatp.chat_base_id).serializable_hash(:except => [:private_key, :public_key, :created_at, :updated_at])
         if chat["chat_name"].include?("private_chat_")
           chat_counterpart = ChatParticipant.where(chat_base_id: chat["id"]).where.not(user_id: params[:chats_for]).first
+
+          # Be able to gather the counterpart info even if they left the chat
+          if chat_counterpart == nil
+            name_disect = chat["chat_name"].split("_")
+            name_disect.delete("private")
+            name_disect.delete("chat")
+
+            chat_counterpart_id = name_disect[0] == params[:chat_for] ? name_disect[1] : name_disect[0]
+            chat_counterpart = UserInfo.where(user_id: chat_counterpart_id).first
+          end
+
           final_chats.push({
             chat_info: chat,
             chat_participant: UserInfo.where(user_id: chat_counterpart.user_id).first.serializable_hash(:except => [:created_at, :updated_at, :user_role_id, :googleid]),
@@ -44,7 +55,7 @@ class ChatParticipantsController < ApplicationController
 
     if params[:page]
       @participants = query_paginate(@participants, params[:page])
-      @participants[:current_page] = serialize_each(@participants[:current_page], [:created_at, :updated_at, :user_id,:chat_base_id], [ :user, :chat_base])
+      @participants[:current_page] = serialize_each(@participants[:current_page], [:created_at, :updated_at, :user_id, :chat_base_id], [:user, :chat_base])
     end
 
     render json: @participants
@@ -86,10 +97,25 @@ class ChatParticipantsController < ApplicationController
 
   # DELETE /chat_participants/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_chat_participants, false, :null)
+    return if !check_perms_delete!(get_user_roles.perms_chat_participants, false, :null)
+
+    @chat_participant.destroy
+  end
+
+  def remove_participant
+    @chat_participant = ChatParticipant.where(user_id: params[:user_id], chat_base_id: params[:chat_base_id])
+    if @chat_participant.length > 0
+      @chat_participant.first.destroy
+
+      if ChatParticipant.where(chat_base_id: params[:chat_base_id]).length < 1
+        ChatMessage.where(chat_base_id: params[:chat_base_id]).each do |m|
+          m.destroy
+        end
+        ChatBase.find(params[:chat_base_id]).destroy
+      end
       return
     end
-    @chat_participant.destroy
+    return render json: { error: "Participant not found." }, status: 404
   end
 
   private

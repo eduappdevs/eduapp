@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";
+import { IMG_FLBK_USER } from "../../config";
 import "./Navbar.css";
 
 export default function Navbar({ mobile, badgeCount }) {
@@ -199,11 +200,7 @@ export default function Navbar({ mobile, badgeCount }) {
           <div className="profile-button-box">
             <div className="profile-pic">
               <img
-                src={
-                  userImage !== null
-                    ? userImage
-                    : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
-                }
+                src={userImage !== null ? userImage : IMG_FLBK_USER}
                 alt="Profile"
               />
             </div>

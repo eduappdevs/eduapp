@@ -109,7 +109,7 @@
 }
 
 .main-chat-info-menu-show {
-	width: 119px;
+	width: 150px;
 	height: 119px;
 	animation: show-info 0.35s ease-in-out;
 	opacity: 1;
@@ -137,7 +137,7 @@
 	}
 
 	100% {
-		width: 119px;
+		width: 150px;
 		height: 119px;
 		opacity: 1;
 	}
@@ -159,7 +159,7 @@
 
 @keyframes hide-info {
 	0% {
-		width: 119px;
+		width: 150px;
 		height: 119px;
 		opacity: 1;
 	}

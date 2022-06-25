@@ -64,7 +64,7 @@ export default function GroupChatCreate() {
   const matchUsers = (nameInput) => {
     if (nameInput.length > 0) {
       let currentParticipants = [];
-      for (let p of participants) currentParticipants.push(p.id);
+      for (let p of participants) currentParticipants.push(p.user.id);
 
       asynchronizeRequest(async () => {
         let match = await USER_SERVICE.findByName(nameInput);
@@ -72,8 +72,8 @@ export default function GroupChatCreate() {
         let filteredUsers = [];
         for (let u of match.data) {
           if (
-            currentParticipants.includes(u.id) ||
-            u.id === getOfflineUser().user.id
+            currentParticipants.includes(u.user.id) ||
+            u.user.id === getOfflineUser().user.id
           )
             continue;
           filteredUsers.push(u);

@@ -1,17 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import ChatBubble from "./chatBubbles/ChatBubble";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ChatsAC from "../../../utils/websockets/actioncable/ChatsAC";
 import { asynchronizeRequest } from "../../../API";
 import * as CHAT_SERVICE from "../../../services/chat.service";
-import { getOfflineUser } from "../../../utils/OfflineManager";
+import {
+  getOfflineUser,
+  interceptExpiredToken,
+} from "../../../utils/OfflineManager";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 import pushNotify from "../../../components/notifications/notifications";
 import EncryptionUtils from "../../../utils/EncryptionUtils";
 import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import useLanguage from "../../../hooks/useLanguage";
+import { MainChatInfoCtx } from "../../../hooks/MainChatInfoContext";
+import { useNavigate } from "react-router-dom";
+import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../../config";
 import "./MainChat.css";
 
 const acInstance = new ChatsAC();
@@ -19,13 +25,19 @@ let privKey = null;
 let pubKey = null;
 export default function MainChat() {
   const language = useLanguage();
+  // eslint-disable-next-line no-unused-vars
+  const [_, setChatCtx] = useContext(MainChatInfoCtx);
+  const navigate = useNavigate();
 
-  const [chat, setChat] = useState({});
+  // eslint-disable-next-line no-unused-vars
+  const [chat, _s] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessages, setNewMessages] = useState([]);
   const [readOnly, setReadOnly] = useState(false);
 
   const [showPopup, setPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
+  const [isPopupQuestion, setIsPopupQuestion] = useState(false);
 
   const sendMessage = () => {
     let inputMsg = document.getElementById("message-area");
@@ -68,10 +80,50 @@ export default function MainChat() {
     }
   };
 
+  const showLeaveChatDialog = () => {
+    setPopupText(language.chat_want_leave);
+    setIsPopupQuestion(true);
+    setPopup(true);
+    manageExtrasMenu();
+  };
+
+  const leaveChat = async () => {
+    asynchronizeRequest(async () => {
+      try {
+        await CHAT_SERVICE.removeParticipant(
+          getOfflineUser().user.id,
+          chat.chatInfo.id
+        );
+        window.location.href = "/chat";
+      } catch (err) {
+        await interceptExpiredToken(err);
+      }
+    }).then((err) => {
+      if (err) console.log("connection error");
+    });
+  };
+
   const findUserName = (uId) => {
     return chat.chatParticipants.length === undefined
       ? chat.chatParticipants.user_name
       : chat.chatParticipants.find((u) => u.user.id === uId).user_name;
+  };
+
+  const manageExtrasMenu = () => {
+    let extras = document.getElementById("main-chat-extras").classList;
+    let extrasList = document.getElementById("main-chat-extras-list").classList;
+
+    if (extras.contains("main-chat-info-menu-hide")) {
+      extras.remove("main-chat-info-menu-hide");
+      extrasList.remove("main-chat-info-list-hide");
+      extras.add("main-chat-info-menu-show");
+      extrasList.add("main-chat-info-list-show");
+    } else {
+      extras.remove("main-chat-info-menu-show");
+      extrasList.remove("main-chat-info-list-show");
+      extrasList.add("main-chat-info-list-hide");
+      extras.add("main-chat-info-menu-hide");
+    }
   };
 
   useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
@@ -118,28 +170,12 @@ export default function MainChat() {
             ].scrollIntoView(true);
           }
 
+          setChatCtx(chat);
           window.dispatchEvent(new Event("canLoadChat"));
         }, 100);
       });
     });
   }, []);
-
-  const managerExtrasMenu = () => {
-    let extras = document.getElementById("main-chat-extras").classList;
-    let extrasList = document.getElementById("main-chat-extras-list").classList;
-
-    if (extras.contains("main-chat-info-menu-hide")) {
-      extras.remove("main-chat-info-menu-hide");
-      extrasList.remove("main-chat-info-list-hide");
-      extras.add("main-chat-info-menu-show");
-      extrasList.add("main-chat-info-list-show");
-    } else {
-      extras.remove("main-chat-info-menu-show");
-      extrasList.remove("main-chat-info-list-show");
-      extrasList.add("main-chat-info-list-hide");
-      extras.add("main-chat-info-menu-hide");
-    }
-  };
 
   useEffect(() => {
     document.addEventListener("new_msg", (e) => {
@@ -156,6 +192,10 @@ export default function MainChat() {
     });
   }, [newMessages, acInstance]);
 
+  useEffect(() => {
+    setPopupText(language.wip);
+  }, [language]);
+
   return (
     <>
       <div className="main-chat-container">
@@ -166,14 +206,26 @@ export default function MainChat() {
             acInstance.closeConnection();
             window.location.href = "/chat";
           }}
-          extrasHandler={() => managerExtrasMenu()}
+          extrasHandler={() => manageExtrasMenu()}
+          openChatInfo={() => {
+            manageExtrasMenu();
+            setTimeout(
+              () => navigate("/chat/info/" + acInstance.chatCode),
+              200
+            );
+          }}
+          language={language}
+          imageNameClick={() =>
+            setTimeout(() => navigate("/chat/info/" + acInstance.chatCode), 200)
+          }
+          leaveChat={() => showLeaveChatDialog()}
           chatImage={
             chat.chatInfo
               ? chat.chatInfo.image
                 ? chat.chatInfo.image
                 : chat.chatInfo.isGroup
-                ? "https://d22r54gnmuhwmk.cloudfront.net/rendr-fe/img/default-organization-logo-6aecc771.gif"
-                : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                ? IMG_FLBK_GROUP
+                : IMG_FLBK_USER
               : ""
           }
         />
@@ -181,13 +233,18 @@ export default function MainChat() {
         <StandardModal
           show={showPopup}
           type={"warning"}
-          text={language.wip}
+          text={popupText}
           iconFill
           hasIconAnimation
           hasTransition
-          onCloseAction={() => {
+          isQuestion={isPopupQuestion}
+          onYesAction={() => leaveChat()}
+          onNoAction={() => {
             setPopup(false);
+            setPopupText(language.wip);
+            setIsPopupQuestion(false);
           }}
+          onCloseAction={() => setPopup(false)}
         />
 
         <div className="main-chat-messages-container">

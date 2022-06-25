@@ -48,8 +48,8 @@ export const fetchChatUsers = async (cId) => {
   });
 };
 
-export const deleteParticipant = async (id) => {
-  return await axios.delete(`${CHAT_PARTICIPANT}/${id}`, {
+export const removeParticipant = async (uId, cId) => {
+  return await axios.delete(`${CHAT_PARTICIPANT}/remove/${uId}/${cId}`, {
     headers: requestHeader,
   });
 };

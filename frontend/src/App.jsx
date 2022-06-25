@@ -1,14 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Resources from "./views/resources/Resources";
 import Login from "./views/login/Login";
 import Home from "./views/home/Home";
-import requireAuth from "./components/auth/RequireAuth";
+import RequireAuth from "./components/auth/RequireAuth";
 import ManagementPanel from "./views/ManagementPanel/ManagementPanel";
 import { FetchUserInfo } from "./hooks/FetchUserInfo";
 import Loader, { runCloseAnimation } from "./components/loader/Loader";
 import Calendar from "./views/Calendar/Calendar";
 import ChatMenu from "./views/chat/ChatMenu";
+import MainChatInfo from "./views/chat/mainChat/mainChatInfo/MainChatInfo";
 import BottomButtons from "./components/bottomButtons/BottomButtons";
 import Navbar from "./components/navbar/Navbar";
 import DarkModeChanger from "./components/DarkModeChanger";
@@ -23,12 +25,12 @@ import GroupChatCreate from "./views/chat/createGroupChat/GroupChatCreate";
 import DirectChatCreate from "./views/chat/createDirectChat/DirectChatCreate";
 import instanceBadge, {
   resetBadge,
-  getBadgeCount,
 } from "./components/notifications/notifications";
 import WebTitle from "./components/WebTitle";
 import { getOfflineUser } from "./utils/OfflineManager";
 import useRole from "./hooks/useRole";
 import Notifications from "./views/Notifications/Notifications";
+import { MainChatInfoCtxProvider } from "./hooks/MainChatInfoContext";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -115,44 +117,53 @@ export default function App() {
     <>
       <BrowserRouter>
         <WebTitle />
-        <React.Fragment>
+        <>
           <div style={{ display: needsLoader ? "flex" : "none" }}>
             <Loader />
           </div>
-        </React.Fragment>
+        </>
         {needsExtras && (
-          <React.Fragment>
+          <>
             <Navbar badgeCount={badgeCount} mobile={ItsMobileDevice} />
-          </React.Fragment>
+          </>
         )}
-        {requireAuth() ? (
-          <Routes>
-            {/* Main Pages */}
-            <Route exact path="/home" element={<Home />} />
-            <Route exact path="/resources" element={<Resources />} />
-            <Route exact path="/calendar" element={<Calendar />} />
-            <Route exact path="/chat" element={<ChatMenu />} />
-            {isAdmin && (
-              <Route exact path="/management" element={<ManagementPanel />} />
-            )}
+        {RequireAuth() ? (
+          <MainChatInfoCtxProvider>
+            <Routes>
+              {/* Main Pages */}
+              <Route exact path="/home" element={<Home />} />
+              <Route exact path="/resources" element={<Resources />} />
+              <Route exact path="/calendar" element={<Calendar />} />
+              <Route exact path="/chat" element={<ChatMenu />} />
+              {isAdmin && (
+                <Route exact path="/management" element={<ManagementPanel />} />
+              )}
 
-            {/* Pages Subroutes */}
-            <Route path="/resource/:resourceId" element={<OpenedResource />} />
-            <Route path="/chat/:chatId" element={<MainChat />} />
-            <Route path="/chat/create/group" element={<GroupChatCreate />} />
-            <Route path="/chat/create/direct" element={<DirectChatCreate />} />
+              {/* Pages Subroutes */}
+              <Route
+                path="/resource/:resourceId"
+                element={<OpenedResource />}
+              />
+              <Route path="/chat/:chatId" element={<MainChat />} />
+              <Route path="/chat/info/:chatId" element={<MainChatInfo />} />
+              <Route path="/chat/create/group" element={<GroupChatCreate />} />
+              <Route
+                path="/chat/create/direct"
+                element={<DirectChatCreate />}
+              />
 
-            {/* Menu */}
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/menu/profile" element={<ProfileSettings />} />
-            <Route path="/menu/settings" element={<MenuSettings />} />
+              {/* Menu */}
+              <Route path="/menu" element={<Menu />} />
+              <Route path="/menu/profile" element={<ProfileSettings />} />
+              <Route path="/menu/settings" element={<MenuSettings />} />
 
-            {/*Notifications*/}
-            <Route path="/notifications" element={<Notifications />} />
+              {/*Notifications*/}
+              <Route path="/notifications" element={<Notifications />} />
 
-            {/* Unknown URL Reroute */}
-            <Route path="*" element={<Navigate to="/home" />} />
-          </Routes>
+              {/* Unknown URL Reroute */}
+              <Route path="*" element={<Navigate to="/home" />} />
+            </Routes>
+          </MainChatInfoCtxProvider>
         ) : (
           <Routes>
             <Route exact path="/login" element={<Login />} />
@@ -165,9 +176,9 @@ export default function App() {
           </Routes>
         )}
         {needsExtras && ItsMobileDevice && (
-          <React.Fragment>
+          <>
             <BottomButtons badgeCount={badgeCount} mobile={ItsMobileDevice} />
-          </React.Fragment>
+          </>
         )}
       </BrowserRouter>
     </>

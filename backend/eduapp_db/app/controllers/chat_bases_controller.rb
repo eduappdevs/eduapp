@@ -16,8 +16,24 @@ class ChatBasesController < ApplicationController
 
       participants = []
       other_participants.each do |participant|
-        participants.push(UserInfo.where(user_id: participant.user_id).first.serializable_hash(:only => [:profile_image, :user_name], :include => [:user]))
+        p = UserInfo.where(user_id: participant.user_id).first.serializable_hash(:only => [:profile_image, :user_name], :include => [:user])
+        p.merge!({ isChatAdmin: participant.isChatAdmin })
+        participants.push(p)
       end
+
+      # Be able to gather the counterpart info even if they left the chat
+      if chat["chat_name"].include?("private_chat_")
+        if participants.length < 2
+          name_disect = chat["chat_name"].split("_")
+          name_disect.delete("private")
+          name_disect.delete("chat")
+
+          chat_counterpart_id = name_disect[0] == participants[0]["user"]["id"] ? name_disect[1] : name_disect[0]
+          chat_counterpart = UserInfo.where(user_id: chat_counterpart_id).first.serializable_hash(:only => [:profile_image, :user_name], :include => [:user])
+          participants.push(chat_counterpart)
+        end
+      end
+
       @chat_bases = { chat: chat, participants: participants }
     else
       if !check_perms_all!(get_user_roles.perms_chat)
