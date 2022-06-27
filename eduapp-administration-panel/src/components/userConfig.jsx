@@ -14,8 +14,6 @@ import PageSelect from "./pagination/PageSelect";
 
 const system_user_name = "eduapp_system";
 export default function UserConfig(props) {
-
-
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
@@ -36,9 +34,6 @@ export default function UserConfig(props) {
   const [userPermRoles, setUserPermRoles] = useState([]);
   const [allSelected, setAllSelected] = useState(true);
   const [maxPages, setMaxPages] = useState(1);
-
-  const [notifyModal, setNotifyModal] = useState(false);
-  const [notifyMsg, setNotifyMsg] = useState("");
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -638,6 +633,7 @@ export default function UserConfig(props) {
   };
 
   const notifyUsers = async () => {
+    let notifyMsg = "This is a test message. 2";
     let systemUser = (await USERSERVICE.fetchSystemUser()).data;
     for (let u of document.getElementsByName("user-check")) {
       if (u.checked) {
@@ -715,41 +711,15 @@ export default function UserConfig(props) {
 
   return (
     <>
-    <StandardModal
-      text={`Notify users`}
-      icon={"notifications"}
-      show={notifyModal}
-      form={
-        <>
-          <textarea placeholder={'Text message.'} onChange={(e)=>{
-            setNotifyMsg(e.target.value)
-          }}/>
-          </>}
-      hasIconAnimation
-      hasTransition
-      isQuestion
-      onNoAction={()=>{
-        setNotifyModal(false)
-        setNotifyMsg("")
-      }}
-      onYesAction={
-        async ()=>{
-          await notifyUsers();
-          setNotifyModal(false)
-          setNotifyMsg("")
-        }
-      }/>
-      <div className="schedulesesionslist-main-container">
-        <table id='users_table_header'>
       <div className="schedulesesionslist-main-container" id="scroll">
-        <table>
+        <table id="users_table_header">
           <thead>
             <tr>
               <th>{props.language.add}</th>
               <th>{props.language.email}</th>
               <th>{props.language.password}</th>
               <th>{props.language.userRole}</th>
-
+              <ExtraFields table="users" />
             </tr>
           </thead>
           <tbody>
@@ -818,38 +788,6 @@ export default function UserConfig(props) {
             </tr>
           </tbody>
         </table>
-        <div className="notify-users">
-          <PageSelect
-            onPageChange={async (p) => fetchUserPage(p)}
-            maxPages={maxPages}
-          />
-          <button onClick={() => setNotifyModal(true)}>Notify Selected Users</button>
-        </div>
-        <table style={{ marginTop: "25px" }}>
-          <thead>
-            <tr>
-              <th>
-                <input type={"checkbox"} onChange={() => selectAll()} />
-              </th>
-              <th>{props.language.userId}</th>
-              <th>{props.language.name}</th>
-              <th>{props.language.email}</th>
-              <th>{props.language.userRole}</th>
-              <th>{props.language.googleLinked}</th>
-              <th></th>
-              <th>{props.language.actions}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users
-              ? // eslint-disable-next-line array-callback-return
-                users.map((u) => {
-                  if (search.length > 0) {
-                    if (
-                      (u.user_name.includes(search) ||
-                        u.user.email.includes(search)) &
-                      filterUsersWithRole(userRole, u)
-                    ) {
         {users && users.length !== 0 ? (
           <>
             <div className="notify-users">
@@ -1101,7 +1039,6 @@ export default function UserConfig(props) {
                             />
                           </td>
                           <td>
-                          <ExtraFields id = {u.user.id} table = {'users'}/>
                             <input
                               type="datetime-local"
                               disabled
@@ -1201,153 +1138,6 @@ export default function UserConfig(props) {
                         </tr>
                       );
                     }
-                  } else if (filterUsersWithRole(userRole, u)) {
-                    return (
-                      <tr key={u.id}>
-                        <td>
-                          <input
-                            id={`check_${u.user.id}`}
-                            type={"checkbox"}
-                            disabled={u.user_name === system_user_name}
-                            name={
-                              u.user_name === system_user_name
-                                ? null
-                                : "user-check"
-                            }
-                          />
-                        </td>
-                        <td>{shortUUID(u.user.id)}</td>
-                        <td>
-                          <input
-                            id={`inputName_${u.user.id}`}
-                            type="text"
-                            disabled
-                            value={changeName === false ? u.user_name : newName}
-                            onChange={() => {
-                              handleChangeName(u.user.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputEmail_${u.user.id}`}
-                            type="text"
-                            disabled
-                            value={
-                              changeEmail === false ? u.user.email : newEmail
-                            }
-                            onChange={() => {
-                              handleChangeEmail(u.user.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            value={u.user_role.name}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            placeholder="=> Link in App"
-                          />
-                        </td>
-                        <td>
-                        <ExtraFields id = {u.user.id} table = {'users'}/>
-                          </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={() => {
-                              confirmDeleteUser(u.user.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionUser(e, u);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-pencil-square"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px", display: "none" }}
-                            onClick={(e) => {
-                              editUser(e, u);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-check2"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditUser(e, u);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-x-lg"
-                              viewBox="0 0 16 16"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                              />
-                              <path
-                                fillRule="evenodd"
-                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                              />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
 
                     if (search.length > 0) {
                       if (
@@ -1469,10 +1259,6 @@ export default function UserConfig(props) {
                               placeholder="=> Link in App"
                             />
                           </td>
-                          <td>
-                          <ExtraFields id = {u.user.id} table = {'users'}/>
-                          
-                          </td>
                           <td
                             style={{
                               display: "flex",
@@ -1500,78 +1286,6 @@ export default function UserConfig(props) {
                         </tr>
                       );
                     }
-<<<<<<< HEAD
-                  } else if (filterUsersWithRole(userRole, u)) {
-                    return (
-                      <tr key={u.id}>
-                        <td>
-                          <input
-                            id={`check_${u.user.id}`}
-                            type={"checkbox"}
-                            disabled={u.user_name === system_user_name}
-                            name={
-                              u.user_name === system_user_name
-                                ? null
-                                : "user-check"
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            value={shortUUID(u.user.id)}
-                          />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user_name} />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user.email} />
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <input type="checkbox" disabled checked={u.isAdmin} />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            placeholder="=> Link in App"
-                          />
-                        </td>
-                        <td>
-                        <ExtraFields id = {u.user.id} table = {'users'}/>
-                         
-                          </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              deleteUser(u.user.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-=======
->>>>>>> develop
 
                     if (search.length > 0) {
                       if (
@@ -1671,10 +1385,6 @@ export default function UserConfig(props) {
                               placeholder="=> Link in App"
                             />
                           </td>
-                          <td>
-                          <ExtraFields id = {u.user.id} table = {'users'}/>
-                          
-                          </td>
                           <td
                             style={{
                               display: "flex",
@@ -1704,72 +1414,6 @@ export default function UserConfig(props) {
                     } else {
                       return null;
                     }
-<<<<<<< HEAD
-                  } else if (filterUsersWithRole(userRole, u)) {
-                    return (
-                      <tr key={u.id}>
-                        <td>
-                          <input
-                            type="checkbox"
-                            name="select_user"
-                            disabled
-                            id={`select_user_${u.user.id}`}
-                          />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user_name} />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user.email} />
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <input type="checkbox" disabled checked={u.isAdmin} />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            placeholder="=> Link in App"
-                          />
-                        </td>
-                        <td>
-                        <ExtraFields id = {u.user.id} table = {'users'}/>
-                         
-                          </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              deleteUser(u.user.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  } else {
-                    return null;
-                  }
-                })
-              : null}
-          </tbody>
-        </table>
-=======
                     return true;
                   })}
                 </tbody>
@@ -1777,7 +1421,6 @@ export default function UserConfig(props) {
             </div>
           </>
         ) : null}
->>>>>>> develop
       </div>
       <StandardModal
         show={showPopup}
