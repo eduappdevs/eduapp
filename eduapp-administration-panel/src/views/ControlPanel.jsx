@@ -23,7 +23,6 @@ import UserRolesConfig from "../components/UserRolesConfig";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
-  const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
   const [language, setLanguage] = useState("en");
   const [subjects, setSubjects] = useState([]);
@@ -52,16 +51,6 @@ export default function ControlPanel() {
     fetchCourse();
   }, []);
 
-  const searchFilter = (search) => {
-    setSearch(search);
-  };
-
-  const userRoleFilter = (role) => {
-    console.log(role);
-    console.log(role === "ADMIN" ? 1 : role === "STUDENT" ? 0 : null);
-    setUserRole(role === "ADMIN" ? 1 : role === "STUDENT" ? 0 : null);
-  };
-
   const switchLanguage = (language) => {
     switch (language) {
       case "es":
@@ -87,8 +76,6 @@ export default function ControlPanel() {
       <div className="main-section">
         <Toolbar
           location={location}
-          search={searchFilter}
-          userRole={userRoleFilter}
           subjects={subjects}
           courses={courses}
           language={language}
@@ -98,33 +85,29 @@ export default function ControlPanel() {
           id="controlPanelContentContainer"
         >
           {location === "sessions" ? (
-            <Schedulesessionslist search={search} language={language} />
+            <Schedulesessionslist language={language} />
           ) : location === "events" ? (
-            <Scheduleeventslist search={search} language={language} />
+            <Scheduleeventslist language={language} />
           ) : location === "institutions" ? (
-            <InstitutionConfig search={search} language={language} />
+            <InstitutionConfig language={language} />
           ) : location === "courses" ? (
-            <CourseConfig search={search} language={language} />
+            <CourseConfig language={language} />
           ) : location === "subjects" ? (
-            <SubjectsConfig search={search} language={language} />
+            <SubjectsConfig language={language} />
           ) : location === "users" ? (
-            <UserConfig
-              search={search}
-              userRole={userRole}
-              language={language}
-            />
+            <UserConfig userRole={userRole} language={language} />
           ) : location === "enroll" ? (
-            <EnrollConfig search={search} language={language} />
+            <EnrollConfig language={language} />
           ) : location === "teachers" ? (
-            <TeacherConfig search={search} language={language} />
+            <TeacherConfig language={language} />
           ) : location === "chatConfig" ? (
-            <ChatConfig search={search} language={language} />
+            <ChatConfig language={language} />
           ) : location === "chatMessage" ? (
-            <ChatMessageConfig search={search} language={language} />
+            <ChatMessageConfig language={language} />
           ) : location === "chatParticipant" ? (
-            <ChatParticipantConfig search={search} language={language} />
+            <ChatParticipantConfig language={language} />
           ) : location === "resources" ? (
-            <ResourcesConfig search={search} language={language} />
+            <ResourcesConfig language={language} />
           ) : location === "userRoles" ? (
             <UserRolesConfig language={language} />
           ) : (

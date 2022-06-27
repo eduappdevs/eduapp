@@ -19,9 +19,7 @@ export default function ExtraFields(props) {
     if (typeof data === "object") {
       let extrafields = [];
       if (data.length > 1) {
-        data.map((extrafield) => {
-          extrafields.push(JSON.parse(extrafield));
-        });
+        data.map((extrafield) => extrafields.push(JSON.parse(extrafield)));
       } else if (data.length === 1) {
         try {
           extrafields.push(JSON.parse(data));
@@ -39,7 +37,6 @@ export default function ExtraFields(props) {
   const GET_EXTRAFIELDS = async () => {
     setLoading(true);
 
-    console.log(table, id);
     await getExtraFields({ table, id }).then((res) => {
       if (!res.data) {
         return false;
@@ -77,6 +74,21 @@ export default function ExtraFields(props) {
     );
   };
 
+  const prepareModal = (inOut) => {
+    if (inOut) {
+      document.getElementsByClassName(
+        "controlPanel-content-container"
+      )[0].scrollLeft = 0;
+      document.getElementsByClassName(
+        "controlPanel-content-container"
+      )[0].style.overflowX = "hidden";
+    } else {
+      document.getElementsByClassName(
+        "controlPanel-content-container"
+      )[0].style.overflowX = "scroll";
+    }
+  };
+
   return (
     <>
       <StandardModal
@@ -108,6 +120,7 @@ export default function ExtraFields(props) {
         icon="success"
         onCloseAction={() => {
           setShow(false);
+          prepareModal(false);
         }}
         isModalExtraFields
         form={
@@ -190,10 +203,12 @@ export default function ExtraFields(props) {
       />
       <button
         onClick={() => {
+          prepareModal(true);
           setShow(true);
           GET_EXTRAFIELDS();
         }}
         className="extrafields_open_modal"
+        style={{ marginRight: "5px" }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

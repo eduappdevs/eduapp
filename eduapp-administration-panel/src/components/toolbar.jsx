@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Batcher from "./Batcher";
-import Input from "./Input";
 import SessionCSVModal from "./modals/sessionCSV-batch-modal/SessionCSVModal";
+import FieldSearcher from "./FieldSearcher";
 import "../styles/scheduletoolbar.css";
 
 export default function Toolbar(props) {
@@ -36,16 +36,6 @@ export default function Toolbar(props) {
     );
   };
 
-  const SearchFilter = (event) => {
-    let value = event.target.value;
-    props.search(value);
-  };
-
-  const userRoleFilter = (event) => {
-    let value = event.target.value;
-    props.userRole(value);
-  };
-
   return (
     <div className="scheduletoolbar-container">
       {props.location === "sessions" ? (
@@ -63,53 +53,7 @@ export default function Toolbar(props) {
                 </div>
               </div>
             </li>
-            <li className="subjectbar-container">
-              <select
-                className="subjectOption"
-                onChange={(e) => {
-                  handleChangeFilterSession(e);
-                }}
-                name="subject"
-                id="subject_id"
-              >
-                <option defaultValue={"--"}>
-                  {props.language.chooseSubject}
-                </option>
-                {props.subjects.map((subject) =>
-                  subject.id !== 1 ? (
-                    <option
-                      key={subject.id}
-                      value={subject.id + "_" + subject.name}
-                    >
-                      {subject.name}
-                    </option>
-                  ) : (
-                    console.log()
-                  )
-                )}
-              </select>
-            </li>
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-
-              <Input
-                type="text"
-                className="searchbar_toolbar"
-                autoComplete="off"
-                placeholder={props.language.search}
-              />
-            </li>
+            <FieldSearcher language={props.language} />
           </ul>
           {modalOpen === true ? (
             <SessionCSVModal
@@ -133,6 +77,7 @@ export default function Toolbar(props) {
             <li>
               <Batcher type="events" language={props.language} />
             </li>
+            <FieldSearcher language={props.language} />
             <li className="subjectbar-container">
               <select
                 className="subjectOption"
@@ -155,27 +100,6 @@ export default function Toolbar(props) {
                 ))}
               </select>
             </li>
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-
-              <Input
-                type="text"
-                className="searchbar_toolbar"
-                autoComplete="off"
-                placeholder={props.language.search}
-              />
-            </li>
           </ul>
         </>
       ) : props.location === "users" ? (
@@ -184,10 +108,9 @@ export default function Toolbar(props) {
             <li>
               <Batcher type="users" language={props.language} />
             </li>
-
+            <FieldSearcher language={props.language} />
             <li className="subjectbar-container">
               <select
-                onChange={userRoleFilter}
                 name="subjects"
                 id="subjects-select"
                 className="subjectOption"
@@ -197,130 +120,26 @@ export default function Toolbar(props) {
                 <option value="STUDENT">{props.language.student}</option>
               </select>
             </li>
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-
-              <Input
-                type="text"
-                className="searchbar_toolbar"
-                autoComplete="off"
-                placeholder={props.language.search}
-              />
-            </li>
           </ul>
         </>
       ) : props.location === "resources" ? (
         <>
           <ul className="scheduletoolbar-ul resources-toolbar">
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-
-              <Input
-                type="text"
-                className="searchbar_toolbar"
-                autoComplete="off"
-                placeholder={props.language.search}
-              />
-            </li>
+            <FieldSearcher language={props.language} />
           </ul>
         </>
       ) : props.location === "institutions" ? (
-        <>
-          <ul className="scheduletoolbar-ul institutions-toolbar">
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-
-              <Input
-                type="text"
-                className="searchbar_toolbar"
-                autoComplete="off"
-                placeholder={props.language.search}
-              />
-            </li>
-          </ul>
-        </>
+        <h1>{props.language.configuration}</h1>
       ) : props.location === "courses" ? (
         <>
           <ul className="scheduletoolbar-ul courses-toolbar">
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-
-              <Input
-                placeholder={props.language.search}
-                className="searchbar_toolbar"
-                autoComplete="off"
-              />
-            </li>
+            <FieldSearcher language={props.language} />
           </ul>
         </>
       ) : props.location === "subjects" ? (
         <>
           <ul className="scheduletoolbar-ul subjects-toolbar">
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-
-              <Input
-                type="text"
-                className="searchbar_toolbar"
-                autoComplete="off"
-                placeholder={props.language.search}
-              />
-            </li>
+            <FieldSearcher language={props.language} />
             <li className="subjectbar-container">
               <select
                 className="subjectOption"
@@ -346,26 +165,7 @@ export default function Toolbar(props) {
       ) : props.location === "enroll" ? (
         <>
           <ul className="scheduletoolbar-ul enroll-toolbar">
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-              <Input
-                type="text"
-                className="searchbar_toolbar"
-                autoComplete="off"
-                placeholder={props.language.search}
-              />
-            </li>
+            <FieldSearcher language={props.language} />
             <li className="subjectbar-container">
               <select
                 className="subjectOption"
@@ -390,26 +190,7 @@ export default function Toolbar(props) {
       ) : props.location === "teachers" ? (
         <>
           <ul className="scheduletoolbar-ul teachers-toolbar">
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-              <Input
-                type="text"
-                className="searchbar_toolbar"
-                autoComplete="off"
-                placeholder={props.language.search}
-              />
-            </li>
+            <FieldSearcher language={props.language} />
             <li className="subjectbar-container">
               <select
                 className="subjectOption"
@@ -437,31 +218,12 @@ export default function Toolbar(props) {
       ) : props.location === "chatConfig" ? (
         <>
           <ul className="scheduletoolbar-ul teachers-toolbar">
-            <li onChange={SearchFilter} className="searchbar-container">
-              <span className="searchicon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-search"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                </svg>
-              </span>
-              <Input
-                type="text"
-                className="searchbar_toolbar"
-                autoComplete="off"
-                placeholder={props.language.search}
-              />
-            </li>
+            <FieldSearcher language={props.language} />
           </ul>
         </>
       ) : (
         <h1>{props.language.configuration}</h1>
-      )}{" "}
+      )}
     </div>
   );
 }
