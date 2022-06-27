@@ -715,7 +715,6 @@ export default function UserConfig(props) {
 
   return (
     <>
-<<<<<<< HEAD
     <StandardModal
       text={`Notify users`}
       icon={"notifications"}
@@ -740,16 +739,10 @@ export default function UserConfig(props) {
           setNotifyMsg("")
         }
       }/>
-
-=======
-<<<<<<< HEAD
->>>>>>> develop
       <div className="schedulesesionslist-main-container">
         <table id='users_table_header'>
-=======
       <div className="schedulesesionslist-main-container" id="scroll">
         <table>
->>>>>>> ec0675dc0172a3894e5ba92caef646f2eb301aea
           <thead>
             <tr>
               <th>{props.language.add}</th>
@@ -825,7 +818,6 @@ export default function UserConfig(props) {
             </tr>
           </tbody>
         </table>
-<<<<<<< HEAD
         <div className="notify-users">
           <PageSelect
             onPageChange={async (p) => fetchUserPage(p)}
@@ -858,7 +850,6 @@ export default function UserConfig(props) {
                         u.user.email.includes(search)) &
                       filterUsersWithRole(userRole, u)
                     ) {
-=======
         {users && users.length !== 0 ? (
           <>
             <div className="notify-users">
@@ -1054,7 +1045,6 @@ export default function UserConfig(props) {
                         );
                       }
                     } else if (filterUsersWithRole(userRole, u)) {
->>>>>>> develop
                       return (
                         <tr key={u.id}>
                           <td>
@@ -1111,15 +1101,12 @@ export default function UserConfig(props) {
                             />
                           </td>
                           <td>
-<<<<<<< HEAD
                           <ExtraFields id = {u.user.id} table = {'users'}/>
-=======
                             <input
                               type="datetime-local"
                               disabled
                               value={user.split(".")[0]}
                             />
->>>>>>> develop
                           </td>
                           <td
                             style={{
@@ -1214,7 +1201,6 @@ export default function UserConfig(props) {
                         </tr>
                       );
                     }
-<<<<<<< HEAD
                   } else if (filterUsersWithRole(userRole, u)) {
                     return (
                       <tr key={u.id}>
@@ -1362,8 +1348,6 @@ export default function UserConfig(props) {
                       </tr>
                     );
                   }
-=======
->>>>>>> develop
 
                     if (search.length > 0) {
                       if (

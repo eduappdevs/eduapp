@@ -28,18 +28,14 @@ import instanceBadge, {
 import WebTitle from "./components/WebTitle";
 import { getOfflineUser } from "./utils/OfflineManager";
 import useRole from "./hooks/useRole";
-<<<<<<< HEAD
-import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
-
-const notifs = new NotifsAC();
-=======
 import Notifications from "./views/Notifications/Notifications";
->>>>>>> develop
-
+import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
   const [needsLoader, setNeedsLoader] = useState(true);
   const [ItsMobileDevice, setItsMobileDevice] = useState(null);
+
+  const notifs = new NotifsAC();
 
   let userinfo = FetchUserInfo(
     getOfflineUser().user === null ? -1 : getOfflineUser().user.id
@@ -163,10 +159,8 @@ export default function App() {
             <Route path="/menu" element={<Menu />} />
             <Route path="/menu/profile" element={<ProfileSettings />} />
             <Route path="/menu/settings" element={<MenuSettings />} />
-
             {/*Notifications*/}
             <Route path="/notifications" element={<Notifications />} />
-
             {/* Unknown URL Reroute */}
             <Route path="*" element={<Navigate to="/home" />} />
           </Routes>
