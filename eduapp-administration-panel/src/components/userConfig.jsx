@@ -14,8 +14,6 @@ import PageSelect from "./pagination/PageSelect";
 
 const system_user_name = "eduapp_system";
 export default function UserConfig(props) {
-
-
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [userRole, setUserRole] = useState(null);
@@ -713,21 +711,15 @@ export default function UserConfig(props) {
 
   return (
     <>
-<<<<<<< HEAD
-      <div className="schedulesesionslist-main-container">
-        <table id='users_table_header'>
-=======
       <div className="schedulesesionslist-main-container" id="scroll">
-        <table>
->>>>>>> ec0675dc0172a3894e5ba92caef646f2eb301aea
+        <table id="users_table_header">
           <thead>
             <tr>
               <th>{props.language.add}</th>
               <th>{props.language.email}</th>
               <th>{props.language.password}</th>
               <th>{props.language.userRole}</th>
-              <ExtraFields table='users'/>
-
+              <ExtraFields table="users" />
             </tr>
           </thead>
           <tbody>

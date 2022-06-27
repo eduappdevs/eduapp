@@ -126,17 +126,11 @@ ActiveRecord::Schema.define(version: 16) do
   create_table "jti_match_lists", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.string "jti", null: false
-<<<<<<< HEAD
-    t.datetime "exp", null: false
-    t.text "extra_fields"
-    t.index ["jti"], name: "index_jwt_denylist_on_jti"
-=======
     t.string "exp"
     t.string "access_ip", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_jti_match_lists_on_user_id"
->>>>>>> b64257ef013cdb2d174dae1a0c05e34be878e42c
   end
 
   create_table "resources", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

@@ -3,11 +3,7 @@ class PasswordMailer < ApplicationMailer
 
   def send_reset_email
     @user = params[:user]
-<<<<<<< HEAD
-    if @user.present? 
-=======
     if @user.present?
->>>>>>> b64257ef013cdb2d174dae1a0c05e34be878e42c
       token = @user.reset_password_token
       @url = ENV.fetch("REACT_APP_FRONTEND_ENDPOINT") + "/password/reset?email=" + @user.email + "&token=" + token
       mail(to: @user.email, subject: "EduApp Password Reset", url: @url)
