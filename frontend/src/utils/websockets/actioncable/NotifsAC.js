@@ -15,9 +15,9 @@ export default class NotifsAC extends ACManager {
   }
 
   instanceURC_IDB() {
-    this.idbm.getStorageInstance("urc-db", "urc-store").then((res) => {
-      console.log("urc-db initialized.");
-    });
+    this.idbm
+      .getStorageInstance("eduapp-urc-db", "urc-store")
+      .then(() => console.log("urc-db initialized."));
   }
 
   async handleNotifs(data) {
