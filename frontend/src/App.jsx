@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Resources from "./views/resources/Resources";
 import Login from "./views/login/Login";
 import Home from "./views/home/Home";
@@ -31,11 +31,14 @@ import { getOfflineUser } from "./utils/OfflineManager";
 import useRole from "./hooks/useRole";
 import Notifications from "./views/Notifications/Notifications";
 import { MainChatInfoCtxProvider } from "./hooks/MainChatInfoContext";
+import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
   const [needsLoader, setNeedsLoader] = useState(true);
   const [ItsMobileDevice, setItsMobileDevice] = useState(null);
+
+  const notifs = new NotifsAC();
 
   let userinfo = FetchUserInfo(
     getOfflineUser().user === null ? -1 : getOfflineUser().user.id
@@ -53,6 +56,7 @@ export default function App() {
   };
 
   useEffect(() => {
+    notifs.instanceURC_IDB();
     if (localStorage.eduapp_language === undefined) {
       localStorage.setItem("eduapp_language", "en_uk");
     }
@@ -101,6 +105,10 @@ export default function App() {
     }
 
     document.addEventListener("visibilitychange", () => resetBadge());
+
+    if (getOfflineUser().user !== null) {
+      notifs.generateChannelConnection();
+    }
 
     return () => {
       document.removeEventListener("visibilitychange", () => {});

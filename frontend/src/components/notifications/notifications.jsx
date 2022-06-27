@@ -1,9 +1,7 @@
 import { incrementBadgeCount } from "../../App";
-import EncryptionUtils from "../../utils/EncryptionUtils";
-
 let unreadMessagesCount = 0;
 
-export default function pushNotify(text, privateKey, image) {
+export default function pushNotify(text, image, name) {
   if (!text) {
     return false;
   }
@@ -16,16 +14,14 @@ export default function pushNotify(text, privateKey, image) {
 
   switch (Notification.permission) {
     case "granted":
-      console.log("granted");
       var notify = new Notification("EduApp", {
-        body: text,
+        body: `${name}: ${text}`,
+        image: image,
       });
-      notify.onshow = () => console.log("SHOWN");
       incrementBadgeCount();
       break;
     case "denied":
     case "default":
-      console.log("default");
       window.Notification.requestPermission().then(function (permission) {
         if (permission === "granted") {
           var notify = new Notification("EduApp", {

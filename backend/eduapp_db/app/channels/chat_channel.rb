@@ -9,8 +9,6 @@ class ChatChannel < ApplicationCable::Channel
   end
 
   def receive(data)
-    puts "CMD: #{data["command"]}"
-
     case data["command"]
     when "message"
       instance = ChatMessage.new(
@@ -27,6 +25,19 @@ class ChatChannel < ApplicationCable::Channel
         ActionCable.server.broadcast @chat_name, newMsg
       else
         ActionCable.server.broadcast @chat_name, { "command" => "error", "message" => "Error saving message" }
+      end
+
+      current_chat = ChatBase.find(params[:chat_room][1..-1]);
+      ChatParticipant.where(chat_base_id: current_chat.id).each do |participant|
+        UserNotifsChannel.broadcast_to(
+          participant.user_id,
+          command: "new_msg",
+          author_name: UserInfo.find_by(user_id: data["author"]).user_name,
+          author_pic: UserInfo.find_by(user_id: data["author"]).profile_image,
+          msg: data["message"],
+          key: current_chat.private_key,
+          chat_url: "http://localhost:3001/chat/#{current_chat.isGroup ? "g" : "p"}#{current_chat.id}"
+        ) if participant.user_id != data["author"]
       end
     else
       puts "DEFAULT"

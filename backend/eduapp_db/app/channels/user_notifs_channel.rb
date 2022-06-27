@@ -5,6 +5,7 @@ class UserNotifsChannel < ApplicationCable::Channel
     @chat_name = "eduapp.notifs.user.#{params[:user_id]}"
     @user_count = 1
     stream_from @chat_name
+    stream_for @notifs_user
   end
 
   def receive(cmd)

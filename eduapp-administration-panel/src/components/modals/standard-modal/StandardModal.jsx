@@ -13,7 +13,8 @@ export default function StandardModal({
   hasTransition,
   hasIconAnimation,
   showLoader,
-  form
+  form,
+  customOkay
 }) {
   iconFill = localStorage.darkMode === "1" ? true : iconFill || false;
   // TYPES = ['success', 'error', 'warning', 'info']
@@ -148,7 +149,7 @@ export default function StandardModal({
           </div>
         ) : !isQuestion && !showLoader ? (
           <div className="standard-modal-btn" onClick={onCloseAction}>
-            Okay
+             {customOkay ? customOkay : "Okay"}
           </div>
         ) : null}
         {showLoader && (
