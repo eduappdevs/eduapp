@@ -38,20 +38,13 @@ export default class NotifsAC extends ACManager {
                     NOTIFSMODAL.instanceModal(data);
                     pushNotify(data.msg.message,data.profile_pic,data.author_name)
                 }
-                if(this.idbm.keyExists(data.author_name)){
-
-                    console.log(await this.idbm.get(data.author_name))
-
-                    // .then((res)=>{
-                    //     let value = parseInt(res)++
-                    //     this.idbm.update(data.author_name,{value})
-                    // })
+                if(await this.idbm.keyExists(data.author_name)){
+                    this.idbm.get(data.author_name).then((r)=>{this.idbm.update(data.author_name,r+1)})
+                    
        
                 }else{
                     let value = 1
-                    this.idbm.set(data.author_name,{
-                        value
-                    })
+                    this.idbm.set(data.author_name,1)
                 }
                 
                 break;

@@ -10,9 +10,11 @@ import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useRole from "../../hooks/useRole";
 import useLanguage from "../../hooks/useLanguage";
 import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
+import IDBManager from "../../utils/IDBManager";
 import "./ChatMenu.css";
 
 let acManager = new ChatsAC();
+let imdb = new IDBManager();
 export default function ChatMenu() {
   const [chats, setChats] = useState([]);
 
@@ -123,7 +125,7 @@ export default function ChatMenu() {
                         {/* <p className="chat-writing">Equisde is writing...</p> */}
                       </div>
                       <p className="chat-pending-messages">
-                        <span>20</span>
+                        <span>{0}</span>
                       </p>
                     </li>
                   );

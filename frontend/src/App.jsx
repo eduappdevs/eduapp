@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, createContext } from "react";
 import Resources from "./views/resources/Resources";
 import Login from "./views/login/Login";
 import Home from "./views/home/Home";
@@ -32,6 +32,7 @@ import useRole from "./hooks/useRole";
 import Notifications from "./views/Notifications/Notifications";
 import { MainChatInfoCtxProvider } from "./hooks/MainChatInfoContext";
 import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
+import IDBManager from "./utils/IDBManager";
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -39,6 +40,8 @@ export default function App() {
   const [ItsMobileDevice, setItsMobileDevice] = useState(null);
 
   const notifs = new NotifsAC();
+  const idbm = new IDBManager();
+  const unreadMessages = createContext("unreadMessages");
 
   let userinfo = FetchUserInfo(
     getOfflineUser().user === null ? -1 : getOfflineUser().user.id
@@ -57,6 +60,10 @@ export default function App() {
 
   useEffect(() => {
     notifs.instanceURC_IDB();
+    idbm.getStorageInstance("urc-db", "urc-store").then((res) => {
+      console.log(`initialized idbm urc provider`, res);
+    });
+    
     if (localStorage.eduapp_language === undefined) {
       localStorage.setItem("eduapp_language", "en_uk");
     }
