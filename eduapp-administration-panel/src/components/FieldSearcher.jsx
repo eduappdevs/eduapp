@@ -1,5 +1,30 @@
 import { useContext } from "react";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
+
+/**
+ * @param {JSON} language Component languages
+ *
+ * How to implement:
+ * 1. Import at the top of the Component SearchBarCtx ([searchParams, setSearchParams])
+ * 2. Import useFilter with searchParams, the main array of information, and the corresponding search_fields parser
+ * 3. In the empty useEffect ([]) empty the searchParams (a)
+ * 4. Finally In the main table render, add a few if statements to return empty if there is a filtered value and if the value does not match with the filter (b)
+ *
+ * - (a) Example:
+ * - setSearchParams({
+ *   query: "",
+ *   fields: getCourseFields(lang),
+ *   selectedField: getCourseFields(lang)[0][0]
+ * });
+ * 
+ * - (b) Example:
+ * - if (filteredCourses !== null)
+       if (
+         filteredCourses.length > 0 &&
+         !filteredCourses.includes(c)
+       )
+         return <></>;
+ */
 export default function FieldSearcher({ language }) {
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
 
