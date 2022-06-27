@@ -2,6 +2,9 @@ function languageDetect(language) {
   if (!language) throw new Error("No language passed to fields.");
 }
 
+// USERS
+
+// Users
 export function getUserFields(lang) {
   languageDetect(lang);
   return [
@@ -23,4 +26,19 @@ export function parseUserFields(u, field) {
     default:
       return u[field];
   }
+}
+
+// MANAGEMENT
+
+// Courses
+export function getCourseFields(lang) {
+  languageDetect(lang);
+  return [
+    ["id", lang.code],
+    ["name", lang.name],
+  ];
+}
+
+export function parseCourseFields(c, field) {
+  return c[field];
 }
