@@ -109,6 +109,7 @@ export default function ExtraFields(props) {
         onCloseAction={() => {
           setShow(false);
         }}
+        isModalExtraFields
         form={
           <>
             <ul className="list">

@@ -73,7 +73,6 @@
 .standard-modal {
 	background-color: var(--backgroundColor);
 	width: 40%;
-	height: 80%;
 	padding: 0.1em 0.1em 0.1em 0.1em;
 	color: var(--textColor);
 	position: fixed;

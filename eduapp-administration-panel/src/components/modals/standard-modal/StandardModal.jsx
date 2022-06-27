@@ -14,7 +14,8 @@ export default function StandardModal({
   hasIconAnimation,
   showLoader,
   form,
-  customOkay
+  customOkay,
+  isModalExtraFields,
 }) {
   iconFill = localStorage.darkMode === "1" ? true : iconFill || false;
   // TYPES = ['success', 'error', 'warning', 'info']
@@ -30,6 +31,7 @@ export default function StandardModal({
         className={`standard-modal ${hasIconAnimation ? "svg-animation" : ""} ${
           hasTransition ? "standard-modal-transition" : ""
         }`}
+        style={isModalExtraFields ? { height: "80%" } : {}}
       >
         {show && (
           <div className="standard-modal-icon">
@@ -136,7 +138,7 @@ export default function StandardModal({
           </div>
         )}
         <h3>{text}</h3>
-        {form && (form)}
+        {form && form}
 
         {isQuestion && !showLoader ? (
           <div className="standard-modal-btn-container">
@@ -149,7 +151,7 @@ export default function StandardModal({
           </div>
         ) : !isQuestion && !showLoader ? (
           <div className="standard-modal-btn" onClick={onCloseAction}>
-             {customOkay ? customOkay : "Okay"}
+            {customOkay ? customOkay : "Okay"}
           </div>
         ) : null}
         {showLoader && (
