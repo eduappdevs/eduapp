@@ -3,6 +3,8 @@ class UserInfosController < ApplicationController
   before_action :authenticate_user!
   before_action :check_role!
 
+
+
   # GET /user_infos
   def index
     if params[:user_id]

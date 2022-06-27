@@ -1,15 +1,96 @@
 class ApplicationController < ActionController::API
 
-    def getExtrafields
-        tables = ActiveRecord::Base.connection.tables
-
-        # get params[:table] from tables
-       table = ActiveRecord::Base.connection.tables.select { |t| t == params[:table] }
-
-        # return tables to json
-        render json: table
-
+  def return_table (table)
+    case table
+    when "users"
+      t_name = User.find(params[:id])
+    when "courses"
+      t_name = Course.find(params[:id])
+    when "sessions"
+      t_name = EduappUserSession.find(params[:id])
+    when "institutions"
+      t_name = Institution.find(params[:id])
+    when "resources"
+      t_name = Resource.find(params[:id])
+    when "subjects"
+      t_name = Subject.find(params[:id])
     end
+    return t_name
+  end
+
+  def get_extrafields
+    id = params[:id]
+    table = return_table(params[:table])
+    puts "extrafields: #{table.extra_fields}"
+    render json: table.extra_fields and return
+  end
+
+  def push_extrafields
+    table = return_table(params[:table])
+    body = request.body.read.to_s
+
+    extrafields_body = table.extra_fields
+    extrafields_body.push(body)
+
+    if table.update(extra_fields: extrafields_body)
+      table.save
+      render json: table.extra_fields and return 
+    else
+      render json: { error: "Error updating extra fields" }, status: 422 and return
+    end
+  end
+
+  def update_extrafield
+    table = return_table(params[:table])
+    body = JSON.parse(request.body.read)
+
+    puts "body: #{body}"
+
+    extrafields = table.extra_fields
+
+    puts "extrafields: #{extrafields}"
+
+    extrafields_updated = []
+
+    extrafields.each do |extrafield|
+      extrafield = JSON.parse(extrafield)
+      if extrafield["name"] === body["name"]
+        extrafield["value"] = body["value"]
+      end
+      extrafields_updated.push(JSON.generate(extrafield))
+    end
+
+    if table.update(extra_fields: extrafields_updated)
+      render json: table.extra_fields and return
+    else
+      render json: { error: "Error updating extra fields" }, status: 422 and return
+    end
+  end
+
+  def delete_extrafield
+    table = return_table(params[:table])
+    name = params[:field] || params[:name]
+
+    puts "table: #{table}, name: #{name}"
+
+    extrafields_updated = []
+
+    extrafields = table.extra_fields
+    extrafields.each do |extrafield|
+      extrafield = JSON.parse(extrafield)
+      if extrafield["name"] != name
+        extrafields_updated.push(JSON.generate(extrafield))
+      end
+    end
+
+    if table.update(extra_fields: extrafields_updated)
+      render json: table.extra_fields and return true
+    else
+      render json: { error: "Error updating extra fields" }, status: 422 and return
+    end
+
+  end
+
   private
 
   # AUTH

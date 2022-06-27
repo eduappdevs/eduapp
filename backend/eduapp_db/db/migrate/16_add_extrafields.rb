@@ -6,6 +6,7 @@ class AddExtrafields < ActiveRecord::Migration[6.1]
             'ar_internal_metadata',
             'jwt_blacklist',
             'jwt_denylist',
+            'jti_match_lists',
             'active_storage_attachments',
             'active_storage_blobs',
             'chat_messages',
@@ -14,12 +15,14 @@ class AddExtrafields < ActiveRecord::Migration[6.1]
             'active_storage_variant_records',
             'tuitions',
             'calendar_annotations',
-            'chat_participants'
+            'chat_participants',
+            'user_infos',
+            'user_roles',
         ]
 
         tables.each do |table|
             if !blacklisted_tables.include?(table)
-                add_column table, :extra_fields, :text
+                add_column table, :extra_fields, :string, array: true, default: []
             end
         end
    end

@@ -86,7 +86,6 @@ ActiveRecord::Schema.define(version: 16) do
     t.boolean "isChatAdmin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "extra_fields"
     t.index ["chat_base_id"], name: "index_chat_participants_on_chat_base_id"
     t.index ["user_id"], name: "index_chat_participants_on_user_id"
   end
@@ -96,7 +95,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.uuid "institution_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "extra_fields"
+    t.string "extra_fields", default: [], array: true
     t.index ["institution_id"], name: "index_courses_on_institution_id"
   end
 
@@ -110,7 +109,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.uuid "subject_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "extra_fields"
+    t.string "extra_fields", default: [], array: true
     t.index ["subject_id"], name: "index_eduapp_user_sessions_on_subject_id"
   end
 
@@ -118,23 +117,17 @@ ActiveRecord::Schema.define(version: 16) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "extra_fields"
+    t.string "extra_fields", default: [], array: true
   end
 
   create_table "jti_match_lists", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.string "jti", null: false
-<<<<<<< HEAD
-    t.datetime "exp", null: false
-    t.text "extra_fields"
-    t.index ["jti"], name: "index_jwt_denylist_on_jti"
-=======
     t.string "exp"
     t.string "access_ip", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_jti_match_lists_on_user_id"
->>>>>>> b64257ef013cdb2d174dae1a0c05e34be878e42c
   end
 
   create_table "resources", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -147,7 +140,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.uuid "subject_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "extra_fields"
+    t.string "extra_fields", default: [], array: true
     t.index ["subject_id"], name: "index_resources_on_subject_id"
     t.index ["user_id"], name: "index_resources_on_user_id"
   end
@@ -159,7 +152,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.uuid "course_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "extra_fields"
+    t.string "extra_fields", default: [], array: true
     t.index ["course_id"], name: "index_subjects_on_course_id"
   end
 
@@ -182,7 +175,6 @@ ActiveRecord::Schema.define(version: 16) do
     t.uuid "user_role_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "extra_fields"
     t.index ["user_id"], name: "index_user_infos_on_user_id"
     t.index ["user_role_id"], name: "index_user_infos_on_user_role_id"
   end
@@ -224,9 +216,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.string "last_sign_in_ip"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "joder_extrafield"
-    t.integer "joder"
-    t.text "extra_fields"
+    t.string "extra_fields", default: [], array: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

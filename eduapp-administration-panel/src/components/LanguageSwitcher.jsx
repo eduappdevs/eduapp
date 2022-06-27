@@ -20,7 +20,7 @@ export default function LanguageSwitcher(props) {
           }}
         >
           <span className={language === "es" ? "languageSelected" : ""}>
-            🇪🇸
+            <img height={'14px'} width={'18pxs'} src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Bandera_de_Espa%C3%B1a.svg/1125px-Bandera_de_Espa%C3%B1a.svg.png" alt="es" />
           </span>
         </li>
         <li
@@ -29,7 +29,7 @@ export default function LanguageSwitcher(props) {
           }}
         >
           <span className={language === "en" ? "languageSelected" : ""}>
-            🇬🇧
+          <img height={'14px'} width={'18pxs'} src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Flag_of_the_United_Kingdom.svg/1920px-Flag_of_the_United_Kingdom.svg.png" alt="en" />
           </span>
         </li>
         <li
@@ -38,7 +38,7 @@ export default function LanguageSwitcher(props) {
           }}
         >
           <span className={language === "pt" ? "languageSelected" : ""}>
-            🇵🇹
+          <img height={'14px'} width={'18pxs'} src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Portugal.svg/1280px-Flag_of_Portugal.svg.png" alt="pt" />
           </span>
         </li>
       </ul>

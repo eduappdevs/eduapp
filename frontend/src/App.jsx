@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Resources from "./views/resources/Resources";
 import Login from "./views/login/Login";
 import Home from "./views/home/Home";
@@ -28,6 +28,9 @@ import instanceBadge, {
 import WebTitle from "./components/WebTitle";
 import { getOfflineUser } from "./utils/OfflineManager";
 import useRole from "./hooks/useRole";
+import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
+
+const notifs = new NotifsAC();
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -50,8 +53,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    instanceBadge();
-
+    notifs.instanceURC_IDB();
     setNeedsExtras(
       !new RegExp(
         "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*)|password/.*)$"
@@ -95,6 +97,10 @@ export default function App() {
 
     document.addEventListener("visibilitychange", () => resetBadge());
 
+    if (getOfflineUser().user !== null) {
+      notifs.generateChannelConnection();
+    }
+
     return () => {
       document.removeEventListener("visibilitychange", () => {});
       document.removeEventListener("canLoadResource", () => {});
@@ -111,7 +117,11 @@ export default function App() {
       <BrowserRouter>
         <WebTitle />
         <React.Fragment>
-          <div style={{ display: needsLoader ? "flex" : "none" }}>
+          <div
+            style={{
+              display: needsLoader ? "flex" : "none",
+            }}
+          >
             <Loader />
           </div>
         </React.Fragment>
@@ -122,26 +132,27 @@ export default function App() {
         )}
         {requireAuth() ? (
           <Routes>
+            {" "}
             {/* Main Pages */}
             <Route exact path="/home" element={<Home />} />
             <Route exact path="/resources" element={<Resources />} />
             <Route exact path="/calendar" element={<Calendar />} />
-            <Route exact path="/chat" element={<ChatMenu />} />
+            <Route exact path="/chat" element={<ChatMenu />} />{" "}
             {isAdmin && (
               <Route exact path="/management" element={<ManagementPanel />} />
             )}
-
             {/* Pages Subroutes */}
             <Route path="/resource/:resourceId" element={<OpenedResource />} />
             <Route path="/chat/:chatId" element={<MainChat />} />
             <Route path="/chat/create/group" element={<GroupChatCreate />} />
-            <Route path="/chat/create/direct" element={<DirectChatCreate />} />
-
+            <Route
+              path="/chat/create/direct"
+              element={<DirectChatCreate />}
+            />{" "}
             {/* Menu */}
             <Route path="/menu" element={<Menu />} />
             <Route path="/menu/profile" element={<ProfileSettings />} />
-            <Route path="/menu/settings" element={<MenuSettings />} />
-
+            <Route path="/menu/settings" element={<MenuSettings />} />{" "}
             {/* Unknown URL Reroute */}
             <Route path="*" element={<Navigate to="/home" />} />
           </Routes>
@@ -160,7 +171,7 @@ export default function App() {
           <React.Fragment>
             <BottomButtons badgeCount={badgeCount} mobile={ItsMobileDevice} />
           </React.Fragment>
-        )}
+        )}{" "}
       </BrowserRouter>
     </>
   ) : (

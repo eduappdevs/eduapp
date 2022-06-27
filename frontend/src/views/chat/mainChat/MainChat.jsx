@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import ChatBubble from "./chatBubbles/ChatBubble";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ChatsAC from "../../../utils/websockets/actioncable/ChatsAC";
+import NotifsAC from "../../../utils/websockets/actioncable/NotifsAC";
 import { asynchronizeRequest } from "../../../API";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import { getOfflineUser } from "../../../utils/OfflineManager";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
-import pushNotify from "../../../components/notifications/notifications";
 import EncryptionUtils from "../../../utils/EncryptionUtils";
 import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import "./MainChat.css";
 
 const acInstance = new ChatsAC();
+const notifs = new NotifsAC();
 let privKey = null;
 let pubKey = null;
 export default function MainChat() {
@@ -30,28 +31,43 @@ export default function MainChat() {
       inputMsg.value !== " " &&
       inputMsg.value.length > 0
     ) {
+      let userId = getOfflineUser().user.id;
+      let msgEncrypted = EncryptionUtils.encrypt(inputMsg.value, pubKey);
       acInstance.sendChannelCmd(
         "message",
         EncryptionUtils.encrypt(inputMsg.value, pubKey),
         getOfflineUser().user.id,
         new Date().toISOString()
       );
+      notifs.sendChannelCmd(`${userId}:${msgEncrypted}`, {
+        type: "notification",
+        to: {
+          userId,
+        },
+      });
       inputMsg.value = "";
+
+      // To test notifications focus...
+      // setTimeout(() => {
+      //   acInstance.sendChannelCmd(
+      //     "message",
+      //     EncryptionUtils.encrypt(inputMsg.value, pubKey),
+      //     getOfflineUser().user.id,
+      //     new Date().toISOString()
+      //   );
+      //   notifs.sendChannelCmd(`${userId}:${msgEncrypted}`, {
+      //     type: "notification",
+      //     to: {
+      //       userId,
+      //     },
+      //   });
+      //   inputMsg.value = "";
+      // },10000);
     }
   };
 
   const manageIncomingMsg = (newMsg) => {
     if (newMsg.chat_base.id === acInstance.chatCode.substring(1)) {
-      //Notify
-      if (newMsg.user.id !== getOfflineUser().user.id) {
-        pushNotify(
-          newMsg.user.email.split("@")[0] +
-            " says: " +
-            EncryptionUtils.decrypt(newMsg.message, privKey).message,
-          privKey
-        );
-      }
-
       setNewMessages((prevMsgs) => [...prevMsgs, newMsg]);
       let messageBox = document.getElementsByClassName(
         "main-chat-messages-container"

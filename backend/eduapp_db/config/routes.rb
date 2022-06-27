@@ -35,8 +35,10 @@ Rails.application.routes.draw do
     post "password/reset", to: "users/passwords#do_reset_password"
     get "send_change_password_instructions", to: "users/passwords#send_change_password_instructions"
     get "change_password_with_code", to: "users/passwords#change_password"
-    get "add_extrafield", to: "application#add_extrafield"
-    get "getExtrafields", to: "application#getExtrafields"
+    get "extrafields/:table/:id", to: "application#get_extrafields"
+    post "extrafields/:table/:id", to: "application#push_extrafields"
+    put "extrafields/:table/:id", to: "application#update_extrafield"
+    delete "extrafields/:table/:id/:field", to: "application#delete_extrafield"
   end
 
   delete "/users/remove/:id", to: "user_infos#destroyuser"

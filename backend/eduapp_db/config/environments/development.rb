@@ -62,15 +62,8 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-<<<<<<< HEAD
-  # config.action_mailer.default_url_options = { :host => "localhost:3001" }
-
-	# Action Cable Config (FMV)
-	# config.action_cable.url = "wss://#{ENV.fetch("DOMAIN")}/chat"
-=======
   # Action Cable Config (FMV)
   # config.action_cable.url = "wss://#{ENV.fetch("DOMAIN")}/chat"
->>>>>>> b64257ef013cdb2d174dae1a0c05e34be878e42c
   config.action_cable.allowed_request_origins = [ENV.fetch("REACT_APP_FRONTEND_ENDPOINT"), "http://localhost:4001"]
 
   config.action_mailer.delivery_method = :smtp

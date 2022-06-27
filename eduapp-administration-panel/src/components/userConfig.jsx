@@ -40,6 +40,9 @@ export default function UserConfig(props) {
   const [allSelected, setAllSelected] = useState(true);
   const [maxPages, setMaxPages] = useState(1);
 
+  const [notifyModal, setNotifyModal] = useState(false);
+  const [notifyMsg, setNotifyMsg] = useState("");
+
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
   const selectAll = () => {
@@ -669,7 +672,6 @@ export default function UserConfig(props) {
   };
 
   const notifyUsers = async () => {
-    let notifyMsg = "This is a test message. 2";
     let systemUser = (await USERSERVICE.fetchSystemUser()).data;
     for (let u of document.getElementsByName("user-check")) {
       if (u.checked) {
@@ -731,33 +733,6 @@ export default function UserConfig(props) {
     }
   };
 
-  // const selectAllUsers = () => {
-  //   if (selectedUsers.length === 0) {
-  //     users.map((user) => {
-  //       selectedUsers.push(user.user.id);
-  //       document.getElementById("select_user_" + user.user.id).checked = true;
-  //     });
-
-  //     document.getElementById("select_all_users").checked = true;
-  //   } else {
-  //     selectedUsers = [];
-  //     document.getElementById("select_all_users").checked = false;
-  //     users.map((user) => {
-  //       document.getElementById("select_user_" + user.user.id).checked = false;
-  //     });
-  //   }
-  // };
-  // const selectUser = (id) => {
-  //   console.log(" que cojones ");
-  //   if (document.getElementById("select_user_" + id).checked) {
-  //     selectedUsers.push(id);
-  //   } else {
-  //     selectedUsers = selectedUsers.filter((user) => {
-  //       return user !== id;
-  //     });
-  //   }
-  // };
-
   useEffect(() => {
     setSearch(props.search);
   }, [props.search]);
@@ -773,6 +748,31 @@ export default function UserConfig(props) {
 
   return (
     <>
+    <StandardModal
+      text={`Notify users`}
+      icon={"notifications"}
+      show={notifyModal}
+      form={
+        <>
+          <textarea placeholder={'Text message.'} onChange={(e)=>{
+            setNotifyMsg(e.target.value)
+          }}/>
+          </>}
+      hasIconAnimation
+      hasTransition
+      isQuestion
+      onNoAction={()=>{
+        setNotifyModal(false)
+        setNotifyMsg("")
+      }}
+      onYesAction={
+        async ()=>{
+          await notifyUsers();
+          setNotifyModal(false)
+          setNotifyMsg("")
+        }
+      }/>
+
       <div className="schedulesesionslist-main-container">
         <table id='users_table_header'>
           <thead>
@@ -781,7 +781,6 @@ export default function UserConfig(props) {
               <th>{props.language.email}</th>
               <th>{props.language.password}</th>
               <th>{props.language.userRole}</th>
-              <ExtraFields table='users'/>
 
             </tr>
           </thead>
@@ -856,7 +855,7 @@ export default function UserConfig(props) {
             onPageChange={async (p) => fetchUserPage(p)}
             maxPages={maxPages}
           />
-          <button onClick={() => notifyUsers()}>Notify Selected Users</button>
+          <button onClick={() => setNotifyModal(true)}>Notify Selected Users</button>
         </div>
         <table style={{ marginTop: "25px" }}>
           <thead>
@@ -869,6 +868,7 @@ export default function UserConfig(props) {
               <th>{props.language.email}</th>
               <th>{props.language.userRole}</th>
               <th>{props.language.googleLinked}</th>
+              <th></th>
               <th>{props.language.actions}</th>
             </tr>
           </thead>
@@ -936,6 +936,9 @@ export default function UserConfig(props) {
                               disabled
                               placeholder="=> Link in App"
                             />
+                          </td>
+                          <td>
+                          <ExtraFields id = {u.user.id} table = {'users'}/>
                           </td>
                           <td
                             style={{
@@ -1081,6 +1084,9 @@ export default function UserConfig(props) {
                             placeholder="=> Link in App"
                           />
                         </td>
+                        <td>
+                        <ExtraFields id = {u.user.id} table = {'users'}/>
+                          </td>
                         <td
                           style={{
                             display: "flex",
@@ -1219,6 +1225,10 @@ export default function UserConfig(props) {
                               placeholder="=> Link in App"
                             />
                           </td>
+                          <td>
+                          <ExtraFields id = {u.user.id} table = {'users'}/>
+                          
+                          </td>
                           <td
                             style={{
                               display: "flex",
@@ -1284,6 +1294,10 @@ export default function UserConfig(props) {
                             placeholder="=> Link in App"
                           />
                         </td>
+                        <td>
+                        <ExtraFields id = {u.user.id} table = {'users'}/>
+                         
+                          </td>
                         <td
                           style={{
                             display: "flex",
@@ -1348,6 +1362,10 @@ export default function UserConfig(props) {
                               placeholder="=> Link in App"
                             />
                           </td>
+                          <td>
+                          <ExtraFields id = {u.user.id} table = {'users'}/>
+                          
+                          </td>
                           <td
                             style={{
                               display: "flex",
@@ -1402,6 +1420,10 @@ export default function UserConfig(props) {
                             placeholder="=> Link in App"
                           />
                         </td>
+                        <td>
+                        <ExtraFields id = {u.user.id} table = {'users'}/>
+                         
+                          </td>
                         <td
                           style={{
                             display: "flex",

@@ -119,9 +119,9 @@ export default function ChatMenu() {
                         </h2>
                         {/* <p className="chat-writing">Equisde is writing...</p> */}
                       </div>
-                      {/* <p className="chat-pending-messages">
+                      <p className="chat-pending-messages">
                         <span>20</span>
-                      </p> */}
+                      </p>
                     </li>
                   );
                 })}
