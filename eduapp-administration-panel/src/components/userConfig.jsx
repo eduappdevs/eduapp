@@ -3,6 +3,7 @@ import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import ExtraFields from "./ExtraFields";
 import * as COURSESERVICE from "../services/course.service";
 import * as CHATSERVICE from "../services/chat.service";
 import * as ROLESERVICE from "../services/role.service";
@@ -711,13 +712,14 @@ export default function UserConfig(props) {
   return (
     <>
       <div className="schedulesesionslist-main-container" id="scroll">
-        <table>
+        <table id="users_table_header">
           <thead>
             <tr>
               <th>{props.language.add}</th>
               <th>{props.language.email}</th>
               <th>{props.language.password}</th>
               <th>{props.language.userRole}</th>
+              <ExtraFields table="users" />
             </tr>
           </thead>
           <tbody>

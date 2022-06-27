@@ -66,6 +66,8 @@ Rails.application.routes.draw do
     post "#{@api_path}/password/reset", to: "users/passwords#do_reset_password"
     get "#{@api_path}/send_change_password_instructions", to: "users/passwords#send_change_password_instructions"
     get "#{@api_path}/change_password_with_code", to: "users/passwords#change_password"
+    get "#{@api_path}/add_extrafield", to: "application#add_extrafield"
+    get "#{@api_path}/getExtrafields", to: "application#getExtrafields"
   end
 
   delete "#{@api_path}/users/remove/:id", to: "user_infos#destroyuser"

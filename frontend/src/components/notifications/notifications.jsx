@@ -53,11 +53,6 @@ async function instanceBadge() {
     console.error("Badge instance error", err);
   }
 }
-
-// async function incrementBadgeCount() {
-//     await navigator.setAppBadge(++unreadMessagesCount);
-// }
-
 async function resetBadge() {
   await navigator.setAppBadge(0);
   unreadMessagesCount = 0;

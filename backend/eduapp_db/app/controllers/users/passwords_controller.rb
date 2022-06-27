@@ -59,7 +59,11 @@ class Users::PasswordsController < Devise::PasswordsController
   def send_reset_password_link
     user = User.find_by(email: params[:email])
     if user.present?
+<<<<<<< HEAD
+      user.send(:set_reset_password_token) 
+=======
       user.send(:set_reset_password_token)
+>>>>>>> b64257ef013cdb2d174dae1a0c05e34be878e42c
       user.save
       @token = user.reset_password_token
       if @token.present?
