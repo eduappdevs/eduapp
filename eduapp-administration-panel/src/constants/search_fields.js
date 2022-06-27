@@ -2,6 +2,10 @@ function languageDetect(language) {
   if (!language) throw new Error("No language passed to fields.");
 }
 
+export function genericParser(x, field) {
+  return x[field];
+}
+
 // USERS
 
 // Users
@@ -39,6 +43,22 @@ export function getCourseFields(lang) {
   ];
 }
 
-export function parseCourseFields(c, field) {
-  return c[field];
+// Subjects
+export function getSubjectFields(lang) {
+  languageDetect(lang);
+  return [
+    ["id", lang.code],
+    ["subject_code", lang.subjectCode],
+    ["name", lang.name],
+    ["course_name", lang.linkedCourse],
+  ];
+}
+
+export function parseSubjectFields(s, field) {
+  switch (field) {
+    case "course_name":
+      return s.course.name;
+    default:
+      return s[field];
+  }
 }

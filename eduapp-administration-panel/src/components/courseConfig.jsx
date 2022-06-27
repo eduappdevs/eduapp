@@ -9,7 +9,7 @@ import StandardModal from "./modals/standard-modal/StandardModal";
 import PageSelect from "./pagination/PageSelect";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
-import { getCourseFields, parseCourseFields } from "../constants/search_fields";
+import { genericParser, getCourseFields } from "../constants/search_fields";
 import "../styles/courseConfig.css";
 
 export default function CourseConfig(props) {
@@ -29,7 +29,7 @@ export default function CourseConfig(props) {
   const [idDelete, setIdDelete] = useState();
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredCourses = useFilter(searchParams, courses, parseCourseFields);
+  const filteredCourses = useFilter(searchParams, courses, genericParser);
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
