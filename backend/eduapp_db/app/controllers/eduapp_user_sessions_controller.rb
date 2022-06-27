@@ -4,6 +4,7 @@ class EduappUserSessionsController < ApplicationController
   before_action :check_role!
 
   require "date"
+  require "securerandom"
 
   # GET /eduapp_user_sessions
   def index
@@ -21,6 +22,7 @@ class EduappUserSessionsController < ApplicationController
 
     if params[:page]
       @eduapp_user_sessions = query_paginate(@eduapp_user_sessions, params[:page])
+      @eduapp_user_sessions[:current_page] = serialize_each(@eduapp_user_sessions[:current_page], [:created_at, :updated_at, :subject_id], [ :subject])
     end
 
     render json: @eduapp_user_sessions
@@ -53,7 +55,13 @@ class EduappUserSessionsController < ApplicationController
       return
     end
 
-    if @eduapp_user_session.update(eduapp_user_session_params)
+    if @eduapp_user_session.update(session_name: params[:session_name],
+                                   session_start_date: params[:session_start_date],
+                                   session_end_date: params[:session_end_date],
+                                   streaming_platform: params[:streaming_platform],
+                                   resources_platform: params[:resources_platform],
+                                   session_chat_id: params[:session_chat_id],
+                                   subject_id: params[:subject_id], batch_id: nil)
       render json: @eduapp_user_session
     else
       render json: @eduapp_user_session.errors, status: :unprocessable_entity
@@ -66,6 +74,10 @@ class EduappUserSessionsController < ApplicationController
       return
     end
     @eduapp_user_session.destroy
+  end
+
+  def destroy_batch
+    EduappUserSession.where(batch_id: params[:batch_id]).destroy_all
   end
 
   def session_batch_load
@@ -127,9 +139,12 @@ class EduappUserSessionsController < ApplicationController
       end
     end
 
+    session_start_time = params[:session_start_date].split("T")[1]
+    session_end_time = params[:session_end_date].split("T")[1]
+    batch_id = SecureRandom.uuid
+    subjectId = Subject.where(subject_code: params[:subject_code]).first.id
+
     new_session_days.each do |day|
-      session_start_time = params[:session_start_date].split("T")[1]
-      session_end_time = params[:session_end_date].split("T")[1]
       @eduapp_user_session = EduappUserSession.new(
         session_name: params[:session_name],
         session_start_date: day.to_s + "T" + session_start_time,
@@ -137,14 +152,44 @@ class EduappUserSessionsController < ApplicationController
         resources_platform: params[:resources_platform],
         streaming_platform: params[:streaming_platform],
         session_chat_id: params[:session_chat_id],
-        subject_id: params[:subject_id],
+        subject_id: subjectId,
+        batch_id: batch_id,
       )
+
       if !@eduapp_user_session.save
         render json: @eduapp_user_session.errors, status: :unprocessable_entity and return
       end
     end
     render json: @eduapp_user_session
   end
+
+  def update_batch
+    if params[:batch_id].nil?
+      render json: { error: "No id provided" }, status: :unprocessable_entity and return
+    end
+
+    sessionIDUpdate = []
+
+    EduappUserSession.all.each do |session|
+      if session.batch_id === params[:batch_id]
+        sessionIDUpdate.append(session.id)
+      end
+    end
+
+    if EduappUserSession.where(id: sessionIDUpdate).update(
+      session_name: params[:session_name],
+      resources_platform: params[:resources_platform],
+      streaming_platform: params[:streaming_platform],
+      session_chat_id: params[:session_chat_id],
+      subject_id: params[:subject_id],
+    )
+      render json: { message: "Successfully updated sessions" }
+    else
+      render json: { error: "Failed to update sessions" }, status: :unprocessable_entity
+    end
+  end
+
+  private
 
   def subject_in_user_course(s_id)
     c_id = Subject.find(s_id).course_id

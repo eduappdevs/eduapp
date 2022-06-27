@@ -1,6 +1,10 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json
 
+  def new
+    return render json: { error: "Method not allowed" }, status: :method_not_allowed
+  end
+
   def create
     if UserInfo.all.where(user_role_id: UserRole.where(name: "eduapp-admin").first.id).count > 0
       if !check_perms_write!(get_user_roles(params[:requester_id]).perms_users) || params[:requester_id].nil?
@@ -52,6 +56,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
         user_name: resource.email.split("@")[0],
         user_role_id: UserRole.where(name: createParams[:user_role]).first.id,
       )
+
+      calendar_annotation = CalendarAnnotation.where(isPop: true)
+
+      if calendar_annotation.count > 0
+        respective_userinfo.calendar_event = calendar_annotation.pluck(:id)
+      end
 
       if respective_userinfo.save
         return [respective_userinfo, 200]

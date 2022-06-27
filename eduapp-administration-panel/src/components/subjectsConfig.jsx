@@ -4,13 +4,24 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import * as COURSESERVICE from "../services/course.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import PageSelect from "./pagination/PageSelect";
+import "../styles/subjectsConfig.css";
 
 export default function SubjectsConfig(props) {
   const [subjects, setSubjects] = useState(null);
   const [courses, setCourses] = useState([]);
+
+  const [maxPages, setMaxPages] = useState(1);
   const [search, setSearch] = useState("");
+
   const [changeColor, setChangeColor] = useState(false);
-  const [newColor] = useState();
+  const [newColor, setNewColor] = useState();
+  const [newCode, setNewCode] = useState();
+  const [changeCode, setChangeCode] = useState(false);
+  const [newName, setNewName] = useState();
+  const [changeName, setChangeName] = useState(false);
+  const [newDescription, setNewDescription] = useState();
+  const [changeDescription, setChangeDescription] = useState(false);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -23,40 +34,38 @@ export default function SubjectsConfig(props) {
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
-  const fetchSubjects = () => {
-    API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubjects().then((sjs) => {
-        setSubjects(sjs.data);
-        course_filter.subject = sjs.data;
-      });
-    }).then(async (e) => {
-      if (e) {
-        await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The subjects could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-      }
-    });
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
   };
 
   const switchSaveState = (state) => {
     if (state) {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "scroll";
       document
         .getElementById("commit-loader-2")
         .classList.remove("commit-loader-hide");
       document.getElementById("add-svg").classList.add("commit-loader-hide");
     } else {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
       document.getElementById("add-svg").classList.remove("commit-loader-hide");
       document
         .getElementById("commit-loader-2")
         .classList.add("commit-loader-hide");
     }
+  };
+
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
   };
 
   const fetchCourses = () => {
@@ -67,32 +76,31 @@ export default function SubjectsConfig(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The courses could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
+        connectionAlert();
       }
     });
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
 
   const createSubject = () => {
+    switchEditState(false);
+    let subject_code = document.getElementById("sj_subjectCode").value;
     let name = document.getElementById("sj_name").value;
     let desc = document.getElementById("sj_desc").value;
     let color = document.getElementById("sj_color").value;
     let sel_course = document.getElementById("course_chooser").value;
 
-    let info = [name, desc, color, sel_course];
+    let info = [subject_code, name, desc, color, sel_course];
 
     let valid = true;
     for (let i of info) {
-      if (i.length < 2 && i === "-") {
+      if (i.length < 2 && i === "-" && i === "") {
         valid = false;
         break;
       }
@@ -101,60 +109,72 @@ export default function SubjectsConfig(props) {
     if (valid) {
       API.asynchronizeRequest(function () {
         SUBJECTSERVICE.createSubject({
+          subject_code: subject_code,
           name: name,
           description: desc,
           color: color,
           course_id: sel_course,
         })
-          .then(() => {
-            fetchSubjects();
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The calendar events was created successfully.");
-            switchSaveState(true);
+          .then((e) => {
+            if (e) {
+              fetchSubjectPage(1);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(props.language.creationCompleted);
+              switchSaveState(true);
+            }
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              alertCreate();
+              setPopup(true);
+              setPopupText(props.language.creationFailed);
+              setPopupType("error");
+              switchSaveState(true);
             }
           });
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The subject could not be published, check if you have an internet connection."
-          );
-          setPopupIcon("error");
+          connectionAlert();
         }
       });
-    } else alertCreate();
+    } else {
+      alertCreate();
+    }
   };
 
   const confirmDeleteEvent = async (id) => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this subject?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
   };
 
   const showDeleteError = () => {
+    switchEditState(false);
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The subject could not be deleted.");
+    setPopupText(props.language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
   const deleteSubject = (id) => {
+    switchEditState(false);
     //eliminar sessiones + modal de aviso y mostrar las sessiones que se eliminarán
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.deleteSubject(id)
         .then(() => {
-          fetchSubjects();
+          fetchSubjectPage(1);
+          setPopup(true);
+          setPopupType("info");
+          setPopupText(props.language.deleteAlertCompleted);
+          switchSaveState(false);
+          setIsConfirmDelete(false);
         })
         .catch(async (e) => {
           if (e) {
@@ -177,13 +197,16 @@ export default function SubjectsConfig(props) {
 
   const showEditOptionSubject = (e) => {
     if (e.target.tagName === "svg") {
-      let name =
+      let subject_code =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
+      let name =
         e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let color =
+      let description =
         e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+      let color =
+        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
 
+      subject_code.disabled = false;
       name.disabled = false;
       description.disabled = false;
       color.disabled = false;
@@ -198,15 +221,20 @@ export default function SubjectsConfig(props) {
       cancelButton.style.display = "block";
     } else {
       if (e.target.tagName === "path") {
-        let name =
+        let subject_code =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
             .childNodes[0];
-        let description =
+        let name =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
             .childNodes[0];
-        let color =
+        let description =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
             .childNodes[0];
+        let color =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
+            .childNodes[0];
+
+        subject_code.disabled = false;
         name.disabled = false;
         description.disabled = false;
         color.disabled = false;
@@ -224,11 +252,13 @@ export default function SubjectsConfig(props) {
           e.target.parentNode.parentNode.parentNode.childNodes[3];
         cancelButton.style.display = "block";
       } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let code = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let name = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
         let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let color = e.target.parentNode.parentNode.childNodes[3].childNodes[0];
+          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
+        let color = e.target.parentNode.parentNode.childNodes[4].childNodes[0];
 
+        code.disabled = false;
         name.disabled = false;
         description.disabled = false;
         color.disabled = false;
@@ -245,21 +275,29 @@ export default function SubjectsConfig(props) {
   };
 
   const editSubject = (e, s) => {
+    switchEditState(false);
     if (e.target.tagName === "svg") {
-      let name =
+      let subject_code =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
+      let name =
         e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
+      let description =
+        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
       let color =
         e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
 
+      let inputCode = document.getElementById("inputSubjectCode_" + s.id).value;
       let inputName = document.getElementById("inputName_" + s.id).value;
       let inputDescription = document.getElementById(
         "inputDescription_" + s.id
       ).value;
       let inputColor = document.getElementById("inputColor_" + s.id).value;
 
-      let editTitle, editColor, editDescription;
+      let editCode, editTitle, editColor, editDescription;
+
+      if (inputCode !== "" && inputCode !== s.code) {
+        editCode = inputCode;
+      } else editCode = s.code;
 
       if (inputName !== "" && inputName !== s.name) {
         editTitle = inputName;
@@ -285,76 +323,82 @@ export default function SubjectsConfig(props) {
       API.asynchronizeRequest(function () {
         SUBJECTSERVICE.editSubject({
           id: s.id,
+          subject_code: editCode,
           name: editTitle,
           description: editDescription,
           color: editColor,
           course_id: s.course_id,
         })
-          .then(() => {
-            fetchSubjects();
+          .then((error) => {
+            if (error) {
+              fetchSubjectPage(1);
+              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+              buttonDelete.style.display = "block";
+              let button = e.target.parentNode.parentNode.childNodes[1];
+              button.style.display = "block";
+              let checkButton = e.target.parentNode.parentNode.childNodes[2];
+              checkButton.style.display = "none";
+              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+              subject_code.disabled = true;
+              cancelButton.style.display = "none";
+              name.disabled = true;
+              color.disabled = true;
+              description.disabled = true;
 
-            let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-            buttonDelete.style.display = "block";
-            let button = e.target.parentNode.parentNode.childNodes[1];
-            button.style.display = "block";
-            let checkButton = e.target.parentNode.parentNode.childNodes[2];
-            checkButton.style.display = "none";
-            let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-            cancelButton.style.display = "none";
-            name.disabled = true;
-            color.disabled = true;
-            description.disabled = true;
-
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The subject was edited successfully.");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(props.language.editAlertCompleted);
+              switchSaveState(false);
+              setIsConfirmDelete(false);
+            }
           })
-          .catch(async (e) => {
-            if (e) {
+          .catch(async (error) => {
+            if (error) {
               await interceptExpiredToken(e);
-              setPopupText(
-                "The subject could not be edited, check if you entered the correct fields."
-              );
+              setPopupText(props.language.editAlertFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
               setIsConfirmDelete(false);
             }
           });
-      }).then(async (e) => {
-        if (e) {
+      }).then(async (error) => {
+        if (error) {
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The calendar session could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          setIsConfirmDelete(false);
-
-          switchSaveState(false);
+          connectionAlert();
         }
       });
     } else {
       if (e.target.tagName === "path") {
-        let name =
+        let code =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
             .childNodes[0];
-        let description =
+        let name =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
             .childNodes[0];
-        let color =
+        let description =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
             .childNodes[0];
+        let color =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
+            .childNodes[0];
 
+        let inputSubjectCode = document.getElementById(
+          "inputSubjectCode_" + s.id
+        ).value;
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputDescription = document.getElementById(
           "inputDescription_" + s.id
         ).value;
         let inputColor = document.getElementById("inputColor_" + s.id).value;
 
-        let editTitle, editColor, editDescription;
+        let editCode, editTitle, editColor, editDescription;
+
+        if (inputSubjectCode !== "" && inputSubjectCode !== s.subject_code) {
+          editCode = inputSubjectCode;
+        } else {
+          editCode = s.subject_code;
+        }
 
         if (inputName !== "" && inputName !== s.name) {
           editTitle = inputName;
@@ -380,72 +424,77 @@ export default function SubjectsConfig(props) {
         API.asynchronizeRequest(function () {
           SUBJECTSERVICE.editSubject({
             id: s.id,
+            subject_code: editCode,
             name: editTitle,
             description: editDescription,
             color: editColor,
             course_id: s.course_id,
           })
-            .then(() => {
-              fetchSubjects();
-
-              let buttonDelete =
-                e.target.parentNode.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button =
-                e.target.parentNode.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              description.disabled = true;
-              color.disabled = true;
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The subject was edited successfully.");
-              switchSaveState(false);
-              setIsConfirmDelete(false);
+            .then((error) => {
+              if (error) {
+                fetchSubjectPage(1);
+                let buttonDelete =
+                  e.target.parentNode.parentNode.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button =
+                  e.target.parentNode.parentNode.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                code.disabled = true;
+                name.disabled = true;
+                description.disabled = true;
+                color.disabled = true;
+                setPopup(true);
+                setPopupType("info");
+                setPopupText(props.language.editAlertCompleted);
+                switchSaveState(false);
+                setIsConfirmDelete(false);
+              }
             })
-            .catch(async (e) => {
-              if (e) {
+            .catch(async (error) => {
+              if (error) {
                 await interceptExpiredToken(e);
-                setPopupText(
-                  "The subject could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
                 setIsConfirmDelete(false);
               }
             });
-        }).then(async (e) => {
-          if (e) {
+        }).then(async (error) => {
+          if (error) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The calendar session could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+            connectionAlert();
           }
         });
       } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let subject_code =
+          e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let name = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
         let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let color = e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-
+          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
+        let color = e.target.parentNode.parentNode.childNodes[4].childNodes[0];
+        let inputCode = document.getElementById(
+          "inputSubjectCode_" + s.id
+        ).value;
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputDescription = document.getElementById(
           "inputDescription_" + s.id
         ).value;
         let inputColor = document.getElementById("inputColor_" + s.id).value;
 
-        let editTitle, editColor, editDescription;
+        let editCode, editTitle, editColor, editDescription;
+
+        if (inputCode !== "" && inputCode !== s.subject_code) {
+          editCode = inputCode;
+        } else {
+          editCode = s.subject_code;
+        }
 
         if (inputName !== "" && inputName !== s.name) {
           editTitle = inputName;
@@ -471,52 +520,49 @@ export default function SubjectsConfig(props) {
         API.asynchronizeRequest(function () {
           SUBJECTSERVICE.editSubject({
             id: s.id,
+            subject_code: editCode,
             name: editTitle,
             description: editDescription,
             color: editColor,
             course_id: s.course_id,
           })
-            .then(() => {
-              fetchSubjects();
-              let buttonDelete = e.target.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              description.disabled = true;
-              color.disabled = true;
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The subject was edited successfully.");
-              switchSaveState(false);
-              setIsConfirmDelete(false);
+            .then((error) => {
+              if (error) {
+                fetchSubjectPage(1);
+                console.log(e.target.parentNode);
+                let buttonDelete = e.target.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button = e.target.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton = e.target.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton = e.target.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                subject_code.disabled = true;
+                name.disabled = true;
+                description.disabled = true;
+                color.disabled = true;
+                setPopup(true);
+                setPopupType("info");
+                setPopupText(props.language.editAlertCompleted);
+                switchSaveState(false);
+                setIsConfirmDelete(false);
+              }
             })
-            .catch(async (e) => {
-              if (e) {
+            .catch(async (error) => {
+              if (error) {
                 await interceptExpiredToken(e);
-                setPopupText(
-                  "The subject could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
                 setIsConfirmDelete(false);
               }
             });
-        }).then(async (e) => {
-          if (e) {
+        }).then(async (error) => {
+          if (error) {
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The calendar session could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+            connectionAlert();
           }
         });
       }
@@ -525,12 +571,15 @@ export default function SubjectsConfig(props) {
 
   const closeEditSubject = (e) => {
     if (e.target.tagName === "svg") {
-      let name =
+      let subejct_code =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
+      let name =
         e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
+      let description =
+        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
       let color =
         e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+      subejct_code.disabled = true;
       name.disabled = true;
       description.disabled = true;
       color.disabled = true;
@@ -545,16 +594,19 @@ export default function SubjectsConfig(props) {
       cancelButton.style.display = "none";
     } else {
       if (e.target.tagName === "path") {
-        let name =
+        let subject_code =
           e.target.parentNode.parentNode.parentNode.parentNode.parentNode
             .childNodes[0].childNodes[1].childNodes[0];
-        let color =
+        let name =
           e.target.parentNode.parentNode.parentNode.parentNode.parentNode
             .childNodes[0].childNodes[2].childNodes[0];
         let description =
           e.target.parentNode.parentNode.parentNode.parentNode.parentNode
             .childNodes[0].childNodes[3].childNodes[0];
-
+        let color =
+          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            .childNodes[0].childNodes[4].childNodes[0];
+        subject_code.disable = true;
         name.disabled = true;
         description.disabled = true;
         color.disabled = true;
@@ -571,11 +623,14 @@ export default function SubjectsConfig(props) {
           e.target.parentNode.parentNode.parentNode.childNodes[3];
         cancelButton.style.display = "none";
       } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let subject_code =
+          e.target.parentNode.parentNode.childNodes[1].childNodes[0];
+        let name = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
         let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
+          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
         let color = e.target.parentNode.parentNode.childNodes[3].childNodes[0];
 
+        subject_code.disable = true;
         name.disabled = true;
         description.disabled = true;
         color.disabled = true;
@@ -592,9 +647,47 @@ export default function SubjectsConfig(props) {
     }
   };
 
+  const fetchSubjectPage = async (page) => {
+    API.asynchronizeRequest(function () {
+      SUBJECTSERVICE.pagedSubjects(page)
+        .then((us) => {
+          setMaxPages(us.data.total_pages);
+          setSubjects(us.data.current_page);
+          fetchCourses();
+          course_filter.subject = us.data;
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+        });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
+    });
+  };
+
   const handleChangeColor = (id) => {
     var content = document.getElementById("inputColor_" + id);
     setChangeColor(true);
+    return content.value;
+  };
+
+  const handleChangeName = (id) => {
+    var content = document.getElementById("inputName_" + id);
+    setChangeName(true);
+    return content.value;
+  };
+
+  const handleChangeDescription = (id) => {
+    var content = document.getElementById("inputDescription_" + id);
+    setChangeDescription(true);
+    return content.value;
+  };
+
+  const handleChangeCode = (id) => {
+    var content = document.getElementById("inputSubjectCode_" + id);
+    setChangeCode(true);
     return content.value;
   };
 
@@ -609,10 +702,11 @@ export default function SubjectsConfig(props) {
       return true;
     });
     setSubjects(filter);
+    fetchSubjectPage(1);
   };
 
   useEffect(() => {
-    fetchSubjects();
+    fetchSubjectPage(1);
     fetchCourses();
 
     document.addEventListener("filter_subject_course", (e) => {
@@ -629,11 +723,12 @@ export default function SubjectsConfig(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container">
+      <div className="schedulesesionslist-main-container" id="scroll">
         <table className="createTable">
           <thead>
             <tr>
               <th></th>
+              <th>{props.language.subjectCode}</th>
               <th>{props.language.name}</th>
               <th>{props.language.description}</th>
               <th>{props.language.color}</th>
@@ -683,6 +778,13 @@ export default function SubjectsConfig(props) {
                 </button>
               </td>
               <td>
+                <input
+                  type="text"
+                  id="sj_subjectCode"
+                  placeholder="Subject Code"
+                />
+              </td>
+              <td>
                 <input id="sj_name" type="text" placeholder="Name" />
               </td>
               <td>
@@ -708,273 +810,346 @@ export default function SubjectsConfig(props) {
             </tr>
           </tbody>
         </table>
+
         {subjects && subjects.length !== 0 ? (
-          <table className="eventList" style={{ marginTop: "50px" }}>
-            <thead>
-              <tr>
-                <th>{props.language.code}</th>
-                <th>{props.language.name}</th>
-                <th>{props.language.description}</th>
-                <th>{props.language.color}</th>
-                <th>{props.language.linkedCourse}</th>
-                <th>{props.language.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {subjects.map((sj) => {
-                if (search.length > 0) {
-                  console.log(sj.name, search);
-                  if (sj.name.toLowerCase().includes(search.toLowerCase())) {
-                    return (
-                      <tr key={sj.id}>
-                        <td>
-                          <input disabled type="text" value={sj.id} />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputName_${sj.id}`}
-                            disabled
-                            type="text"
-                            placeholder={sj.name}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputDescription_${sj.id}`}
-                            disabled
-                            type="text"
-                            placeholder={sj.description}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputColor_${sj.id}`}
-                            disabled
-                            type="color"
-                            value={changeColor === false ? sj.color : newColor}
-                            onChange={(e) => handleChangeColor(e, sj.id)}
-                          />
-                        </td>
-                        <td>
-                          <input disabled type="text" value={sj.course.name} />
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={() => {
-                              confirmDeleteEvent(sj.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionSubject(e, sj);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-pencil-square"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+          <>
+            <div className="notify-users">
+              <PageSelect
+                onPageChange={async (p) => fetchSubjectPage(p)}
+                maxPages={maxPages}
+              />
+            </div>
+            <div className="subjects-table-info">
+              <table className="eventList" style={{ marginTop: "15px" }}>
+                <thead>
+                  <tr>
+                    <th>{props.language.code}</th>
+                    <th>{props.language.subjectCode}</th>
+                    <th>{props.language.name}</th>
+                    <th>{props.language.description}</th>
+                    <th>{props.language.color}</th>
+                    <th>{props.language.linkedCourse}</th>
+                    <th>{props.language.actions}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {subjects.map((sj) => {
+                    if (search.length > 0) {
+                      if (
+                        sj.name.toLowerCase().includes(search.toLowerCase())
+                      ) {
+                        return (
+                          <tr key={sj.id}>
+                            <td>
+                              <input disabled type="text" value={sj.id} />
+                            </td>
+                            <td>
+                              <input
+                                id={`inputSubjectCode_${sj.id}`}
+                                disabled
+                                type="text"
+                                value={changeCode ? newCode : sj.subject_code}
+                                onChange={() => {
+                                  handleChangeCode(sj.id);
+                                }}
                               />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px", display: "none" }}
-                            onClick={(e) => {
-                              editSubject(e, sj);
+                            </td>
+
+                            <td>
+                              <input
+                                id={`inputName_${sj.id}`}
+                                disabled
+                                type="text"
+                                value={changeName ? newName : sj.name}
+                                onChange={() => {
+                                  handleChangeName(sj.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                id={`inputDescription_${sj.id}`}
+                                disabled
+                                type="text"
+                                value={
+                                  changeDescription
+                                    ? newDescription
+                                    : sj.description
+                                }
+                                onChange={() => {
+                                  handleChangeDescription(sj.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                id={`inputColor_${sj.id}`}
+                                disabled
+                                type="color"
+                                value={changeColor ? newColor : sj.color}
+                                onChange={(e) => {
+                                  handleChangeColor(e, sj.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                disabled
+                                type="text"
+                                value={sj.course.name}
+                              />
+                            </td>
+                            <td
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <button
+                                style={{ marginRight: "5px" }}
+                                onClick={() => {
+                                  confirmDeleteEvent(sj.id);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-trash3"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ marginRight: "5px" }}
+                                onClick={(e) => {
+                                  showEditOptionSubject(e, sj);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-pencil-square"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ marginRight: "5px", display: "none" }}
+                                onClick={(e) => {
+                                  editSubject(e, sj);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-check2"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ display: "none" }}
+                                onClick={(e) => {
+                                  closeEditSubject(e, sj);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-x-lg"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                                  />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                                  />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    } else {
+                      return (
+                        <tr key={sj.id}>
+                          <td>
+                            <input
+                              disabled
+                              type="text"
+                              value={shortUUID(sj.id)}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputSubjectCode_${sj.id}`}
+                              disabled
+                              type="text"
+                              value={changeCode ? newCode : sj.subject_code}
+                              onChange={() => {
+                                handleChangeCode(sj.id);
+                              }}
+                            />
+                          </td>
+
+                          <td>
+                            <input
+                              id={`inputName_${sj.id}`}
+                              disabled
+                              type="text"
+                              value={changeName ? newName : sj.name}
+                              onChange={() => {
+                                handleChangeName(sj.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputDescription_${sj.id}`}
+                              disabled
+                              type="text"
+                              value={
+                                changeDescription
+                                  ? newDescription
+                                  : sj.description
+                              }
+                              onChange={() => {
+                                handleChangeDescription(sj.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputColor_${sj.id}`}
+                              disabled
+                              type="color"
+                              value={changeColor ? newColor : sj.color}
+                              onChange={(e) => {
+                                handleChangeColor(e, sj.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              disabled
+                              type="text"
+                              value={sj.course.name}
+                            />
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
                             }}
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-check2"
-                              viewBox="0 0 16 16"
+                            <button
+                              style={{ marginRight: "5px" }}
+                              onClick={() => {
+                                confirmDeleteEvent(sj.id);
+                              }}
                             >
-                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditSubject(e, sj);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-x-lg"
-                              viewBox="0 0 16 16"
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ marginRight: "5px" }}
+                              onClick={(e) => {
+                                showEditOptionSubject(e, sj);
+                              }}
                             >
-                              <path
-                                fillRule="evenodd"
-                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                              />
-                              <path
-                                fillRule="evenodd"
-                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                              />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-                } else {
-                  return (
-                    <tr key={sj.id}>
-                      <td>
-                        <input disabled type="text" value={shortUUID(sj.id)} />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputName_${sj.id}`}
-                          disabled
-                          type="text"
-                          placeholder={sj.name}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputDescription_${sj.id}`}
-                          disabled
-                          type="text"
-                          placeholder={sj.description}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputColor_${sj.id}`}
-                          disabled
-                          type="color"
-                          value={changeColor === false ? sj.color : newColor}
-                          onChange={(e) => handleChangeColor(e, sj.id)}
-                        />
-                      </td>
-                      <td>
-                        <input disabled type="text" value={sj.course.name} />
-                      </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={() => {
-                            confirmDeleteEvent(sj.id);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={(e) => {
-                            showEditOptionSubject(e, sj);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px", display: "none" }}
-                          onClick={(e) => {
-                            editSubject(e, sj);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-check2"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ display: "none" }}
-                          onClick={(e) => {
-                            closeEditSubject(e, sj);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-x-lg"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                            />
-                            <path
-                              fillRule="evenodd"
-                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                            />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                }
-              })}
-            </tbody>
-          </table>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-pencil-square"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ marginRight: "5px", display: "none" }}
+                              onClick={(e) => {
+                                editSubject(e, sj);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-check2"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ display: "none" }}
+                              onClick={(e) => {
+                                closeEditSubject(e, sj);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-x-lg"
+                                viewBox="0 0 16 16"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                                />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                                />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : null}
       </div>
       <StandardModal
@@ -987,24 +1162,17 @@ export default function SubjectsConfig(props) {
           setPopup(false);
           setIsConfirmDelete(false);
           deleteSubject(idDelete);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
         }}
         onNoAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          switchEditState(true);
         }}
         onCloseAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
           switchSaveState();
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

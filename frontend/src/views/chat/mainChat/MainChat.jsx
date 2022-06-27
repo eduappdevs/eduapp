@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import ChatBubble from "./chatBubbles/ChatBubble";
 import AppHeader from "../../../components/appHeader/AppHeader";
@@ -10,12 +11,15 @@ import pushNotify from "../../../components/notifications/notifications";
 import EncryptionUtils from "../../../utils/EncryptionUtils";
 import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import useLanguage from "../../../hooks/useLanguage";
 import "./MainChat.css";
 
 const acInstance = new ChatsAC();
 let privKey = null;
 let pubKey = null;
 export default function MainChat() {
+  const language = useLanguage();
+
   const [chat, setChat] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessages, setNewMessages] = useState([]);
@@ -162,7 +166,7 @@ export default function MainChat() {
         <StandardModal
           show={showPopup}
           type={"warning"}
-          text={"Option under development."}
+          text={language.wip}
           iconFill
           hasIconAnimation
           hasTransition

@@ -1,20 +1,27 @@
 import React from "react";
 import MenuHeader from "../menuHeader/MenuHeader";
 import DarkModeChanger from "../../../components/DarkModeChanger";
+import LanguageManager from "../../../components/LanguageManager";
+import useLanguage from "../../../hooks/useLanguage";
 import "./MenuSettings.css";
 
-
 export default function MenuSettings() {
+  const language = useLanguage();
+
   return (
     <div className={"MenuSettings__main-container"}>
       <MenuHeader
         backTo={() => {
           window.location.href = "/menu";
         }}
-        location={"SETTINGS"}
+        location={language.menu_settings}
       />
       <ul>
-        <li >LANGUAGE</li>
+        <li className="language-switcher">
+          {language.language}
+          <LanguageManager />
+        </li>
+
         <li>
           <ul id={"darkModes"}>
             <li

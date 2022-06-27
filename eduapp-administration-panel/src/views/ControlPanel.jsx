@@ -19,6 +19,7 @@ import * as COURSESERVICE from "../services/course.service";
 import ResourcesConfig from "../components/ResourcesConfig";
 import "../styles/users.css";
 import "../styles/controlPanel.css";
+import UserRolesConfig from "../components/UserRolesConfig";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
@@ -66,14 +67,12 @@ export default function ControlPanel() {
       case "es":
         setLanguage(LANGUAGES.es);
         break;
-      case "en":
-        setLanguage(LANGUAGES.en);
-        break;
       case "pt":
         setLanguage(LANGUAGES.pt);
         break;
       default:
         setLanguage(LANGUAGES.en);
+        break;
     }
   };
 
@@ -126,6 +125,8 @@ export default function ControlPanel() {
             <ChatParticipantConfig search={search} language={language} />
           ) : location === "resources" ? (
             <ResourcesConfig search={search} language={language} />
+          ) : location === "userRoles" ? (
+            <UserRolesConfig language={language} />
           ) : (
             <></>
           )}

@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.string "annotation_title"
     t.string "annotation_description"
     t.boolean "isGlobal"
+    t.boolean "isPop"
     t.uuid "user_id", null: false
     t.uuid "subject_id"
     t.datetime "created_at", precision: 6, null: false
@@ -107,6 +108,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.string "streaming_platform"
     t.string "resources_platform"
     t.string "session_chat_id"
+    t.uuid "batch_id"
     t.uuid "subject_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -153,6 +155,7 @@ ActiveRecord::Schema.define(version: 16) do
   end
 
   create_table "subjects", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "subject_code"
     t.string "name"
     t.string "description"
     t.string "color"
@@ -176,6 +179,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.string "user_name"
     t.string "profile_image"
     t.uuid "teaching_list", default: [], array: true
+    t.uuid "calendar_event", default: [], array: true
     t.uuid "user_id"
     t.string "googleid"
     t.boolean "isLoggedWithGoogle", default: false

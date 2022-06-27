@@ -3,6 +3,9 @@ services:
   web:
     build: 
       context: .
-    image: eduapp/eduapp_web_admin
+    image: eduapp_project:admin
+    environment:
+      - REACT_APP_EDUAPP_SYSTEM_USER_PWD="system_eduapp"
+      - REACT_APP_BACKEND_ENDPOINT=http://localhost:3000
     ports:
       - "3002:3002"

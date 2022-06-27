@@ -20,9 +20,12 @@ import * as USER_SERVICE from "../../../services/user.service";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 import ChangePasswordButton from "../../../components/ChangePasswordButton";
 import useRole from "../../../hooks/useRole";
+import useLanguage from "../../../hooks/useLanguage";
 import "./ProfileSettings.css";
+import { useEffect } from "react";
 
 export default function ProfileSettings() {
+  const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let isAdmin = useRole(userInfo, "eduapp-admin");
   let isTeacher = useRole(userInfo, "eduapp-teacher");
@@ -31,10 +34,8 @@ export default function ProfileSettings() {
   const [userName, setUserName] = useState(null);
   const [changeImage, setChangeImage] = useState(null);
   const [displayImageWarning, setWarnDisplay] = useState("none");
-  const [imageWarningText, setWarningText] = useState(
-    "Image size is larger than 2MB"
-  );
-  const [saveText, setSaveText] = useState("SAVE CHANGES");
+  const [imageWarningText, setWarningText] = useState(language.image_too_big);
+  const [saveText, setSaveText] = useState(language.save);
   const [showPopup, setPopup] = useState(false);
 
   const changeImagePreview = (newPreview) => {
@@ -51,9 +52,9 @@ export default function ProfileSettings() {
             );
           setWarnDisplay("none");
           setChangeImage(newPreview.target.files[0]);
-        } else displayWarning("Image size is larger than 2MB");
-      } else displayWarning("No provided image");
-    } else displayWarning("File is not an image");
+        } else displayWarning(language.image_too_big);
+      } else displayWarning(language.chat_no_image);
+    } else displayWarning(language.file_not_image);
   };
 
   const displayWarning = (text) => {
@@ -84,12 +85,12 @@ export default function ProfileSettings() {
 
   const switchSaveState = (state) => {
     if (state) {
-      setSaveText("SAVING...");
+      setSaveText(language.saving);
       document
         .getElementById("commit-loader")
         .classList.remove("commit-loader-hide");
     } else {
-      setSaveText("SAVE CHANGES");
+      setSaveText(language.save);
       document
         .getElementById("commit-loader")
         .classList.add("commit-loader-hide");
@@ -138,13 +139,17 @@ export default function ProfileSettings() {
     }
   };
 
+  useEffect(() => {
+    setSaveText(language.save);
+  }, [language.save]);
+
   return (
     <div className="profileSettings_container">
       <MenuHeader
         backTo={() => {
           window.location.href = "/menu";
         }}
-        location={"PROFILE"}
+        location={language.menu_profile}
       />
       <div className="profileSettings_wrapper">
         <StandardModal
@@ -153,7 +158,7 @@ export default function ProfileSettings() {
           hasTransition
           hasIconAnimation
           type={"error"}
-          text={"The profile information could not be saved."}
+          text={language.menu_profile_error}
           onCloseAction={() => {
             setPopup(false);
           }}

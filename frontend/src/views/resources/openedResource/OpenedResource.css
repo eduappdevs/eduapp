@@ -175,6 +175,10 @@
 	opacity: 0.3;
 }
 
+.resources__NO_FILES {
+	font-size: 0.9rem;
+}
+
 .fileDownload-button {
 	padding: 10px 20px;
 	background-color: var(--orange);

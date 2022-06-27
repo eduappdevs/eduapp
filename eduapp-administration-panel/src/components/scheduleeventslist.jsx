@@ -5,23 +5,30 @@ import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as USER_SERVICE from "../services/user.service";
 import Input from "./Input";
 import { interceptExpiredToken } from "../utils/OfflineManager";
-import "../styles/scheduleeventslist.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
+import PageSelect from "./pagination/PageSelect";
+import "../styles/scheduleeventslist.css";
 
 export default function Scheduleeventslist(props) {
   const [subject, setSubject] = useState([]);
   const [events, setEvents] = useState([]);
   const [users, setUsers] = useState([]);
   const [isGlobal, setIsGlobal] = useState(false);
+  const [isPop, setIsPop] = useState(false);
+
+  const [maxPages, setMaxPages] = useState(1);
+
   const [newStartDate] = useState();
   const [newEndDate] = useState();
   const [newName] = useState();
   const [newDescription] = useState();
+  const [newIsPop] = useState();
 
   const [changeEndDate, setChangeEndDate] = useState(false);
   const [changeStartDate, setChangeStartDate] = useState(false);
   const [changeName, setChangeName] = useState(false);
   const [changeDescription, setChangeDescription] = useState(false);
+  const [changeIsPop, setChangeIsPop] = useState(false);
   const [subjectEdit, setSubjectEdit] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -38,15 +45,11 @@ export default function Scheduleeventslist(props) {
 
   const switchSaveState = (state) => {
     if (state) {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "scroll";
       document
         .getElementById("commit-loader-2")
         .classList.remove("commit-loader-hide");
       document.getElementById("add-svg").classList.add("commit-loader-hide");
     } else {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
       document.getElementById("add-svg").classList.remove("commit-loader-hide");
       document
         .getElementById("commit-loader-2")
@@ -54,11 +57,30 @@ export default function Scheduleeventslist(props) {
     }
   };
 
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "hidden";
+    }
+  };
+
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
   const fetchSubjects = () => {
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.fetchSubject()
         .then((res) => {
-          res.data.shift();
           setSubject(res.data);
         })
         .catch(async (e) => {
@@ -67,12 +89,7 @@ export default function Scheduleeventslist(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The subjects could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -85,31 +102,24 @@ export default function Scheduleeventslist(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The users could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (pages) => {
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.fetchEvents().then((event) => {
-        setEvents(event.data);
-        events_filter.events = event.data;
+      SCHEDULESERVICE.pagedEvents(pages).then((event) => {
+        setMaxPages(event.data.total_pages);
+        setEvents(event.data.current_page);
+        fetchSubjects();
+        fetchUsers();
+        events_filter.events = event.data.current_page;
       });
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The calendar events could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -117,7 +127,7 @@ export default function Scheduleeventslist(props) {
   const listSubject = (sub) => {
     let list_subject = [];
     subject.map((s) => {
-      if (s.id !== parseInt(sub)) {
+      if (s.id !== sub.split("_")[0]) {
         list_subject.push(s);
       }
       return true;
@@ -126,14 +136,15 @@ export default function Scheduleeventslist(props) {
   };
 
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
 
   const AddNewEvent = async (e) => {
     e.preventDefault();
-    switchSaveState(true);
+    switchEditState(false);
 
     const context = [
       "annotation_title",
@@ -141,6 +152,7 @@ export default function Scheduleeventslist(props) {
       "annotation_start_date",
       "annotation_end_date",
       "isGlobal",
+      "isPop",
       "user_id",
       "subject_id",
     ];
@@ -154,13 +166,12 @@ export default function Scheduleeventslist(props) {
     let subject = !isGlobal
       ? document.getElementById("e_subjectId").value
       : (await SUBJECTSERVICE.getGeneralSubject()).data[0].id;
-
     if (
       name !== "" &&
       author !== "" &&
       start_date !== "" &&
       end_date !== "" &&
-      subject !== "Choose subject"
+      subject !== props.language.chooseSubject
     ) {
       json.push(
         name,
@@ -168,6 +179,7 @@ export default function Scheduleeventslist(props) {
         start_date,
         end_date,
         isGlobal,
+        isPop,
         author,
         subject
       );
@@ -180,27 +192,40 @@ export default function Scheduleeventslist(props) {
     for (let i = 0; i <= context.length - 1; i++) {
       eventJson[context[i]] = json[i];
     }
+
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.createEvent(eventJson)
-        .then(() => {
-          fetchEvents();
-          setPopup(true);
-          setPopupType("info");
-          setPopupText("The calendar events was created successfully.");
-          switchSaveState(false);
+        .then((e) => {
+          if (e) {
+            let user = localStorage
+              .getItem("offline_user")
+              .split("user_id")[1]
+              .split('":"')[1]
+              .split('"')[0];
+            USER_SERVICE.global_events(user).then((x) => {
+              if (x) {
+                setPopup(true);
+                setPopupType("info");
+                setPopupText(props.language.creationCompleted);
+                fetchEvents(1);
+              }
+            });
+          }
         })
         .catch(async (e) => {
           if (e) {
+            console.log(e);
             await interceptExpiredToken(e);
-            setPopupText(
-              "The calendar session could not be created, check if you entered the correct fields."
-            );
+            setPopupText(props.language.creationFailed);
             setPopupIcon("error");
-            switchSaveState(false);
             setPopup(true);
-            switchSaveState(false);
           }
         });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
     });
   };
 
@@ -209,46 +234,82 @@ export default function Scheduleeventslist(props) {
     setIsGlobal(checkbox);
   };
 
-  const confirmDeleteEvent = async (id) => {
+  const isPopEvent = () => {
+    let checkbox = document.getElementById("e_isPop").checked;
+    setIsPop(checkbox);
+  };
+
+  const confirmDeleteEvent = async (e) => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this event?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
-    setIdDelete(id);
+    setIdDelete(e);
   };
 
   const showDeleteError = () => {
+    switchEditState(false);
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText("The event could not be deleted.");
+    setPopupText(props.language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
-  const deleteEvent = async (id) => {
+  const deleteEvent = async (e) => {
+    switchEditState(false);
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.deleteEvent(id)
-        .then(() => {
-          fetchEvents();
-        })
-        .catch(async (e) => {
-          await interceptExpiredToken(e);
-          showDeleteError();
-        });
-    }).then(async (e) => {
-      if (e) {
-        await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The calendar event could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+      if (e.isGlobal && e.isPop) {
+        let user = localStorage
+          .getItem("offline_user")
+          .split("user_id")[1]
+          .split('":"')[1]
+          .split('"')[0];
+        USER_SERVICE.remove_global_events(user, e.id)
+          .then((x) => {
+            if (x) {
+              SCHEDULESERVICE.deleteEvent(e.id).then((f) => {
+                if (f) {
+                  setPopup(true);
+                  setPopupType("info");
+                  setPopupText(props.language.deleteAlertCompleted);
+                  setIsConfirmDelete(false);
+                  fetchEvents(1);
+                }
+              });
+            }
+          })
+          .catch(async (error) => {
+            await interceptExpiredToken(error);
+            showDeleteError();
+          });
+      } else {
+        SCHEDULESERVICE.deleteEvent(e.id)
+          .then((x) => {
+            if (x) {
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(props.language.deleteAlertCompleted);
+              setIsConfirmDelete(false);
+              fetchEvents(1);
+            }
+          })
+          .catch(async (error) => {
+            await interceptExpiredToken(error);
+            showDeleteError();
+          });
+      }
+    }).then(async (error) => {
+      if (error) {
+        await interceptExpiredToken(error);
+        connectionAlert();
       }
     });
   };
   const editEvent = (e, s) => {
+    switchEditState(false);
     if (e.target.tagName === "svg") {
       let name =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -260,6 +321,9 @@ export default function Scheduleeventslist(props) {
         e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
       let subject =
         e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
+      let isPop =
+        e.target.parentNode.parentNode.parentNode.childNodes[8].childNodes[0];
+
       let inputName = document.getElementById("inputName_" + s.id).value;
       let inputStartDate = document.getElementById(
         "inputStartDate_" + s.id
@@ -269,7 +333,13 @@ export default function Scheduleeventslist(props) {
         "inputDescription_" + s.id
       ).value;
 
-      let editTitle, editStartDate, editEndDate, editDescription, editSubject;
+      let editTitle,
+        editStartDate,
+        editEndDate,
+        editDescription,
+        editSubject,
+        editIsGlobal,
+        editIsPop;
 
       if (inputName !== "" && inputName !== s.annotation_title) {
         editTitle = inputName;
@@ -297,18 +367,26 @@ export default function Scheduleeventslist(props) {
       } else {
         editDescription = s.annotation_description;
       }
-      if (subject !== undefined && subject !== s.subject_id) {
+
+      if (subject !== undefined && subject !== null) {
         let inputSubject = document.getElementById(
           "inputSubjectID_" + s.id
         ).value;
+
         if (inputSubject !== "" && inputSubject !== s.subject_id) {
-          editSubject = inputSubject;
+          editSubject = inputSubject.split("_")[0];
         } else {
           editSubject = s.subject_id;
         }
-        parseInt(editSubject);
-      } else {
-        editSubject = s.subject_id;
+        let inputPop = document.getElementById("inputIsPop_" + s.id).checked;
+
+        if (inputSubject.split("_")[1] !== "General") {
+          editIsGlobal = false;
+          editIsPop = inputPop;
+        } else {
+          editIsGlobal = true;
+          editIsPop = false;
+        }
       }
 
       API.asynchronizeRequest(function () {
@@ -318,41 +396,42 @@ export default function Scheduleeventslist(props) {
           annotation_end_date: editEndDate,
           annotation_title: editTitle,
           annotation_description: editDescription,
-          isGlobal: s.isGlobal,
+          isGlobal: editIsGlobal,
+          isPop: editIsPop,
           user_id: s.user_id,
           subject_id: editSubject,
         })
-          .then(() => {
-            fetchEvents();
-            fetchSubjects();
-            let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-            buttonDelete.style.display = "block";
-            let button = e.target.parentNode.parentNode.childNodes[1];
-            button.style.display = "block";
-            let checkButton = e.target.parentNode.parentNode.childNodes[2];
-            checkButton.style.display = "none";
-            let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-            cancelButton.style.display = "none";
-            name.disabled = true;
-            startDate.disabled = true;
-            endDate.disabled = true;
-            description.disabled = true;
-            if (subject !== undefined && subject !== null) {
-              subject.disabled = true;
+          .then((c) => {
+            if (c) {
+              fetchEvents(1);
+              fetchSubjects();
+              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+              buttonDelete.style.display = "block";
+              let button = e.target.parentNode.parentNode.childNodes[1];
+              button.style.display = "block";
+              let checkButton = e.target.parentNode.parentNode.childNodes[2];
+              checkButton.style.display = "none";
+              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+              cancelButton.style.display = "none";
+              name.disabled = true;
+              startDate.disabled = true;
+              endDate.disabled = true;
+              description.disabled = true;
+              if (subject !== undefined && subject !== null) {
+                subject.disabled = true;
+              }
+              isPop.disabled = true;
+              setIsConfirmDelete(false);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(props.language.editAlertCompleted);
             }
-            setIsConfirmDelete(false);
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The calendar event was edited successfully.");
           })
           .catch(async (error) => {
             if (error) {
               await interceptExpiredToken(e);
-              setPopupText(
-                "The calendar session could not be edited, check if you entered the correct fields."
-              );
+              setPopupText(props.language.editAlertFailed);
               setPopupIcon("error");
-              switchSaveState(false);
               setPopup(true);
               setIsConfirmDelete(false);
             }
@@ -360,13 +439,7 @@ export default function Scheduleeventslist(props) {
       }).catch(async (error) => {
         if (error) {
           await interceptExpiredToken(error);
-          setPopup(true);
-          setPopupText(
-            "The calendar event could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+          connectionAlert();
         }
       });
     } else {
@@ -386,6 +459,9 @@ export default function Scheduleeventslist(props) {
         let subject =
           e.target.parentNode.parentNode.parentNode.parentNode.childNodes[7]
             .childNodes[0];
+        let isPop =
+          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[8]
+            .childNodes[0];
 
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputStartDate = document.getElementById(
@@ -398,7 +474,13 @@ export default function Scheduleeventslist(props) {
           "inputDescription_" + s.id
         ).value;
 
-        let editTitle, editStartDate, editEndDate, editDescription, editSubject;
+        let editTitle,
+          editStartDate,
+          editEndDate,
+          editDescription,
+          editSubject,
+          editIsGlobal,
+          editIsPop;
 
         if (inputName !== "" && inputName !== s.annotation_title) {
           editTitle = inputName;
@@ -429,18 +511,27 @@ export default function Scheduleeventslist(props) {
         } else {
           editDescription = s.annotation_description;
         }
+
         if (subject !== undefined && subject !== null) {
           let inputSubject = document.getElementById(
             "inputSubjectID_" + s.id
           ).value;
-          if (inputSubject !== "" && inputSubject !== s.subject_id) {
-            editSubject = inputSubject;
+
+          if (inputSubject !== s.subject_id) {
+            editSubject = inputSubject.split("_")[0];
           } else {
             editSubject = s.subject_id;
           }
-          parseInt(editSubject);
-        } else {
-          editSubject = s.subject_id;
+
+          let inputPop = document.getElementById("inputIsPop_" + s.id).checked;
+
+          if (inputSubject.split("_")[1] !== "General") {
+            editIsGlobal = false;
+            editIsPop = inputPop;
+          } else {
+            editIsGlobal = true;
+            editIsPop = false;
+          }
         }
 
         API.asynchronizeRequest(function () {
@@ -450,58 +541,54 @@ export default function Scheduleeventslist(props) {
             annotation_end_date: editEndDate,
             annotation_title: editTitle,
             annotation_description: editDescription,
-            isGlobal: s.isGlobal,
+            isGlobal: editIsGlobal,
+            isPop: editIsPop,
             user_id: s.user_id,
             subject_id: editSubject,
           })
-            .then(() => {
-              fetchEvents();
-              fetchSubjects();
+            .then((c) => {
+              if (c) {
+                fetchEvents(1);
+                fetchSubjects();
 
-              let buttonDelete =
-                e.target.parentNode.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button =
-                e.target.parentNode.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              startDate.disabled = true;
-              endDate.disabled = true;
-              description.disabled = true;
-              if (subject !== undefined && subject !== null) {
-                subject.disabled = true;
+                let buttonDelete =
+                  e.target.parentNode.parentNode.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button =
+                  e.target.parentNode.parentNode.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton =
+                  e.target.parentNode.parentNode.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                name.disabled = true;
+                startDate.disabled = true;
+                endDate.disabled = true;
+                description.disabled = true;
+                isPop.disabled = true;
+                if (subject !== undefined && subject !== null) {
+                  subject.disabled = true;
+                }
+                setIsConfirmDelete(false);
+                setPopup(true);
+                setPopupType("info");
+                setPopupText(props.language.editAlertCompleted);
               }
-              setIsConfirmDelete(false);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The calendar event was edited successfully.");
             })
             .catch(async (error) => {
               if (error) {
-                await interceptExpiredToken(e);
-                setPopupText(
-                  "The calendar event could not be edited, check if you entered the correct fields."
-                );
+                await interceptExpiredToken(error);
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
-                switchSaveState(false);
                 setPopup(true);
               }
             });
-        }).catch((error) => {
+        }).catch(async (error) => {
           if (error) {
-            setIsConfirmDelete(false);
-            setPopup(true);
-            setPopupText(
-              "The calendar event could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
+            await interceptExpiredToken(error);
+            connectionAlert();
           }
         });
       } else {
@@ -512,6 +599,9 @@ export default function Scheduleeventslist(props) {
           e.target.parentNode.parentNode.childNodes[4].childNodes[0];
         let endDate =
           e.target.parentNode.parentNode.childNodes[5].childNodes[0];
+        let subject =
+          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
+        let isPop = e.target.parentNode.parentNode.childNodes[7].childNodes[0];
 
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputStartDate = document.getElementById(
@@ -524,7 +614,13 @@ export default function Scheduleeventslist(props) {
           "inputDescription_" + s.id
         ).value;
 
-        let editTitle, editStartDate, editEndDate, editDescription, editSubject;
+        let editTitle,
+          editStartDate,
+          editEndDate,
+          editDescription,
+          editSubject,
+          editIsGlobal,
+          editIsPop;
 
         if (inputName !== "" && inputName !== s.annotation_title) {
           editTitle = inputName;
@@ -555,21 +651,30 @@ export default function Scheduleeventslist(props) {
         } else {
           editDescription = s.annotation_description;
         }
-        let subject =
-          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
+
         if (subject !== undefined && subject !== null) {
-          let inputSubject = document.getElementById(
-            "inputSubjectID_" + s.id
-          ).value;
-          if (inputSubject !== "" && inputSubject !== s.subject_id) {
+          let inputSubject = document
+            .getElementById("inputSubjectID_" + s.id)
+            .value.split("_")[0];
+
+          if (inputSubject !== s.subject_id) {
             editSubject = inputSubject;
           } else {
             editSubject = s.subject_id;
           }
-          parseInt(editSubject);
-        } else {
-          editSubject = s.subject_id;
+
+          let inputPop = document.getElementById("inputIsPop_" + s.id).checked;
+
+          if (inputSubject.split("_")[1] !== "General") {
+            editIsGlobal = false;
+            console.log(newIsPop);
+            editIsPop = inputPop;
+          } else {
+            editIsGlobal = true;
+            editIsPop = false;
+          }
         }
+
         API.asynchronizeRequest(function () {
           SCHEDULESERVICE.editEvent({
             id: s.id,
@@ -577,17 +682,18 @@ export default function Scheduleeventslist(props) {
             annotation_end_date: editEndDate,
             annotation_title: editTitle,
             annotation_description: editDescription,
-            isGlobal: s.isGlobal,
+            isGlobal: editIsGlobal,
+            isPop: editIsPop,
             user_id: s.user_id,
             subject_id: editSubject,
           })
-            .then((error) => {
-              if (error) {
+            .then((c) => {
+              if (c) {
                 setIsConfirmDelete(false);
                 setPopup(true);
                 setPopupType("info");
-                setPopupText("The calendar event was edited successfully.");
-                fetchEvents();
+                setPopupText(props.language.editAlertCompleted);
+                fetchEvents(1);
                 fetchSubjects();
                 let buttonDelete = e.target.parentNode.childNodes[0];
                 buttonDelete.style.display = "block";
@@ -601,6 +707,7 @@ export default function Scheduleeventslist(props) {
                 startDate.disabled = true;
                 endDate.disabled = true;
                 description.disabled = true;
+                isPop.disabled = true;
                 if (subject !== undefined && subject !== null) {
                   subject.disabled = true;
                 }
@@ -611,24 +718,15 @@ export default function Scheduleeventslist(props) {
                 await interceptExpiredToken(error);
                 console.log(error);
                 setIsConfirmDelete(false);
-                setPopupText(
-                  "The calendar event could not be edited, check if you entered the correct fields."
-                );
+                setPopupText(props.language.editAlertFailed);
                 setPopupIcon("error");
-                switchSaveState(false);
                 setPopup(true);
               }
             });
         }).catch(async (error) => {
           if (error) {
             await interceptExpiredToken(e);
-            setIsConfirmDelete(false);
-            setPopup(true);
-            setPopupText(
-              "The calendar event could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
+            connectionAlert();
           }
         });
       }
@@ -647,9 +745,12 @@ export default function Scheduleeventslist(props) {
         e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
       let subject =
         e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
+      let isPop =
+        e.target.parentNode.parentNode.parentNode.childNodes[8].childNodes[0];
+
       if (subject !== undefined) {
         let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-        if (s.subject_id !== parseInt(content.value)) {
+        if (s.subject_id !== content.value) {
           content = s.subject_id;
         }
         subject.disabled = true;
@@ -658,6 +759,7 @@ export default function Scheduleeventslist(props) {
       startDate.disabled = true;
       endDate.disabled = true;
       description.disabled = true;
+      isPop.disabled = true;
       let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
       buttonDelete.style.display = "block";
       let button = e.target.parentNode.parentNode.childNodes[1];
@@ -683,10 +785,13 @@ export default function Scheduleeventslist(props) {
         let subject =
           e.target.parentNode.parentNode.parentNode.parentNode.parentNode
             .childNodes[0].childNodes[7].childNodes[0];
+        let isPop =
+          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
+            .childNodes[0].childNodes[8].childNodes[0];
 
         if (subject !== undefined) {
           let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-          if (s.subject_id !== parseInt(content.value)) {
+          if (s.subject_id !== content.value) {
             content = s.subject_id;
           }
           subject.disabled = true;
@@ -696,6 +801,7 @@ export default function Scheduleeventslist(props) {
         startDate.disabled = true;
         endDate.disabled = true;
         description.disabled = true;
+        isPop.disabled = true;
         let buttonDelete =
           e.target.parentNode.parentNode.parentNode.childNodes[0];
         buttonDelete.style.display = "block";
@@ -717,9 +823,10 @@ export default function Scheduleeventslist(props) {
           e.target.parentNode.parentNode.childNodes[5].childNodes[0];
         let subject =
           e.target.parentNode.parentNode.childNodes[7].childNodes[0];
+        let isPop = e.target.parentNode.parentNode.childNodes[8].childNodes[0];
         if (subject !== undefined) {
           let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-          if (s.subject_id !== parseInt(content.value)) {
+          if (s.subject_id !== content.value) {
             content = s.subject_id;
           }
           subject.disabled = true;
@@ -728,6 +835,7 @@ export default function Scheduleeventslist(props) {
         startDate.disabled = true;
         endDate.disabled = true;
         description.disabled = true;
+        isPop.disabled = true;
         let buttonDelete = e.target.parentNode.childNodes[0];
         buttonDelete.style.display = "block";
         let button = e.target.parentNode.childNodes[1];
@@ -740,7 +848,7 @@ export default function Scheduleeventslist(props) {
     }
   };
 
-  const showEditOptionEvent = (e, S) => {
+  const showEditOptionEvent = (e) => {
     if (e.target.tagName === "svg") {
       let name =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -756,7 +864,14 @@ export default function Scheduleeventslist(props) {
       if (subject !== undefined) {
         subject.disabled = false;
         listSubject(subject.value);
+        if (subject.value.split("_")[1] === "GEN") {
+          let isPop =
+            e.target.parentNode.parentNode.parentNode.childNodes[8]
+              .childNodes[0];
+          isPop.disabled = false;
+        }
       }
+
       name.disabled = false;
       startDate.disabled = false;
       endDate.disabled = false;
@@ -791,6 +906,12 @@ export default function Scheduleeventslist(props) {
         if (subject !== undefined) {
           subject.disabled = false;
           listSubject(subject.value);
+          if (subject.value.split("_")[1] === "GEN") {
+            let isPop =
+              e.target.parentNode.parentNode.parentNode.parentNode.childNodes[8]
+                .childNodes[0];
+            isPop.disabled = false;
+          }
         }
         name.disabled = false;
         startDate.disabled = false;
@@ -822,6 +943,11 @@ export default function Scheduleeventslist(props) {
         if (subject !== undefined) {
           subject.disabled = false;
           listSubject(subject.value);
+          if (subject.value.split("_")[1] === "GEN") {
+            let isPop =
+              e.target.parentNode.parentNode.childNodes[8].childNodes[0];
+            isPop.disabled = false;
+          }
         }
         name.disabled = false;
         startDate.disabled = false;
@@ -862,6 +988,11 @@ export default function Scheduleeventslist(props) {
     return document.getElementById(`inputDescription_${id}`);
   };
 
+  const handleChangeIsPop = (id, value) => {
+    setChangeIsPop(true);
+    return (document.getElementById(`inputIsPop_${id}`).checked = value);
+  };
+
   const sessionFilterEvent = (sessionList) => {
     let filterSessions = [];
     sessionList.map((s) => {
@@ -879,7 +1010,7 @@ export default function Scheduleeventslist(props) {
 
   useEffect(() => {
     fetchSubjects();
-    fetchEvents();
+    fetchEvents(1);
     fetchUsers();
     setSearch();
 
@@ -890,6 +1021,7 @@ export default function Scheduleeventslist(props) {
 
       sessionFilterEvent(events_filter.events);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -898,7 +1030,7 @@ export default function Scheduleeventslist(props) {
 
   return (
     <>
-      <div className="scheduleeventslist-main-container">
+      <div className="scheduleeventslist-main-container" id="scroll">
         <table className="createTable">
           <thead>
             <tr>
@@ -909,7 +1041,11 @@ export default function Scheduleeventslist(props) {
               <th>{props.language.startDate}</th>
               <th>{props.language.endDate}</th>
               <th>{props.language.isGlobal}</th>
-              {isGlobal ? console.log() : <th>{props.language.subjects}</th>}
+              {isGlobal ? (
+                <th>{props.language.isPop}</th>
+              ) : (
+                <th>{props.language.subjects}</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -993,17 +1129,27 @@ export default function Scheduleeventslist(props) {
                   onClick={isGlobalEvent}
                 />
               </td>
-              {isGlobal ? null : (
+              {isGlobal ? (
+                <td style={{ textAlign: "center" }}>
+                  <input id="e_isPop" type="checkbox" onClick={isPopEvent} />
+                </td>
+              ) : (
                 <td className="subjecButton">
                   <select id="e_subjectId">
                     <option defaultValue="Choose subject">
                       {props.language.chooseSubject}
                     </option>
-                    {subject.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
+                    {subject.map((s) => {
+                      if (s.name !== "General") {
+                        return (
+                          <option key={s.id} value={s.id}>
+                            {s.name}
+                          </option>
+                        );
+                      } else {
+                        return null;
+                      }
+                    })}
                   </select>
                 </td>
               )}
@@ -1012,106 +1158,312 @@ export default function Scheduleeventslist(props) {
         </table>
       </div>
       {events && events.length !== 0 ? (
-        <table className="eventList" style={{ marginTop: "50px" }}>
-          <thead>
-            <tr>
-              <th>{props.language.code}</th>
-              <th>{props.language.title}</th>
-              <th>{props.language.description}</th>
-              <th>{props.language.author}</th>
-              <th>{props.language.startDate}</th>
-              <th>{props.language.endDate}</th>
-              <th>{props.language.isGlobal}</th>
-              <th>{props.language.subjects}</th>
-              <th>{props.language.actions}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((e) => {
-              if (search.length > 0) {
-                if (
-                  e.annotation_title
-                    .toLowerCase()
-                    .includes(search.toLowerCase()) ||
-                  e.user.email.toLowerCase().includes(search.toLowerCase())
-                ) {
-                  return (
-                    <tr key={e.id}>
-                      <td>{shortUUID(e.id)}</td>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputName_${e.id}`}
-                          disabled
-                          value={
-                            changeName === false ? e.annotation_title : newName
-                          }
-                          onChange={() => {
-                            handleChangeName(e.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          value={
-                            changeDescription === false
-                              ? e.annotation_description
-                              : newDescription
-                          }
-                          disabled
-                          id={`inputDescription_${e.id}`}
-                          onChange={() => {
-                            handleChangeDescription();
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input type="text" value={e.user.email} disabled />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputStartDate_${e.id}`}
-                          type="datetime-local"
-                          value={
-                            changeStartDate === false
-                              ? e.annotation_start_date
-                              : newStartDate
-                          }
-                          disabled
-                          onChange={() => {
-                            handleChangeStartDate(e.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputEndDate_${e.id}`}
-                          type="datetime-local"
-                          value={
-                            changeEndDate === false
-                              ? e.annotation_end_date
-                              : newEndDate
-                          }
-                          disabled
-                          onChange={() => {
-                            handleChangeEndDate(e.id);
-                          }}
-                        />
-                      </td>
-                      <td style={{ textAlign: "center" }}>
-                        {e.isGlobal ? (
-                          <input type="checkbox" disabled checked />
-                        ) : (
-                          <input type="checkbox" disabled />
-                        )}
-                      </td>
-                      <td>
-                        {e.isGlobal ? null : (
-                          <select disabled id={`inputSubjectID_${e.id}`}>
+        <>
+          <div className="notify-users">
+            <PageSelect
+              onPageChange={async (p) => fetchEvents(p)}
+              maxPages={maxPages}
+            />
+          </div>
+          <div className="schedule-table-info">
+            <table className="eventList" style={{ marginTop: "15px" }}>
+              <thead>
+                <tr>
+                  <th>{props.language.code}</th>
+                  <th>{props.language.title}</th>
+                  <th>{props.language.description}</th>
+                  <th>{props.language.author}</th>
+                  <th>{props.language.startDate}</th>
+                  <th>{props.language.endDate}</th>
+                  <th>{props.language.isGlobal}</th>
+                  <th>{props.language.subjects}</th>
+                  <th>{props.language.isPop}</th>
+                  <th>{props.language.actions}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((e) => {
+                  if (search.length > 0) {
+                    if (
+                      e.annotation_title
+                        .toLowerCase()
+                        .includes(search.toLowerCase()) ||
+                      e.user.email.toLowerCase().includes(search.toLowerCase())
+                    ) {
+                      return (
+                        <tr key={e.id}>
+                          <td>{shortUUID(e.id)}</td>
+                          <td>
+                            <input
+                              type="text"
+                              id={`inputName_${e.id}`}
+                              disabled
+                              value={
+                                changeName === false
+                                  ? e.annotation_title
+                                  : newName
+                              }
+                              onChange={() => {
+                                handleChangeName(e.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={
+                                changeDescription === false
+                                  ? e.annotation_description
+                                  : newDescription
+                              }
+                              disabled
+                              id={`inputDescription_${e.id}`}
+                              onChange={() => {
+                                handleChangeDescription();
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input type="text" value={e.user.email} disabled />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputStartDate_${e.id}`}
+                              type="datetime-local"
+                              value={
+                                changeStartDate === false
+                                  ? e.annotation_start_date
+                                  : newStartDate
+                              }
+                              disabled
+                              onChange={() => {
+                                handleChangeStartDate(e.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputEndDate_${e.id}`}
+                              type="datetime-local"
+                              value={
+                                changeEndDate === false
+                                  ? e.annotation_end_date
+                                  : newEndDate
+                              }
+                              disabled
+                              onChange={() => {
+                                handleChangeEndDate(e.id);
+                              }}
+                            />
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            {e.isGlobal ? (
+                              <input type="checkbox" disabled checked />
+                            ) : (
+                              <input type="checkbox" disabled />
+                            )}
+                          </td>
+                          <td>
+                            <select id={`inputSubjectID_${e.id}`} disabled>
+                              <option
+                                defaultValue={e.subject.id}
+                                value={
+                                  e.subject.id + "_" + e.subject.subject_code
+                                }
+                              >
+                                {e.subject.name}
+                              </option>
+                              {subjectEdit.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            <input
+                              id={`inputIsPop_${e.id}`}
+                              type="checkbox"
+                              disabled
+                              checked={
+                                changeIsPop === false ? e.isPop : newIsPop
+                              }
+                              onChange={(ev) => {
+                                handleChangeIsPop(e.id, ev.target.checked);
+                              }}
+                            />
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <button
+                              style={{ marginRight: "5px" }}
+                              onClick={() => {
+                                confirmDeleteEvent(e);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ marginRight: "5px" }}
+                              onClick={(event) => {
+                                showEditOptionEvent(event, e);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-pencil-square"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ marginRight: "5px", display: "none" }}
+                              onClick={(event) => {
+                                editEvent(event, e);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-check2"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ display: "none" }}
+                              onClick={(ev) => {
+                                closeEditEvent(ev, e);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-x-lg"
+                                viewBox="0 0 16 16"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                                />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                                />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  } else {
+                    return (
+                      <tr key={e.id}>
+                        <td>{shortUUID(e.id)}</td>
+                        <td>
+                          <input
+                            type="text"
+                            id={`inputName_${e.id}`}
+                            disabled
+                            value={
+                              changeName === false
+                                ? e.annotation_title
+                                : newName
+                            }
+                            onChange={() => {
+                              handleChangeName(e.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            value={
+                              changeDescription === false
+                                ? e.annotation_description
+                                : newDescription
+                            }
+                            disabled
+                            id={`inputDescription_${e.id}`}
+                            onChange={() => {
+                              handleChangeDescription();
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input type="text" value={e.user.email} disabled />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputStartDate_${e.id}`}
+                            type="datetime-local"
+                            value={
+                              changeStartDate === false
+                                ? e.annotation_start_date
+                                : newStartDate
+                            }
+                            disabled
+                            onChange={() => {
+                              handleChangeStartDate(e.id);
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputEndDate_${e.id}`}
+                            type="datetime-local"
+                            value={
+                              changeEndDate === false
+                                ? e.annotation_end_date
+                                : newEndDate
+                            }
+                            disabled
+                            onChange={() => {
+                              handleChangeEndDate(e.id);
+                            }}
+                          />
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          {e.isGlobal ? (
+                            <input type="checkbox" disabled checked />
+                          ) : (
+                            <input type="checkbox" disabled />
+                          )}
+                        </td>
+                        <td>
+                          <select id={`inputSubjectID_${e.id}`} disabled>
                             <option
-                              defaultValue={e.subject_id}
-                              value={e.subject_id}
+                              defaultValue={e.subject.id}
+                              value={
+                                e.subject.id + "_" + e.subject.subject_code
+                              }
                             >
                               {e.subject.name}
                             </option>
@@ -1121,282 +1473,114 @@ export default function Scheduleeventslist(props) {
                               </option>
                             ))}
                           </select>
-                        )}
-                      </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={() => {
-                            confirmDeleteEvent(e.id);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={(event) => {
-                            showEditOptionEvent(event, e);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px", display: "none" }}
-                          onClick={(event) => {
-                            editEvent(event, e);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-check2"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ display: "none" }}
-                          onClick={(ev) => {
-                            closeEditEvent(ev, e);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-x-lg"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                            />
-                            <path
-                              fillRule="evenodd"
-                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                            />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                }
-              } else {
-                return (
-                  <tr key={e.id}>
-                    <td>{shortUUID(e.id)}</td>
-                    <td>
-                      <input
-                        type="text"
-                        id={`inputName_${e.id}`}
-                        disabled
-                        value={
-                          changeName === false ? e.annotation_title : newName
-                        }
-                        onChange={() => {
-                          handleChangeName(e.id);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        value={
-                          changeDescription === false
-                            ? e.annotation_description
-                            : newDescription
-                        }
-                        disabled
-                        id={`inputDescription_${e.id}`}
-                        onChange={() => {
-                          handleChangeDescription();
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input type="text" value={e.user.email} disabled />
-                    </td>
-                    <td>
-                      <input
-                        id={`inputStartDate_${e.id}`}
-                        type="datetime-local"
-                        value={
-                          changeStartDate === false
-                            ? e.annotation_start_date
-                            : newStartDate
-                        }
-                        disabled
-                        onChange={() => {
-                          handleChangeStartDate(e.id);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        id={`inputEndDate_${e.id}`}
-                        type="datetime-local"
-                        value={
-                          changeEndDate === false
-                            ? e.annotation_end_date
-                            : newEndDate
-                        }
-                        disabled
-                        onChange={() => {
-                          handleChangeEndDate(e.id);
-                        }}
-                      />
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      {e.isGlobal ? (
-                        <input type="checkbox" disabled checked />
-                      ) : (
-                        <input type="checkbox" disabled />
-                      )}
-                    </td>
-                    <td>
-                      {e.isGlobal ? (
-                        console.log()
-                      ) : (
-                        <select disabled id={`inputSubjectID_${e.id}`}>
-                          <option
-                            defaultValue={e.subject_id}
-                            value={e.subject_id}
-                          >
-                            {e.subject.name}
-                          </option>
-                          {subjectEdit.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    </td>
-                    <td
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <button
-                        style={{ marginRight: "5px" }}
-                        onClick={() => {
-                          confirmDeleteEvent(e.id);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-trash3"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                        </svg>
-                      </button>
-                      <button
-                        style={{ marginRight: "5px" }}
-                        onClick={(event) => {
-                          showEditOptionEvent(event, e);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-pencil-square"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                          <path
-                            fillRule="evenodd"
-                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          <input
+                            id={`inputIsPop_${e.id}`}
+                            type="checkbox"
+                            disabled
+                            checked={changeIsPop === false ? e.isPop : newIsPop}
+                            onChange={(ev) => {
+                              handleChangeIsPop(e.id, ev.target.checked);
+                            }}
                           />
-                        </svg>
-                      </button>
-                      <button
-                        style={{ marginRight: "5px", display: "none" }}
-                        onClick={(event) => {
-                          editEvent(event, e);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-check2"
-                          viewBox="0 0 16 16"
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
                         >
-                          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                        </svg>
-                      </button>
-                      <button
-                        style={{ display: "none" }}
-                        onClick={(ev) => {
-                          closeEditEvent(ev, e);
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          className="bi bi-x-lg"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                          />
-                          <path
-                            fillRule="evenodd"
-                            d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                          />
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              }
-            })}
-          </tbody>
-        </table>
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={() => {
+                              confirmDeleteEvent(e);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={(event) => {
+                              showEditOptionEvent(event, e);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-pencil-square"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px", display: "none" }}
+                            onClick={(event) => {
+                              editEvent(event, e);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-check2"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ display: "none" }}
+                            onClick={(ev) => {
+                              closeEditEvent(ev, e);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-x-lg"
+                              viewBox="0 0 16 16"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                              />
+                              <path
+                                fillRule="evenodd"
+                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                              />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  }
+                  return true;
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : null}
       <StandardModal
         show={showPopup}
@@ -1407,21 +1591,19 @@ export default function Scheduleeventslist(props) {
         onYesAction={() => {
           setPopup(false);
           deleteEvent(idDelete);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          setIsConfirmDelete(false);
         }}
         onNoAction={() => {
           setPopup(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          setIsConfirmDelete(false);
+          switchEditState(true);
+          switchSaveState(false);
         }}
         onCloseAction={() => {
           setPopup(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          setIsConfirmDelete(false);
+          switchSaveState(false);
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

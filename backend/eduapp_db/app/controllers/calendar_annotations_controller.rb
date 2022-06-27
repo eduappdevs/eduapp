@@ -36,8 +36,17 @@ class CalendarAnnotationsController < ApplicationController
 
     if params[:page]
       @calendar_annotations = query_paginate(@calendar_annotations, params[:page])
+      @calendar_annotations[:current_page] = serialize_each(@calendar_annotations[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [ :subject, :user,])
     end
 
+    render json: @calendar_annotations
+  end
+
+  def calendar_info
+    if !check_perms_query!(get_user_roles.perms_events)
+      return
+    end
+    @calendar_annotations = CalendarAnnotation.where(isGlobal: true, isPop: true).order(:annotation_start_date)
     render json: @calendar_annotations
   end
 
@@ -92,6 +101,6 @@ class CalendarAnnotationsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def calendar_annotation_params
-    params.require(:calendar_annotation).permit(:annotation_start_date, :annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :user_id, :subject_id)
+    params.require(:calendar_annotation).permit(:annotation_start_date, :annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :isPop,  :user_id, :subject_id)
   end
 end

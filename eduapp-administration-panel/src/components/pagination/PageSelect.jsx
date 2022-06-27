@@ -24,12 +24,21 @@ export default function PageSelect({ onPageChange, maxPages }) {
       setCanGoDown(true);
     } else setCanGoDown(false);
 
+    if (page < maxPages) {
+      setCanGoUp(true);
+    } else setCanGoUp(false);
+
     if (page === maxPages) {
       setCanGoUp(false);
     } else setCanGoUp(true);
-
     onPageChange(page);
   }, [page]);
+
+  useEffect(() => {
+    if (page < maxPages) {
+      setCanGoUp(true);
+    } else setCanGoUp(false);
+  }, [maxPages]);
 
   return (
     <div className="page-selector">

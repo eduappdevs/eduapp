@@ -138,7 +138,7 @@
 	color: white;
 	border-radius: 10px;
 	padding: 10px 5px !important;
-
+	font-family: Consolas;
 }
 
 .management__form-container>form>select {
@@ -148,6 +148,7 @@
 	color: white;
 	outline: none;
 	transition: 0.3s ease all;
+	font-family: Consolas;
 }
 
 .management__form-container>form>select:focus {

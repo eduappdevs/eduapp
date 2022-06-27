@@ -6,7 +6,7 @@ import CSVReader from "react-csv-reader";
 import ImageModal from "./ImageModal";
 import BatchPreviewTable from "./BatchPreviewTable";
 
-export default function BatcherButtonTemplate(props) {
+export default function BatcherButtonTemplate({ type }) {
   const [modalActive, setModalActive] = useState(false);
   const [csvTemplateActive, setCsvTemplateActive] = useState(false);
   const [csvData, setCsvData] = useState([]);
@@ -36,9 +36,9 @@ export default function BatcherButtonTemplate(props) {
     <>
       <ImageModal
         imageRoute={
-          props.type === "users"
+          type === "users"
             ? usersTemplate
-            : props.type === "sessions"
+            : type === "sessions"
             ? sessionsTemplate
             : eventsTemplate
         }
@@ -62,7 +62,7 @@ export default function BatcherButtonTemplate(props) {
       </button>
 
       <BatchPreviewTable
-        type={props.type}
+        type={type}
         data={csvData}
         show={modalActive}
         close={closeModal}

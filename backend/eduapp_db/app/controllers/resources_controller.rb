@@ -19,6 +19,7 @@ class ResourcesController < ApplicationController
 
     if params[:page]
       @resources = query_paginate(@resources, params[:page])
+      @resources[:current_page] = serialize_each(@resources[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [:user, :subject])
     end
 
     render json: @resources

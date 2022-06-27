@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
 import jsreport from "@jsreport/browser-client";
-import logogeduapp from "../assets/eduappadmin.png";
+import logoeduapp from "../assets/eduappadmin.png";
 import API, { endpoints } from "../API";
 import { fetchMessage } from "../services/chat.service";
 import { fetchCourses } from "../services/course.service";
@@ -145,7 +146,7 @@ export default function Navbar(props) {
     <div className="navbar-container">
       <div className="navbar-header">
         <div className="logo">
-          <img src={logogeduapp} alt="eduapplogo" />
+          <img src={logoeduapp} alt="eduapplogo" />
         </div>
         <LanguageSwitcher switchLanguage={switchLanguage} />
         <div id="liveClock" />
@@ -226,24 +227,9 @@ export default function Navbar(props) {
       </div>
       <div className="settings-button-container button-container">
         <span>
-          <p>{props.language.settings}</p>
+          <p>{props.language.management}</p>
         </span>
         <ul className={"suboptions"}>
-          <li
-            className={
-              activeSection === "institutions"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p
-              onClick={() => {
-                props.toolbarLocation("institutions");
-              }}
-            >
-              {props.language.institution}
-            </p>
-          </li>
           <li
             className={
               activeSection === "courses"
@@ -282,6 +268,43 @@ export default function Navbar(props) {
             }
           >
             <p>{props.language.resources}</p>
+          </li>
+        </ul>
+      </div>
+      <div className="settings-button-container button-container">
+        <span>
+          <p>{props.language.settings}</p>
+        </span>
+        <ul className={"suboptions"}>
+          <li
+            className={
+              activeSection === "institutions"
+                ? "active button-suboption"
+                : "button-suboptions"
+            }
+          >
+            <p
+              onClick={() => {
+                props.toolbarLocation("institutions");
+              }}
+            >
+              {props.language.institution}
+            </p>
+          </li>
+          <li
+            className={
+              activeSection === "userRoles"
+                ? "active button-suboption"
+                : "button-suboptions"
+            }
+          >
+            <p
+              onClick={() => {
+                props.toolbarLocation("userRoles");
+              }}
+            >
+              {props.language.userRoles}
+            </p>
           </li>
         </ul>
       </div>

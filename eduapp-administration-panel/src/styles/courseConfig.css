@@ -1,0 +1,41 @@
+.courses-table-info {
+    height: auto;
+}
+
+.courses-table-info>table>thead {
+    display: block;
+    flex-direction: row;
+}
+
+.courses-table-info>table>thead>tr {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #dddddd76;
+    text-align: left;
+}
+
+.courses-table-info>table>thead>tr>th {
+    flex: 1;
+}
+
+.courses-table-info>table>tbody {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    height: 350px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.courses-table-info>table>tbody>tr {
+    display: flex;
+    flex-direction: row;
+}
+
+.courses-table-info>table>tbody>tr>td {
+    flex: 1;
+}
+
+.courses-table-info>table>tbody>tr:nth-child(even) {
+    background-color: #dddddd;
+}

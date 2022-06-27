@@ -6,6 +6,7 @@ import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import * as ENROLL_SERVICE from "../../services/enrollment.service";
 import * as ROLE_SERVICE from "../../services/role.service";
 import AppHeader from "../../components/appHeader/AppHeader";
+import useLanguage from "../../hooks/useLanguage";
 import "./ManagementPanel.css";
 
 var institutions, courses, users;
@@ -17,6 +18,8 @@ export default function ManagementPanel() {
   const [usersLoading, setUsersLoading] = useState(true);
   const [allowNewInstitution, setAllowInstitution] = useState(true);
   const [userRoles, setUserRoles] = useState([]);
+
+  const language = useLanguage();
 
   const postSession = async (e) => {
     e.preventDefault();
@@ -228,7 +231,7 @@ export default function ManagementPanel() {
             openThisItem("institutions");
           }}
         >
-          <span>Institution</span>
+          <span>{language.institutions}</span>
         </div> */}
         <div
           className="buttonManagementPanel"
@@ -236,7 +239,7 @@ export default function ManagementPanel() {
             openThisItem("courses");
           }}
         >
-          <span>Courses</span>
+          <span>{language.courses}</span>
         </div>
         <div
           className="buttonManagementPanel"
@@ -244,7 +247,7 @@ export default function ManagementPanel() {
             openThisItem("users");
           }}
         >
-          <span>Users</span>
+          <span>{language.users}</span>
         </div>
         <div
           className="buttonManagementPanel"
@@ -252,7 +255,7 @@ export default function ManagementPanel() {
             openThisItem("enrollments");
           }}
         >
-          <span>Enrollments</span>
+          <span>{language.enrollments}</span>
         </div>
         <div
           className="buttonManagementPanel"
@@ -260,7 +263,7 @@ export default function ManagementPanel() {
             openThisItem("sessions");
           }}
         >
-          <span>Sessions</span>
+          <span>{language.sessions}</span>
         </div>
         <div
           id="institutions"
@@ -270,7 +273,7 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("institutions");
             }}
-            tabName="Institutions"
+            tabName={language.institutions}
           />
 
           <div className="managementpanel__item__header">
@@ -290,19 +293,15 @@ export default function ManagementPanel() {
                       display: allowNewInstitution ? "none" : "block",
                     }}
                   >
-                    No more than 1 institution is allowed
+                    {language.mgmt_institution_cap}
                   </p>
-                  {allowNewInstitution ? (
-                    <button type="submit">SUBMIT</button>
-                  ) : (
-                    <button type="submit" disabled>
-                      SUBMIT
-                    </button>
-                  )}
+                  <button type="submit" disabled={allowNewInstitution}>
+                    {language.submit}
+                  </button>
                 </form>
               </div>
               <div className="institutions__delete management__form-container">
-                <h3>DELETE AN INSTITUTION</h3>
+                <h3>{language.mgmt_delete_institution}</h3>
                 <form action="submit" onSubmit={deleteInstitution}>
                   <select name="institutions" id="institutions_delete">
                     {institutions.map((i) => {
@@ -313,7 +312,7 @@ export default function ManagementPanel() {
                       );
                     })}
                   </select>
-                  <button type="submit">DELETE</button>
+                  <button type="submit">{language.delete}</button>
                 </form>
               </div>
             </div>
@@ -327,7 +326,7 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("courses");
             }}
-            tabName="Courses"
+            tabName={language.courses}
           />
           <div className="managementpanel__item__header">
             <div id="cp-courses" className="courses">
@@ -343,11 +342,11 @@ export default function ManagementPanel() {
                       );
                     })}
                   </select>
-                  <button type="submit">SUBMIT</button>
+                  <button type="submit">{language.submit}</button>
                 </form>
               </div>
               <div className="courses__delete management__form-container">
-                <h3>DELETE A COURSE</h3>
+                <h3>{language.mgmt_delete_course}</h3>
                 <form action="submit" onSubmit={deleteCourse}>
                   <select name="courses" id="courses_delete">
                     {courses.map((i) => {
@@ -358,7 +357,7 @@ export default function ManagementPanel() {
                       );
                     })}
                   </select>
-                  <button type="submit">DELETE</button>
+                  <button type="submit">{language.delete}</button>
                 </form>
               </div>
             </div>
@@ -372,15 +371,15 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("users");
             }}
-            tabName="Users"
+            tabName={language.users}
           />
           <div className="managementpanel__item__header">
             <div id="cp-users" className="users">
               <div className="users__post management__form-container">
                 <form action="submit" onSubmit={createUser}>
-                  <label htmlFor="email">Email </label>
+                  <label htmlFor="email">{language.email}</label>
                   <input autoComplete="off" type="text" name="email" />
-                  <label htmlFor="password">Password</label>
+                  <label htmlFor="password">{language.password}</label>
                   <input autoComplete="off" type="password" name="password" />
                   <label htmlFor="new_u_role">Admin</label>
                   <select name="new_u_role" id="new_u_role">
@@ -394,7 +393,7 @@ export default function ManagementPanel() {
                         })
                       : null}
                   </select>
-                  <button type="submit">SIGN UP</button>
+                  <button type="submit">{language.mgmt_register_user}</button>
                 </form>
               </div>
             </div>
@@ -408,7 +407,7 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("enrollments");
             }}
-            tabName="Enrollments"
+            tabName={language.enrollments}
           />
           <div
             className="managementpanel__item__header"
@@ -416,7 +415,9 @@ export default function ManagementPanel() {
           >
             <div className="user_tuition management__form-container">
               <form action="submit" onSubmit={userEnroll}>
-                <label htmlFor="tuition_course">Course</label>
+                <label htmlFor="tuition_course">
+                  {language.courses.substring(0, language.courses.length - 1)}
+                </label>
                 <select name="tuition_course" id="tuition_course">
                   {courses.map((i) => {
                     return (
@@ -424,12 +425,14 @@ export default function ManagementPanel() {
                         key={i.id}
                         value={i.name + ":" + i.id + "/" + i.institution_id}
                       >
-                        {i.name} of {getInstitution(i.institution_id)}
+                        {i.name} - {getInstitution(i.institution_id)}
                       </option>
                     );
                   })}
                 </select>
-                <label htmlFor="tuition_user">User</label>
+                <label htmlFor="tuition_user">
+                  {language.users.substring(0, language.users.length - 1)}
+                </label>
                 <select name="tuition_user" id="tuition_user">
                   {users.map((i) => {
                     return (
@@ -439,7 +442,7 @@ export default function ManagementPanel() {
                     );
                   })}
                 </select>
-                <button type="submit">ENROLL</button>
+                <button type="submit">{language.enroll}</button>
               </form>
             </div>
           </div>
@@ -452,7 +455,7 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("sessions");
             }}
-            tabName="Sessions"
+            tabName={language.sessions}
           />
           <div
             className="managementpanel__item__header"
@@ -461,7 +464,7 @@ export default function ManagementPanel() {
             <div id="cp-sessions" className="sessions">
               <div className="sessions__post management__form-container">
                 <form action="submit" onSubmit={postSession}>
-                  <label htmlFor="institution_name">Subject:</label>
+                  <label htmlFor="institution_name">{language.subject}:</label>
                   <input
                     id="session_name"
                     autoComplete="off"
@@ -469,12 +472,14 @@ export default function ManagementPanel() {
                     name="session_name"
                     required
                   />
-                  <label htmlFor="institution_name">Schedule:</label>
+                  <label htmlFor="institution_name">{language.date}:</label>
                   <div className="timeInputs">
                     <input id="start" name="start" type="time" required></input>
                     <input id="end" name="end" type="time" required></input>
                   </div>
-                  <label htmlFor="institution_name">Streaming Link:</label>
+                  <label htmlFor="institution_name">
+                    {language.mgmt_streaming_link}:
+                  </label>
                   <input
                     id="streaming"
                     autoComplete="off"
@@ -482,16 +487,23 @@ export default function ManagementPanel() {
                     name="streaming"
                     required
                   />
-                  <label htmlFor="session_resources">Resources Link:</label>
+                  <label htmlFor="session_resources">
+                    {language.mgmt_resources_link}:
+                  </label>
                   <input
                     id="resources"
                     name="resources"
                     type="text"
                     required
                   ></input>
-                  <label htmlFor="session_chat">Chat Link:</label>
+                  <label htmlFor="session_chat">
+                    {language.mgmt_chat_link}:
+                  </label>
                   <input id="chat" name="chat" type="text" required></input>
-                  <label htmlFor="course_id">Course:</label>
+                  <label htmlFor="course_id">
+                    {language.courses.substring(0, language.courses.length - 1)}
+                    :
+                  </label>
                   <select name="course_id" id="course_id" required>
                     {courses.map((i) => {
                       return (
@@ -501,7 +513,7 @@ export default function ManagementPanel() {
                       );
                     })}
                   </select>
-                  <button type="submit">SUBMIT</button>
+                  <button type="submit">{language.submit}</button>
                 </form>
               </div>
               {/* <div className="sessions__delete management__form-container">

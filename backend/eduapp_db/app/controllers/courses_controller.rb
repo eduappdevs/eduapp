@@ -26,6 +26,8 @@ class CoursesController < ApplicationController
 
     if params[:page]
       @courses = query_paginate(@courses, params[:page])
+      @courses[:current_page] = serialize_each(@courses[:current_page], [:created_at, :updated_at, :institution_id], [ :institution])
+
     end
 
     render json: @courses
