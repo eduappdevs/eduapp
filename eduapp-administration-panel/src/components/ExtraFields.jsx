@@ -38,6 +38,8 @@ export default function ExtraFields(props) {
 
   const GET_EXTRAFIELDS = async () => {
     setLoading(true);
+
+    console.log(table, id);
     await getExtraFields({ table, id }).then((res) => {
       if (!res.data) {
         return false;

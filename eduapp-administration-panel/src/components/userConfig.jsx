@@ -719,7 +719,6 @@ export default function UserConfig(props) {
               <th>{props.language.email}</th>
               <th>{props.language.password}</th>
               <th>{props.language.userRole}</th>
-              <ExtraFields table="users" />
             </tr>
           </thead>
           <tbody>
@@ -889,6 +888,7 @@ export default function UserConfig(props) {
                                 value={user.split(".")[0]}
                               />
                             </td>
+                            <ExtraFields table="users" id={u.user.id} />
                             <td
                               style={{
                                 display: "flex",
@@ -1045,6 +1045,7 @@ export default function UserConfig(props) {
                               value={user.split(".")[0]}
                             />
                           </td>
+                          <ExtraFields table="users" id={u.user.id} />
                           <td
                             style={{
                               display: "flex",
@@ -1190,6 +1191,8 @@ export default function UserConfig(props) {
                                 placeholder="=> Link in App"
                               />
                             </td>
+                            <ExtraFields table="users" id={u.user.id} />
+
                             <td
                               style={{
                                 display: "flex",
@@ -1259,6 +1262,8 @@ export default function UserConfig(props) {
                               placeholder="=> Link in App"
                             />
                           </td>
+                          <ExtraFields table="users" id={u.user.id} />
+
                           <td
                             style={{
                               display: "flex",
@@ -1327,6 +1332,8 @@ export default function UserConfig(props) {
                                 placeholder="=> Link in App"
                               />
                             </td>
+                            <ExtraFields table="users" id={u.user.id} />
+
                             <td
                               style={{
                                 display: "flex",
@@ -1385,6 +1392,8 @@ export default function UserConfig(props) {
                               placeholder="=> Link in App"
                             />
                           </td>
+                          <ExtraFields table="users" id={u.user.id} />
+
                           <td
                             style={{
                               display: "flex",
