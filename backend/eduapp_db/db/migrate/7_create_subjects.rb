@@ -1,6 +1,7 @@
 class CreateSubjects < ActiveRecord::Migration[6.1]
   def change
     create_table :subjects, id: :uuid do |t|
+      t.string :subject_code
       t.string :name
       t.string :description
       t.string :color

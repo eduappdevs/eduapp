@@ -3,10 +3,12 @@ import { GoogleLogin } from "react-google-login";
 import * as USER_SERVICE from "../../services/user.service";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";
+import useLanguage from "../../hooks/useLanguage";
 import "./googleLogin.css";
 
 let finalData = new FormData();
 export default function GoogleLoginButton(useType) {
+  const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
 
   const getInfo = (data) => {
@@ -41,22 +43,20 @@ export default function GoogleLoginButton(useType) {
           <div className="googleAccountInfo">
             <div onClick={unlinkGoogle} className="unlinkGoogle">
               <span className="unlinkGoogleButton">
-                {" "}
                 <img
                   alt=""
                   src='https://upload.wikimedia.org/wikipedia/commons/5/53/Google_"G"_Logo.svg'
-                />{" "}
-                Unlink
+                />
+                {language.unlink}
               </span>
             </div>
-            <span className="googleid-span">
-              Google id : {userInfo.googleid}
-            </span>
           </div>
         ) : (
           <GoogleLogin
             clientId="34244826007-ute01mc8d42e8hc89bgsiv73njfj9kbe.apps.googleusercontent.com"
-            buttonText={useType.useType === "merge" ? "Link" : "Login"}
+            buttonText={
+              useType.useType === "merge" ? language.link : language.login_title
+            }
             onSuccess={useType.useType === "merge" ? linkGoogle : loginGoogle}
             onFailure={responseGoogle}
             cookiePolicy={"single_host_origin"}

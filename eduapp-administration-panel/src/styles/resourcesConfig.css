@@ -10,6 +10,10 @@
     cursor: pointer;
 }
 
+.resources-table-info {
+    height: auto;
+}
+
 .resources-table-info>table>thead {
     display: block;
     flex-direction: row;

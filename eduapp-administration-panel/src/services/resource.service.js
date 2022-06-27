@@ -22,3 +22,9 @@ export const deleteResources = async (id) => {
 export const fetchResourcesJson = async () => {
   return await (await fetch(RESOURCE)).json();
 };
+
+export const pagedResources = async (page) => {
+  return await axios.get(`${RESOURCE}?page=${page}`, {
+    headers: requestHeader,
+  });
+}

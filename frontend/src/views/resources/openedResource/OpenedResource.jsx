@@ -7,9 +7,11 @@ import * as RESOURCE_SERVICE from "../../../services/resource.service";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import useRole from "../../../hooks/useRole";
 import { getOfflineUser } from "../../../utils/OfflineManager";
+import useLanguage from "../../../hooks/useLanguage";
 import "./OpenedResource.css";
 
 export default function OpenedResource() {
+  const language = useLanguage();
   const [name, setName] = useState("None");
   const [description, setDescription] = useState("None");
   const [subjectOrigin, setSubjectOrigin] = useState("None");
@@ -38,25 +40,6 @@ export default function OpenedResource() {
   };
 
   const namefixed = (name) => {
-    // let codes = [
-    //   ["%3A", ":"],
-    //   ["%C3%A1", "á"],
-    //   ["%C3%81", "Á"],
-    //   ["","é"],
-    //   ["","É"],
-    //   ["","í"],
-    //   ["","Í"],
-    //   ["","ó"],
-    //   ["","Ó"],
-    //   ["","ú"],
-    //   ["","Ú"],
-
-    // ];
-
-    // for (let c of codes) {
-    //   name = name.replaceAll(c[0], c[1]);
-    // }
-
     return decodeURI(name);
   };
 
@@ -87,7 +70,7 @@ export default function OpenedResource() {
               rel="noopener noreferrer"
               target="_blank"
             >
-              OPEN
+              {language.open}
             </a>
           </>
         );
@@ -102,7 +85,7 @@ export default function OpenedResource() {
               height={250}
             />
             <a className="fileDownload-button" name="file" href={media}>
-              DOWNLOAD
+              {language.download}
             </a>
           </>
         );
@@ -113,7 +96,7 @@ export default function OpenedResource() {
           <>
             <h1 htmlFor="file">{media != null ? namefixed(name) : "file"}</h1>
             <a className="fileDownload-button" name="file" href={media}>
-              DOWNLOAD
+              {language.download}
             </a>
           </>
         </>
@@ -169,10 +152,10 @@ export default function OpenedResource() {
         <p>{description}</p>
       </div>
       <div className="resourceOpened__files">
-        <h1>Files</h1>
+        <h1>{language.resources_files}</h1>
         <p id="wip">EduApp W.I.P</p>
         <ul>
-          {files.length > 0 ? (
+          {files && files.length > 0 ? (
             files.map((file) => {
               return (
                 <>
@@ -184,7 +167,7 @@ export default function OpenedResource() {
             })
           ) : (
             <div className="resources__NO_FILES">
-              <h1>No files attached.</h1>
+              <h1>{language.resources_no_files_attached}</h1>
             </div>
           )}
         </ul>

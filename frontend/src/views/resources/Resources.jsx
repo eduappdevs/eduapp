@@ -10,9 +10,11 @@ import * as RESOURCE_SERVICE from "../../services/resource.service";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useRole from "../../hooks/useRole";
+import useLanguage from "../../hooks/useLanguage";
 import "./Resources.css";
 
 export default function Resources() {
+  const language = useLanguage();
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [resourcesFilter, setResourcesFilter] = useState("");
   const [resources, setResources] = useState([]);
@@ -97,6 +99,7 @@ export default function Resources() {
   return subjects && userInfo ? (
     <>
       <SubjectDropdown
+        language={language}
         dropdown={showResources}
         onSubjectClick={(e) => {
           handleChangeSelector(e.split("_")[1]);
@@ -117,7 +120,7 @@ export default function Resources() {
                 setShowResources(true);
               }}
             >
-              All Resources
+              {language.resources_all_resources}
             </button>
           </div>
           <h2 className="subject-title">{currentSubject}</h2>
@@ -246,11 +249,15 @@ export default function Resources() {
               className="select-subject"
               style={{ display: subjectSelected !== "" ? "none" : "block" }}
             >
-              <h3>You must select a subject</h3>
+              <h3>{language.resources_select_subject}</h3>
             </div>
           </div>
         </section>
-        <ResourcesModal subject={subjectSelected} userInfo={userInfo} />
+        <ResourcesModal
+          subject={subjectSelected}
+          userInfo={userInfo}
+          language={language}
+        />
       </div>
     </>
   ) : (

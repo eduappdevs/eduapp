@@ -3,15 +3,20 @@ import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import Input from "./Input";
-import "../styles/schedulesessionslist.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
-import SessionsModal from "./modals/event-modal/SessionsModal";
+import SessionsModal from "./modals/sessions-modal/SessionsModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import PageSelect from "./pagination/PageSelect";
+
+import "../styles/schedulesessionslist.css";
+import SelectedModal from "./modals/selected-modal/SelectedModal";
 
 export default function Schedulesessionslist(props) {
   const [sessions, setSessions] = useState(null);
   const [search, setSearch] = useState("");
   const [subject, setSubject] = useState([]);
+
+  const [maxPages, setMaxPages] = useState(1);
 
   const [subjectEdit, setSubjectEdit] = useState([]);
   const [newStartDate] = useState();
@@ -30,6 +35,9 @@ export default function Schedulesessionslist(props) {
 
   const [showModalSession, setShowModalSession] = useState(false);
   const [sessionInfo, setSessionInfo] = useState();
+  const [selectType, setSelectType] = useState(false);
+  const [selectTypeModal, setSelectTypeModal] = useState(false);
+  const [selectInfo, setSelectInfo] = useState([]);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -37,17 +45,39 @@ export default function Schedulesessionslist(props) {
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
+  const [idBatch, setIdBatch] = useState();
 
   let sessions_filter = {};
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
-  const fetchSessions = async () => {
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
+
+  const connectionAlert = async () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
+  const fetchSessions = async (pages) => {
     await API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.fetchSessions()
+      SCHEDULESERVICE.pagedSessions(pages)
         .then((e) => {
-          setSessions(e.data);
-          sessions_filter.sessions = e.data;
+          setMaxPages(e.data.total_pages);
+          setSessions(e.data.current_page);
+          sessions_filter.sessions = e.data.current_page;
         })
         .catch(async (e) => {
           await interceptExpiredToken(e);
@@ -55,12 +85,7 @@ export default function Schedulesessionslist(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The calendar sessions could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
@@ -78,19 +103,21 @@ export default function Schedulesessionslist(props) {
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The subjects could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
+        connectionAlert();
       }
     });
   };
 
+  const alertCreate = async () => {
+    switchEditState(false);
+    setPopupText(props.language.creationAlert);
+    setPopupType("error");
+    setPopup(true);
+  };
+
   const AddNewSession = (e) => {
     e.preventDefault();
-    switchSaveState(true);
+    switchEditState(false);
 
     const context = [
       "session_name",
@@ -100,6 +127,7 @@ export default function Schedulesessionslist(props) {
       "resources_platform",
       "session_chat_id",
       "subject_id",
+      "subject_code",
     ];
 
     let json = [];
@@ -111,15 +139,18 @@ export default function Schedulesessionslist(props) {
     let chat = 1;
     let subject = document.getElementById("s_subjectId").value;
     let subject_id = subject.split("_")[1];
+    let subject_code = subject.split("_")[0];
+
     if (
-      name !== "" &&
-      start_date !== "" &&
-      end_date !== "" &&
-      resources !== "" &&
-      streaming !== "" &&
-      chat !== "" &&
-      subject_id !== "Choose subject" &&
-      subject_id !== ""
+      (name !== "" &&
+        start_date !== "" &&
+        end_date !== "" &&
+        resources !== "" &&
+        streaming !== "" &&
+        chat !== "" &&
+        subject_id !== `${props.language.chooseSubject}` &&
+        subject_id !== "",
+      subject_code !== `${props.language.chooseSubject}` && subject_code !== "")
     ) {
       json.push(
         name,
@@ -128,7 +159,8 @@ export default function Schedulesessionslist(props) {
         streaming,
         resources,
         chat,
-        subject_id
+        subject_id,
+        subject_code
       );
     } else {
       alertCreate();
@@ -140,70 +172,106 @@ export default function Schedulesessionslist(props) {
     for (let i = 0; i <= context.length - 1; i++) {
       SessionJson[context[i]] = json[i];
     }
-    console.log(SessionJson);
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.createSession(SessionJson)
-        .then(() => {
-          fetchSessions();
-          setPopup(true);
-          setPopupType("info");
-          setPopupText("The calendar events was created successfully.");
-          setIsConfirmDelete(false);
-          switchSaveState(true);
+        .then((error) => {
+          if (error) {
+            fetchSessions(1);
+            setPopup(true);
+            setPopupType("info");
+            setPopupText(props.language.creationCompleted);
+            setIsConfirmDelete(false);
+          }
         })
-        .catch(async (e) => {
-          await interceptExpiredToken(e);
+        .catch(async (error) => {
+          await interceptExpiredToken(error);
+          setPopup(true);
+          setPopupText(props.language.creationFailed);
+          setIsConfirmDelete(false);
+          setPopupIcon("error");
+          switchSaveState(false);
         });
-    }).then(async (e) => {
-      if (e) {
-        await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The calendar session could not be published, check if you have an internet connection."
-        );
-        setIsConfirmDelete(false);
-        setPopupIcon("error");
-        switchSaveState(false);
+    }).then(async (error) => {
+      if (error) {
+        await interceptExpiredToken(error);
+        connectionAlert();
       }
     });
   };
 
-  const confirmDeleteEvent = async (id) => {
+  const confirmDeleteEvent = async (s) => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this session?");
+    setPopupText(props.language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
-    setIdDelete(id);
+    setIdDelete(s.id);
+    setIdBatch(s.batch_id);
   };
 
-  const showDeleteError = () => {
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText("The session could not be deleted.");
-    setIsConfirmDelete(false);
+  const deleteSession = async (id, batch_id) => {
+    switchEditState(false);
+    if (batch_id === null) {
+      API.asynchronizeRequest(function () {
+        SCHEDULESERVICE.deleteSession(id)
+          .then((del) => {
+            if (del) {
+              fetchSessions(1);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(props.language.deleteAlertCompleted);
+              setIsConfirmDelete(false);
+              switchSaveState(false);
+            }
+          })
+          .catch(async (e) => {
+            await interceptExpiredToken(e);
+            setPopupType("error");
+            popupIcon(false);
+            setPopup(false);
+            setPopupText(props.language.deleteFailed);
+            setIsConfirmDelete(false);
+          });
+      }).then(async (e) => {
+        if (e) {
+          await interceptExpiredToken(e);
+          connectionAlert();
+        }
+      });
+    } else {
+      setSelectType(true);
+      setSelectTypeModal(false);
+      setSelectInfo({
+        id: id,
+      });
+    }
   };
 
-  const deleteSession = async (id) => {
+  const deleteOneSession = async () => {
+    switchEditState(false);
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.deleteSession(id)
+      SCHEDULESERVICE.deleteSession(selectInfo.id)
         .then(() => {
-          fetchSessions();
+          fetchSessions(1);
+          setPopup(true);
+          setPopupType("info");
+          setPopupText(props.language.deleteAlertCompleted);
+          setIsConfirmDelete(false);
+          switchSaveState(false);
         })
         .catch(async (e) => {
           await interceptExpiredToken(e);
-          showDeleteError();
+          setPopupType("error");
+          popupIcon(false);
+          setPopup(false);
+          setPopupText(props.language.deleteFailed);
+          setIsConfirmDelete(false);
         });
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The calendar session could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(true);
+        connectionAlert();
       }
     });
   };
@@ -212,9 +280,9 @@ export default function Schedulesessionslist(props) {
     let filterSessions = [];
     sessionList.map((s) => {
       if (
-        s.subject_id ===
+        s.subject.id ===
         (sessions_filter.filter === -1
-          ? s.subject_id
+          ? s.subject.id
           : parseInt(sessions_filter.filter))
       )
         filterSessions.push(s);
@@ -225,15 +293,11 @@ export default function Schedulesessionslist(props) {
 
   const switchSaveState = (state) => {
     if (state) {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "scroll";
       document
         .getElementById("commit-loader-2")
         .classList.remove("commit-loader-hide");
       document.getElementById("add-svg").classList.add("commit-loader-hide");
     } else {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
       document.getElementById("add-svg").classList.remove("commit-loader-hide");
       document
         .getElementById("commit-loader-2")
@@ -242,6 +306,7 @@ export default function Schedulesessionslist(props) {
   };
 
   const editSession = (e, s) => {
+    switchEditState(false);
     if (e.target.tagName === "svg") {
       let name =
         e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -280,7 +345,8 @@ export default function Schedulesessionslist(props) {
         editChat,
         editResources,
         editStream,
-        editSubject;
+        editSubject,
+        editCode;
 
       if (inputName !== "" && inputName !== s.session_name) {
         editTitle = inputName;
@@ -324,14 +390,26 @@ export default function Schedulesessionslist(props) {
         editStream = s.streaming_platform;
       }
 
-      if (inputSubject !== "" && inputSubject !== s.subject_id) {
-        editSubject = inputSubject;
+      if (
+        inputSubject.split("_")[0] !== "" &&
+        inputSubject.split("_")[0] !== s.subject.id
+      ) {
+        editSubject = inputSubject.split("_")[0];
       } else {
-        editSubject = s.subject_id;
+        editSubject = s.subject.id;
+      }
+
+      if (
+        inputSubject.split("_")[1] !== "" &&
+        inputSubject.split("_")[1] !== s.subject.subject_code
+      ) {
+        editCode = inputSubject.split("_")[1];
+      } else {
+        editCode = s.subject.subject_code;
       }
 
       API.asynchronizeRequest(function () {
-        SCHEDULESERVICE.editSession({
+        setSelectInfo({
           id: s.id,
           session_name: editTitle,
           session_start_date: editStartDate,
@@ -340,55 +418,62 @@ export default function Schedulesessionslist(props) {
           resources_platform: editResources,
           session_chat_id: editChat,
           subject_id: editSubject,
-        })
-          .then(() => {
-            fetchSessions();
-            fetchSubjects();
-
-            let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-            buttonDelete.style.display = "block";
-            let button = e.target.parentNode.parentNode.childNodes[1];
-            button.style.display = "block";
-            let checkButton = e.target.parentNode.parentNode.childNodes[2];
-            checkButton.style.display = "none";
-            let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-            cancelButton.style.display = "none";
-            name.disabled = true;
-            startDate.disabled = true;
-            endDate.disabled = true;
-            streaming.disabled = true;
-            resources.disabled = true;
-            chat.disabled = true;
-            subject.disabled = true;
-
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The calendar session was edited successfully.");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+          subject_code: editCode,
+          batch_id: s.batch_id,
+        });
+        if (s.batch_id === null) {
+          SCHEDULESERVICE.editSession({
+            id: s.id,
+            session_name: editTitle,
+            session_start_date: editStartDate,
+            session_end_date: editEndDate,
+            streaming_platform: editStream,
+            resources_platform: editResources,
+            session_chat_id: editChat,
+            subject_id: editSubject,
           })
-          .catch(async (e) => {
-            if (e) {
-              await interceptExpiredToken(e);
-              setPopupText(
-                "The calendar session could not be edited, check if you entered the correct fields."
-              );
-              setPopupIcon("error");
-              switchSaveState(false);
-              setPopup(true);
-              setIsConfirmDelete(false);
-            }
-          });
-      }).then(async (e) => {
-        if (e) {
-          await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The calendar session could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+            .then((error) => {
+              if (error) {
+                let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
+                buttonDelete.style.display = "block";
+                let button = e.target.parentNode.parentNode.childNodes[1];
+                button.style.display = "block";
+                let checkButton = e.target.parentNode.parentNode.childNodes[2];
+                checkButton.style.display = "none";
+                let cancelButton = e.target.parentNode.parentNode.childNodes[3];
+                cancelButton.style.display = "none";
+                name.disabled = true;
+                startDate.disabled = true;
+                endDate.disabled = true;
+                streaming.disabled = true;
+                resources.disabled = true;
+                chat.disabled = true;
+                subject.disabled = true;
+                setPopup(true);
+                setPopupType("info");
+                setPopupText(props.language.editAlertCompleted);
+                switchSaveState(false);
+                setIsConfirmDelete(false);
+                fetchSessions(1);
+              }
+            })
+            .catch(async (error) => {
+              if (error) {
+                await interceptExpiredToken(error);
+                setPopupText(props.language.editAlertFailed);
+                setPopupIcon("error");
+                switchSaveState(false);
+                setPopup(true);
+              }
+            });
+        } else {
+          setSelectType(true);
+          setSelectTypeModal(true);
+        }
+      }).then(async (error) => {
+        if (error) {
+          await interceptExpiredToken(error);
+          connectionAlert();
         }
       });
     } else {
@@ -440,7 +525,8 @@ export default function Schedulesessionslist(props) {
           editChat,
           editResources,
           editStream,
-          editSubject;
+          editSubject,
+          editCode;
 
         if (inputName !== "" && inputName !== s.session_name) {
           editTitle = inputName;
@@ -484,14 +570,26 @@ export default function Schedulesessionslist(props) {
           editStream = s.streaming_platform;
         }
 
-        if (inputSubject !== "" && inputSubject !== s.subject_id) {
-          editSubject = inputSubject;
+        if (
+          inputSubject.split("_")[0] !== "" &&
+          inputSubject.split("_")[0] !== s.subject.id
+        ) {
+          editSubject = inputSubject.split("_")[0];
         } else {
-          editSubject = s.subject_id;
+          editSubject = s.subject.id;
+        }
+
+        if (
+          inputSubject.split("_")[1] !== "" &&
+          inputSubject.split("_")[1] !== s.subject.subject_code
+        ) {
+          editCode = inputSubject.split("_")[1];
+        } else {
+          editCode = s.subject.subject_code;
         }
 
         API.asynchronizeRequest(function () {
-          SCHEDULESERVICE.editSession({
+          setSelectInfo({
             id: s.id,
             session_name: editTitle,
             session_start_date: editStartDate,
@@ -500,58 +598,66 @@ export default function Schedulesessionslist(props) {
             resources_platform: editResources,
             session_chat_id: editChat,
             subject_id: editSubject,
-          })
-            .then(() => {
-              fetchSessions();
-              fetchSubjects();
-              let buttonDelete =
-                e.target.parentNode.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button =
-                e.target.parentNode.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              startDate.disabled = true;
-              endDate.disabled = true;
-              streaming.disabled = true;
-              resources.disabled = true;
-              chat.disabled = true;
-              subject.disabled = true;
-
-              switchSaveState(false);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The calendar session was edited successfully.");
-              setIsConfirmDelete(false);
+            subject_code: editCode,
+            batch_id: s.batch_id,
+          });
+          if (s.batch_id === null) {
+            SCHEDULESERVICE.editSession({
+              id: s.id,
+              session_name: editTitle,
+              session_start_date: editStartDate,
+              session_end_date: editEndDate,
+              streaming_platform: editStream,
+              resources_platform: editResources,
+              session_chat_id: editChat,
+              subject_id: editSubject,
             })
-            .catch(async (e) => {
-              if (e) {
-                await interceptExpiredToken(e);
-                setPopupText(
-                  "The calendar session could not be edited, check if you entered the correct fields."
-                );
-                setPopupIcon("error");
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-                setPopup(true);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The calendar session could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
+              .then((error) => {
+                if (error) {
+                  let buttonDelete =
+                    e.target.parentNode.parentNode.parentNode.childNodes[0];
+                  buttonDelete.style.display = "block";
+                  let button =
+                    e.target.parentNode.parentNode.parentNode.childNodes[1];
+                  button.style.display = "block";
+                  let checkButton =
+                    e.target.parentNode.parentNode.parentNode.childNodes[2];
+                  checkButton.style.display = "none";
+                  let cancelButton =
+                    e.target.parentNode.parentNode.parentNode.childNodes[3];
+                  cancelButton.style.display = "none";
+                  name.disabled = true;
+                  startDate.disabled = true;
+                  endDate.disabled = true;
+                  streaming.disabled = true;
+                  resources.disabled = true;
+                  chat.disabled = true;
+                  subject.disabled = true;
+                  setPopupType("info");
+                  setPopupText(props.language.editAlertCompleted);
+                  setIsConfirmDelete(false);
+                  setPopup(true);
+                  fetchSessions(1);
+                }
+              })
+              .catch(async (error) => {
+                if (error) {
+                  await interceptExpiredToken(error);
+                  setPopupText(props.language.editAlertFailed);
+                  setPopupIcon("error");
+                  switchSaveState(false);
+                  setIsConfirmDelete(false);
+                  setPopup(true);
+                }
+              });
+          } else {
+            setSelectType(true);
+            setSelectTypeModal(true);
+          }
+        }).then(async (error) => {
+          if (error) {
+            await interceptExpiredToken(error);
+            connectionAlert();
           }
         });
       } else {
@@ -594,7 +700,8 @@ export default function Schedulesessionslist(props) {
           editChat,
           editResources,
           editStream,
-          editSubject;
+          editSubject,
+          editCode;
 
         if (inputName !== "" && inputName !== s.session_name) {
           editTitle = inputName;
@@ -638,14 +745,31 @@ export default function Schedulesessionslist(props) {
           editStream = s.streaming_platform;
         }
 
-        if (inputSubject !== "" && inputSubject !== s.subject_id) {
+        if (inputSubject !== "" && inputSubject !== s.subject.id) {
           editSubject = inputSubject;
         } else {
-          editSubject = s.subject_id;
+          editSubject = s.subject.id;
+        }
+        if (
+          inputSubject.split("_")[0] !== "" &&
+          inputSubject.split("_")[0] !== s.subject.id
+        ) {
+          editSubject = inputSubject.split("_")[0];
+        } else {
+          editSubject = s.subject.id;
+        }
+
+        if (
+          inputSubject.split("_")[1] !== "" &&
+          inputSubject.split("_")[1] !== s.subject.subject_code
+        ) {
+          editCode = inputSubject.split("_")[1];
+        } else {
+          editCode = s.subject.subject_code;
         }
 
         API.asynchronizeRequest(function () {
-          SCHEDULESERVICE.editSession({
+          setSelectInfo({
             id: s.id,
             session_name: editTitle,
             session_start_date: editStartDate,
@@ -654,57 +778,146 @@ export default function Schedulesessionslist(props) {
             resources_platform: editResources,
             session_chat_id: editChat,
             subject_id: editSubject,
-          })
-            .then(() => {
-              fetchSessions();
-              fetchSubjects();
-              let buttonDelete = e.target.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              startDate.disabled = true;
-              endDate.disabled = true;
-              streaming.disabled = true;
-              resources.disabled = true;
-              chat.disabled = true;
-              subject.disabled = true;
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The calendar session was edited successfully.");
-              switchSaveState(false);
-              setIsConfirmDelete(false);
+            subject_code: editCode,
+            batch_id: s.batch_id,
+          });
+          if (s.batch_id === null) {
+            SCHEDULESERVICE.editSession({
+              id: s.id,
+              session_name: editTitle,
+              session_start_date: editStartDate,
+              session_end_date: editEndDate,
+              streaming_platform: editStream,
+              resources_platform: editResources,
+              session_chat_id: editChat,
+              subject_id: editSubject,
+              batch_id: s.batch_id,
             })
-            .catch(async (e) => {
-              if (e) {
-                await interceptExpiredToken(e);
-                setPopupText(
-                  "The calendar session could not be edited, check if you entered the correct fields."
-                );
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-                setIsConfirmDelete(false);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The calendar session could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            setIsConfirmDelete(false);
-            switchSaveState(false);
+              .then((error) => {
+                if (error) {
+                  fetchSessions(1);
+                  let buttonDelete = e.target.parentNode.childNodes[0];
+                  buttonDelete.style.display = "block";
+                  let button = e.target.parentNode.childNodes[1];
+                  button.style.display = "block";
+                  let checkButton = e.target.parentNode.childNodes[2];
+                  checkButton.style.display = "none";
+                  let cancelButton = e.target.parentNode.childNodes[3];
+                  cancelButton.style.display = "none";
+                  name.disabled = true;
+                  startDate.disabled = true;
+                  endDate.disabled = true;
+                  streaming.disabled = true;
+                  resources.disabled = true;
+                  chat.disabled = true;
+                  subject.disabled = true;
+                  setPopupType("info");
+                  setPopupText(props.language.editAlertCompleted);
+                  switchSaveState(false);
+                  setIsConfirmDelete(false);
+                  setPopup(true);
+                }
+              })
+              .catch(async (error) => {
+                if (error) {
+                  await interceptExpiredToken(error);
+                  setPopupText(props.language.editAlertFailed);
+                  setPopupIcon("error");
+                  switchSaveState(false);
+                  setPopup(true);
+                  setIsConfirmDelete(false);
+                }
+              });
+          } else {
+            setSelectType(true);
+            setSelectTypeModal(true);
+          }
+        }).then(async (error) => {
+          if (error) {
+            await interceptExpiredToken(error);
+            connectionAlert();
           }
         });
       }
     }
+  };
+
+  const editGlobalSession = () => {
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.editSessionBatch({
+        id: selectInfo.id,
+        session_name: selectInfo.session_name,
+        session_start_date: selectInfo.session_start_date,
+        session_end_date: selectInfo.session_end_date,
+        streaming_platform: selectInfo.streaming_platform,
+        resources_platform: selectInfo.resources_platform,
+        session_chat_id: selectInfo.session_chat_id,
+        subject_id: selectInfo.subject_id,
+        batch_id: selectInfo.batch_id,
+      })
+        .then((e) => {
+          if (e) {
+            setPopup(true);
+            setPopupType("info");
+            setPopupText(props.language.editAlertCompleted);
+            switchSaveState(false);
+            setIsConfirmDelete(false);
+            fetchSessions(1);
+          }
+        })
+        .catch((e) => {
+          if (e) {
+            setPopupText(props.language.editAlertFailed);
+            setPopupIcon("error");
+            switchSaveState(false);
+            setPopup(true);
+            setIsConfirmDelete(false);
+          }
+        });
+    }).then(async (error) => {
+      if (error) {
+        await interceptExpiredToken(error);
+        connectionAlert();
+      }
+    });
+  };
+
+  const editOneSession = () => {
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.editSession({
+        id: selectInfo.id,
+        session_name: selectInfo.session_name,
+        session_start_date: selectInfo.session_start_date,
+        session_end_date: selectInfo.session_end_date,
+        streaming_platform: selectInfo.streaming_platform,
+        resources_platform: selectInfo.resources_platform,
+        session_chat_id: selectInfo.session_chat_id,
+        subject_id: selectInfo.subject_id,
+        batch_id: null,
+      })
+        .then(() => {
+          fetchSessions(1);
+          setPopup(true);
+          setPopupType("info");
+          setPopupText(props.language.editAlertCompleted);
+          switchSaveState(false);
+          setIsConfirmDelete(false);
+        })
+        .catch((e) => {
+          if (e) {
+            setPopupText(props.language.editAlertFailed);
+            setPopupIcon("error");
+            switchSaveState(false);
+            setPopup(true);
+            setIsConfirmDelete(false);
+          }
+        });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
+    });
   };
 
   const closeEditSession = (e, s) => {
@@ -739,8 +952,8 @@ export default function Schedulesessionslist(props) {
       let cancelButton = e.target.parentNode.parentNode.childNodes[3];
       cancelButton.style.display = "none";
       let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-      if (s.subject_id !== parseInt(content.value)) {
-        content = s.subject_id;
+      if (s.subject.id !== parseInt(content.value)) {
+        content = s.subject.id;
       }
     } else {
       if (e.target.tagName === "path") {
@@ -784,8 +997,8 @@ export default function Schedulesessionslist(props) {
           e.target.parentNode.parentNode.parentNode.childNodes[3];
         cancelButton.style.display = "none";
         let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-        if (s.subject_id !== parseInt(content.value)) {
-          content = s.subject_id;
+        if (s.subject.id !== parseInt(content.value)) {
+          content = s.subject.id;
         }
       } else {
         let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
@@ -816,8 +1029,8 @@ export default function Schedulesessionslist(props) {
         let cancelButton = e.target.parentNode.childNodes[3];
         cancelButton.style.display = "none";
         let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-        if (s.subject_id !== parseInt(content.value)) {
-          content = s.subject_id;
+        if (s.subject.id !== parseInt(content.value)) {
+          content = s.subject.id;
         }
       }
     }
@@ -932,6 +1145,36 @@ export default function Schedulesessionslist(props) {
     }
   };
 
+  const deleteGlobalSession = async () => {
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.deleteGlobal(idBatch)
+        .then((e) => {
+          if (e) {
+            fetchSessions(1);
+            setPopup(true);
+            setPopupType("info");
+            setPopupText(props.language.deleteAlertCompleted);
+            switchSaveState(false);
+            setSelectType(false);
+            fetchSessions(1);
+          }
+        })
+        .catch((e) => {
+          if (e) {
+            setPopupText(props.language.deleteFailed);
+            setPopupIcon("error");
+            switchSaveState(false);
+            setPopup(true);
+            setIsConfirmDelete(false);
+          }
+        });
+    }).then((e) => {
+      if (e) {
+        connectionAlert();
+      }
+    });
+  };
+
   const listSubject = (sub) => {
     let list_subject = [];
     subject.map((s) => {
@@ -965,7 +1208,7 @@ export default function Schedulesessionslist(props) {
 
   const handleChangeResourcesPlatform = (id) => {
     setChangeResourcesPlatform(true);
-    return document.getElementById(`inputResourcesPlatform_${id}`).value;
+    return document.getElementById(`inputResourcePlatform_${id}`).value;
   };
 
   const handleChangeSessionChat = (id) => {
@@ -973,21 +1216,13 @@ export default function Schedulesessionslist(props) {
     return document.getElementById(`inputSessionChat_${id}`).value;
   };
 
-  const alertCreate = async () => {
-    setPopupText("Required information is missing.");
-    setPopupType("error");
-    setPopup(true);
-  };
-
   const showModal = async () => {
-    document.getElementById("controlPanelContentContainer").style.overflow =
-      "hidden";
-
     let subject_name = document.getElementById("s_subjectId").value;
     let name = document.getElementById("s_name").value;
     let streaming = document.getElementById("s_streaming").value;
     let resource = document.getElementById("s_resources").value;
     let chat = document.getElementById("s_chatGroup").value;
+
     let info = {
       name: name,
       streaming: streaming,
@@ -995,14 +1230,28 @@ export default function Schedulesessionslist(props) {
       chat: chat,
       subject: subject_name,
     };
-    setShowModalSession(true);
-    setSessionInfo(info);
+
+    if (
+      subject_name !== `${props.language.chooseSubject}` &&
+      name !== "" &&
+      streaming !== "" &&
+      resource !== "" &&
+      chat !== ""
+    ) {
+      setShowModalSession(true);
+      setSessionInfo(info);
+    } else {
+      let box = document.getElementById("s_dailySession").checked;
+      if (box === true) {
+        document.getElementById("s_dailySession").checked = false;
+      }
+      alertCreate();
+    }
   };
 
   useEffect(() => {
-    fetchSessions();
+    fetchSessions(1);
     fetchSubjects();
-
     document.addEventListener("filter_subject", (e) => {
       e.stopImmediatePropagation();
       sessions_filter.filter =
@@ -1019,7 +1268,7 @@ export default function Schedulesessionslist(props) {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container">
+      <div className="schedulesesionslist-main-container" id="scroll">
         <table>
           <thead>
             <tr>
@@ -1099,7 +1348,7 @@ export default function Schedulesessionslist(props) {
                     {props.language.chooseSubject}
                   </option>
                   {subject.map((s) => (
-                    <option key={s.id} value={`${s.name}_${s.id}`}>
+                    <option key={s.id} value={`${s.subject_code}_${s.id}`}>
                       {s.name}
                     </option>
                   ))}
@@ -1132,432 +1381,474 @@ export default function Schedulesessionslist(props) {
           </tbody>
         </table>
         {sessions && sessions.length !== 0 ? (
-          <table style={{ marginTop: "50px" }}>
-            <thead>
-              <tr>
-                <th>{props.language.code}</th>
-                <th>{props.language.name}</th>
-                <th>{props.language.startDate}</th>
-                <th>{props.language.endDate}</th>
-                <th>{props.language.streaming}</th>
-                <th>{props.language.resources}</th>
-                <th>{props.language.chatLink}</th>
-                <th>{props.language.subjects}</th>
-                <th>{props.language.actions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sessions.map((s) => {
-                if (search.length > 0) {
-                  if (
-                    s.session_name.toLowerCase().includes(search.toLowerCase())
-                  ) {
-                    return (
-                      <tr key={s.id}>
-                        <td>{s.id}</td>
-                        <td>
-                          <input
-                            id={`inputName_${s.id}`}
-                            type="text"
-                            disabled
-                            value={
-                              changeName === false ? s.session_name : newName
-                            }
-                            onChange={() => {
-                              handleChangeName(s.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputStartDate_${s.id}`}
-                            type="datetime-local"
-                            value={
-                              changeStartDate === false
-                                ? s.session_start_date
-                                : newStartDate
-                            }
-                            disabled
-                            onChange={(e) => {
-                              handleChangeStartDate(e, s.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputEndDate_${s.id}`}
-                            type="datetime-local"
-                            value={
-                              changeEndDate === false
-                                ? s.session_end_date
-                                : newEndDate
-                            }
-                            disabled
-                            onChange={(e) => {
-                              handleChangeEndDate(e, s.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputStreamPlatform_${s.id}`}
-                            type="text"
-                            disabled
-                            value={
-                              s.streaming_platform === null
-                                ? ""
-                                : changeStreamPlatform === false
-                                ? s.streaming_platform
-                                : newStreamPlatform
-                            }
-                            onChange={() => {
-                              handleChangeStreamPlatform(s.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputResourcePlatform_${s.id}`}
-                            type="text"
-                            disabled
-                            value={
-                              s.resources_platform === null
-                                ? ""
-                                : changeResourcesPlatform === false
-                                ? s.resources_platform
-                                : newResourcesPlatform
-                            }
-                            onChange={() => {
-                              handleChangeResourcesPlatform(s.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputSessionChat_${s.id}`}
-                            type="text"
-                            disabled
-                            value={
-                              s.session_chat_id === null
-                                ? ""
-                                : changeChatId === false
-                                ? s.session_chat_id
-                                : newChatId
-                            }
-                            onChange={() => {
-                              handleChangeSessionChat(s.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <select id={`inputSubjectID_${s.id}`} disabled>
-                            <option
-                              defaultValue={s.subject_id}
-                              value={s.subject_id}
+          <>
+            <div className="notify-users">
+              <PageSelect
+                onPageChange={async (p) => fetchSessions(p)}
+                maxPages={maxPages}
+              />
+            </div>
+            <div className="schedule-table-info">
+              <table style={{ marginTop: "10px" }}>
+                <thead>
+                  <tr>
+                    <th>{props.language.code}</th>
+                    <th>{props.language.name}</th>
+                    <th>{props.language.startDate}</th>
+                    <th>{props.language.endDate}</th>
+                    <th>{props.language.streaming}</th>
+                    <th>{props.language.resources}</th>
+                    <th>{props.language.chatLink}</th>
+                    <th>{props.language.subjects}</th>
+                    <th>{props.language.actions}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sessions.map((s) => {
+                    if (search.length > 0) {
+                      if (
+                        s.session_name
+                          .toLowerCase()
+                          .includes(search.toLowerCase())
+                      ) {
+                        return (
+                          <tr key={s.id}>
+                            <td>{s.id}</td>
+                            <td>
+                              <input
+                                id={`inputName_${s.id}`}
+                                type="text"
+                                disabled
+                                value={
+                                  changeName === false
+                                    ? s.session_name
+                                    : newName
+                                }
+                                onChange={() => {
+                                  handleChangeName(s.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                id={`inputStartDate_${s.id}`}
+                                type="datetime-local"
+                                value={
+                                  changeStartDate === false
+                                    ? s.session_start_date
+                                    : newStartDate
+                                }
+                                disabled
+                                onChange={(e) => {
+                                  handleChangeStartDate(e, s.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                id={`inputEndDate_${s.id}`}
+                                type="datetime-local"
+                                value={
+                                  changeEndDate === false
+                                    ? s.session_end_date
+                                    : newEndDate
+                                }
+                                disabled
+                                onChange={(e) => {
+                                  handleChangeEndDate(e, s.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                id={`inputStreamPlatform_${s.id}`}
+                                type="text"
+                                disabled
+                                value={
+                                  s.streaming_platform === null
+                                    ? ""
+                                    : changeStreamPlatform === false
+                                    ? s.streaming_platform
+                                    : newStreamPlatform
+                                }
+                                onChange={() => {
+                                  handleChangeStreamPlatform(s.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                id={`inputResourcePlatform_${s.id}`}
+                                type="text"
+                                disabled
+                                value={
+                                  s.resources_platform === null
+                                    ? ""
+                                    : changeResourcesPlatform === false
+                                    ? s.resources_platform
+                                    : newResourcesPlatform
+                                }
+                                onChange={() => {
+                                  handleChangeResourcesPlatform(s.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                id={`inputSessionChat_${s.id}`}
+                                type="text"
+                                disabled
+                                value={
+                                  s.session_chat_id === null
+                                    ? ""
+                                    : changeChatId === false
+                                    ? s.session_chat_id
+                                    : newChatId
+                                }
+                                onChange={() => {
+                                  handleChangeSessionChat(s.id);
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <select id={`inputSubjectID_${s.id}`} disabled>
+                                <option
+                                  defaultValue={s.subject.id}
+                                  value={
+                                    s.subject.id + "_" + s.subject.subject_code
+                                  }
+                                >
+                                  {s.subject.name}
+                                </option>
+                                {subjectEdit.map((s) => (
+                                  <option key={s.id} value={s.id}>
+                                    {s.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
                             >
-                              {s.subject.name}
-                            </option>
-                            {subjectEdit.map((s) => (
-                              <option key={s.id} value={s.id}>
-                                {s.name}
+                              <button
+                                style={{ marginRight: "5px" }}
+                                onClick={() => {
+                                  confirmDeleteEvent(s);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-trash3"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ marginRight: "5px" }}
+                                onClick={(e) => {
+                                  showEditOptionSession(e, s);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-pencil-square"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ marginRight: "5px", display: "none" }}
+                                onClick={(e) => {
+                                  editSession(e, s);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-check2"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                                </svg>
+                              </button>
+                              <button
+                                style={{ display: "none" }}
+                                onClick={(e) => {
+                                  closeEditSession(e, s);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  fill="currentColor"
+                                  className="bi bi-x-lg"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                                  />
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                                  />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    } else {
+                      return (
+                        <tr key={s.id}>
+                          <td>{shortUUID(s.id)}</td>
+                          <td>
+                            <input
+                              id={`inputName_${s.id}`}
+                              type="text"
+                              disabled
+                              value={
+                                changeName === false ? s.session_name : newName
+                              }
+                              onChange={() => {
+                                handleChangeName(s.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputStartDate_${s.id}`}
+                              type="datetime-local"
+                              value={
+                                changeStartDate === false
+                                  ? s.session_start_date
+                                  : newStartDate
+                              }
+                              disabled
+                              onChange={(e) => {
+                                handleChangeStartDate(e, s.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputEndDate_${s.id}`}
+                              type="datetime-local"
+                              value={
+                                changeEndDate === false
+                                  ? s.session_end_date
+                                  : newEndDate
+                              }
+                              disabled
+                              onChange={(e) => {
+                                handleChangeEndDate(e, s.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputStreamPlatform_${s.id}`}
+                              type="text"
+                              disabled
+                              value={
+                                s.streaming_platform === null
+                                  ? ""
+                                  : changeStreamPlatform === false
+                                  ? s.streaming_platform
+                                  : newStreamPlatform
+                              }
+                              onChange={() => {
+                                handleChangeStreamPlatform(s.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputResourcePlatform_${s.id}`}
+                              type="text"
+                              disabled
+                              value={
+                                changeResourcesPlatform === false
+                                  ? s.resources_platform
+                                  : newResourcesPlatform
+                              }
+                              onChange={() => {
+                                handleChangeResourcesPlatform(s.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              id={`inputSessionChat_${s.id}`}
+                              type="text"
+                              disabled
+                              value={
+                                changeChatId === false
+                                  ? s.session_chat_id
+                                  : newChatId
+                              }
+                              onChange={() => {
+                                handleChangeSessionChat(s.id);
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <select id={`inputSubjectID_${s.id}`} disabled>
+                              <option
+                                defaultValue={s.subject.id}
+                                value={
+                                  s.subject.id + "_" + s.subject.subject_code
+                                }
+                              >
+                                {s.subject.name}
                               </option>
-                            ))}
-                          </select>
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={() => {
-                              confirmDeleteEvent(s.id);
+                              {subjectEdit.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
                             }}
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
+                            <button
+                              style={{ marginRight: "5px" }}
+                              onClick={() => {
+                                confirmDeleteEvent(s);
+                              }}
                             >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionSession(e, s);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-pencil-square"
-                              viewBox="0 0 16 16"
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ marginRight: "5px" }}
+                              onClick={(e) => {
+                                showEditOptionSession(e, s);
+                              }}
                             >
-                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px", display: "none" }}
-                            onClick={(e) => {
-                              editSession(e, s);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-check2"
-                              viewBox="0 0 16 16"
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-pencil-square"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ marginRight: "5px", display: "none" }}
+                              onClick={(e) => {
+                                editSession(e, s);
+                              }}
                             >
-                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditSession(e, s);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-x-lg"
-                              viewBox="0 0 16 16"
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-check2"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                              </svg>
+                            </button>
+                            <button
+                              style={{ display: "none" }}
+                              onClick={(e) => {
+                                closeEditSession(e, s);
+                              }}
                             >
-                              <path
-                                fillRule="evenodd"
-                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                              />
-                              <path
-                                fillRule="evenodd"
-                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                              />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-                } else {
-                  return (
-                    <tr key={s.id}>
-                      <td>{shortUUID(s.id)}</td>
-                      <td>
-                        <input
-                          id={`inputName_${s.id}`}
-                          type="text"
-                          disabled
-                          value={
-                            changeName === false ? s.session_name : newName
-                          }
-                          onChange={() => {
-                            handleChangeName(s.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputStartDate_${s.id}`}
-                          type="datetime-local"
-                          value={
-                            changeStartDate === false
-                              ? s.session_start_date
-                              : newStartDate
-                          }
-                          disabled
-                          onChange={(e) => {
-                            handleChangeStartDate(e, s.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputEndDate_${s.id}`}
-                          type="datetime-local"
-                          value={
-                            changeEndDate === false
-                              ? s.session_end_date
-                              : newEndDate
-                          }
-                          disabled
-                          onChange={(e) => {
-                            handleChangeEndDate(e, s.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputStreamPlatform_${s.id}`}
-                          type="text"
-                          disabled
-                          value={
-                            s.streaming_platform === null
-                              ? ""
-                              : changeStreamPlatform === false
-                              ? s.streaming_platform
-                              : newStreamPlatform
-                          }
-                          onChange={() => {
-                            handleChangeStreamPlatform(s.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputResourcePlatform_${s.id}`}
-                          type="text"
-                          disabled
-                          value={
-                            changeResourcesPlatform === false
-                              ? s.resources_platform
-                              : newResourcesPlatform
-                          }
-                          onChange={() => {
-                            handleChangeResourcesPlatform(s.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputSessionChat_${s.id}`}
-                          type="text"
-                          disabled
-                          value={
-                            changeChatId === false
-                              ? s.session_chat_id
-                              : newChatId
-                          }
-                          onChange={() => {
-                            handleChangeSessionChat(s.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <select id={`inputSubjectID_${s.id}`} disabled>
-                          <option
-                            defaultValue={s.subject_id}
-                            value={s.subject_id}
-                          >
-                            {s.subject.name}
-                          </option>
-                          {subjectEdit.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={() => {
-                            confirmDeleteEvent(s.id);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={(e) => {
-                            showEditOptionSession(e, s);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px", display: "none" }}
-                          onClick={(e) => {
-                            editSession(e, s);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-check2"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ display: "none" }}
-                          onClick={(e) => {
-                            closeEditSession(e, s);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-x-lg"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                            />
-                            <path
-                              fillRule="evenodd"
-                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                            />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                }
-              })}
-            </tbody>
-          </table>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-x-lg"
+                                viewBox="0 0 16 16"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                                />
+                                <path
+                                  fillRule="evenodd"
+                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                                />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
+
+                    return true;
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : null}
       </div>
+
+      <SelectedModal
+        show={selectType}
+        editGlobal={() => {
+          editGlobalSession();
+        }}
+        deleteGlobal={() => {
+          deleteGlobalSession();
+        }}
+        editOne={() => {
+          editOneSession();
+        }}
+        deleteOne={() => {
+          deleteOneSession();
+        }}
+        selectTypeModal={selectTypeModal}
+        onCloseModal={() => {
+          setSelectType(false);
+          switchEditState(true);
+        }}
+        language={props.language}
+      />
 
       <SessionsModal
         show={showModalSession}
@@ -1565,13 +1856,11 @@ export default function Schedulesessionslist(props) {
         info={sessionInfo}
         onCloseModal={() => {
           setShowModalSession(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
           let box = document.getElementById("s_dailySession").checked;
           if (box === true) {
             document.getElementById("s_dailySession").checked = false;
           }
+          fetchSessions(1);
         }}
       ></SessionsModal>
       <StandardModal
@@ -1582,23 +1871,20 @@ export default function Schedulesessionslist(props) {
         isQuestion={isConfirmDelete}
         onYesAction={() => {
           setPopup(false);
-          deleteSession(idDelete);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          deleteSession(idDelete, idBatch);
+          setIsConfirmDelete(false);
         }}
         onNoAction={() => {
           setPopup(false);
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          setSelectType(false);
+          switchEditState(true);
+          switchSaveState(false);
         }}
         onCloseAction={() => {
           setPopup(false);
-          switchSaveState();
-          document.getElementById(
-            "controlPanelContentContainer"
-          ).style.overflow = "scroll";
+          switchSaveState(false);
+          setSelectType(false);
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

@@ -6,6 +6,7 @@ class CreateCalendarAnnotations < ActiveRecord::Migration[6.1]
       t.string :annotation_title
       t.string :annotation_description
       t.boolean :isGlobal
+      t.boolean :isPop
       t.belongs_to :user, null: false, foreign_key: true, type: :uuid
       t.belongs_to :subject, foreign_key: true, type: :uuid
       t.timestamps

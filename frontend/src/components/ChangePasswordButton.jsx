@@ -3,8 +3,10 @@ import axios from "axios";
 import StandardModal from "../components/modals/standard-modal/StandardModal";
 import { getOfflineUser } from "../utils/OfflineManager";
 import * as AUTH_SERVICE from "../services/auth.service";
+import useLanguage from "../hooks/useLanguage";
 
 export default function ChangePasswordButton() {
+  const language = useLanguage();
   const [showModal, setShowModal] = useState(false);
   const [formIndex, setFormIndex] = useState(0);
   const [showAlertModal, setShowAlertModal] = useState(false);
@@ -14,35 +16,37 @@ export default function ChangePasswordButton() {
   const email = getOfflineUser().user.email;
   const forms = [
     <form className="standard-modal-form">
-      <label htmlFor="old_password">Old password</label>
+      <label htmlFor="old_password">{language.recovery_old_pswd}</label>
       <input
         id="old_password"
         name="old_password"
         type="password"
-        placeholder="Old password"
+        placeholder={language.recovery_old_pswd}
       />
     </form>,
     <form id="submit_form" className="standard-modal-form">
-      <label htmlFor="new_password">New password</label>
+      <label htmlFor="new_password">{language.recovery_new_pswd}</label>
       <input
         id="new_password"
         name="new_password"
         type="password"
-        placeholder="New password"
+        placeholder={language.recovery_new_pswd}
       />
-      <label htmlFor="confirm_password">Confirm password</label>
+      <label htmlFor="confirm_password">{language.recovery_confirm_pswd}</label>
       <input
         id="confirm_password"
         name="confirm_password"
         type="password"
-        placeholder="Confirm password"
+        placeholder={language.recovery_confirm_pswd}
       />
-      <label htmlFor="confirmation_code">Confirmation code</label>
+      <label htmlFor="confirmation_code">
+        {language.recovery_confirm_code}
+      </label>
       <input
         id="confirmation_code"
         name="confirmation_code"
         type="password"
-        placeholder="Confirmation code"
+        placeholder={language.recovery_confirm_code}
       />
     </form>,
   ];
@@ -65,16 +69,14 @@ export default function ChangePasswordButton() {
         if (res.data.status === "success") {
           setShowModal(false);
           setShowAlertModal(true);
-          setAlertMessage("Password changed successfully");
+          setAlertMessage(language.recovery_change_pswd_success);
           setAlertType("success");
           setTimeout(async () => await AUTH_SERVICE.logout(), 3000);
         } else {
           console.log(res);
           setShowModal(false);
           setTimeout(() => {
-            setAlertMessage(
-              "Something went wrong while trying to change your password. Please try again later."
-            );
+            setAlertMessage(language.recovery_change_pswd_error);
             setAlertType("error");
             setShowAlertModal(true);
           }, 300);
@@ -86,8 +88,8 @@ export default function ChangePasswordButton() {
         setTimeout(() => {
           setAlertMessage(
             invalidCode
-              ? "The code provided is not valid. Please try again later"
-              : "Something went wrong while changing your password. Please try again later."
+              ? language.recovery_invalid_code
+              : language.recovery_change_pswd_error
           );
           setAlertType("error");
           setShowAlertModal(true);
@@ -108,7 +110,7 @@ export default function ChangePasswordButton() {
         if (res.data.status === "success") {
           document.getElementById("old_password").value = "";
           setAlertType("warning");
-          setAlertMessage("Check your email for the confirmation code");
+          setAlertMessage(language.recovery_code_sent_success);
           setShowAlertModal(true);
           setShowModal(false);
           setTimeout(() => {
@@ -117,13 +119,14 @@ export default function ChangePasswordButton() {
             setFormIndex(formIndex + 1);
           }, 4000);
         } else {
-          let invalidOldPwd = res.data.message === "Invalid old password";
+          let invalidOldPwd =
+            res.data.message === language.recovery_old_invalid;
           setShowModal(false);
           setTimeout(() => {
             setAlertMessage(
               invalidOldPwd
-                ? "The password you entered is incorrect. Please try again."
-                : "Something went wrong when checking your password. Please try again later."
+                ? language.recovery_incorrect_pswd
+                : language.recovery_check_pswd_error
             );
             setAlertType("error");
             setShowAlertModal(true);
@@ -134,7 +137,7 @@ export default function ChangePasswordButton() {
         console.error(err);
         setShowModal(false);
         setTimeout(() => {
-          setAlertMessage("An error occurred. Please try again later.");
+          setAlertMessage(language.recovery_unknown_error_ocurred);
           setAlertType("error");
           setShowAlertModal(true);
         }, 300);
@@ -149,15 +152,19 @@ export default function ChangePasswordButton() {
           setShowModal(!showModal);
         }}
       >
-        Change password
+        {language.change_password}
       </button>
       <StandardModal
         show={showModal}
         hasIconAnimation
         hasTransition
         type={"info"}
-        text={!formIndex ? "1st step" : "2nd step"}
-        customOkay={!formIndex ? "Next" : "Submit"}
+        text={
+          !formIndex
+            ? language.recovery_first_step
+            : language.recovery_second_step
+        }
+        customOkay={!formIndex ? language.next : language.submit}
         onCloseAction={
           !formIndex ? begin_password_change : submit_password_change
         }

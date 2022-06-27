@@ -28,9 +28,13 @@ import instanceBadge, {
 import WebTitle from "./components/WebTitle";
 import { getOfflineUser } from "./utils/OfflineManager";
 import useRole from "./hooks/useRole";
+<<<<<<< HEAD
 import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
 
 const notifs = new NotifsAC();
+=======
+import Notifications from "./views/Notifications/Notifications";
+>>>>>>> develop
 
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
@@ -54,6 +58,12 @@ export default function App() {
 
   useEffect(() => {
     notifs.instanceURC_IDB();
+    if (localStorage.eduapp_language === undefined) {
+      localStorage.setItem("eduapp_language", "en_uk");
+    }
+
+    instanceBadge();
+
     setNeedsExtras(
       !new RegExp(
         "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*)|password/.*)$"
@@ -152,7 +162,11 @@ export default function App() {
             {/* Menu */}
             <Route path="/menu" element={<Menu />} />
             <Route path="/menu/profile" element={<ProfileSettings />} />
-            <Route path="/menu/settings" element={<MenuSettings />} />{" "}
+            <Route path="/menu/settings" element={<MenuSettings />} />
+
+            {/*Notifications*/}
+            <Route path="/notifications" element={<Notifications />} />
+
             {/* Unknown URL Reroute */}
             <Route path="*" element={<Navigate to="/home" />} />
           </Routes>

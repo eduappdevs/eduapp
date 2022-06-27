@@ -1,3 +1,4 @@
+import useLanguage from "../../../hooks/useLanguage";
 import "./StandardModal.css";
 
 export default function StandardModal({
@@ -21,6 +22,7 @@ export default function StandardModal({
   showLoader,
   form,
 }) {
+  const language = useLanguage();
   iconFill = localStorage.darkMode === "1" ? true : iconFill || false;
   // TYPES = ['success', 'error', 'warning', 'info']
   return (
@@ -146,21 +148,21 @@ export default function StandardModal({
           {isQuestion && !showLoader && (
             <>
               <div className="standard-modal-btn" onClick={onYesAction}>
-                {customYes ? customYes : "Yes"}
+                {customYes ? customYes : language.modal_yes}
               </div>
               <div className="standard-modal-btn" onClick={onNoAction}>
-                {customNo ? customNo : "No"}
+                {customNo ? customNo : language.modal_no}
               </div>
             </>
           )}
           {!isQuestion && !showLoader && (
             <div className="standard-modal-btn" onClick={onCloseAction}>
-              {customOkay ? customOkay : "Okay"}
+              {customOkay ? customOkay : language.modal_okay}
             </div>
           )}
           {hasCancel && !showLoader && (
             <div className="standard-modal-btn" onClick={onCancelAction}>
-              {customCancel ? customCancel : "Cancel"}
+              {customCancel ? customCancel : language.modal_cancel}
             </div>
           )}
         </div>

@@ -1,0 +1,33 @@
+.prevent-y-overflow {
+	overflow-y: scroll !important;
+}
+
+.permission-table {
+	margin-top: 10px;
+}
+
+.permission-table>thead>tr>th {
+	text-align: center;
+}
+
+.permission-table>tbody>tr>td {
+	text-align: center;
+}
+
+.close-perms>svg {
+	-webkit-transform: translateY(3px);
+	transform: translateY(3px);
+	margin-right: 5px;
+	transition: all 0.3s ease-in-out;
+	opacity: 20%;
+}
+
+.close-perms>svg:hover {
+	cursor: pointer;
+	opacity: 90%;
+}
+
+.close-perms>span {
+	font-weight: bold;
+	opacity: 0.5;
+}

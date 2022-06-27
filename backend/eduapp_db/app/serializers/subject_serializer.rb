@@ -1,4 +1,4 @@
 class SubjectSerializer < ActiveModel::Serializer
-  attributes :id, :name, :description, :color, :course_id
+  attributes :id,:subject_code,  :name, :description, :color, :course_id
   has_one :course
 end

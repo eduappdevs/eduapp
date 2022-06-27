@@ -10,6 +10,24 @@
 	z-index: 99999999999999;
 }
 
+.language-switcher {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.language-switcher>div>select {
+	background-color: var(--blue);
+	color: white;
+	font-family: Consolas;
+	font-size: 1.3rem;
+	border-radius: 5px;
+	padding: 15px;
+	border: none;
+	margin-top: 20px;
+}
+
 .MenuSettings__main-container>ul {
 	width: 100%;
 	height: 91%;

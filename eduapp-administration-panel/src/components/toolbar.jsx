@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import Batcher from "./Batcher";
 import Input from "./Input";
+import SessionCSVModal from "./modals/sessionCSV-batch-modal/SessionCSVModal";
 import "../styles/scheduletoolbar.css";
 
 export default function Toolbar(props) {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const handleChangeFilterSession = (event) => {
     document.dispatchEvent(
       new CustomEvent("filter_subject", { detail: event.target.value })
@@ -49,7 +52,16 @@ export default function Toolbar(props) {
         <>
           <ul className="scheduletoolbar-ul sessions-toolbar">
             <li>
-              <Batcher type="sessions" />
+              <div
+                className="check-button-containter"
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+              >
+                <div className="check-button-main">
+                  <p>CSV file upload</p>
+                </div>
+              </div>
             </li>
             <li className="subjectbar-container">
               <select
@@ -99,6 +111,21 @@ export default function Toolbar(props) {
               />
             </li>
           </ul>
+          {modalOpen === true ? (
+            <SessionCSVModal
+              closed={() => {
+                setModalOpen(false);
+                document.getElementById(
+                  "controlPanelContentContainer"
+                ).style.overflow = "scroll";
+              }}
+              type={() => {
+                document.getElementById(
+                  "controlPanelContentContainer"
+                ).style.overflow = "scroll";
+              }}
+            />
+          ) : null}
         </>
       ) : props.location === "events" ? (
         <>
@@ -433,7 +460,7 @@ export default function Toolbar(props) {
           </ul>
         </>
       ) : (
-        <h1>Communication configuration</h1>
+        <h1>{props.language.configuration}</h1>
       )}{" "}
     </div>
   );

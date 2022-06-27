@@ -31,7 +31,7 @@ registerRoute(({ request, url }) => {
     return false;
   }
 
-  if (url.pathname.startsWith("/_")) {
+  if (url.pathname.startsWith("/app/_")) {
     return false;
   }
 
@@ -62,6 +62,4 @@ self.addEventListener("message", (event) => {
         break;
     }
   }
-}
-
-)
+});

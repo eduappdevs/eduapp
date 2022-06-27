@@ -35,6 +35,26 @@ export default function ResourcesModal({
 
   let finalData = new FormData();
 
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("resources-modal-container").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "100vw";
+      document.getElementById("standard-modal").style.height = "100vh";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
+
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(language.connectionAlert);
+    setPopupIcon("error");
+  };
+
   const deleteFirstFileEdited = async (i) => {
     let newFile = [];
     let deleteFile = [];
@@ -118,6 +138,7 @@ export default function ResourcesModal({
   };
 
   const createResource = async () => {
+    switchEditState(false);
     finalData.append("name", name);
     finalData.append("description", description);
     if (filesToUpload !== undefined) {
@@ -131,44 +152,48 @@ export default function ResourcesModal({
       RESOURCESERVICE.createResources(finalData)
         .then(() => onAddModal("create"))
         .catch((e) => {
-          setPopupText("An error ocurred while trying to create the resource.");
-          setPopupIcon("error");
-          setPopup(true);
-          setIsConfirmDelete(false);
+          if (e) {
+            setPopupText(language.editAlertFailed);
+            setPopupIcon("error");
+            setPopup(true);
+            setIsConfirmDelete(false);
+          }
         });
     }).then((e) => {
       if (e) {
         setPopup(true);
         setIsConfirmDelete(false);
-        setPopupText(
-          "The resource could not be published, check if you have an internet connection."
-        );
+        setPopupText(language.connectionAlert);
+
         setPopupIcon("error");
       }
     });
   };
 
   const confirmCreate = () => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to create this resources?");
+    setPopupText(language.creationAlertQuestion);
     setIsConfirmDelete(true);
     setPopup(true);
   };
 
   const confirmEdit = () => {
+    switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText("Are you sure you want to edit this resources?");
+    setPopupText(language.editAlertQuestion);
     setIsConfirmDelete(true);
     setPopup(true);
   };
 
   const handleFileSelect = (e) => {
     e.preventDefault();
+    switchEditState(false);
     if (e.target.files.length > 10) {
       setPopup(true);
-      setPopupText("Only 10 files are allowed");
+      setPopupText(language.only10Files);
       setPopupType("warning");
       setFilesToUpload();
       setShowFilesToUpload(false);
@@ -180,7 +205,7 @@ export default function ResourcesModal({
         if (videoRegex.test(f.name)) {
           if (f.size / 1000 / 1000 > 15) {
             setPopup(true);
-            setPopupText("Video is larger than 15MB");
+            setPopupText(language.videoLargeAlert);
             setPopupType("info");
             setFilesToUpload();
             setShowFilesToUpload(false);
@@ -189,7 +214,7 @@ export default function ResourcesModal({
         } else if (imageRegex.test(f.name)) {
           if (f.size / 1000 / 1000 > 2) {
             setPopup(true);
-            setPopupText("Image is larger than 2MB");
+            setPopupText(language.imageLargeThan);
             setPopupType("info");
             setFilesToUpload();
             setShowFilesToUpload(false);
@@ -198,7 +223,7 @@ export default function ResourcesModal({
         } else {
           if (f.size / 1000 / 1000 > 5) {
             setPopup(true);
-            setPopupText("File is larger than 3MB");
+            setPopupText(language.filesLargeThan);
             setPopupType("info");
             setFilesToUpload();
             setShowFilesToUpload(false);
@@ -212,7 +237,7 @@ export default function ResourcesModal({
         setFilesToUpload(files);
       } else {
         setPopup(true);
-        setPopupText("There are too many files, only 10 are allowed.");
+        setPopupText(language.manyFiles);
         setPopupType("error");
         setFilesToUpload();
         setShowFilesToUpload(false);
@@ -221,9 +246,7 @@ export default function ResourcesModal({
   };
 
   const editResource = async (r) => {
-    document.getElementById("controlPanelContentContainer").style.overflow =
-      "scroll";
-
+    switchEditState(false);
     let inputName = document.getElementById("inputName_" + r.id).value;
     let inputDescription = document.getElementById(
       "inputDescription_" + r.id
@@ -290,9 +313,7 @@ export default function ResourcesModal({
           })
           .catch((e) => {
             if (e) {
-              setPopupText(
-                "The resource could not be edited, check if you entered the correct fields."
-              );
+              setPopupText(language.editAlertFailed);
               setIsConfirmDelete(false);
               setPopupIcon("error");
               setPopup(true);
@@ -301,12 +322,7 @@ export default function ResourcesModal({
           });
       }).then((e) => {
         if (e) {
-          setPopup(true);
-          setPopupText(
-            "The resource could not be published, check if you have an internet connection."
-          );
-          setIsConfirmDelete(false);
-          setPopupIcon("error");
+          connectionAlert();
         }
       });
     } else {
@@ -331,9 +347,8 @@ export default function ResourcesModal({
           })
           .catch((e) => {
             if (e) {
-              setPopupText(
-                "The resources could not be edited, check if you entered the correct fields."
-              );
+              setPopupText(language.editAlertFailed);
+
               setIsConfirmDelete(false);
               setPopupIcon("error");
               setPopup(true);
@@ -342,12 +357,7 @@ export default function ResourcesModal({
           });
       }).then((e) => {
         if (e) {
-          setPopup(true);
-          setPopupText(
-            "The resource could not be published, check if you have an internet connection."
-          );
-          setIsConfirmDelete(false);
-          setPopupIcon("error");
+          connectionAlert();
         }
       });
     }
@@ -367,6 +377,7 @@ export default function ResourcesModal({
       <div
         className="resources-modal-container-main"
         style={{ display: show ? "flex" : "none" }}
+        id="resources-modal-container"
       >
         {create && (
           <>
@@ -606,18 +617,22 @@ export default function ResourcesModal({
           if (create) {
             setPopup(false);
             createResource();
+            switchEditState(true);
           }
           if (edit) {
             setPopup(false);
             editResource(info);
+            switchEditState(true);
           }
         }}
         onNoAction={() => {
           setPopup(false);
+          switchEditState(true);
         }}
         onCloseAction={() => {
           setPopup(false);
           setFilesEdit();
+          switchEditState(true);
         }}
         hasIconAnimation
         hasTransition

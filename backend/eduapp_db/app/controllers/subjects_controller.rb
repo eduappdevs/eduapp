@@ -53,6 +53,7 @@ class SubjectsController < ApplicationController
 
     if params[:page]
       @subjects = query_paginate(@subjects, params[:page])
+      @subjects[:current_page] = serialize_each(@subjects[:current_page], [:created_at, :updated_at, :course], [ :course])
     end
 
     render json: @subjects
@@ -71,13 +72,19 @@ class SubjectsController < ApplicationController
     if !check_perms_write!(get_user_roles.perms_subjects)
       return
     end
-    @subject = Subject.new(subject_params)
 
-    if @subject.save
-      render json: @subject, status: :created, location: @subject
+    if Subject.where(subject_code: params[:subject_code]).count > 0
+      render json: @Subject, status: :unprocessable_entity
     else
-      render json: @subject.errors, status: :unprocessable_entity
+      puts "Creating subject: "
+      @subject = Subject.new(subject_code: params[:subject_code], name: params[:name], description: params[:description], color: params[:color], course_id: params[:course_id])
+      if @subject.save
+        render json: @subject, status: :created, location: @subject
+      else
+        render json: @subject.errors, status: :unprocessable_entity
+      end
     end
+
   end
 
   # PATCH/PUT /subjects/1
@@ -116,6 +123,6 @@ class SubjectsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def subject_params
-    params.require(:subject).permit(:name, :description, :color, :course_id)
+    params.require(:subject).permit(:subject_code, :name, :description, :color, :course_id)
   end
 end

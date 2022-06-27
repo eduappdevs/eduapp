@@ -29,10 +29,12 @@
 	border: 1px solid rgba(117, 117, 117, 0.199);
 	border-radius: 10px;
 	overflow-x: auto;
+	overflow-y: hidden;
 	margin-top: 20vh;
 	transform: scale(0.98);
 	padding: 8px;
-	height: 72vh;
+	min-height: 500px;
+	height: 76vh;
 }
 
 button {

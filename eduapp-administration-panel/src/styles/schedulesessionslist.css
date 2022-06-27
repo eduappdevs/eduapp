@@ -1,7 +1,6 @@
 table {
 	font-family: arial, sans-serif;
 	border-collapse: collapse;
-	width: 100%;
 }
 
 td,
@@ -30,3 +29,4 @@ tr:nth-child(even) {
 	border-radius: 3px;
 	text-align: left;
 }
+
