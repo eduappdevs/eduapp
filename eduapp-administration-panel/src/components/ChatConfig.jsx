@@ -336,13 +336,9 @@ export default function ChatConfig(props) {
       CHATSERVICE.pagedChat(page)
         .then((res) => {
           setChat(res.data.current_page);
-          console.log(res.data.current_page);
           setMaxPages(res.data.total_pages);
         })
-        .catch(async (err) => {
-          await interceptExpiredToken(err);
-          console.error(err);
-        });
+        .catch(async (err) => await interceptExpiredToken(err));
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);

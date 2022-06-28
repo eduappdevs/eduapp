@@ -11,45 +11,18 @@ import EnrollConfig from "../components/enrollConfig";
 import ChatConfig from "../components/ChatConfig";
 import ChatMessageConfig from "../components/ChatMessageConfig";
 import ChatParticipantConfig from "../components/ChatParticipantConfig";
-import * as SUBJECTSERVICE from "../services/subject.service";
 import TeacherConfig from "../components/teacherConfig";
-import * as API from "../API";
 import LANGUAGES from "../constants/languages";
-import * as COURSESERVICE from "../services/course.service";
 import ResourcesConfig from "../components/ResourcesConfig";
+import UserRolesConfig from "../components/UserRolesConfig";
 import "../styles/users.css";
 import "../styles/controlPanel.css";
-import UserRolesConfig from "../components/UserRolesConfig";
 
 export default function ControlPanel() {
   const [location, setLocation] = useState("sessions");
-  const [userRole, setUserRole] = useState(null);
   const [language, setLanguage] = useState("en");
-  const [subjects, setSubjects] = useState([]);
-  const [courses, setCourses] = useState([]);
 
   const changeToolbarLocation = (incoming) => setLocation(incoming);
-
-  const fetchSubject = () => {
-    API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubjects().then((i) => {
-        setSubjects(i.data);
-      });
-    });
-  };
-
-  const fetchCourse = () => {
-    API.asynchronizeRequest(function () {
-      COURSESERVICE.fetchCourses().then((i) => {
-        setCourses(i.data);
-      });
-    });
-  };
-
-  useEffect(() => {
-    fetchSubject();
-    fetchCourse();
-  }, []);
 
   const switchLanguage = (language) => {
     switch (language) {
@@ -74,12 +47,7 @@ export default function ControlPanel() {
         language={language}
       />
       <div className="main-section">
-        <Toolbar
-          location={location}
-          subjects={subjects}
-          courses={courses}
-          language={language}
-        />
+        <Toolbar location={location} language={language} />
         <div
           className="controlPanel-content-container"
           id="controlPanelContentContainer"
@@ -95,7 +63,7 @@ export default function ControlPanel() {
           ) : location === "subjects" ? (
             <SubjectsConfig language={language} />
           ) : location === "users" ? (
-            <UserConfig userRole={userRole} language={language} />
+            <UserConfig language={language} />
           ) : location === "enroll" ? (
             <EnrollConfig language={language} />
           ) : location === "teachers" ? (

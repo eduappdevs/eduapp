@@ -180,6 +180,26 @@ export function getChatFields(lang) {
   return [["chat_name", lang.name]];
 }
 
+// Chat Participants
+export function getParticipantFields(lang) {
+  languageDetect(lang);
+  return [
+    ["p_email", lang.participantName],
+    ["chat_name", lang.chatName],
+  ];
+}
+
+export function parseParticipantFields(pt, field) {
+  switch (field) {
+    case "p_email":
+      return pt.user.email;
+    case "chat_name":
+      return pt.chat_base.chat_name;
+    default:
+      return pt[field];
+  }
+}
+
 // HELPER METHODS
 function languageDetect(language) {
   if (!language) throw new Error("No language passed to fields.");

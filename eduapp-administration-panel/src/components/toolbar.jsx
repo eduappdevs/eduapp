@@ -94,7 +94,7 @@ export default function Toolbar(props) {
         </>
       ) : props.location === "chatConfig" ? (
         <>
-          <ul className="scheduletoolbar-ul teachers-toolbar">
+          <ul className="scheduletoolbar-ul chatConfig-toolbar">
             <FieldSearcher language={props.language} />
           </ul>
         </>
@@ -104,6 +104,10 @@ export default function Toolbar(props) {
             <FieldSearcher language={props.language} />
           </ul>
         </>
+      ) : props.location === "chatParticipant" ? (
+        <ul className="scheduletoolbar-ul chatParticipant-toolbar">
+          <FieldSearcher language={props.language} />
+        </ul>
       ) : (
         <h1>{props.language.configuration}</h1>
       )}

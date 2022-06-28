@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useContext, useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import useFilter from "../hooks/useFilter";
+import {
+  getParticipantFields,
+  parseParticipantFields,
+} from "../constants/search_fields";
 import "../styles/chatParticipant.css";
 
 export default function ChatParticipantConfig(props) {
@@ -13,7 +20,9 @@ export default function ChatParticipantConfig(props) {
   const [chat, setChat] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [search, setSearch] = useState("");
+
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredParticipants = useFilter(participant, parseParticipantFields);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -203,9 +212,15 @@ export default function ChatParticipantConfig(props) {
     setIdDelete(id);
   };
 
+  useEffect(() => fetchParticipantsPage(1), []);
+
   useEffect(() => {
-    fetchParticipantsPage(1);
-  }, []);
+    setSearchParams({
+      query: "",
+      fields: getParticipantFields(props.language),
+      selectedField: getParticipantFields(props.language)[0][0],
+    });
+  }, [props.language]);
 
   return (
     <>
@@ -299,11 +314,13 @@ export default function ChatParticipantConfig(props) {
                     <th>{props.language.participantName}</th>
                     <th>{props.language.chatName}</th>
                     <th>{props.language.admin}</th>
-                    <th>{props.language.admin}</th>
+                    <th>{props.language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {participant.map((e) => {
+                    if (filteredParticipants !== null)
+                      if (!filteredParticipants.includes(e)) return <></>;
                     return (
                       <tr key={e.id}>
                         <td>{e.user.email}</td>
