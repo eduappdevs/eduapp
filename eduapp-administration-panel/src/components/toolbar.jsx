@@ -58,17 +58,6 @@ export default function Toolbar(props) {
               <Batcher type="users" language={props.language} />
             </li>
             <FieldSearcher language={props.language} />
-            <li className="subjectbar-container">
-              <select
-                name="subjects"
-                id="subjects-select"
-                className="subjectOption"
-              >
-                <option value="ALL">{props.language.viewAllRoles}</option>
-                <option value="ADMIN">{props.language.admin}</option>
-                <option value="STUDENT">{props.language.student}</option>
-              </select>
-            </li>
           </ul>
         </>
       ) : props.location === "resources" ? (

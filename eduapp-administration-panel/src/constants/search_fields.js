@@ -71,6 +71,26 @@ export function parseUserFields(u, field) {
   }
 }
 
+// Enrollment
+export function getEnrollmentFields(lang) {
+  languageDetect(lang);
+  return [
+    ["user_email", lang.email],
+    ["course_id", lang.course],
+  ];
+}
+
+export function parseEnrollmentFields(er, field) {
+  switch (field) {
+    case "user_email":
+      return er.user.email;
+    case "course_id":
+      return er.course.name;
+    default:
+      return er[field];
+  }
+}
+
 // MANAGEMENT
 
 // Courses
