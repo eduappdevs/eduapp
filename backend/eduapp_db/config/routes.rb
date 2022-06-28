@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   resources :eduapp_user_sessions, :path => "#{@api_path}/eduapp_user_sessions"
   resources :user_infos, :path => "#{@api_path}/user_infos"
 
+  get "#{@api_path}/filter/user_infos", to: "user_infos#filter"
+
   delete "#{@api_path}/chat_participants/remove/:user_id/:chat_base_id", to: "chat_participants#remove_participant"
 
   post "#{@api_path}/eduapp_user_sessions/batch_load", to: "eduapp_user_sessions#session_batch_load"

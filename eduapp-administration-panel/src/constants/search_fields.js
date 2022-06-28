@@ -208,3 +208,10 @@ function languageDetect(language) {
 export function genericParser(x, field) {
   return x[field];
 }
+
+export function genericRequestParser(fields, query, field) {
+  let info = {};
+  for (let f of fields) if (f[0] === field) info[field] = query;
+
+  return info;
+}

@@ -14,7 +14,7 @@ import EncryptionUtils from "../utils/EncryptionUtils";
 import PageSelect from "./pagination/PageSelect";
 import { useContext } from "react";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
-import { getUserFields, parseUserFields } from "../constants/search_fields";
+import { getUserFields } from "../constants/search_fields";
 import useFilter from "../hooks/useFilter";
 
 const system_user_name = "eduapp_system";
@@ -35,7 +35,12 @@ export default function UserConfig(props) {
   const [idDelete, setIdDelete] = useState();
 
   const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredUsers = useFilter(users, parseUserFields);
+  const filteredUsers = useFilter(
+    users,
+    null,
+    USERSERVICE.filterUsers,
+    getUserFields(props.language)
+  );
 
   const [userPermRoles, setUserPermRoles] = useState([]);
   const [allSelected, setAllSelected] = useState(true);
@@ -796,7 +801,11 @@ export default function UserConfig(props) {
                   {users.map((u) => {
                     let user = u.user.last_sign_in_at;
                     if (filteredUsers !== null)
-                      if (!filteredUsers.includes(u)) return <></>;
+                      if (
+                        filteredUsers.find((fu) => fu.user.id === u.user.id) ===
+                        undefined
+                      )
+                        return <></>;
                     return (
                       <tr key={u.id}>
                         <td>

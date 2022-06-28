@@ -3,8 +3,6 @@ class UserInfosController < ApplicationController
   before_action :authenticate_user!
   before_action :check_role!
 
-
-
   # GET /user_infos
   def index
     if params[:user_id]
@@ -13,7 +11,7 @@ class UserInfosController < ApplicationController
       end
       @user_infos = UserInfo.where(user_id: params[:user_id])
     elsif params[:name]
-      # TODO: CHECK IS USER CAN SEARCH BY NAME
+      # TODO: CHECK IF USER CAN SEARCH BY NAME
       @user_infos = UserInfo.search_name(params[:name]).take(3)
     else
       if !check_perms_all!(get_user_roles.perms_users)
@@ -24,12 +22,74 @@ class UserInfosController < ApplicationController
 
     if params[:page]
       @user_infos = query_paginate(@user_infos, params[:page])
-      @user_infos[:current_page] = serialize_each(@user_infos[:current_page], [:created_at, :updated_at, :user_id, :user_role_id], [:user, :user_role])
+      @user_infos[:current_page] = serialize_each(@user_infos[:current_page], [:created_at, :googleid, :updated_at, :user_id, :user_role_id], [:user, :user_role])
       @user_infos[:current_page].each do |user_info|
         user_info["user"]["last_sign_in_at"] = User.find(user_info["user"]["id"]).last_sign_in_at
       end
     end
     render json: @user_infos
+  end
+
+  def filter
+    infos_query = {}
+    user_query = {}
+    role_query = {}
+    params.each do |param|
+      next if param[0] == "controller" || param[0] == "action" || param[0] == "extras" || param[0] == "user_info"
+      next unless param[1] != "null" && param[1].length > 0
+
+      query = { param[0] => param[1] }
+      case param[0]
+      when "user_id", "user_name"
+        infos_query.merge!(query)
+      when "email"
+        user_query.merge!(query)
+      when "role"
+        role_query.merge!(query)
+      end
+    end
+
+    final_query = nil
+
+    if !infos_query.empty?
+      query = nil
+      if infos_query["user_id"]
+        user_ids = []
+        UserInfo.all.each do |u|
+          user_ids << u.user_id if u.user_id.to_s =~ /^#{infos_query["user_id"]}.*$/
+        end
+        query = UserInfo.where(user_id: user_ids)
+      end
+
+      if infos_query["user_name"]
+        if query != nil
+          query = query.where("user_name LIKE ?", "%#{infos_query["user_name"]}%")
+        else
+          query = UserInfo.where("user_name LIKE ?", "%#{infos_query["user_name"]}%")
+        end
+      end
+
+      final_query = query
+    end
+
+    if !final_query.nil? && !user_query.empty?
+      final_query = final_query.where(user_id: User.where("email LIKE ?", "%#{user_query["email"]}%"))
+    elsif !user_query.empty?
+      final_query = UserInfo.where(user_id: User.where("email LIKE ?", "%#{user_query["email"]}%"))
+    end
+
+    if !final_query.nil? && !role_query.empty?
+      final_query = final_query.where(user_role_id: UserRole.where("name LIKE ?", "%#{role_query["role"]}%"))
+    elsif !role_query.empty?
+      final_query = UserInfo.where(user_role_id: UserRole.where("name LIKE ?", "%#{role_query["role"]}%"))
+    end
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :user_id, :user_role_id, :googleid], [:user, :user_role])
+    end
+
+    render json: { filtration: final_query }
   end
 
   # GET /user_infos/1
@@ -87,7 +147,7 @@ class UserInfosController < ApplicationController
       end
       user_info.save
     end
-     render json: @user_info
+    render json: @user_info
   end
 
   def remove_event
@@ -95,10 +155,9 @@ class UserInfosController < ApplicationController
       return
     end
     @user_info = UserInfo.where(user_id: params[:user_id]).first
-    puts "userInfo: #{@user_info}"
     @user_info.calendar_event.delete(CalendarAnnotation.find(params[:calendar_event]).id)
     @user_info.save
-    render json:@user_info
+    render json: @user_info
   end
 
   def remove_subject

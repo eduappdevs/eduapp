@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  def return_table (table)
+  def return_table(table)
     case table
     when "users"
       t_name = User.find(params[:id])
@@ -18,7 +18,6 @@ class ApplicationController < ActionController::API
   end
 
   def get_extrafields
-    id = params[:id]
     table = return_table(params[:table])
     puts "extrafields: #{table.extra_fields}"
     render json: table.extra_fields and return
@@ -33,7 +32,7 @@ class ApplicationController < ActionController::API
 
     if table.update(extra_fields: extrafields_body)
       table.save
-      render json: table.extra_fields and return 
+      render json: table.extra_fields and return
     else
       render json: { error: "Error updating extra fields" }, status: 422 and return
     end
@@ -87,7 +86,6 @@ class ApplicationController < ActionController::API
     else
       render json: { error: "Error updating extra fields" }, status: 422 and return
     end
-
   end
 
   private

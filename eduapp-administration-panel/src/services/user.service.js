@@ -1,12 +1,9 @@
 import axios from "axios";
-import { API_URL, TOKEN } from "../API";
+import { API_URL, TOKEN, FILTER_URL } from "../API";
 export const USERS_INFO = `${API_URL}/user_infos`;
 export const USERS = `${API_URL}/users`;
 export const SYSTEM = `${API_URL}/system/user`;
 const requestHeader = { eduauth: TOKEN };
-
-//User
-
 
 export const fetchUserInfos = async () => {
   return await axios.get(`${USERS_INFO}`, { headers: requestHeader });
@@ -48,6 +45,23 @@ export const fetchSystemUser = async () => {
   });
 };
 
+export const filterUsers = async ({
+  user_id = null,
+  user_name = null,
+  email = null,
+  role = null,
+  page = 1,
+  extras = null,
+}) => {
+  return await axios.get(
+    `${FILTER_URL}/user_infos?user_id=${user_id}&user_name=${user_name}&email=${email}&role=${role}&page=${page}`,
+    {
+      headers: requestHeader,
+      data: extras,
+    }
+  );
+};
+
 export const enroll_teacher = async (uId, subject_id) => {
   return await axios.request({
     url: USERS_INFO + `/add_subject/${uId}/${subject_id}`,
@@ -62,14 +76,16 @@ export const global_events = async (uId) => {
     method: "POST",
     headers: requestHeader,
   });
-}
+};
 
 export const remove_global_events = async (uId, event_id) => {
-  return await axios.delete(`${USERS_INFO}/remove_global_events/${uId}/${event_id}`, {
-    headers: requestHeader,
-  });
-
-}
+  return await axios.delete(
+    `${USERS_INFO}/remove_global_events/${uId}/${event_id}`,
+    {
+      headers: requestHeader,
+    }
+  );
+};
 
 export const delist_teacher = async (uId, subject_id) => {
   return await axios.delete(
@@ -81,8 +97,10 @@ export const delist_teacher = async (uId, subject_id) => {
 };
 
 export const editTeacher = async (body) => {
-  return await axios.put(`${USERS_INFO}/${body.id}`, body, { headers: requestHeader })
-}
+  return await axios.put(`${USERS_INFO}/${body.id}`, body, {
+    headers: requestHeader,
+  });
+};
 
 export const findByName = async (name) => {
   return await axios.get(`${USERS_INFO}?name=${name}`, {

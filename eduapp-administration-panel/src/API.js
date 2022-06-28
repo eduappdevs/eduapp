@@ -3,6 +3,7 @@ export const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
 const JSREPORT = process.env.REACT_APP_REPORTS_ENDPOINT;
 const PING = `${API_URL}/ping`;
 export const TOKEN = "Bearer " + localStorage.getItem("eduapp_auth");
+export const FILTER_URL = `${API_URL}/filter`;
 
 export const endpoints = {
   JSREPORT,
