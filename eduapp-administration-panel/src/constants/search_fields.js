@@ -142,6 +142,28 @@ export function parseSubjectFields(s, field) {
   }
 }
 
+// Resources
+export function getResourceFields(lang) {
+  languageDetect(lang);
+  return [
+    ["id", lang.code],
+    ["name", lang.name],
+    ["author", lang.author],
+    ["subject_name", lang.subjects],
+  ];
+}
+
+export function parseResourceFields(r, field) {
+  switch (field) {
+    case "author":
+      return r.user.email;
+    case "subject_name":
+      return r.subject.name;
+    default:
+      return r[field];
+  }
+}
+
 // HELPER METHODS
 function languageDetect(language) {
   if (!language) throw new Error("No language passed to fields.");
