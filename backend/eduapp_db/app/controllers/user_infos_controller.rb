@@ -62,7 +62,7 @@ class UserInfosController < ApplicationController
       end
 
       if infos_query["user_name"]
-        if query != nil
+        if !query.nil?
           query = query.where("user_name LIKE ?", "%#{infos_query["user_name"]}%")
         else
           query = UserInfo.where("user_name LIKE ?", "%#{infos_query["user_name"]}%")

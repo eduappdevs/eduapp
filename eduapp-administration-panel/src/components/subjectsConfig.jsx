@@ -7,12 +7,9 @@ import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import PageSelect from "./pagination/PageSelect";
-import "../styles/subjectsConfig.css";
 import useFilter from "../hooks/useFilter";
-import {
-  getSubjectFields,
-  parseSubjectFields,
-} from "../constants/search_fields";
+import { getSubjectFields } from "../constants/search_fields";
+import "../styles/subjectsConfig.css";
 
 export default function SubjectsConfig(props) {
   const [subjects, setSubjects] = useState(null);
@@ -21,12 +18,12 @@ export default function SubjectsConfig(props) {
   const [maxPages, setMaxPages] = useState(1);
 
   const [changeColor, setChangeColor] = useState(false);
-  const [newColor, setNewColor] = useState();
-  const [newCode, setNewCode] = useState();
+  const [newColor] = useState();
+  const [newCode] = useState();
   const [changeCode, setChangeCode] = useState(false);
-  const [newName, setNewName] = useState();
+  const [newName] = useState();
   const [changeName, setChangeName] = useState(false);
-  const [newDescription, setNewDescription] = useState();
+  const [newDescription] = useState();
   const [changeDescription, setChangeDescription] = useState(false);
 
   const [showPopup, setPopup] = useState(false);
@@ -37,7 +34,12 @@ export default function SubjectsConfig(props) {
   const [idDelete, setIdDelete] = useState();
 
   const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredSubjects = useFilter(subjects, parseSubjectFields);
+  const filteredSubjects = useFilter(
+    subjects,
+    null,
+    SUBJECTSERVICE.filterCourses,
+    getSubjectFields(props.language)
+  );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -823,7 +825,11 @@ export default function SubjectsConfig(props) {
                 <tbody>
                   {subjects.map((sj) => {
                     if (filteredSubjects !== null)
-                      if (!filteredSubjects.includes(sj)) return <></>;
+                      if (
+                        filteredSubjects.find((fsj) => sj.id === fsj.id) ===
+                        undefined
+                      )
+                        return <></>;
                     return (
                       <tr key={sj.id}>
                         <td>

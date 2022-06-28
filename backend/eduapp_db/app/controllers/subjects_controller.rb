@@ -53,10 +53,74 @@ class SubjectsController < ApplicationController
 
     if params[:page]
       @subjects = query_paginate(@subjects, params[:page])
-      @subjects[:current_page] = serialize_each(@subjects[:current_page], [:created_at, :updated_at, :course], [ :course])
+      @subjects[:current_page] = serialize_each(@subjects[:current_page], [:created_at, :updated_at, :course], [:course])
     end
 
     render json: @subjects
+  end
+
+  def filter
+    subjects_query = {}
+    course_query = {}
+    params.each do |param|
+      next if param[0] == "controller" || param[0] == "action" || param[0] == "extras" || param[0] == "subject"
+      next unless param[1] != "null" && param[1].length > 0
+
+      query = { param[0] => param[1] }
+      case param[0]
+      when "id", "name", "subject_code"
+        subjects_query.merge!(query)
+      when "course_name"
+        course_query.merge!(query)
+      end
+    end
+
+    final_query = nil
+
+    if !subjects_query.empty?
+      query = nil
+
+      if subjects_query["id"]
+        ids = []
+        Subject.all.each do |s|
+          ids << s.id if s.id.to_s =~ /^#{subjects_query["id"]}.*$/
+        end
+        query = Subject.where(id: ids)
+      end
+
+      if subjects_query["name"]
+        if !query.nil?
+          query = query.where("name LIKE ?", "%#{subjects_query["name"]}%")
+        else
+          query = Subject.where("name LIKE ?", "%#{subjects_query["name"]}%")
+        end
+      end
+
+      if subjects_query["subject_code"]
+        if !query.nil?
+          query = query.where("subject_code LIKE ?", "%#{subjects_query["subject_code"]}%")
+        else
+          query = Subject.where("subject_code LIKE ?", "%#{subjects_query["subject_code"]}%")
+        end
+      end
+
+      final_query = query
+    end
+
+    if !final_query.nil? && !course_query.empty?
+      final_query = final_query.where(course_id: Course.where("name LIKE ?", "%#{course_query["course_name"]}%"))
+    elsif !course_query.empty?
+      final_query = Subject.where(course_id: Course.where("name LIKE ?", "%#{course_query["course_name"]}%"))
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :course_id], [:course])
+    end
+
+    render json: { filtration: final_query }
   end
 
   # GET /subjects/1
@@ -84,7 +148,6 @@ class SubjectsController < ApplicationController
         render json: @subject.errors, status: :unprocessable_entity
       end
     end
-
   end
 
   # PATCH/PUT /subjects/1
