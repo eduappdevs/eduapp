@@ -34,8 +34,8 @@ export default function UserConfig(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredUsers = useFilter(searchParams, users, parseUserFields);
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredUsers = useFilter(users, parseUserFields);
 
   const [userPermRoles, setUserPermRoles] = useState([]);
   const [allSelected, setAllSelected] = useState(true);

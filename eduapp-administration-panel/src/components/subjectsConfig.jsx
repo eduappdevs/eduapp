@@ -36,12 +36,8 @@ export default function SubjectsConfig(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredSubjects = useFilter(
-    searchParams,
-    subjects,
-    parseSubjectFields
-  );
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredSubjects = useFilter(subjects, parseSubjectFields);
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 

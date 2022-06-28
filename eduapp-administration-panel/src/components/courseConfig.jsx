@@ -28,8 +28,8 @@ export default function CourseConfig(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredCourses = useFilter(searchParams, courses, genericParser);
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredCourses = useFilter(courses, genericParser);
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 

@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
 
-export default function useFilter(searchParams, mainInfo, fieldParserFn) {
+export default function useFilter(mainInfo, fieldParserFn) {
   const [filter, setFilter] = useState([]);
+  const [searchParams] = useContext(SearchBarCtx);
 
   useEffect(() => {
     if (!mainInfo) return;
