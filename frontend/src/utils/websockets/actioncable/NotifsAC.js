@@ -4,21 +4,13 @@ import ACManager from "../ACManager";
 import EncryptionUtils from "../../EncryptionUtils";
 import * as NOTIFSMODAL from "../../../components/notifications/notifsModal";
 import pushNotify from "../../../components/notifications/notifications";
-import IDBManager from "../../IDBManager";
 
 
 export default class NotifsAC extends ACManager {
-    idbm = new IDBManager();
 
     constructor() {
         super("user notifications.");
         this.chatId = null;
-    }
-
-    instanceURC_IDB(){
-        this.idbm.getStorageInstance("urc-db","urc-store").then((res)=>{
-            console.log('urc-db initialized.')
-        })
     }
     
 
@@ -37,14 +29,6 @@ export default class NotifsAC extends ACManager {
                 else{
                     NOTIFSMODAL.instanceModal(data);
                     pushNotify(data.msg.message,data.profile_pic,data.author_name)
-                }
-                if(await this.idbm.keyExists(data.author_name)){
-                    this.idbm.get(data.author_name).then((r)=>{this.idbm.update(data.author_name,r+1)})
-                    
-       
-                }else{
-                    let value = 1
-                    this.idbm.set(data.author_name,1)
                 }
                 
                 break;

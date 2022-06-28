@@ -38,15 +38,11 @@ Rails.application.routes.draw do
              controllers: {
                sessions: "users/sessions",
                registrations: "users/registrations",
-               omniauth_callbacks: "users/omniauth_callbacks",
              }, defaults: { format: :json }
   devise_scope :user do
     match "#{@api_path}/users/sign_in" => "users/sessions#new", via: [:get]
     match "#{@api_path}/users/sign_in" => "users/sessions#create", via: [:post]
     match "#{@api_path}/users/sign_out" => "users/sessions#destroy", via: [:delete]
-
-    match "#{@api_path}/users/auth/google_oauth2" => "users/omniauth_callbacks#passthru", via: [:get, :post]
-    match "#{@api_path}/users/auth/google_oauth2/callback" => "users/omniauth_callbacks#google_oauth2", via: [:get, :post]
 
     match "#{@api_path}/users/password/new" => "devise/passwords#new", via: [:get]
     match "#{@api_path}/users/password/edit" => "devise/passwords#edit", via: [:get]
@@ -61,6 +57,10 @@ Rails.application.routes.draw do
     match "#{@api_path}/users" => "users/registrations#destroy", via: [:delete]
     match "#{@api_path}/users" => "users/registrations#create", via: [:post]
 
+    match "#{@api_path}/glogin/link" => "users/sessions#glogin_link", via: [:post]
+    match "#{@api_path}/glogin/unlink" => "users/sessions#glogin_unlink", via: [:post]
+    match "#{@api_path}/glogin/login" => "users/sessions#glogin_login", via: [:post]
+
     get "#{@api_path}/password/reset", to: "users/passwords#get_reset_password_token"
     get "#{@api_path}/reset_password", to: "users/passwords#send_reset_password_link"
     post "#{@api_path}/password/reset", to: "users/passwords#do_reset_password"
@@ -70,10 +70,11 @@ Rails.application.routes.draw do
     post "#{@api_path}/extrafields/:table/:id", to: "application#push_extrafields"
     put "#{@api_path}/extrafields/:table/:id", to: "application#update_extrafield"
     delete "#{@api_path}/extrafields/:table/:id/:field", to: "application#delete_extrafield"
+
+
   end
 
   delete "#{@api_path}/users/remove/:id", to: "user_infos#destroyuser"
-  get "#{@api_path}/google-login", to: "glogin#login"
   get "#{@api_path}/ping", to: "static#home"
   get "#{@api_path}/ping/admin", to: "static#created"
 end

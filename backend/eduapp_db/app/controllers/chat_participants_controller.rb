@@ -57,6 +57,7 @@ class ChatParticipantsController < ApplicationController
       @participants = query_paginate(@participants, params[:page])
       @participants[:current_page] = serialize_each(@participants[:current_page], [:created_at, :updated_at, :user_id, :chat_base_id], [:user, :chat_base])
     end
+    
 
     render json: @participants
   end

@@ -4,11 +4,13 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.1]
   def change
     create_table :users, id: :uuid do |t|
       ## Database authenticatable
-      t.string :email, null: false, default: ""
+      t.string :email, null: false, default: "", index: { unique: true }
+      t.string :username, null:false, default:""
       t.string :encrypted_password, null: false, default: ""
+      t.string :encrypted_googleid, null:true, index: { unique: true }
 
       ## Recoverable
-      t.string :reset_password_token
+      t.string :reset_password_token, index: { unique: true }
       t.datetime :reset_password_sent_at
 
       ## Rememberable
@@ -40,9 +42,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.1]
 
       t.timestamps null: false
     end
-
-    add_index :users, :email, unique: true
-    add_index :users, :reset_password_token, unique: true
+    
     # add_column :users, :confirmation_code, :string
     # :users, :confirmation_code_exp_time, :string
     # add_index :users, :jti, unique: true

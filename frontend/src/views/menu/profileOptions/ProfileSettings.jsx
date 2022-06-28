@@ -8,7 +8,7 @@ import {
 import MenuHeader from "../menuHeader/MenuHeader";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { GetCourses } from "../../../hooks/GetCourses";
-import GoogleLoginButton from "../../../components/googleLogin/googleLoginButton";
+import GoogleLoginButton from "../../../components/googleLogin/googleLinkButton";
 import NameCapitalizer from "../../../utils/NameCapitalizer";
 import {
   getOfflineUser,

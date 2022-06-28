@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import {
   RESOURCES,
   USERS,
@@ -8,7 +9,7 @@ import {
   GLOGIN,
   TUITIONS,
   PING,
-  SUBJECT,
+  SUBJECT
 } from "./config";
 
 export const API_URL = process.env.REACT_APP_BACKEND_ENDPOINT;
@@ -20,9 +21,7 @@ const saveInLocalStorage = (userDetails) => {
   if (userDetails.data.message.id == null) {
     throw new Error("error");
   }
-
-  console.log(userDetails);
-
+  
   localStorage.setItem("userId", userDetails.data.message.id);
   localStorage.setItem("userToken", userDetails.headers.authorization);
 };
@@ -59,18 +58,8 @@ const apiSettings = {
       saveInLocalStorage(res);
     });
   },
-  loginWithGoogle: async (data) => {
-    console.log(data);
-    const endpoint = `${GLOGIN}`;
-    return await axios.post(endpoint, data).then((res) => {
-      console.log(res);
-    });
-  },
 
-  chechToken: async (token) => {
-    const endpoint = `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`;
-    return await (await fetch(endpoint)).json();
-  },
+
 
   // User Info
   fetchInfo: async (userId) => {
@@ -79,7 +68,7 @@ const apiSettings = {
   },
   createInfo: async (body) => {
     const endpoint = `${USERS_INFO}`;
-    return await await axios.post(endpoint, body);
+    return await axios.post(endpoint, body);
   },
 
   deleteInfo: async (infoId) => {
@@ -89,27 +78,6 @@ const apiSettings = {
   updateInfo: async (infoId, body) => {
     const endpoint = `${USERS_INFO}/${infoId}`;
     return await axios.put(endpoint, body);
-  },
-
-  addGoogleId: async (userId, body) => {
-    const endpoint = `${USERS_INFO}/${userId}`;
-    let finaldata = new FormData();
-    return await axios.put(endpoint, body).then(() => {
-      finaldata.append("isLoggedWithGoogle", true);
-      axios.put(endpoint, finaldata).then(() => {
-        window.location.reload();
-      });
-    });
-  },
-  unlinkGoogleId: async (userId, body) => {
-    const endpoint = `${USERS_INFO}/${userId}`;
-    let finaldata = new FormData();
-    return await axios.put(endpoint, body).then(() => {
-      finaldata.append("isLoggedWithGoogle", false);
-      axios.put(endpoint, finaldata).then(() => {
-        window.location.reload();
-      });
-    });
   },
 
   //User courses

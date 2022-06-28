@@ -43,6 +43,40 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
+  def glogin_link
+    gid= "#{params['gid']}_eduapp_gid"
+    user = User.find(params['user_id'])
+
+    user.valid?
+      user.encrypted_googleid = Base64.encode64(gid)
+      user.save
+      render json: {status: 200, message: "Successfully link"}
+      return
+  end
+
+  def glogin_unlink
+    user = User.find(params['user_id'])
+    user.valid?
+      puts user.encrypted_googleid
+      user.encrypted_googleid = nil
+      user.save
+      render json: {status: 200, message: "Successfully unlinked"}
+      return
+    
+  end
+
+  def glogin_login
+    google_id = "#{params['gid']}_eduapp_gid"
+    user = User.find_by encrypted_googleid: Base64.encode64(google_id)
+    sign_in user, event: :authentication
+    set_flash_message!(:notice, :signed_in)
+    yield user if block_given?
+
+    @user_info = UserInfo.where(user_id: user.id).first.serializable_hash(:include => [:user, :user_role], :except => [:user_role_id, :googleid, :created_at, :updated_at])
+    respond_with @user_info
+    
+  end
+
   private
 
   def respond_with(resource, _opts = {})

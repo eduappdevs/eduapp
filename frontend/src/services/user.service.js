@@ -72,27 +72,3 @@ export const findByName = async (name) => {
     headers: requestHeader,
   });
 };
-
-// Google Management
-
-export const addGoogleId = async (uId, data) => {
-  let info = await axios.get(`${USERS_INFO}?user_id=${uId}`, {
-    headers: requestHeader,
-  });
-
-  let finaldata = new FormData();
-  await axios.put(`${USERS_INFO}/${info.data[0].id}`, data);
-  finaldata.append("isLoggedWithGoogle", true);
-  return await axios.put(`${USERS_INFO}/${info.data[0].id}`, finaldata);
-};
-
-export const unlinkGoogleId = async (userId, body) => {
-  let finaldata = new FormData();
-  await axios.put(`${USERS_INFO}/${userId}`, body);
-  finaldata.append("isLoggedWithGoogle", false);
-  return await axios.put(`${USERS_INFO}/${userId}`, finaldata);
-};
-
-export const googleLogin = async (data) => {
-  return await axios.post(`${GLOGIN}`, data);
-};

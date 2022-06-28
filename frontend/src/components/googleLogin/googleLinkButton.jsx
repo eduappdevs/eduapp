@@ -1,35 +1,21 @@
 import React from "react";
 import { GoogleLogin } from "react-google-login";
-import * as USER_SERVICE from "../../services/user.service";
-import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import * as AUTHSERVICE from "../../services/auth.service";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import useLanguage from "../../hooks/useLanguage";
 import "./googleLogin.css";
 
-let finalData = new FormData();
 export default function GoogleLoginButton(useType) {
   const language = useLanguage();
-  let userInfo = FetchUserInfo(getOfflineUser().user.id);
-
-  const getInfo = (data) => {
-    return [data.profileObj, data.googleId];
-  };
+  let user = getOfflineUser().user;
 
   const linkGoogle = async (res) => {
-    let info = getInfo(res);
-    finalData.append("googleid", info[1]);
-    await USER_SERVICE.addGoogleId(userInfo.id, finalData);
-    window.location.reload();
+    let gid = res.googleId;
+    await AUTHSERVICE.link_with_google({ user_id: user.id, gid: gid });
   };
 
   const unlinkGoogle = async () => {
-    finalData.append("googleid", "");
-    await USER_SERVICE.unlinkGoogleId(userInfo.id, finalData);
-    window.location.reload();
-  };
-
-  const loginGoogle = async (res) => {
-    await USER_SERVICE.googleLogin(res);
+    await AUTHSERVICE.unlink_with_google({ user_id: user.id });
   };
 
   const responseGoogle = (response) => {
@@ -37,9 +23,9 @@ export default function GoogleLoginButton(useType) {
   };
 
   return (
-    userInfo && (
+    user && (
       <div className="googleButton">
-        {userInfo.isLoggedWithGoogle ? (
+        {user.encrypted_googleid && user.encrypted_googleid.length > 0 ? (
           <div className="googleAccountInfo">
             <div onClick={unlinkGoogle} className="unlinkGoogle">
               <span className="unlinkGoogleButton">
@@ -57,7 +43,7 @@ export default function GoogleLoginButton(useType) {
             buttonText={
               useType.useType === "merge" ? language.link : language.login_title
             }
-            onSuccess={useType.useType === "merge" ? linkGoogle : loginGoogle}
+            onSuccess={linkGoogle}
             onFailure={responseGoogle}
             cookiePolicy={"single_host_origin"}
           />

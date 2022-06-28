@@ -4,10 +4,8 @@ class User < ApplicationRecord
   devise :database_authenticatable,
          :jwt_authenticatable,
          :registerable,
-         :omniauthable,
          :trackable,
          :recoverable,
-         omniauth_providers: [:google_oauth2],
          jwt_revocation_strategy: self
 
   has_one :user_info
@@ -93,16 +91,6 @@ class User < ApplicationRecord
     else
       return { error: revokedUserJti.errors.messages }
     end
-  end
-
-  # Google Login
-
-  def self.from_omniauth(access_token)
-    data = access_token.info
-    puts data
-    puts data["googleId"]
-    user = User.find_by(id: UserInfo.find_by(googleid: data["googleId"]))
-    user
   end
 
   private
