@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   resources :user_infos, :path => "#{@api_path}/user_infos"
 
   get "#{@api_path}/filter/user_infos", to: "user_infos#filter"
+  get "#{@api_path}/filter/courses", to: "courses#filter"
 
   delete "#{@api_path}/chat_participants/remove/:user_id/:chat_base_id", to: "chat_participants#remove_participant"
 

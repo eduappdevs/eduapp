@@ -256,7 +256,7 @@ export default function UserConfig(props) {
         let inputName = document.getElementById("inputName_" + s.id).value;
         let inputEmail = document.getElementById("inputEmail_" + s.id).value;
 
-        let editTitle, editEmail, editisAdmin;
+        let editTitle, editEmail;
 
         if (inputName !== "" && inputName !== s.session_name) {
           editTitle = inputName;
@@ -340,8 +340,6 @@ export default function UserConfig(props) {
 
         if (inputEmail !== "" && inputEmail !== s.email) {
           editEmail = inputEmail;
-        } else {
-          editEmail = s.session_start_date;
         }
 
         API.asynchronizeRequest(function () {
@@ -614,7 +612,7 @@ export default function UserConfig(props) {
             })
             .catch(async (err) => {
               await interceptExpiredToken(err);
-              console.error(err);
+              showDeleteError();
             });
         }).then(async (e) => {
           if (e) {

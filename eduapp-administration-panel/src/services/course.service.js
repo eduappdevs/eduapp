@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL, TOKEN } from "../API";
+import { API_URL, FILTER_URL, TOKEN } from "../API";
 const requestHeader = { eduauth: TOKEN };
 
 const COURSES = `${API_URL}/courses`;
@@ -19,6 +19,21 @@ export const deleteCourse = async (id) => {
   });
 };
 
+export const filterCourses = async ({
+  id = null,
+  name = null,
+  page = 1,
+  extras = null,
+}) => {
+  return await axios.get(
+    `${FILTER_URL}/courses?id=${id}&name=${name}&page=${page}`,
+    {
+      headers: requestHeader,
+      data: extras,
+    }
+  );
+};
+
 export const fetchGeneralCourse = async () => {
   return await axios.get(`${COURSES}?name=General`, { headers: requestHeader });
 };
@@ -33,4 +48,4 @@ export const pagedCourses = async (page) => {
   return await axios.get(`${COURSES}?page=${page}`, {
     headers: requestHeader,
   });
-}
+};

@@ -26,11 +26,47 @@ class CoursesController < ApplicationController
 
     if params[:page]
       @courses = query_paginate(@courses, params[:page])
-      @courses[:current_page] = serialize_each(@courses[:current_page], [:created_at, :updated_at, :institution_id], [ :institution])
-
+      @courses[:current_page] = serialize_each(@courses[:current_page], [:created_at, :updated_at, :institution_id], [:institution])
     end
 
     render json: @courses
+  end
+
+  def filter
+    course_query = {}
+    params.each do |param|
+      next unless param[0] == "id" || param[0] == "name"
+      next unless param[1] != "null" && param[1].length > 0
+
+      course_query.merge!({ param[0] => param[1] })
+    end
+
+    final_query = nil
+
+    if course_query["id"]
+      ids = []
+      Course.all.each do |c|
+        ids << c.id if c.id.to_s =~ /^#{course_query["id"]}.*$/
+      end
+      final_query = Course.where(id: ids)
+    end
+
+    if course_query["name"]
+      if !final_query.nil?
+        final_query = final_query.where("name LIKE ?", "%#{course_query["name"]}%")
+      else
+        final_query = Course.where("name LIKE ?", "%#{course_query["name"]}%")
+      end
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :institution_id], [:institution])
+    end
+
+    render json: { filtration: final_query }
   end
 
   # GET /courses/1

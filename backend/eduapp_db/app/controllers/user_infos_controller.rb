@@ -84,6 +84,8 @@ class UserInfosController < ApplicationController
       final_query = UserInfo.where(user_role_id: UserRole.where("name LIKE ?", "%#{role_query["role"]}%"))
     end
 
+    final_query = [] if final_query.nil?
+
     if params[:page]
       final_query = query_paginate(final_query, params[:page])
       final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :user_id, :user_role_id, :googleid], [:user, :user_role])
