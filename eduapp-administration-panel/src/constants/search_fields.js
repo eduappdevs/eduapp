@@ -91,6 +91,26 @@ export function parseEnrollmentFields(er, field) {
   }
 }
 
+// Teachers
+export function getTeacherFields(lang) {
+  languageDetect(lang);
+  return [
+    ["teacher_name", lang.teacherName],
+    ["subject_name", lang.subjectName],
+  ];
+}
+
+export function parseTeacherFields(t, field) {
+  switch (field) {
+    case "teacher_name":
+      return t.user.user_name;
+    case "subject_name":
+      return t.subject.name;
+    default:
+      return t[field];
+  }
+}
+
 // MANAGEMENT
 
 // Courses
