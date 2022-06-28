@@ -172,6 +172,14 @@ export function getRoleFields(lang) {
   return [["name", lang.name]];
 }
 
+// CHAT SETTINGS
+
+// Chat Base
+export function getChatFields(lang) {
+  languageDetect(lang);
+  return [["chat_name", lang.name]];
+}
+
 // HELPER METHODS
 function languageDetect(language) {
   if (!language) throw new Error("No language passed to fields.");
