@@ -22,6 +22,29 @@ export function parseSessionFields(s, field) {
   }
 }
 
+// Events
+export function getEventFields(lang) {
+  languageDetect(lang);
+  return [
+    ["id", lang.code],
+    ["annotation_title", lang.title],
+    ["annotation_description", lang.description],
+    ["event_author", lang.author],
+    ["subject_name", lang.subjects],
+  ];
+}
+
+export function parseEventFields(e, field) {
+  switch (field) {
+    case "event_author":
+      return e.user.email;
+    case "subject_name":
+      return e.subject.name;
+    default:
+      return e[field];
+  }
+}
+
 // USERS
 
 // Users
