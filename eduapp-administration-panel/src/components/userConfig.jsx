@@ -676,13 +676,15 @@ export default function UserConfig(props) {
   useEffect(() => {
     fetchUsers();
     fetchRoles();
+  }, []);
 
+  useEffect(() => {
     setSearchParams({
       query: "",
       fields: getUserFields(props.language),
       selectedField: getUserFields(props.language)[0][0],
     });
-  }, []);
+  }, [props.language]);
 
   return (
     <>
@@ -794,11 +796,7 @@ export default function UserConfig(props) {
                   {users.map((u) => {
                     let user = u.user.last_sign_in_at;
                     if (filteredUsers !== null)
-                      if (
-                        filteredUsers.length > 0 &&
-                        !filteredUsers.includes(u)
-                      )
-                        return <></>;
+                      if (!filteredUsers.includes(u)) return <></>;
                     return (
                       <tr key={u.id}>
                         <td>

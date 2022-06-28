@@ -1,9 +1,25 @@
-function languageDetect(language) {
-  if (!language) throw new Error("No language passed to fields.");
+// SCHEDULE
+
+// Sessions
+export function getSessionFields(lang) {
+  languageDetect(lang);
+  return [
+    ["id", lang.code],
+    ["session_name", lang.name],
+    ["streaming_platform", lang.streaming],
+    ["resources_platform", lang.resources],
+    ["session_chat_id", lang.chatLink],
+    ["subject_name", lang.subjects],
+  ];
 }
 
-export function genericParser(x, field) {
-  return x[field];
+export function parseSessionFields(s, field) {
+  switch (field) {
+    case "subject_name":
+      return s.subject.name;
+    default:
+      return s[field];
+  }
 }
 
 // USERS
@@ -61,4 +77,13 @@ export function parseSubjectFields(s, field) {
     default:
       return s[field];
   }
+}
+
+// HELPER METHODS
+function languageDetect(language) {
+  if (!language) throw new Error("No language passed to fields.");
+}
+
+export function genericParser(x, field) {
+  return x[field];
 }

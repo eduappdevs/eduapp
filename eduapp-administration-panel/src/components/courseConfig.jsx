@@ -489,15 +489,15 @@ export default function CourseConfig(props) {
     return document.getElementById("inputName_" + id).value;
   };
 
-  useEffect(() => {
-    fetchCoursePage(1);
+  useEffect(() => fetchCoursePage(1), []);
 
+  useEffect(() => {
     setSearchParams({
       query: "",
       fields: getCourseFields(props.language),
       selectedField: getCourseFields(props.language)[0][0],
     });
-  }, []);
+  }, [props.language]);
 
   return (
     <>
@@ -588,11 +588,7 @@ export default function CourseConfig(props) {
                 <tbody>
                   {courses.map((c) => {
                     if (filteredCourses !== null)
-                      if (
-                        filteredCourses.length > 0 &&
-                        !filteredCourses.includes(c)
-                      )
-                        return <></>;
+                      if (!filteredCourses.includes(c)) return <></>;
                     return (
                       <tr key={c.id}>
                         <td>
@@ -715,7 +711,6 @@ export default function CourseConfig(props) {
           </>
         ) : null}
       </div>
-
       <StandardModal
         show={showPopup}
         iconFill={popupIcon}

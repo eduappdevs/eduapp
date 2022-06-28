@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
@@ -9,6 +9,12 @@ import SessionsModal from "./modals/sessions-modal/SessionsModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
 import SelectedModal from "./modals/selected-modal/SelectedModal";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import useFilter from "../hooks/useFilter";
+import {
+  getSessionFields,
+  parseSessionFields,
+} from "../constants/search_fields";
 import "../styles/schedulesessionslist.css";
 
 export default function Schedulesessionslist(props) {
@@ -45,6 +51,9 @@ export default function Schedulesessionslist(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
   const [idBatch, setIdBatch] = useState();
+
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredSessions = useFilter(sessions, parseSessionFields);
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -1235,7 +1244,13 @@ export default function Schedulesessionslist(props) {
     fetchSubjects();
   }, []);
 
-  useEffect(() => {}, [props.language]);
+  useEffect(() => {
+    setSearchParams({
+      query: "",
+      fields: getSessionFields(props.language),
+      selectedField: getSessionFields(props.language)[0][0],
+    });
+  }, [props.language]);
 
   return (
     <>
@@ -1376,6 +1391,8 @@ export default function Schedulesessionslist(props) {
                 </thead>
                 <tbody>
                   {sessions.map((s) => {
+                    if (filteredSessions !== null)
+                      if (!filteredSessions.includes(s)) return <></>;
                     return (
                       <tr key={s.id}>
                         <td>{shortUUID(s.id)}</td>

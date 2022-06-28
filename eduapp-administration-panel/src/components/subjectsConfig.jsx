@@ -700,13 +700,15 @@ export default function SubjectsConfig(props) {
   useEffect(() => {
     fetchSubjectPage(1);
     fetchCourses();
+  }, []);
 
+  useEffect(() => {
     setSearchParams({
       query: "",
       fields: getSubjectFields(props.language),
       selectedField: getSubjectFields(props.language)[0][0],
     });
-  }, []);
+  }, [props.language]);
 
   return (
     <>
@@ -821,11 +823,7 @@ export default function SubjectsConfig(props) {
                 <tbody>
                   {subjects.map((sj) => {
                     if (filteredSubjects !== null)
-                      if (
-                        filteredSubjects.length > 0 &&
-                        !filteredSubjects.includes(sj)
-                      )
-                        return <></>;
+                      if (!filteredSubjects.includes(sj)) return <></>;
                     return (
                       <tr key={sj.id}>
                         <td>
