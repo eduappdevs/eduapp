@@ -1,11 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import PageSelect from "./pagination/PageSelect";
 import * as ROLE_SERVICE from "../services/role.service";
 import asynchronizeRequest from "../API";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import useFilter from "../hooks/useFilter";
 import "../styles/userRoles.css";
+import { genericParser, getRoleFields } from "../constants/search_fields";
 
 export default function UserRolesConfig({ language }) {
   const [showPerms, setShowPerms] = useState(false);
@@ -17,6 +20,9 @@ export default function UserRolesConfig({ language }) {
   const [newPermsDesc, setNewPermsDesc] = useState("");
 
   const [maxPages, setMaxPages] = useState(1);
+
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredRoles = useFilter(roles, genericParser);
 
   const [changesSaved, setChangesSaved] = useState(true);
   const [currentPermissions, setCurrentPermissions] = useState(null);
@@ -392,6 +398,14 @@ export default function UserRolesConfig({ language }) {
     }
   }, [currentPermissions]);
 
+  useEffect(() => {
+    setSearchParams({
+      query: "",
+      fields: getRoleFields(language),
+      selectedField: getRoleFields(language)[0][0],
+    });
+  }, [language]);
+
   return (
     <>
       <div className="schedulesesionslist-main-container" id="scroll">
@@ -494,6 +508,8 @@ export default function UserRolesConfig({ language }) {
               </thead>
               <tbody>
                 {roles.map((role) => {
+                  if (filteredRoles !== null)
+                    if (!filteredRoles.includes(role)) return <></>;
                   return (
                     <tr key={role.id}>
                       <td>

@@ -4,8 +4,8 @@
 export function getSessionFields(lang) {
   languageDetect(lang);
   return [
-    ["id", lang.code],
     ["session_name", lang.name],
+    ["id", lang.code],
     ["streaming_platform", lang.streaming],
     ["resources_platform", lang.resources],
     ["session_chat_id", lang.chatLink],
@@ -26,8 +26,8 @@ export function parseSessionFields(s, field) {
 export function getEventFields(lang) {
   languageDetect(lang);
   return [
-    ["id", lang.code],
     ["annotation_title", lang.title],
+    ["id", lang.code],
     ["annotation_description", lang.description],
     ["event_author", lang.author],
     ["subject_name", lang.subjects],
@@ -51,8 +51,8 @@ export function parseEventFields(e, field) {
 export function getUserFields(lang) {
   languageDetect(lang);
   return [
-    ["user_id", lang.userId],
     ["user_name", lang.name],
+    ["user_id", lang.userId],
     ["email", lang.email],
     ["role", lang.userRole],
   ];
@@ -117,8 +117,8 @@ export function parseTeacherFields(t, field) {
 export function getCourseFields(lang) {
   languageDetect(lang);
   return [
-    ["id", lang.code],
     ["name", lang.name],
+    ["id", lang.code],
   ];
 }
 
@@ -126,9 +126,9 @@ export function getCourseFields(lang) {
 export function getSubjectFields(lang) {
   languageDetect(lang);
   return [
+    ["name", lang.name],
     ["id", lang.code],
     ["subject_code", lang.subjectCode],
-    ["name", lang.name],
     ["course_name", lang.linkedCourse],
   ];
 }
@@ -146,8 +146,8 @@ export function parseSubjectFields(s, field) {
 export function getResourceFields(lang) {
   languageDetect(lang);
   return [
-    ["id", lang.code],
     ["name", lang.name],
+    ["id", lang.code],
     ["author", lang.author],
     ["subject_name", lang.subjects],
   ];
@@ -162,6 +162,14 @@ export function parseResourceFields(r, field) {
     default:
       return r[field];
   }
+}
+
+// SETTINGS
+
+// User Roles
+export function getRoleFields(lang) {
+  languageDetect(lang);
+  return [["name", lang.name]];
 }
 
 // HELPER METHODS

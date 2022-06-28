@@ -98,6 +98,12 @@ export default function Toolbar(props) {
             <FieldSearcher language={props.language} />
           </ul>
         </>
+      ) : props.location === "userRoles" ? (
+        <>
+          <ul className="scheduletoolbar-ul userRoles-toolbar">
+            <FieldSearcher language={props.language} />
+          </ul>
+        </>
       ) : (
         <h1>{props.language.configuration}</h1>
       )}
