@@ -47,8 +47,8 @@ export default function ResourcesConfig(props) {
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100vw";
-      document.getElementById("standard-modal").style.height = "100vh";
+      document.getElementById("standard-modal").style.width = "100%";
+      document.getElementById("standard-modal").style.height = "100%";
       document.getElementById("resources-modal-container").style.width =
         "100vw";
       document.getElementById("resources-modal-container").style.height =
