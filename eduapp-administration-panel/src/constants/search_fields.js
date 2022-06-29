@@ -76,7 +76,7 @@ export function getEnrollmentFields(lang) {
   languageDetect(lang);
   return [
     ["user_email", lang.email],
-    ["course_id", lang.course],
+    ["course_name", lang.course],
   ];
 }
 
@@ -84,7 +84,7 @@ export function parseEnrollmentFields(er, field) {
   switch (field) {
     case "user_email":
       return er.user.email;
-    case "course_id":
+    case "course_name":
       return er.course.name;
     default:
       return er[field];

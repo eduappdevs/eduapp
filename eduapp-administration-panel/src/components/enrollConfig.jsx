@@ -9,10 +9,7 @@ import { interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import PageSelect from "./pagination/PageSelect";
 import useFilter from "../hooks/useFilter";
-import {
-  getEnrollmentFields,
-  parseEnrollmentFields,
-} from "../constants/search_fields";
+import { getEnrollmentFields } from "../constants/search_fields";
 
 export default function EnrollConfig(props) {
   const [tuitions, setTuitions] = useState(null);
@@ -30,7 +27,12 @@ export default function EnrollConfig(props) {
   const [changeCourse, setChangeCourse] = useState(false);
 
   const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredTuitions = useFilter(tuitions, parseEnrollmentFields);
+  const filteredTuitions = useFilter(
+    tuitions,
+    null,
+    TUITIONSSERVICE.filterTuitions,
+    getEnrollmentFields(props.language)
+  );
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -684,7 +686,10 @@ export default function EnrollConfig(props) {
                 <tbody>
                   {tuitions.map((t) => {
                     if (filteredTuitions !== null)
-                      if (!filteredTuitions.includes(t))
+                      if (
+                        filteredTuitions.find((ft) => t.id === ft.id) ===
+                        undefined
+                      )
                         return <Fragment key={t.id} />;
                     return (
                       <tr key={t.id}>
