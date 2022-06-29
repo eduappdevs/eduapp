@@ -170,7 +170,7 @@
 
 }
 
-input[type=checkbox] {
+.management__form-container>form>input[type=checkbox] {
 	position: relative;
 	cursor: pointer;
 	left: 50%;
@@ -179,7 +179,7 @@ input[type=checkbox] {
 	padding: 0 0 0 0 !important;
 }
 
-input[type=checkbox]:before {
+.management__form-container>form>input[type=checkbox]:before {
 	content: "";
 	display: block;
 	position: absolute;
@@ -191,7 +191,7 @@ input[type=checkbox]:before {
 
 }
 
-input[type=checkbox]:checked:before {
+.management__form-container>form>input[type=checkbox]:checked:before {
 	content: "";
 	display: block;
 	position: absolute;
@@ -202,7 +202,7 @@ input[type=checkbox]:checked:before {
 	background-color: #1E80EF;
 }
 
-input[type=checkbox]:checked:after {
+.management__form-container>form>input[type=checkbox]:checked:after {
 	content: "";
 	display: block;
 	width: 5px;

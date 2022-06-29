@@ -197,19 +197,12 @@ export default function Scheduleeventslist(props) {
       SCHEDULESERVICE.createEvent(eventJson)
         .then((e) => {
           if (e) {
-            let user = localStorage
-              .getItem("offline_user")
-              .split("user_id")[1]
-              .split('":"')[1]
-              .split('"')[0];
-            USER_SERVICE.global_events(user).then((x) => {
-              if (x) {
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.creationCompleted);
-                fetchEvents(1);
-              }
-            });
+            if (e) {
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(props.language.creationCompleted);
+              fetchEvents(1);
+            }
           }
         })
         .catch(async (e) => {

@@ -32,11 +32,19 @@ export default class IDBManager {
     return await idb.del(key, this.store);
   }
 
+  async getMany(keys) {
+    return await idb.getMany(keys, this.store)
+  }
+
   async deleteMany(keys) {
     return await idb.delMany(keys, this.store);
   }
 
   async getStoreKeys() {
     return await idb.keys(this.store);
+  }
+
+  async clear() {
+    return await idb.clear(this.store);
   }
 }

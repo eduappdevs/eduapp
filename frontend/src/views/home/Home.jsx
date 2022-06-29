@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import SessionAdd from "../../components/modals/modals-home/SessionAdd";
 import SessionEdit from "../../components/modals/modals-home/SessionEdit";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import CourseSelector from "../../components/courseSelector/CourseSelector";
 import * as SUBJECT_SERVICE from "../../services/subject.service";
 import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import { asynchronizeRequest } from "../../API";
@@ -18,6 +17,7 @@ export default function Home() {
   const [firstSessionId, setFirstSessionId] = useState("");
   const [sessionLength, setSessionLength] = useState("");
   const [userImage, setUserImage] = useState(null);
+
   const sessionsPreSorted = [];
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let sessionsSorted;
@@ -35,7 +35,6 @@ export default function Home() {
     let date = e.data.session_date;
     let date1 = date.split("-")[0];
     let date2 = date.split("-")[1];
-    console.log(date1, date2);
     let streamingPlatform = e.data.streaming_platform;
     let resourcesPlatform = e.data.resources_platform;
     let chat = e.data.session_chat_id;
@@ -192,7 +191,6 @@ export default function Home() {
     RequireAuth();
     checkMediaQueries();
     getSessions();
-
     if (window.innerWidth < 1100) {
       setIsMobile(true);
     } else {
@@ -402,7 +400,7 @@ export default function Home() {
                         <p
                           className={
                             firstSessionId === data.id && sessionLength > 1
-                              ? console.log()
+                              ? null
                               : "hidden"
                           }
                         >

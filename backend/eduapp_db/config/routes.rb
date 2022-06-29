@@ -25,9 +25,9 @@ Rails.application.routes.draw do
   post "/user_infos/add_subject/:user_id/:subject_id", to: "user_infos#add_subject"
   delete "/user_infos/remove_subject/:user_id/:subject_id", to: "user_infos#remove_subject"
 
-  post "/user_infos/global_events/:user_id", to: "user_infos#add_events"
-  delete "/user_infos/remove_global_events/:user_id/:calendar_event", to: "user_infos#remove_event"
-  get "/calendar_annotations/all_id", to: "calendar_annotations#calendar_info"
+  delete "/user_infos/remove_global_events/:user_id", to: "user_infos#remove_event"
+  get "calendar_annotations/:user_id/event_pop", to: "calendar_annotations#show_calendar_event"
+  get "calendar_annotations/:user_id/all", to: "calendar_annotations#calendar_info"
 
   devise_for :users,
              controllers: {

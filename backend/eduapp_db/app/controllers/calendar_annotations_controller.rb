@@ -46,8 +46,17 @@ class CalendarAnnotationsController < ApplicationController
     if !check_perms_query!(get_user_roles.perms_events)
       return
     end
-    @calendar_annotations = CalendarAnnotation.where(isGlobal: true, isPop: true).order(:annotation_start_date)
-    render json: @calendar_annotations
+    annotation = CalendarAnnotation.where(isGlobal: true, isPop: true).order(:created_at).pluck(:annotation_start_date, :annotation_end_date)
+    now = Time.now.to_i
+    event = []
+    for date in annotation
+      stime = date[0].to_time.to_i
+      etime = date[1].to_time.to_i
+      if stime > now or now < etime
+        event += CalendarAnnotation.where(annotation_start_date: date[0], annotation_end_date: date[1])
+      end
+    end
+    render json: event
   end
 
   # GET /calendar_annotations/1
@@ -56,6 +65,14 @@ class CalendarAnnotationsController < ApplicationController
       return
     end
     render json: @calendar_annotation
+  end
+
+  def show_calendar_event
+    if !check_perms_query!(get_user_roles.perms_events)
+      return
+    end
+    calendar_annotation = CalendarAnnotation.where(isPop: true).last
+    render json: calendar_annotation
   end
 
   # POST /calendar_annotations
