@@ -145,7 +145,7 @@ export default function ResourcesModal({
       for (let i = 0; i < filesToUpload.length; i++)
         finalData.append("file_" + i, filesToUpload[i]);
     }
-    finalData.append("user_id", author.user.id);
+    finalData.append("user_id", author.user_id);
     finalData.append("subject_id", subject.split("_")[1]);
 
     asynchronizeRequest(function () {
@@ -301,7 +301,7 @@ export default function ResourcesModal({
           resource_files: url,
           resource_files_json: urlJson,
           blob_id_delete: blob_id_delete,
-          user_id: author.user.id,
+          user_id: author.user_id,
         })
           .then((e) => {
             if (e) {
@@ -335,7 +335,7 @@ export default function ResourcesModal({
           resource_files: info.resource_files,
           resource_files_json: info.resource_files_json,
           blob_id_delete: blob_id_delete,
-          user_id: author.user.id,
+          user_id: author.user_id,
         })
           .then((e) => {
             if (e) {
@@ -521,7 +521,7 @@ export default function ResourcesModal({
                     {language.description}: {description}
                   </p>
                   <p>
-                    {language.author}: {author.user_name}
+                    {language.author}: {author}
                   </p>
                   <p>
                     {language.subjects}: {subject.name}

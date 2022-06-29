@@ -205,7 +205,7 @@ class ApplicationController < ActionController::API
 
   def check_perms_query_self!(user_roles, query_user_id)
     if user_roles[2]
-      if query_user_id === @current_user
+      if query_user_id == @current_user
         return true
       else
         return check_perms_query!(user_roles)

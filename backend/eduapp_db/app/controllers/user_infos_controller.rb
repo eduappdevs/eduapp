@@ -70,37 +70,6 @@ class UserInfosController < ApplicationController
     render json: @user_info
   end
 
-  def add_events
-    if !check_perms_write!(get_user_roles.perms_users)
-      return
-    end
-    @user_info = UserInfo.all
-    calendar_annotation = CalendarAnnotation.where(isPop: true)
-
-    @user_info.each do |user_info|
-      calendar_annotation.each do |annotation|
-        if user_info.calendar_event.include?(annotation.id.to_s)
-          puts "already added"
-        else
-          user_info.calendar_event << annotation.id
-        end
-      end
-      user_info.save
-    end
-     render json: @user_info
-  end
-
-  def remove_event
-    if !check_perms_write!(get_user_roles.perms_users)
-      return
-    end
-    @user_info = UserInfo.where(user_id: params[:user_id]).first
-    puts "userInfo: #{@user_info}"
-    @user_info.calendar_event.delete(CalendarAnnotation.find(params[:calendar_event]).id)
-    @user_info.save
-    render json:@user_info
-  end
-
   def remove_subject
     if !check_perms_write!(get_user_roles.perms_users)
       return

@@ -56,14 +56,6 @@ export const enroll_teacher = async (uId, subject_id) => {
   });
 };
 
-export const global_events = async (uId) => {
-  return await axios.request({
-    url: USERS_INFO + `/global_events/${uId}`,
-    method: "POST",
-    headers: requestHeader,
-  });
-}
-
 export const remove_global_events = async (uId, event_id) => {
   return await axios.delete(`${USERS_INFO}/remove_global_events/${uId}/${event_id}`, {
     headers: requestHeader,
