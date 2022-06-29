@@ -4,7 +4,7 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as USER_SERVICE from "../services/user.service";
 import Input from "./Input";
-import { interceptExpiredToken } from "../utils/OfflineManager";
+import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import PageSelect from "./pagination/PageSelect";
 import "../styles/scheduleeventslist.css";
@@ -159,16 +159,15 @@ export default function Scheduleeventslist(props) {
 
     let json = [];
     let name = document.getElementById("e_title").value;
-    let author = document.getElementById("e_author").value;
     let description = document.getElementById("e_description").value;
     let start_date = document.getElementById("e_start_date").value;
     let end_date = document.getElementById("e_end_date").value;
     let subject = !isGlobal
       ? document.getElementById("e_subjectId").value
       : (await SUBJECTSERVICE.getGeneralSubject()).data[0].id;
+    let author = getOfflineUser().user.id;
     if (
       name !== "" &&
-      author !== "" &&
       start_date !== "" &&
       end_date !== "" &&
       subject !== props.language.chooseSubject
@@ -1029,7 +1028,6 @@ export default function Scheduleeventslist(props) {
             <tr>
               <th></th>
               <th>{props.language.title}</th>
-              <th>{props.language.author}</th>
               <th>{props.language.description}</th>
               <th>{props.language.startDate}</th>
               <th>{props.language.endDate}</th>
@@ -1080,18 +1078,6 @@ export default function Scheduleeventslist(props) {
                   placeholder="Title"
                   className={"e_title"}
                 />
-              </td>
-              <td>
-                <select id="e_author">
-                  <option defaultValue="--">
-                    {props.language.chooseAuthor}
-                  </option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.user.id}>
-                      {u.user.email}
-                    </option>
-                  ))}
-                </select>
               </td>
               <td>
                 <Input

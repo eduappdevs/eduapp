@@ -7,7 +7,7 @@ import * as RESOURCESERVICES from "../services/resource.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import "../styles/resourcesConfig.css";
 import PageSelect from "./pagination/PageSelect";
-import { interceptExpiredToken } from "../utils/OfflineManager";
+import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function ResourcesConfig(props) {
   const [users, setUsers] = useState([]);
@@ -184,7 +184,7 @@ export default function ResourcesConfig(props) {
       setResourceName(name);
       setResourceSubject(subject.find((s) => s.id === editSubject));
       setResourceDescription(description);
-      setResourceAuthor(users.find((u) => u.user.email === author));
+      setResourceAuthor(author);
 
       setInfo(res);
       setShowModal(true);
@@ -198,13 +198,12 @@ export default function ResourcesConfig(props) {
     let subject_id = document.getElementById("i_subject").value;
     let name = document.getElementById("i_name").value;
     let description = document.getElementById("i_description").value;
-    let author = document.getElementById("i_author").value;
 
-    if (name.length > 0 && author !== "--" && subject_id !== "--") {
+    if (name.length > 0 && subject_id !== "--") {
       setResourceName(name);
       setResourceSubject(subject_id);
       setResourceDescription(description);
-      setResourceAuthor(users.find((u) => u.user.id === author));
+      setResourceAuthor(getOfflineUser());
       setShowModal(true);
       setShowCreateModal(true);
     } else {
@@ -432,7 +431,6 @@ export default function ResourcesConfig(props) {
             <tr>
               <th>{props.language.name}</th>
               <th>{props.language.description}</th>
-              <th>{props.language.author}</th>
               <th>{props.language.subjects}</th>
               <th>{props.language.files}</th>
             </tr>
@@ -454,16 +452,6 @@ export default function ResourcesConfig(props) {
                   type="text"
                   placeholder={props.language.description}
                 />
-              </td>
-              <td>
-                <select id="i_author">
-                  <option value="--">{props.language.chooseAuthor}</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.user.id}>
-                      {u.user.email}
-                    </option>
-                  ))}
-                </select>
               </td>
               <td>
                 <select id="i_subject">

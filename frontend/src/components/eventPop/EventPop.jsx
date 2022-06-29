@@ -1,12 +1,7 @@
 import React from "react";
-import { useEffect } from "react";
 import "./eventPop.css";
 
 export default function EventPop({ show, close, data }) {
-  const eventPop = async () => {};
-  useEffect(() => {
-    eventPop();
-  }, []);
   return data.length !== 0 ? (
     <>
       <div
