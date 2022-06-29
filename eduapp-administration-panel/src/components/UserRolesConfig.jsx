@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, Fragment } from "react";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import PageSelect from "./pagination/PageSelect";
 import * as ROLE_SERVICE from "../services/role.service";
@@ -509,7 +509,8 @@ export default function UserRolesConfig({ language }) {
               <tbody>
                 {roles.map((role) => {
                   if (filteredRoles !== null)
-                    if (!filteredRoles.includes(role)) return <></>;
+                    if (!filteredRoles.includes(role))
+                      return <Fragment key={role.id} />;
                   return (
                     <tr key={role.id}>
                       <td>

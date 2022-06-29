@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
@@ -320,7 +320,8 @@ export default function ChatParticipantConfig(props) {
                 <tbody>
                   {participant.map((e) => {
                     if (filteredParticipants !== null)
-                      if (!filteredParticipants.includes(e)) return <></>;
+                      if (!filteredParticipants.includes(e))
+                        return <Fragment key={e.id} />;
                     return (
                       <tr key={e.id}>
                         <td>{e.user.email}</td>

@@ -48,7 +48,7 @@ export default function FieldSearcher({ language }) {
           type="text"
           className="searchbar_toolbar"
           autoComplete="off"
-          placeholder={language.search}
+          placeholder={String(language.search)}
           onChange={(e) => {
             let c = { ...searchParams };
             c.query = e.target.value;

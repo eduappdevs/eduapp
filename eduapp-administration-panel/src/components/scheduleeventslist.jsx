@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
@@ -9,9 +9,9 @@ import { interceptExpiredToken } from "../utils/OfflineManager";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import PageSelect from "./pagination/PageSelect";
-import "../styles/scheduleeventslist.css";
 import useFilter from "../hooks/useFilter";
 import { getEventFields, parseEventFields } from "../constants/search_fields";
+import "../styles/scheduleeventslist.css";
 
 export default function Scheduleeventslist(props) {
   const [subject, setSubject] = useState([]);
@@ -1166,7 +1166,8 @@ export default function Scheduleeventslist(props) {
               <tbody>
                 {events.map((e) => {
                   if (filteredEvents !== null)
-                    if (!filteredEvents.includes(e)) return <></>;
+                    if (!filteredEvents.includes(e))
+                      return <Fragment key={e.id} />;
                   return (
                     <tr key={e.id}>
                       <td>{shortUUID(e.id)}</td>

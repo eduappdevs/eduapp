@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import asynchronizeRequest from "../API";
 import * as USER_SERVICE from "../services/user.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
@@ -533,7 +533,8 @@ export default function ResourcesConfig(props) {
               <tbody>
                 {resources.map((r) => {
                   if (filteredResources !== null)
-                    if (!filteredResources.includes(r)) return <></>;
+                    if (!filteredResources.includes(r))
+                      return <Fragment key={r.id} />;
                   return (
                     <tr key={r.id}>
                       <td>

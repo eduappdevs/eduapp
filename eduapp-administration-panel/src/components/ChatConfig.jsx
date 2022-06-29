@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
@@ -537,7 +537,7 @@ export default function ChatConfig(props) {
                 <tbody>
                   {chat.map((e) => {
                     if (filteredChats !== null)
-                      if (!filteredChats.includes(e)) return <></>;
+                      if (!filteredChats.includes(e)) return <Fragment key={e.id} />;
                     return (
                       <tr key={e.id}>
                         <td>

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as API from "../API";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import * as INSTITUTIONSERVICES from "../services/institution.service";
@@ -597,7 +597,7 @@ export default function CourseConfig(props) {
                         filteredCourses.find((fc) => c.id === fc.id) ===
                         undefined
                       )
-                        return <></>;
+                        return <Fragment key={c.id} />;
                     return (
                       <tr key={c.id}>
                         <td>

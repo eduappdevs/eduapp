@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as COURSESERVICE from "../services/course.service";
@@ -829,7 +829,7 @@ export default function SubjectsConfig(props) {
                         filteredSubjects.find((fsj) => sj.id === fsj.id) ===
                         undefined
                       )
-                        return <></>;
+                        return <Fragment key={sj.id} />;
                     return (
                       <tr key={sj.id}>
                         <td>

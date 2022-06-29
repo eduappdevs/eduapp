@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, Fragment } from "react";
 import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
@@ -1392,7 +1392,8 @@ export default function Schedulesessionslist(props) {
                 <tbody>
                   {sessions.map((s) => {
                     if (filteredSessions !== null)
-                      if (!filteredSessions.includes(s)) return <></>;
+                      if (!filteredSessions.includes(s))
+                        return <Fragment key={s.id} />;
                     return (
                       <tr key={s.id}>
                         <td>{shortUUID(s.id)}</td>

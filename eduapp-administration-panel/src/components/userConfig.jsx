@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as API from "../API";
@@ -803,7 +803,7 @@ export default function UserConfig(props) {
                         filteredUsers.find((fu) => fu.user.id === u.user.id) ===
                         undefined
                       )
-                        return <></>;
+                        return <Fragment key={u.id} />;
                     return (
                       <tr key={u.id}>
                         <td>

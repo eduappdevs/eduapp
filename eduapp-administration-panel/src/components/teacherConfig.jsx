@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { asynchronizeRequest } from "../API";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import * as SUBJECT_SERVICE from "../services/subject.service";
@@ -378,7 +378,8 @@ export default function TeacherConfig(props) {
                 <tbody>
                   {teachers.map((t) => {
                     if (filteredTeachers !== null)
-                      if (!filteredTeachers.includes(t)) return <></>;
+                      if (!filteredTeachers.includes(t))
+                        return <Fragment key={t.id} />;
                     return (
                       <tr key={t.user.user.id}>
                         <td>

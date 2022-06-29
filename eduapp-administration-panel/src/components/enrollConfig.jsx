@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as API from "../API";
 import * as TUITIONSSERVICE from "../services/enrollConfig.service";
 import * as USERSSERVICE from "../services/user.service";
@@ -684,7 +684,8 @@ export default function EnrollConfig(props) {
                 <tbody>
                   {tuitions.map((t) => {
                     if (filteredTuitions !== null)
-                      if (!filteredTuitions.includes(t)) return <></>;
+                      if (!filteredTuitions.includes(t))
+                        return <Fragment key={t.id} />;
                     return (
                       <tr key={t.id}>
                         <td>
