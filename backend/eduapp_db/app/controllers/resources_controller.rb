@@ -25,6 +25,70 @@ class ResourcesController < ApplicationController
     render json: @resources
   end
 
+  def filter
+    resources_query = {}
+    subject_query = {}
+    params.each do |param|
+      next if param[0] == "controller" || param[0] == "action" || param[0] == "extras" || param[0] == "resource"
+      next unless param[1] != "null" && param[1].length > 0
+
+      query = { param[0] => param[1] }
+      case param[0]
+      when "id", "name", "author"
+        resources_query.merge!(query)
+      when "subject_name"
+        subject_query.merge!(query)
+      end
+    end
+
+    final_query = nil
+
+    if !resources_query.empty?
+      query = nil
+
+      if resources_query["id"]
+        ids = []
+        Resource.all.each do |r|
+          ids << r.id if r.id.to_s =~ /^#{resources_query["id"]}.*$/
+        end
+        query = Resource.where(id: ids)
+      end
+
+      if resources_query["name"]
+        if !query.nil?
+          query = query.where("name LIKE ?", "%#{resources_query["name"]}%")
+        else
+          query = Resource.where("name LIKE ?", "%#{resources_query["name"]}%")
+        end
+      end
+
+      if resources_query["author"]
+        if !query.nil?
+          query = query.where(user_id: User.where("email LIKE ?", "%#{resources_query["author"]}%"))
+        else
+          query = Resource.where(user_id: User.where("email LIKE ?", "%#{resources_query["author"]}%"))
+        end
+      end
+
+      final_query = query
+    end
+
+    if !final_query.nil? && !subject_query.empty?
+      final_query = final_query.where(subject_id: Subject.where("name LIKE ?", "%#{subject_query["subject_name"]}%"))
+    elsif !subject_query.empty?
+      final_query = Resource.where(subject_id: Subject.where("name LIKE ?", "%#{subject_query["subject_name"]}%"))
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [:user, :subject])
+    end
+
+    render json: { filtration: final_query }
+  end
+
   # GET /resources/1
   def show
     if !resource_in_user_course && get_user_roles.name != "eduapp-admin"

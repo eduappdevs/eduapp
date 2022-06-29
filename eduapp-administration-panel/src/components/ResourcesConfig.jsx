@@ -10,10 +10,7 @@ import PageSelect from "./pagination/PageSelect";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
-import {
-  getResourceFields,
-  parseResourceFields,
-} from "../constants/search_fields";
+import { getResourceFields } from "../constants/search_fields";
 import "../styles/resourcesConfig.css";
 
 export default function ResourcesConfig(props) {
@@ -24,7 +21,12 @@ export default function ResourcesConfig(props) {
   const [maxPages, setMaxPages] = useState(1);
 
   const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredResources = useFilter(resources, parseResourceFields);
+  const filteredResources = useFilter(
+    resources,
+    null,
+    RESOURCESERVICES.filterResources,
+    getResourceFields(props.language)
+  );
 
   const [resourceName, setResourceName] = useState();
   const [resourceSubject, setResourceSubject] = useState();
@@ -533,7 +535,10 @@ export default function ResourcesConfig(props) {
               <tbody>
                 {resources.map((r) => {
                   if (filteredResources !== null)
-                    if (!filteredResources.includes(r))
+                    if (
+                      filteredResources.find((fr) => r.id === fr.id) ===
+                      undefined
+                    )
                       return <Fragment key={r.id} />;
                   return (
                     <tr key={r.id}>
