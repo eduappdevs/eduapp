@@ -22,10 +22,90 @@ class EduappUserSessionsController < ApplicationController
 
     if params[:page]
       @eduapp_user_sessions = query_paginate(@eduapp_user_sessions, params[:page])
-      @eduapp_user_sessions[:current_page] = serialize_each(@eduapp_user_sessions[:current_page], [:created_at, :updated_at, :subject_id], [ :subject])
+      @eduapp_user_sessions[:current_page] = serialize_each(@eduapp_user_sessions[:current_page], [:created_at, :updated_at, :subject_id], [:subject])
     end
 
     render json: @eduapp_user_sessions
+  end
+
+  def filter
+    sessions_query = {}
+    subject_query = {}
+    params.each do |param|
+      next if param[0] == "controller" || param[0] == "action" || param[0] == "extras" || param[0] == "eduapp_user_session"
+      next unless param[1] != "null" && param[1].length > 0
+
+      query = { param[0] => param[1] }
+      case param[0]
+      when "id", "session_name", "streaming_platform", "resources_platform", "session_chat_id"
+        sessions_query.merge!(query)
+      when "subject_name"
+        subject_query.merge!(query)
+      end
+    end
+
+    final_query = nil
+
+    if !sessions_query.empty?
+      query = nil
+
+      if sessions_query["id"]
+        ids = []
+        EduappUserSession.all.each do |s|
+          ids << s.id if s.id.to_s =~ /^#{sessions_query["id"]}.*$/
+        end
+        query = EduappUserSession.where(id: ids)
+      end
+
+      if sessions_query["session_name"]
+        if !query.nil?
+          query = query.where("session_name LIKE ?", "%#{sessions_query["session_name"]}%")
+        else
+          query = EduappUserSession.where("session_name LIKE ?", "%#{sessions_query["session_name"]}%")
+        end
+      end
+
+      if sessions_query["streaming_platform"]
+        if !query.nil?
+          query = query.where("streaming_platform LIKE ?", "%#{sessions_query["streaming_platform"]}%")
+        else
+          query = EduappUserSession.where("streaming_platform LIKE ?", "%#{sessions_query["streaming_platform"]}%")
+        end
+      end
+
+      if sessions_query["resources_platform"]
+        if !query.nil?
+          query = query.where("resources_platform LIKE ?", "%#{sessions_query["resources_platform"]}%")
+        else
+          query = EduappUserSession.where("resources_platform LIKE ?", "%#{sessions_query["resources_platform"]}%")
+        end
+      end
+
+      if sessions_query["session_chat_id"]
+        if !query.nil?
+          query = query.where("session_chat_id LIKE ?", "%#{sessions_query["session_chat_id"]}%")
+        else
+          query = EduappUserSession.where("session_chat_id LIKE ?", "%#{sessions_query["session_chat_id"]}%")
+        end
+      end
+
+      final_query = query
+    end
+
+    if !final_query.nil? && !subject_query.empty?
+      final_query = final_query.where(subject_id: Subject.where("name LIKE ?", "%#{subject_query["subject_name"]}%"))
+    elsif !subject_query.empty?
+      final_query = EduappUserSession.where(subject_id: Subject.where("name LIKE ?", "%#{subject_query["subject_name"]}%"))
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :subject_id], [:subject])
+    end
+
+    render json: { filtration: final_query }
   end
 
   # GET /eduapp_user_sessions/1

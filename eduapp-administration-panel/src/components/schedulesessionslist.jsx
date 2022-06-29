@@ -11,10 +11,7 @@ import PageSelect from "./pagination/PageSelect";
 import SelectedModal from "./modals/selected-modal/SelectedModal";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
-import {
-  getSessionFields,
-  parseSessionFields,
-} from "../constants/search_fields";
+import { getSessionFields } from "../constants/search_fields";
 import "../styles/schedulesessionslist.css";
 
 export default function Schedulesessionslist(props) {
@@ -53,7 +50,12 @@ export default function Schedulesessionslist(props) {
   const [idBatch, setIdBatch] = useState();
 
   const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredSessions = useFilter(sessions, parseSessionFields);
+  const filteredSessions = useFilter(
+    sessions,
+    null,
+    SCHEDULESERVICE.filterSessions,
+    getSessionFields(props.language)
+  );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -1392,7 +1394,10 @@ export default function Schedulesessionslist(props) {
                 <tbody>
                   {sessions.map((s) => {
                     if (filteredSessions !== null)
-                      if (!filteredSessions.includes(s))
+                      if (
+                        filteredSessions.find((fs) => s.id === fs.id) ===
+                        undefined
+                      )
                         return <Fragment key={s.id} />;
                     return (
                       <tr key={s.id}>

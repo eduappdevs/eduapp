@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   get "#{@api_path}/filter/courses", to: "courses#filter"
   get "#{@api_path}/filter/subjects", to: "subjects#filter"
   get "#{@api_path}/filter/resources", to: "resources#filter"
+  get "#{@api_path}/filter/sessions", to: "eduapp_user_sessions#filter"
 
   delete "#{@api_path}/chat_participants/remove/:user_id/:chat_base_id", to: "chat_participants#remove_participant"
 
