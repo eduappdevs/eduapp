@@ -66,6 +66,7 @@ export default function App() {
     SCHEDULE_SERVICE.fetchEventsById(getOfflineUser().user.id).then(
       async (e) => {
         if (e) {
+          db.clear();
           e.data.map(async (data) => {
             await db.set(data.id, data, "events");
           });
