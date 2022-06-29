@@ -27,9 +27,10 @@ export const filterCourses = async ({
   course_name = null,
   page = 1,
   extras = null,
+  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/subjects?id=${id}&name=${name}&subject_code=${subject_code}&course_name=${course_name}&page=${page}`,
+    `${FILTER_URL}/subjects?id=${id}&name=${name}&subject_code=${subject_code}&course_name=${course_name}&page=${page}&order=${order}`,
     {
       headers: requestHeader,
       data: extras,

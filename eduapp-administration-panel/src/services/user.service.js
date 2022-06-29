@@ -52,9 +52,10 @@ export const filterUsers = async ({
   role = null,
   page = 1,
   extras = null,
+  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/user_infos?user_id=${user_id}&user_name=${user_name}&email=${email}&role=${role}&page=${page}`,
+    `${FILTER_URL}/user_infos?user_id=${user_id}&user_name=${user_name}&email=${email}&role=${role}&page=${page}&order=${order}`,
     {
       headers: requestHeader,
       data: extras,

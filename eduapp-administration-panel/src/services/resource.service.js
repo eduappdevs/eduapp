@@ -14,9 +14,10 @@ export const filterResources = async ({
   subject_name = null,
   page = 1,
   extras = null,
+  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/resources?id=${id}&name=${name}&author=${author}&subject_name=${subject_name}&page=${page}`,
+    `${FILTER_URL}/resources?id=${id}&name=${name}&author=${author}&subject_name=${subject_name}&page=${page}&order=${order}`,
     {
       headers: requestHeader,
       data: extras,

@@ -24,9 +24,10 @@ export const filterSessions = async ({
   subject_name = null,
   page = 1,
   extras = null,
+  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/sessions?id=${id}&session_name=${session_name}&streaming_platform=${streaming_platform}&resources_platform=${resources_platform}&session_chat_id=${session_chat_id}&subject_name=${subject_name}&page=${page}`,
+    `${FILTER_URL}/sessions?id=${id}&session_name=${session_name}&streaming_platform=${streaming_platform}&resources_platform=${resources_platform}&session_chat_id=${session_chat_id}&subject_name=${subject_name}&page=${page}&order=${order}`,
     {
       headers: requestHeader,
       data: extras,
