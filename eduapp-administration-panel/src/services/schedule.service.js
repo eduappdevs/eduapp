@@ -59,6 +59,25 @@ export const pagedSessions = async (page) => {
   });
 };
 
+export const filterEvents = async ({
+  id = null,
+  annotation_title = null,
+  annotation_description = null,
+  event_author = null,
+  subject_name = null,
+  page = 1,
+  extras = null,
+  order = "asc",
+}) => {
+  return await axios.get(
+    `${FILTER_URL}/events?id=${id}&annotation_title=${annotation_title}&annotation_description=${annotation_description}&event_author=${event_author}&subject_name=${subject_name}&page=${page}&order=${order}`,
+    {
+      headers: requestHeader,
+      data: extras,
+    }
+  );
+};
+
 export const createSession = async (body) => {
   return await axios.post(SESSIONS, body, { headers: requestHeader });
 };

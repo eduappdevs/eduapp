@@ -24,7 +24,7 @@ class CalendarAnnotationsController < ApplicationController
       end
 
       for subject in @subjects
-        @sessions += EduappUserSession.where(subject_id: subject)
+        @sessions += CalendarAnnotation.where(subject_id: subject)
       end
       @calendar_annotations = { :globalEvents => @calendar_isGlobal, :calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents }
     else
@@ -36,7 +36,7 @@ class CalendarAnnotationsController < ApplicationController
 
     if params[:page]
       @calendar_annotations = query_paginate(@calendar_annotations, params[:page])
-      @calendar_annotations[:current_page] = serialize_each(@calendar_annotations[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [ :subject, :user,])
+      @calendar_annotations[:current_page] = serialize_each(@calendar_annotations[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [:subject, :user])
     end
 
     render json: @calendar_annotations
@@ -48,6 +48,78 @@ class CalendarAnnotationsController < ApplicationController
     end
     @calendar_annotations = CalendarAnnotation.where(isGlobal: true, isPop: true).order(:annotation_start_date)
     render json: @calendar_annotations
+  end
+
+  def filter
+    events_query = {}
+    subject_query = {}
+    params.each do |param|
+      next if param[0] == "controller" || param[0] == "action" || param[0] == "extras" || param[0] == "calendar_annotations"
+      next unless param[1] != "null" && param[1].length > 0
+
+      query = { param[0] => param[1] }
+      case param[0]
+      when "id", "annotation_title", "annotation_description", "event_author"
+        events_query.merge!(query)
+      when "subject_name"
+        subject_query.merge!(query)
+      end
+    end
+
+    final_query = nil
+
+    if !events_query.empty?
+      query = nil
+
+      if events_query["id"]
+        ids = []
+        CalendarAnnotation.all.each do |e|
+          ids << e.id if e.id.to_s =~ /^#{events_query["id"]}.*$/
+        end
+        query = CalendarAnnotation.where(id: ids)
+      end
+
+      if events_query["annotation_title"]
+        if !query.nil?
+          query = query.where("annotation_title LIKE ?", "%#{events_query["annotation_title"]}%")
+        else
+          query = CalendarAnnotation.where("annotation_title LIKE ?", "%#{events_query["annotation_title"]}%")
+        end
+      end
+
+      if events_query["annotation_description"]
+        if !query.nil?
+          query = query.where("annotation_description LIKE ?", "%#{events_query["annotation_description"]}%")
+        else
+          query = CalendarAnnotation.where("annotation_description LIKE ?", "%#{events_query["annotation_description"]}%")
+        end
+      end
+
+      if events_query["event_author"]
+        if !query.nil?
+          query = query.where(user_id: User.where("email LIKE ?", "%#{events_query["event_author"]}%"))
+        else
+          query = CalendarAnnotation.where(user_id: User.where("email LIKE ?", "%#{events_query["event_author"]}%"))
+        end
+      end
+
+      final_query = query
+    end
+
+    if !final_query.nil? && !subject_query.empty?
+      final_query = final_query.where(subject_id: Subject.where("name LIKE ?", "%#{subject_query["subject_name"]}%"))
+    elsif !subject_query.empty?
+      final_query = CalendarAnnotation.where(subject_id: Subject.where("name LIKE ?", "%#{subject_query["subject_name"]}%"))
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :subject_id], [:subject])
+    end
+
+    render json: { filtration: final_query }
   end
 
   # GET /calendar_annotations/1
@@ -101,6 +173,6 @@ class CalendarAnnotationsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def calendar_annotation_params
-    params.require(:calendar_annotation).permit(:annotation_start_date, :annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :isPop,  :user_id, :subject_id)
+    params.require(:calendar_annotation).permit(:annotation_start_date, :annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :isPop, :user_id, :subject_id)
   end
 end
