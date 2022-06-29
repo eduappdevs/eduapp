@@ -35,24 +35,11 @@ export default function Notifications() {
               return (
                 <div className="notifications-body-item-content">
                   <h2>{e.annotation_title}</h2>
-                  <h4>Description:</h4>
                   <div className="notification-body-description">
                     <textarea
                       disabled
                       defaultValue={e.annotation_description}
                     />
-                  </div>
-                  <div className="notification-body-date">
-                    <p id="first_hour">
-                      {"Start date: "}
-                      {e.annotation_start_date.split("T")[0]}{" "}
-                      {e.annotation_start_date.split("T")[1]}
-                    </p>
-                    <p>
-                      {"End date: "}
-                      {e.annotation_end_date.split("T")[0]}{" "}
-                      {e.annotation_end_date.split("T")[1]}
-                    </p>
                   </div>
                 </div>
               );
