@@ -7,8 +7,8 @@ import asynchronizeRequest from "../API";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
+import { getRoleFields } from "../constants/search_fields";
 import "../styles/userRoles.css";
-import { genericParser, getRoleFields } from "../constants/search_fields";
 
 export default function UserRolesConfig({ language }) {
   const [showPerms, setShowPerms] = useState(false);
@@ -22,7 +22,12 @@ export default function UserRolesConfig({ language }) {
   const [maxPages, setMaxPages] = useState(1);
 
   const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredRoles = useFilter(roles, genericParser);
+  const filteredRoles = useFilter(
+    roles,
+    null,
+    ROLE_SERVICE.filterRoles,
+    getRoleFields(language)
+  );
 
   const [changesSaved, setChangesSaved] = useState(true);
   const [currentPermissions, setCurrentPermissions] = useState(null);
@@ -509,7 +514,10 @@ export default function UserRolesConfig({ language }) {
               <tbody>
                 {roles.map((role) => {
                   if (filteredRoles !== null)
-                    if (!filteredRoles.includes(role))
+                    if (
+                      filteredRoles.find((fr) => role.id === fr.id) ===
+                      undefined
+                    )
                       return <Fragment key={role.id} />;
                   return (
                     <tr key={role.id}>

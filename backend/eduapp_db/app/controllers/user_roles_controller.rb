@@ -29,6 +29,31 @@ class UserRolesController < ApplicationController
     render json: @user_roles
   end
 
+  def filter
+    role_query = {}
+    params.each do |param|
+      next unless param[0] == "name"
+      next unless param[1] != "null" && param[1].length > 0
+
+      role_query.merge!({ param[0] => param[1] })
+    end
+
+    final_query = nil
+
+    if role_query["name"]
+      final_query = UserRole.where("name LIKE ?", "%#{role_query["name"]}%")
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at], [])
+    end
+
+    render json: { filtration: final_query }
+  end
+
   # GET /user_roles/1
   def show
     return if !check_perms_query!(get_user_roles.perms_roles)
