@@ -94,6 +94,54 @@ class UserInfosController < ApplicationController
     render json: { filtration: final_query }
   end
 
+  def teacher_filter
+    teacher_query = {}
+    params.each do |param|
+      next unless param[0] == "teacher_name" || param[0] == "subject_name"
+      next unless param[1] != "null" && param[1].length > 0
+
+      teacher_query.merge!({ param[0] => param[1] })
+    end
+
+    teachers = UserInfo.where(user_role_id: UserRole.where(name: ["eduapp-teacher", "eduapp-admin-query", "eduapp-admin"]))
+    final_query = nil
+    filtered_users = nil
+    filtered_subjects = nil
+
+    if teacher_query["teacher_name"]
+      filtered_users = teachers.where("user_name LIKE ?", "%#{teacher_query["teacher_name"]}%")
+    end
+
+    if teacher_query["subject_name"]
+      filtered_subjects = Subject.where("name LIKE ?", "%#{teacher_query["subject_name"]}%")
+    end
+
+    if !filtered_users.nil? || !filtered_subjects.nil?
+      users = !filtered_users.nil? ? filtered_users : teachers
+      subjects = !filtered_subjects.nil? ? filtered_subjects : Subject.all
+
+      final_query = []
+      users.each do |u|
+        subjects.each do |s|
+          next if final_query.include?({ user: u, subject: s })
+          final_query << { user: u, subject: s } if u.teaching_list.include? s.id
+        end
+      end
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = array_paginate(final_query, params[:page])
+      final_query.each do |t|
+        t[:user] = UserInfo.find(t[:user][:id]).serializable_hash(except: [:created_at, :updated_at, :googleid, :calendar_event, :isLoggedWithGoogle, :profile_image, :user_role_id, :user_id], include: [:user])
+        t[:subject] = Subject.find(t[:subject][:id]).serializable_hash(except: [:created_at, :updated_at, :course_id, :color, :description], include: [:course])
+      end if !final_query.nil?
+    end
+
+    render json: { filtration: final_query }
+  end
+
   # GET /user_infos/1
   def show
     if !check_perms_query!(get_user_roles.perms_users)

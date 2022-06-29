@@ -167,6 +167,10 @@ class ApplicationController < ActionController::API
     return { :current_page => query.limit(limit).offset((page - 1) * limit), :total_pages => (query.count.to_f / limit).ceil }
   end
 
+  def array_paginate(array, page, limit = 10)
+    return array.slice(Integer(page) > 0 ? Integer(page) - 1 : 0, limit)
+  end
+
   # PERMISSIONS
 
   def deny_perms_access!

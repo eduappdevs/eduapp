@@ -8,10 +8,7 @@ import StandardModal from "./modals/standard-modal/StandardModal";
 import PageSelect from "./pagination/PageSelect";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
-import {
-  getTeacherFields,
-  parseTeacherFields,
-} from "../constants/search_fields";
+import { getTeacherFields } from "../constants/search_fields";
 
 export default function TeacherConfig(props) {
   const [users, setUsers] = useState(null);
@@ -30,7 +27,12 @@ export default function TeacherConfig(props) {
   const [subjectDelete, setSubjectIdDelete] = useState();
 
   const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredTeachers = useFilter(teachers, parseTeacherFields);
+  const filteredTeachers = useFilter(
+    teachers,
+    null,
+    USER_SERVICE.filterTeachers,
+    getTeacherFields(props.language)
+  );
 
   const switchEditState = (state) => {
     if (state) {
@@ -94,6 +96,7 @@ export default function TeacherConfig(props) {
         }
       }
     }
+
     let pages = 0;
     let max = 0;
     let listAllTeacher = [];
@@ -111,12 +114,13 @@ export default function TeacherConfig(props) {
         teacher.push(allTeachers[i]);
       }
     }
+
     if (pages > 1) {
       for (let i = 10; i > allTeachers.length; i++) {
-        console.log(i);
         teacher.push(allTeachers[i]);
       }
     }
+
     listAllTeacher.push(teacher);
     teacher = [];
     pages += 1;
@@ -376,12 +380,16 @@ export default function TeacherConfig(props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {teachers.map((t) => {
+                  {teachers.map((t, i) => {
                     if (filteredTeachers !== null)
-                      if (!filteredTeachers.includes(t))
-                        return <Fragment key={t.id} />;
+                      if (
+                        filteredTeachers.find(
+                          (ft) => t.user.id === ft.user.id
+                        ) === undefined
+                      )
+                        return <Fragment key={i} />;
                     return (
-                      <tr key={t.user.user.id}>
+                      <tr key={i}>
                         <td>
                           <input
                             type="text"

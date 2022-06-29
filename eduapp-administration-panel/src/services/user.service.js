@@ -63,6 +63,22 @@ export const filterUsers = async ({
   );
 };
 
+export const filterTeachers = async ({
+  teacher_name = null,
+  subject_name = null,
+  page = 1,
+  extras = null,
+  order = "asc",
+}) => {
+  return await axios.get(
+    `${FILTER_URL}/teachers?teacher_name=${teacher_name}&subject_name=${subject_name}&page=${page}&order=${order}`,
+    {
+      headers: requestHeader,
+      data: extras,
+    }
+  );
+};
+
 export const enroll_teacher = async (uId, subject_id) => {
   return await axios.request({
     url: USERS_INFO + `/add_subject/${uId}/${subject_id}`,
