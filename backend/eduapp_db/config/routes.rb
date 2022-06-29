@@ -24,6 +24,11 @@ Rails.application.routes.draw do
   get "#{@api_path}/filter/resources", to: "resources#filter"
   get "#{@api_path}/filter/sessions", to: "eduapp_user_sessions#filter"
   get "#{@api_path}/filter/events", to: "calendar_annotations#filter"
+  get "#{@api_path}/filter/tuitions", to: "tuitions#filter"
+  get "#{@api_path}/filter/teachers", to: "user_infos#teacher_filter"
+  get "#{@api_path}/filter/roles", to: "user_roles#filter"
+  get "#{@api_path}/filter/chat", to: "chat_bases#filter"
+  get "#{@api_path}/filter/chat_participants", to: "chat_participants#filter"
 
   delete "#{@api_path}/chat_participants/remove/:user_id/:chat_base_id", to: "chat_participants#remove_participant"
 
