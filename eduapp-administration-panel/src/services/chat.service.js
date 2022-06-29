@@ -64,12 +64,27 @@ export const fetchChatParticipants = async () => {
   return await axios.get(`${CHAT_PARTICIPANT}`, { headers: requestHeader });
 };
 
+export const filterParticipants = async ({
+  email = null,
+  chat_name = null,
+  page = 1,
+  extras = null,
+  order = "asc",
+}) => {
+  return await axios.get(
+    `${FILTER_URL}/chat_participants?chat_name=${chat_name}&email=${email}&page=${page}&order=${order}`,
+    {
+      headers: requestHeader,
+      data: extras,
+    }
+  );
+};
+
 export const pagedChatParticipants = async (page) => {
   return await axios.get(`${CHAT_PARTICIPANT}?page=${page}`, {
     headers: requestHeader,
   });
 };
-
 
 export const deleteParticipant = async (id) => {
   return await axios.delete(`${CHAT_PARTICIPANT}/${id}`, {

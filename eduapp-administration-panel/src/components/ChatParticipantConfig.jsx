@@ -8,10 +8,7 @@ import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
-import {
-  getParticipantFields,
-  parseParticipantFields,
-} from "../constants/search_fields";
+import { getParticipantFields } from "../constants/search_fields";
 import "../styles/chatParticipant.css";
 
 export default function ChatParticipantConfig(props) {
@@ -22,7 +19,12 @@ export default function ChatParticipantConfig(props) {
   const [maxPages, setMaxPages] = useState(1);
 
   const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredParticipants = useFilter(participant, parseParticipantFields);
+  const filteredParticipants = useFilter(
+    participant,
+    null,
+    CHATSERVICE.filterParticipants,
+    getParticipantFields(props.language)
+  );
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -311,7 +313,7 @@ export default function ChatParticipantConfig(props) {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.participantName}</th>
+                    <th>{props.language.email}</th>
                     <th>{props.language.chatName}</th>
                     <th>{props.language.admin}</th>
                     <th>{props.language.actions}</th>
@@ -320,7 +322,10 @@ export default function ChatParticipantConfig(props) {
                 <tbody>
                   {participant.map((e) => {
                     if (filteredParticipants !== null)
-                      if (!filteredParticipants.includes(e))
+                      if (
+                        filteredParticipants.find((fp) => fp.id === e.id) ===
+                        undefined
+                      )
                         return <Fragment key={e.id} />;
                     return (
                       <tr key={e.id}>

@@ -184,14 +184,14 @@ export function getChatFields(lang) {
 export function getParticipantFields(lang) {
   languageDetect(lang);
   return [
-    ["p_email", lang.participantName],
+    ["email", lang.email],
     ["chat_name", lang.chatName],
   ];
 }
 
 export function parseParticipantFields(pt, field) {
   switch (field) {
-    case "p_email":
+    case "email":
       return pt.user.email;
     case "chat_name":
       return pt.chat_base.chat_name;
