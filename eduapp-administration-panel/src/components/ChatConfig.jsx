@@ -7,7 +7,7 @@ import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
-import { genericParser, getChatFields } from "../constants/search_fields";
+import { getChatFields } from "../constants/search_fields";
 import "../styles/chatConfig.css";
 
 export default function ChatConfig(props) {
@@ -19,7 +19,12 @@ export default function ChatConfig(props) {
   const [maxPages, setMaxPages] = useState(1);
 
   const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredChats = useFilter(chat, genericParser);
+  const filteredChats = useFilter(
+    chat,
+    null,
+    CHATSERVICE.filterChats,
+    getChatFields(props.language)
+  );
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -537,7 +542,10 @@ export default function ChatConfig(props) {
                 <tbody>
                   {chat.map((e) => {
                     if (filteredChats !== null)
-                      if (!filteredChats.includes(e)) return <Fragment key={e.id} />;
+                      if (
+                        filteredChats.find((fc) => fc.id === e.id) === undefined
+                      )
+                        return <Fragment key={e.id} />;
                     return (
                       <tr key={e.id}>
                         <td>

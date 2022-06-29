@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL, TOKEN } from "../API";
+import { API_URL, FILTER_URL, TOKEN } from "../API";
 export const CHAT_MESSAGES = `${API_URL}/chat_messages`;
 export const CHAT = `${API_URL}/chat_bases`;
 export const CHAT_PARTICIPANT = `${API_URL}/chat_participants`;
@@ -10,6 +10,21 @@ const requestHeader = { eduauth: TOKEN };
 //chat
 export const fetchChat = async () => {
   return await axios.get(`${CHAT}`, { headers: requestHeader });
+};
+
+export const filterChats = async ({
+  name = null,
+  page = 1,
+  extras = null,
+  order = "asc",
+}) => {
+  return await axios.get(
+    `${FILTER_URL}/chats?name=${name}&page=${page}&order=${order}`,
+    {
+      headers: requestHeader,
+      data: extras,
+    }
+  );
 };
 
 export const pagedChat = async (page) => {

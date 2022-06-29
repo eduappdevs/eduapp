@@ -177,7 +177,7 @@ export function getRoleFields(lang) {
 // Chat Base
 export function getChatFields(lang) {
   languageDetect(lang);
-  return [["chat_name", lang.name]];
+  return [["name", lang.name]];
 }
 
 // Chat Participants

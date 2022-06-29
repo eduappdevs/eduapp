@@ -49,6 +49,31 @@ class ChatBasesController < ApplicationController
     render json: @chat_bases
   end
 
+  def filter
+    chat_query = {}
+    params.each do |param|
+      next unless param[0] == "name"
+      next unless param[1] != "null" && param[1].length > 0
+
+      chat_query.merge!({ param[0] => param[1] })
+    end
+
+    final_query = nil
+
+    if chat_query["name"]
+      final_query = ChatBase.where("chat_name LIKE ?", "%#{chat_query["name"]}%")
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at], [])
+    end
+
+    render json: { filtration: final_query }
+  end
+
   # GET /chat_bases/1
   def show
     if !check_user_in_chat(@chat_basis.id)
