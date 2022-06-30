@@ -48,7 +48,7 @@ export default function ExtraFields(props) {
 
   const UPDATE_EXTRAFIELD = (body) => {
     let ex = extraFields.find((f) => f.name === body.name);
-    ex.value = body.value;
+    ex.value = body.type === "number" ? parseFloat(body.value) : body.value;
 
     updateExtraFields(
       {
@@ -126,7 +126,6 @@ export default function ExtraFields(props) {
         form={
           <>
             <ul className="list">
-              {" "}
               {extraFields &&
                 extraFields.map((field, index) => {
                   return (
@@ -141,7 +140,11 @@ export default function ExtraFields(props) {
                           onChange={(e) =>
                             UPDATE_EXTRAFIELD({
                               name: field.name,
-                              value: e.target.value,
+                              value:
+                                field.type === "checkbox"
+                                  ? e.target.checked
+                                  : e.target.value,
+                              type: field.type,
                             })
                           }
                         />
