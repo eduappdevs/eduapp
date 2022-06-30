@@ -49,7 +49,7 @@ class UserInfosController < ApplicationController
       end
     end
 
-    final_query = nil
+    final_query = params[:extras] ? UserInfo.where(user_id: filter_extrafields(params[:extras], User)) : nil
 
     if !infos_query.empty?
       query = nil

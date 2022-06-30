@@ -18,12 +18,13 @@ class ApplicationController < ActionController::API
   end
 
   def get_extrafields
+    authenticate_user!
     table = return_table(params[:table])
-    puts "extrafields: #{table.extra_fields}"
     render json: table.extra_fields and return
   end
 
   def push_extrafields
+    authenticate_user!
     table = return_table(params[:table])
     body = request.body.read.to_s
 
@@ -39,17 +40,12 @@ class ApplicationController < ActionController::API
   end
 
   def update_extrafield
+    authenticate_user!
     table = return_table(params[:table])
     body = JSON.parse(request.body.read)
-
-    puts "body: #{body}"
-
     extrafields = table.extra_fields
 
-    puts "extrafields: #{extrafields}"
-
     extrafields_updated = []
-
     extrafields.each do |extrafield|
       extrafield = JSON.parse(extrafield)
       if extrafield["name"] === body["name"]
@@ -66,13 +62,11 @@ class ApplicationController < ActionController::API
   end
 
   def delete_extrafield
+    authenticate_user!
     table = return_table(params[:table])
     name = params[:field] || params[:name]
 
-    puts "table: #{table}, name: #{name}"
-
     extrafields_updated = []
-
     extrafields = table.extra_fields
     extrafields.each do |extrafield|
       extrafield = JSON.parse(extrafield)
@@ -88,9 +82,35 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def filter_extrafields(extras, table)
+    check_extra_fields(table)
+    valuable = table.where.not(extra_fields: [])
+
+    ids = []
+    valuable.each do |entry|
+      next if ids.include? entry.id
+      entry.extra_fields.each do |field|
+        break if ids.include? entry.id
+        extras.each do |extra_field|
+          break if ids.include? entry.id
+          extra_field = { extra_field[0] => extra_field[1] }
+          field = JSON.parse field
+
+          ids.push(entry.id) if field["value"] =~ /^#{extra_field[field["name"]]}.*$/ && !extra_field[field["name"]].nil?
+        end
+      end
+    end
+
+    return table.where(id: ids)
+  end
+
   private
 
   # AUTH
+
+  def check_extra_fields(table)
+    raise Exception.new "Table does is not elegible for extra fields." unless table.column_names.include?("extra_fields")
+  end
 
   def authenticate_user!(options = {})
     if request.headers["eduauth"].present?

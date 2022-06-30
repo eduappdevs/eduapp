@@ -75,7 +75,7 @@ class SubjectsController < ApplicationController
       end
     end
 
-    final_query = nil
+    final_query = params[:extras] ? filter_extrafields(params[:extras], Subject) : nil
 
     if !subjects_query.empty?
       query = nil

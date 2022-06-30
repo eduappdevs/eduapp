@@ -41,7 +41,7 @@ class ResourcesController < ApplicationController
       end
     end
 
-    final_query = nil
+    final_query = params[:extras] ? filter_extrafields(params[:extras], Resource) : nil
 
     if !resources_query.empty?
       query = nil

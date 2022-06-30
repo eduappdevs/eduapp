@@ -41,7 +41,7 @@ class CoursesController < ApplicationController
       course_query.merge!({ param[0] => param[1] })
     end
 
-    final_query = nil
+    final_query = params[:extras] ? filter_extrafields(params[:extras], Course) : nil
 
     if course_query["id"]
       ids = []
