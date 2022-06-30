@@ -12,6 +12,7 @@ import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
 import { getResourceFields } from "../constants/search_fields";
 import "../styles/resourcesConfig.css";
+import ExtraFields from "./ExtraFields";
 
 export default function ResourcesConfig(props) {
   const [users, setUsers] = useState([]);
@@ -601,12 +602,11 @@ export default function ResourcesConfig(props) {
                           alignItems: "center",
                         }}
                       >
+                        <ExtraFields table="resources" id={r.id} />
                         <button
                           id="btn-delete-resources"
                           style={{ marginRight: "5px" }}
-                          onClick={() => {
-                            confirmDeleteResource(r.id);
-                          }}
+                          onClick={() => confirmDeleteResource(r.id)}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -622,9 +622,7 @@ export default function ResourcesConfig(props) {
                         <button
                           id="show-edit-option"
                           style={{ marginRight: "5px" }}
-                          onClick={(e) => {
-                            showEditOptionResource(e);
-                          }}
+                          onClick={(e) => showEditOptionResource(e)}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -644,9 +642,7 @@ export default function ResourcesConfig(props) {
                         <button
                           id="btn-edit"
                           style={{ marginRight: "5px", display: "none" }}
-                          onClick={() => {
-                            showModalsEdit(r);
-                          }}
+                          onClick={() => showModalsEdit(r)}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -662,9 +658,7 @@ export default function ResourcesConfig(props) {
                         <button
                           id="btn-cancel-resources"
                           style={{ display: "none" }}
-                          onClick={(e) => {
-                            closeEditResource(e, r);
-                          }}
+                          onClick={(e) => closeEditResource(e, r)}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

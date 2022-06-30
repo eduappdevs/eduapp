@@ -7,13 +7,11 @@ import {
   deleteExtraFields,
 } from "../services/extrafields.service";
 
-export default function ExtraFields(props) {
+export default function ExtraFields({ table, id }) {
   const [extraFields, setExtraFields] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteModal, setDeleteModal] = useState("");
   const [show, setShow] = useState(false);
-  let table = props.table;
-  let id = props.id;
 
   const extrafields_parser = (data) => {
     if (typeof data === "object") {
@@ -69,8 +67,8 @@ export default function ExtraFields(props) {
       }
     ).then(
       GET_EXTRAFIELDS(),
-      (document.getElementById(`new_fieldName_${props.id}`).value = ""),
-      (document.getElementById(`new_fieldType_${props.id}`).value = "")
+      (document.getElementById(`new_fieldName_${id}`).value = ""),
+      (document.getElementById(`new_fieldType_${id}`).value = "")
     );
   };
 
@@ -174,9 +172,9 @@ export default function ExtraFields(props) {
               <input
                 type="text"
                 placeholder="Name"
-                id={`new_fieldName_${props.id}`}
+                id={`new_fieldName_${id}`}
               />
-              <select id={`new_fieldType_${props.id}`}>
+              <select id={`new_fieldType_${id}`}>
                 <option value="text">Text</option>
                 <option value="number">Number</option>
                 <option value="date">Date</option>
@@ -185,10 +183,10 @@ export default function ExtraFields(props) {
               <button
                 onClick={() => {
                   let name = document.getElementById(
-                    `new_fieldName_${props.id}`
+                    `new_fieldName_${id}`
                   ).value;
                   let type = document.getElementById(
-                    `new_fieldType_${props.id}`
+                    `new_fieldType_${id}`
                   ).value;
                   name != "" &&
                     type != "" &&

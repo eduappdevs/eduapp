@@ -621,7 +621,7 @@ export default function UserConfig(props) {
           }
         });
       } else {
-        alert("Dumbass");
+        alert("Cannot delete yourself.");
       }
     } else {
       alert("Cannot delete system user.");
@@ -874,9 +874,7 @@ export default function UserConfig(props) {
                           <ExtraFields table="users" id={u.user.id} />
                           <button
                             style={{ marginRight: "5px" }}
-                            onClick={() => {
-                              confirmDeleteUser(u.user.id);
-                            }}
+                            onClick={() => confirmDeleteUser(u.user.id)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -891,9 +889,7 @@ export default function UserConfig(props) {
                           </button>
                           <button
                             style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionUser(e, u);
-                            }}
+                            onClick={(e) => showEditOptionUser(e, u)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -915,9 +911,7 @@ export default function UserConfig(props) {
                               marginRight: "5px",
                               display: "none",
                             }}
-                            onClick={(e) => {
-                              editUser(e, u);
-                            }}
+                            onClick={(e) => editUser(e, u)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -932,9 +926,7 @@ export default function UserConfig(props) {
                           </button>
                           <button
                             style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditUser(e, u);
-                            }}
+                            onClick={(e) => closeEditUser(e, u)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

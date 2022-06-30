@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { asynchronizeRequest } from "../API";
 import * as INSTITUTIONSERVICE from "../services/institution.service";
@@ -6,9 +7,10 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import Input from "./Input";
-import "../styles/institutionConfig.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
+import "../styles/institutionConfig.css";
+import ExtraFields from "./ExtraFields";
 
 export default function InstitutionConfig(props) {
   const [institutions, setInstitutions] = useState(null);
@@ -385,9 +387,7 @@ export default function InstitutionConfig(props) {
     }
   };
 
-  useEffect(() => {
-    fetchInstitutions();
-  }, []);
+  useEffect(() => fetchInstitutions(), []);
 
   return (
     <>
@@ -460,7 +460,6 @@ export default function InstitutionConfig(props) {
                         disabled
                       />
                     </td>
-
                     <td
                       style={{
                         display: "flex",
@@ -468,11 +467,8 @@ export default function InstitutionConfig(props) {
                         alignItems: "center",
                       }}
                     >
-                      <button
-                        onClick={(e) => {
-                          showEditOptionInstitution(e);
-                        }}
-                      >
+                      <ExtraFields table="institutions" id={x.id} />
+                      <button onClick={(e) => showEditOptionInstitution(e)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"
@@ -494,9 +490,7 @@ export default function InstitutionConfig(props) {
 
                       <button
                         style={{ marginRight: "5px", display: "none" }}
-                        onClick={(e) => {
-                          editInstitution(e, x);
-                        }}
+                        onClick={(e) => editInstitution(e, x)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -515,9 +509,7 @@ export default function InstitutionConfig(props) {
 
                       <button
                         style={{ marginRight: "5px", display: "none" }}
-                        onClick={(e) => {
-                          closeEditInstitutions(e);
-                        }}
+                        onClick={(e) => closeEditInstitutions(e)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

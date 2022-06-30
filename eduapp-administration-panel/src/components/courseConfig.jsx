@@ -11,6 +11,7 @@ import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
 import { getCourseFields } from "../constants/search_fields";
 import "../styles/courseConfig.css";
+import ExtraFields from "./ExtraFields";
 
 export default function CourseConfig(props) {
   const [courses, setCourses] = useState(null);
@@ -609,9 +610,7 @@ export default function CourseConfig(props) {
                             disabled
                             type="text"
                             value={changeName === false ? c.name : newName}
-                            onChange={() => {
-                              handleChange(c.id);
-                            }}
+                            onChange={() => handleChange(c.id)}
                           />
                         </td>
                         <td>
@@ -628,10 +627,9 @@ export default function CourseConfig(props) {
                             alignItems: "center",
                           }}
                         >
+                          <ExtraFields table="courses" id={c.id} />
                           <button
-                            onClick={() => {
-                              confirmDeleteEvent(c.id);
-                            }}
+                            onClick={() => confirmDeleteEvent(c.id)}
                             style={{ marginRight: "5px" }}
                           >
                             <svg
@@ -647,9 +645,7 @@ export default function CourseConfig(props) {
                           </button>
                           <button
                             style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionCourse(e, c.id);
-                            }}
+                            onClick={(e) => showEditOptionCourse(e, c.id)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -671,9 +667,7 @@ export default function CourseConfig(props) {
                               marginRight: "5px",
                               display: "none",
                             }}
-                            onClick={(e) => {
-                              editCourse(e, c);
-                            }}
+                            onClick={(e) => editCourse(e, c)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -688,9 +682,7 @@ export default function CourseConfig(props) {
                           </button>
                           <button
                             style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditCourse(e, c.id);
-                            }}
+                            onClick={(e) => closeEditCourse(e, c.id)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

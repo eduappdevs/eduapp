@@ -10,6 +10,7 @@ import PageSelect from "./pagination/PageSelect";
 import useFilter from "../hooks/useFilter";
 import { getSubjectFields } from "../constants/search_fields";
 import "../styles/subjectsConfig.css";
+import ExtraFields from "./ExtraFields";
 
 export default function SubjectsConfig(props) {
   const [subjects, setSubjects] = useState(null);
@@ -845,9 +846,7 @@ export default function SubjectsConfig(props) {
                             disabled
                             type="text"
                             value={changeCode ? newCode : sj.subject_code}
-                            onChange={() => {
-                              handleChangeCode(sj.id);
-                            }}
+                            onChange={() => handleChangeCode(sj.id)}
                           />
                         </td>
 
@@ -857,9 +856,7 @@ export default function SubjectsConfig(props) {
                             disabled
                             type="text"
                             value={changeName ? newName : sj.name}
-                            onChange={() => {
-                              handleChangeName(sj.id);
-                            }}
+                            onChange={() => handleChangeName(sj.id)}
                           />
                         </td>
                         <td>
@@ -872,9 +869,7 @@ export default function SubjectsConfig(props) {
                                 ? newDescription
                                 : sj.description
                             }
-                            onChange={() => {
-                              handleChangeDescription(sj.id);
-                            }}
+                            onChange={() => handleChangeDescription(sj.id)}
                           />
                         </td>
                         <td>
@@ -883,9 +878,7 @@ export default function SubjectsConfig(props) {
                             disabled
                             type="color"
                             value={changeColor ? newColor : sj.color}
-                            onChange={(e) => {
-                              handleChangeColor(e, sj.id);
-                            }}
+                            onChange={(e) => handleChangeColor(e, sj.id)}
                           />
                         </td>
                         <td>
@@ -898,11 +891,10 @@ export default function SubjectsConfig(props) {
                             alignItems: "center",
                           }}
                         >
+                          <ExtraFields table="subjects" id={sj.id} />
                           <button
                             style={{ marginRight: "5px" }}
-                            onClick={() => {
-                              confirmDeleteEvent(sj.id);
-                            }}
+                            onClick={() => confirmDeleteEvent(sj.id)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -917,9 +909,7 @@ export default function SubjectsConfig(props) {
                           </button>
                           <button
                             style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionSubject(e, sj);
-                            }}
+                            onClick={(e) => showEditOptionSubject(e, sj)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -938,9 +928,7 @@ export default function SubjectsConfig(props) {
                           </button>
                           <button
                             style={{ marginRight: "5px", display: "none" }}
-                            onClick={(e) => {
-                              editSubject(e, sj);
-                            }}
+                            onClick={(e) => editSubject(e, sj)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -955,9 +943,7 @@ export default function SubjectsConfig(props) {
                           </button>
                           <button
                             style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditSubject(e, sj);
-                            }}
+                            onClick={(e) => closeEditSubject(e, sj)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
