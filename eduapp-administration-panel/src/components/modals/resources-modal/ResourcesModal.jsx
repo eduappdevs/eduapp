@@ -41,8 +41,8 @@ export default function ResourcesModal({
         "auto";
     } else {
       document.getElementById("resources-modal-container").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100vw";
-      document.getElementById("standard-modal").style.height = "100vh";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
@@ -617,12 +617,10 @@ export default function ResourcesModal({
           if (create) {
             setPopup(false);
             createResource();
-            switchEditState(true);
           }
           if (edit) {
             setPopup(false);
             editResource(info);
-            switchEditState(true);
           }
         }}
         onNoAction={() => {

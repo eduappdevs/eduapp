@@ -34,7 +34,6 @@ class TuitionsController < ApplicationController
     end
 
     @tuition = Tuition.new(course_id: params[:course_id], user_id: params[:user_id])
-    puts "Tuition count: #{Tuition.where(user_id: params[:user_id], course_id: params[:course_id]).count}"
     if Tuition.where(user_id: params[:user_id], course_id: params[:course_id]).count > 0
       render json: @tuition.errors, status: :unprocessable_entity
     else
@@ -51,9 +50,8 @@ class TuitionsController < ApplicationController
     if !check_perms_update!(get_user_roles.perms_tuitions, false, :null)
       return
     end
-    puts "tuition_params: #{tuition_params}"
 
-    if @tuition.update(course_id: params[:course_id], user_id: params[:user_id])
+    if @tuition.update(course_id: params[:course_id], user_id: params[:user_id], id: params[:id])
       render json: @tuition
     else
       render json: @tuition.errors, status: :unprocessable_entity

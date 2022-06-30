@@ -12,15 +12,16 @@ export default function SubjectsConfig(props) {
   const [courses, setCourses] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
   const [search, setSearch] = useState("");
 
   const [changeColor, setChangeColor] = useState(false);
-  const [newColor, setNewColor] = useState();
-  const [newCode, setNewCode] = useState();
+  const [newColor] = useState();
+  const [newCode] = useState();
   const [changeCode, setChangeCode] = useState(false);
-  const [newName, setNewName] = useState();
+  const [newName] = useState();
   const [changeName, setChangeName] = useState(false);
-  const [newDescription, setNewDescription] = useState();
+  const [newDescription] = useState();
   const [changeDescription, setChangeDescription] = useState(false);
 
   const [showPopup, setPopup] = useState(false);
@@ -40,24 +41,10 @@ export default function SubjectsConfig(props) {
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100%";
-      document.getElementById("standard-modal").style.height = "100%";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
-    }
-  };
-
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
     }
   };
 
@@ -86,6 +73,15 @@ export default function SubjectsConfig(props) {
     setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
+  };
+
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchSubjectPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
   };
 
   const createSubject = () => {
@@ -117,20 +113,23 @@ export default function SubjectsConfig(props) {
         })
           .then((e) => {
             if (e) {
-              fetchSubjectPage(1);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.creationCompleted);
-              switchSaveState(true);
+              finalizedCreate(
+                "info",
+                true,
+                props.language.creationCompleted,
+                false
+              );
             }
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopup(true);
-              setPopupText(props.language.creationFailed);
-              setPopupType("error");
-              switchSaveState(true);
+              finalizedCreate(
+                "error",
+                true,
+                props.language.creationFailed,
+                false
+              );
             }
           });
       }).then(async (e) => {
@@ -145,22 +144,19 @@ export default function SubjectsConfig(props) {
   };
 
   const confirmDeleteEvent = async (id) => {
+    finalizedDelete("warning", true, true, props.language.deleteAlert);
     switchEditState(false);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
     setIdDelete(id);
   };
 
-  const showDeleteError = () => {
+  const finalizedDelete = (type, icon, confirmDel, text) => {
     switchEditState(false);
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText(props.language.deleteFailed);
-    setIsConfirmDelete(false);
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchSubjectPage(actualPage);
   };
 
   const deleteSubject = (id) => {
@@ -168,482 +164,169 @@ export default function SubjectsConfig(props) {
     //eliminar sessiones + modal de aviso y mostrar las sessiones que se eliminarán
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.deleteSubject(id)
-        .then(() => {
-          fetchSubjectPage(1);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+        .then((e) => {
+          if (e) {
+            finalizedDelete(
+              "info",
+              true,
+              false,
+              props.language.deleteAlertCompleted
+            );
+          }
         })
         .catch(async (e) => {
           if (e) {
+            finalizedDelete(
+              "error",
+              true,
+              false,
+              props.language.deleteAlertFailed
+            );
             await interceptExpiredToken(e);
-            showDeleteError();
           }
         });
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The subject could not be deleted, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(true);
+        connectionAlert();
       }
     });
   };
 
   const showEditOptionSubject = (e) => {
-    if (e.target.tagName === "svg") {
-      let subject_code =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let description =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-      let color =
-        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
-
-      subject_code.disabled = false;
-      name.disabled = false;
-      description.disabled = false;
-      color.disabled = false;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[1];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode.parentNode.childNodes[0];
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-    } else {
-      if (e.target.tagName === "path") {
-        let subject_code =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
-            .childNodes[0];
-        let color =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
-            .childNodes[0];
-
-        subject_code.disabled = false;
-        name.disabled = false;
-        description.disabled = false;
-        color.disabled = false;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-      } else {
-        let code = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let name = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-        let color = e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-
-        code.disabled = false;
-        name.disabled = false;
-        description.disabled = false;
-        color.disabled = false;
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-      }
+    let disable = 1;
+    while (disable < 5) {
+      e.target.parentNode.parentNode.childNodes[
+        disable
+      ].childNodes[0].disabled = false;
+      disable += 1;
     }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
+    }
+  };
+
+  const finalizedEdit = (type, icon, pop, text, confirmDel) => {
+    fetchSubjectPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(pop);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
   };
 
   const editSubject = (e, s) => {
     switchEditState(false);
-    if (e.target.tagName === "svg") {
-      let subject_code =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let description =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-      let color =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+    let inputCode = document.getElementById("inputSubjectCode_" + s.id).value;
+    let inputName = document.getElementById("inputName_" + s.id).value;
+    let inputDescription = document.getElementById(
+      "inputDescription_" + s.id
+    ).value;
+    let inputColor = document.getElementById("inputColor_" + s.id).value;
 
-      let inputCode = document.getElementById("inputSubjectCode_" + s.id).value;
-      let inputName = document.getElementById("inputName_" + s.id).value;
-      let inputDescription = document.getElementById(
-        "inputDescription_" + s.id
-      ).value;
-      let inputColor = document.getElementById("inputColor_" + s.id).value;
+    let editCode, editTitle, editColor, editDescription;
 
-      let editCode, editTitle, editColor, editDescription;
-
-      if (inputCode !== "" && inputCode !== s.code) {
-        editCode = inputCode;
-      } else editCode = s.code;
-
-      if (inputName !== "" && inputName !== s.name) {
-        editTitle = inputName;
-      } else {
-        editTitle = s.name;
-      }
-
-      if (
-        inputDescription !== "" &&
-        inputDescription !== s.session_start_date
-      ) {
-        editDescription = inputDescription;
-      } else {
-        editDescription = s.description;
-      }
-
-      if (inputColor !== "" && inputColor !== s.session_end_date) {
-        editColor = inputColor;
-      } else {
-        editColor = s.session_end_date;
-      }
-
-      API.asynchronizeRequest(function () {
-        SUBJECTSERVICE.editSubject({
-          id: s.id,
-          subject_code: editCode,
-          name: editTitle,
-          description: editDescription,
-          color: editColor,
-          course_id: s.course_id,
-        })
-          .then((error) => {
-            if (error) {
-              fetchSubjectPage(1);
-              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-              subject_code.disabled = true;
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              color.disabled = true;
-              description.disabled = true;
-
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
-              switchSaveState(false);
-              setIsConfirmDelete(false);
-            }
-          })
-          .catch(async (error) => {
-            if (error) {
-              await interceptExpiredToken(e);
-              setPopupText(props.language.editAlertFailed);
-              setPopupIcon("error");
-              switchSaveState(false);
-              setPopup(true);
-              setIsConfirmDelete(false);
-            }
-          });
-      }).then(async (error) => {
-        if (error) {
-          await interceptExpiredToken(e);
-          connectionAlert();
-        }
-      });
+    if (inputCode !== "" && inputCode !== s.subject_code) {
+      editCode = inputCode;
     } else {
-      if (e.target.tagName === "path") {
-        let code =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
-            .childNodes[0];
-        let color =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
-            .childNodes[0];
-
-        let inputSubjectCode = document.getElementById(
-          "inputSubjectCode_" + s.id
-        ).value;
-        let inputName = document.getElementById("inputName_" + s.id).value;
-        let inputDescription = document.getElementById(
-          "inputDescription_" + s.id
-        ).value;
-        let inputColor = document.getElementById("inputColor_" + s.id).value;
-
-        let editCode, editTitle, editColor, editDescription;
-
-        if (inputSubjectCode !== "" && inputSubjectCode !== s.subject_code) {
-          editCode = inputSubjectCode;
-        } else {
-          editCode = s.subject_code;
-        }
-
-        if (inputName !== "" && inputName !== s.name) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.name;
-        }
-
-        if (
-          inputDescription !== "" &&
-          inputDescription !== s.session_start_date
-        ) {
-          editDescription = inputDescription;
-        } else {
-          editDescription = s.description;
-        }
-
-        if (inputColor !== "" && inputColor !== s.session_end_date) {
-          editColor = inputColor;
-        } else {
-          editColor = s.session_end_date;
-        }
-
-        API.asynchronizeRequest(function () {
-          SUBJECTSERVICE.editSubject({
-            id: s.id,
-            subject_code: editCode,
-            name: editTitle,
-            description: editDescription,
-            color: editColor,
-            course_id: s.course_id,
-          })
-            .then((error) => {
-              if (error) {
-                fetchSubjectPage(1);
-                let buttonDelete =
-                  e.target.parentNode.parentNode.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button =
-                  e.target.parentNode.parentNode.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                code.disabled = true;
-                name.disabled = true;
-                description.disabled = true;
-                color.disabled = true;
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-              }
-            })
-            .catch(async (error) => {
-              if (error) {
-                await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-                setIsConfirmDelete(false);
-              }
-            });
-        }).then(async (error) => {
-          if (error) {
-            await interceptExpiredToken(e);
-            connectionAlert();
-          }
-        });
-      } else {
-        let subject_code =
-          e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let name = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-        let color = e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-        let inputCode = document.getElementById(
-          "inputSubjectCode_" + s.id
-        ).value;
-        let inputName = document.getElementById("inputName_" + s.id).value;
-        let inputDescription = document.getElementById(
-          "inputDescription_" + s.id
-        ).value;
-        let inputColor = document.getElementById("inputColor_" + s.id).value;
-
-        let editCode, editTitle, editColor, editDescription;
-
-        if (inputCode !== "" && inputCode !== s.subject_code) {
-          editCode = inputCode;
-        } else {
-          editCode = s.subject_code;
-        }
-
-        if (inputName !== "" && inputName !== s.name) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.name;
-        }
-
-        if (
-          inputDescription !== "" &&
-          inputDescription !== s.session_start_date
-        ) {
-          editDescription = inputDescription;
-        } else {
-          editDescription = s.description;
-        }
-
-        if (inputColor !== "" && inputColor !== s.session_end_date) {
-          editColor = inputColor;
-        } else {
-          editColor = s.session_end_date;
-        }
-
-        API.asynchronizeRequest(function () {
-          SUBJECTSERVICE.editSubject({
-            id: s.id,
-            subject_code: editCode,
-            name: editTitle,
-            description: editDescription,
-            color: editColor,
-            course_id: s.course_id,
-          })
-            .then((error) => {
-              if (error) {
-                fetchSubjectPage(1);
-                console.log(e.target.parentNode);
-                let buttonDelete = e.target.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button = e.target.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton = e.target.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton = e.target.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                subject_code.disabled = true;
-                name.disabled = true;
-                description.disabled = true;
-                color.disabled = true;
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-              }
-            })
-            .catch(async (error) => {
-              if (error) {
-                await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-                setIsConfirmDelete(false);
-              }
-            });
-        }).then(async (error) => {
-          if (error) {
-            await interceptExpiredToken(e);
-            connectionAlert();
-          }
-        });
-      }
+      editCode = s.subject_code;
     }
+
+    if (inputName !== "" && inputName !== s.name) {
+      editTitle = inputName;
+    } else {
+      editTitle = s.name;
+    }
+
+    if (inputDescription !== "" && inputDescription !== s.session_start_date) {
+      editDescription = inputDescription;
+    } else {
+      editDescription = s.description;
+    }
+
+    if (inputColor !== "" && inputColor !== s.session_end_date) {
+      editColor = inputColor;
+    } else {
+      editColor = s.session_end_date;
+    }
+
+    API.asynchronizeRequest(function () {
+      SUBJECTSERVICE.editSubject({
+        id: s.id,
+        subject_code: editCode,
+        name: editTitle,
+        description: editDescription,
+        color: editColor,
+        course_id: s.course_id,
+      })
+        .then((error) => {
+          if (error) {
+            let num = 0;
+            while (num < 4) {
+              e.target.parentNode.childNodes[num].style.display === "block"
+                ? (e.target.parentNode.childNodes[num].style.display = "none")
+                : (e.target.parentNode.childNodes[num].style.display = "block");
+              num += 1;
+            }
+            let disable = 1;
+            while (disable < 5) {
+              e.target.parentNode.parentNode.childNodes[
+                disable
+              ].childNodes[0].disabled = true;
+              disable += 1;
+            }
+            finalizedEdit(
+              "info",
+              true,
+              true,
+              props.language.editAlertCompleted,
+              false
+            );
+          }
+        })
+        .catch(async (error) => {
+          if (error) {
+            await interceptExpiredToken(e);
+            finalizedEdit(
+              "error",
+              true,
+              true,
+              props.language.editAlertFailed,
+              false
+            );
+          }
+        });
+    }).then(async (error) => {
+      if (error) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
+    });
   };
 
   const closeEditSubject = (e) => {
-    if (e.target.tagName === "svg") {
-      let subejct_code =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let description =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-      let color =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-      subejct_code.disabled = true;
-      name.disabled = true;
-      description.disabled = true;
-      color.disabled = true;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-    } else {
-      if (e.target.tagName === "path") {
-        let subject_code =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[1].childNodes[0];
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[2].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[3].childNodes[0];
-        let color =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[4].childNodes[0];
-        subject_code.disable = true;
-        name.disabled = true;
-        description.disabled = true;
-        color.disabled = true;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      } else {
-        let subject_code =
-          e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let name = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-        let color = e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-
-        subject_code.disable = true;
-        name.disabled = true;
-        description.disabled = true;
-        color.disabled = true;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      }
+    e.preventDefault();
+    let disable = 1;
+    while (disable < 5) {
+      e.target.parentNode.parentNode.childNodes[
+        disable
+      ].childNodes[0].disabled = true;
+      disable += 1;
+    }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
@@ -653,6 +336,7 @@ export default function SubjectsConfig(props) {
         .then((us) => {
           setMaxPages(us.data.total_pages);
           setSubjects(us.data.current_page);
+          setActualPage(us.data.page);
           fetchCourses();
           course_filter.subject = us.data;
         })
@@ -668,27 +352,23 @@ export default function SubjectsConfig(props) {
   };
 
   const handleChangeColor = (id) => {
-    var content = document.getElementById("inputColor_" + id);
     setChangeColor(true);
-    return content.value;
+    return document.getElementById("inputColor_" + id).value;
   };
 
   const handleChangeName = (id) => {
-    var content = document.getElementById("inputName_" + id);
     setChangeName(true);
-    return content.value;
+    return document.getElementById("inputName_" + id).value;
   };
 
   const handleChangeDescription = (id) => {
-    var content = document.getElementById("inputDescription_" + id);
     setChangeDescription(true);
-    return content.value;
+    return document.getElementById("inputDescription_" + id).value;
   };
 
   const handleChangeCode = (id) => {
-    var content = document.getElementById("inputSubjectCode_" + id);
     setChangeCode(true);
-    return content.value;
+    return document.getElementById("inputSubjectCode_" + id).value;
   };
 
   const courseFilter = (courseList) => {
@@ -702,7 +382,7 @@ export default function SubjectsConfig(props) {
       return true;
     });
     setSubjects(filter);
-    fetchSubjectPage(1);
+    fetchSubjectPage(actualPage);
   };
 
   useEffect(() => {
@@ -781,17 +461,29 @@ export default function SubjectsConfig(props) {
                 <input
                   type="text"
                   id="sj_subjectCode"
-                  placeholder="Subject Code"
+                  placeholder={props.language.subjectCode}
                 />
               </td>
               <td>
-                <input id="sj_name" type="text" placeholder="Name" />
+                <input
+                  id="sj_name"
+                  type="text"
+                  placeholder={props.language.name}
+                />
               </td>
               <td>
-                <input id="sj_desc" type="text" placeholder="Description" />
+                <input
+                  id="sj_desc"
+                  type="text"
+                  placeholder={props.language.description}
+                />
               </td>
               <td>
-                <input id="sj_color" type="color" placeholder="Description" />
+                <input
+                  id="sj_color"
+                  type="color"
+                  placeholder={props.language.description}
+                />
               </td>
               <td>
                 <select defaultValue={"-"} id="course_chooser">
@@ -1171,7 +863,6 @@ export default function SubjectsConfig(props) {
         onCloseAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
-          switchSaveState();
           switchEditState(true);
         }}
         hasIconAnimation

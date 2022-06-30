@@ -6,6 +6,7 @@ import {
   updateExtraFields,
   deleteExtraFields,
 } from "../services/extrafields.service";
+import { useEffect } from "react";
 
 export default function ExtraFields(props) {
   const [extraFields, setExtraFields] = useState([]);
@@ -38,8 +39,8 @@ export default function ExtraFields(props) {
 
   const GET_EXTRAFIELDS = async () => {
     setLoading(true);
+    switchEditState(false);
 
-    console.log(table, id);
     await getExtraFields({ table, id }).then((res) => {
       if (!res.data) {
         return false;
@@ -76,6 +77,18 @@ export default function ExtraFields(props) {
       (document.getElementById(`new_fieldType_${props.id}`).value = "")
     );
   };
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
 
   return (
     <>
@@ -108,6 +121,7 @@ export default function ExtraFields(props) {
         icon="success"
         onCloseAction={() => {
           setShow(false);
+          switchEditState(true);
         }}
         isModalExtraFields
         form={

@@ -13,6 +13,7 @@ export default function ChatConfig(props) {
   const [changeName, setChangeName] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
   const [search, setSearch] = useState("");
 
   const [showPopup, setPopup] = useState(false);
@@ -35,307 +36,17 @@ export default function ChatConfig(props) {
     }
   };
 
-  const connectionAlert = () => {
-    switchEditState(false);
-    setPopup(true);
-    setPopupText(props.language.connectionAlert);
-    setPopupIcon("error");
-  };
-
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
-  };
-
-  const showEditOptionChat = async (e, id) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode;
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-      name.disabled = false;
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-
-        name.disabled = false;
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        name.disabled = false;
-      }
-    }
-  };
-
-  const closeEditChat = async (e) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-      name.disabled = true;
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-        name.disabled = true;
-      } else {
-        let name =
-          e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0]
-            .childNodes[0];
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-        name.disabled = true;
-      }
-    }
-  };
-
-  const editChat = async (e, data) => {
-    switchEditState(false);
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-
-      let inputName = document.getElementById("inputName_" + data.id).value;
-
-      let editTitle;
-
-      if (inputName !== "" && inputName !== data.chat_name) {
-        editTitle = inputName;
-      } else {
-        editTitle = data.chat_name;
-      }
-
-      API.asynchronizeRequest(function () {
-        CHATSERVICE.editChat({
-          id: data.id,
-          chat_name: editTitle,
-          isGroup: data.isGroup,
-        })
-          .then((e) => {
-            if (e) {
-              setIsConfirmDelete(false);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
-              fetchChatPage(1);
-              setChangeName(false);
-              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-            }
-          })
-          .catch(async (e) => {
-            if (e) {
-              await interceptExpiredToken(e);
-              setIsConfirmDelete(false);
-              setPopupText(props.language.editAlertFailed);
-              setPopupIcon("error");
-              switchSaveState(false);
-              setPopup(true);
-            }
-          });
-      }).then(async (e) => {
-        if (e) {
-          await interceptExpiredToken(e);
-          connectionAlert();
-        }
-      });
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let inputName = document.getElementById("inputName_" + data.id).value;
-
-        let editTitle;
-
-        if (inputName !== "" && inputName !== data.chat_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = data.chat_name;
-        }
-
-        API.asynchronizeRequest(function () {
-          CHATSERVICE.editChat({
-            id: data.id,
-            chat_name: editTitle,
-            isGroup: data.isGroup,
-          })
-            .then((e) => {
-              if (e) {
-                setIsConfirmDelete(false);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                fetchChatPage(1);
-                setChangeName(false);
-
-                let buttonDelete =
-                  e.target.parentNode.parentNode.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button =
-                  e.target.parentNode.parentNode.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-              }
-            })
-            .catch(async (e) => {
-              if (e) {
-                await interceptExpiredToken(e);
-                setIsConfirmDelete(false);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            connectionAlert();
-          }
-        });
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let inputName = document.getElementById("inputName_" + data.id).value;
-
-        let editTitle;
-
-        if (inputName !== "" && inputName !== data.chat_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = data.chat_name;
-        }
-
-        API.asynchronizeRequest(function () {
-          CHATSERVICE.editChat({
-            id: data.id,
-            chat_name: editTitle,
-            isGroup: data.isGroup,
-          })
-            .then(() => {
-              if (e) {
-                let buttonDelete = e.target.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button = e.target.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton = e.target.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton = e.target.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-                setIsConfirmDelete(false);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                fetchChatPage(1);
-                setChangeName(false);
-              }
-            })
-            .catch(async (e) => {
-              if (e) {
-                await interceptExpiredToken(e);
-                setIsConfirmDelete(false);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            connectionAlert();
-          }
-        });
-      }
-    }
-  };
-
   const fetchChatPage = async (page) => {
-    API.asynchronizeRequest(function () {
+    await API.asynchronizeRequest(function () {
       CHATSERVICE.pagedChat(page)
         .then((res) => {
+          console.log(res);
           setChat(res.data.current_page);
-          console.log(res.data.current_page);
           setMaxPages(res.data.total_pages);
+          setActualPage(res.data.page);
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
-          console.error(err);
         });
     }).then(async (e) => {
       if (e) {
@@ -345,16 +56,121 @@ export default function ChatConfig(props) {
     });
   };
 
-  const alertCreate = async () => {
+  const connectionAlert = () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
-    setPopupType("error");
     setPopup(true);
+    setPopupText(props.language.connectionAlert);
+    setPopupIcon("error");
+  };
+
+  const finalizedEdit = (type, icon, text, confirmDel) => {
+    fetchChatPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
+  };
+
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchChatPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    switchEditState(false);
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchChatPage(actualPage);
+  };
+
+  const showEditOptionChat = async (e) => {
+    e.target.parentNode.parentNode.childNodes[0].childNodes[0].disabled = false;
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
+    }
+  };
+
+  const closeEditChat = async (e) => {
+    e.preventDefault();
+    e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0].childNodes[0].disabled = true;
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
+    }
+  };
+
+  const editChat = async (e, data) => {
+    switchEditState(false);
+    let inputName = document.getElementById("inputName_" + data.id).value;
+
+    let editTitle;
+
+    if (inputName !== "" && inputName !== data.chat_name) {
+      editTitle = inputName;
+    } else {
+      editTitle = data.chat_name;
+    }
+
+    API.asynchronizeRequest(function () {
+      CHATSERVICE.editChat({
+        id: data.id,
+        chat_name: editTitle,
+        isGroup: data.isGroup,
+      })
+        .then((x) => {
+          if (x) {
+            let num = 0;
+            while (num < 4) {
+              e.target.parentNode.childNodes[num].style.display === "block"
+                ? (e.target.parentNode.childNodes[num].style.display = "none")
+                : (e.target.parentNode.childNodes[num].style.display = "block");
+              num += 1;
+            }
+            e.target.parentNode.parentNode.childNodes[0].childNodes[0].disabled = true;
+            finalizedEdit(
+              "info",
+              true,
+              props.language.editAlertCompleted,
+              false
+            );
+            setChangeName(false);
+          }
+        })
+        .catch(async (x) => {
+          if (x) {
+            finalizedEdit("error", true, props.language.editAlertFailed, false);
+            await interceptExpiredToken(e);
+          }
+        });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
+    });
   };
 
   const addChat = async (e) => {
-    switchSaveState(false);
-
+    switchEditState(false);
     e.preventDefault();
     const context = ["chat_name", "isGroup"];
     let json = [];
@@ -364,8 +180,7 @@ export default function ChatConfig(props) {
     if (name !== "" && isGroup !== null) {
       json.push(name, isGroup);
     } else {
-      alertCreate();
-      switchSaveState(false);
+      finalizedCreate("error", true, props.language.creationFailed, false);
       return;
     }
 
@@ -375,18 +190,25 @@ export default function ChatConfig(props) {
     }
     API.asynchronizeRequest(function () {
       CHATSERVICE.createChat(eventJson)
-        .then(() => {
-          fetchChatPage(1);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.creationCompleted);
-          switchSaveState(false);
+        .then((x) => {
+          if (x) {
+            finalizedCreate(
+              "info",
+              true,
+              props.language.creationCompleted,
+              false
+            );
+          }
         })
         .catch(async (e) => {
           if (e) {
+            finalizedCreate(
+              "error",
+              true,
+              props.language.creationFailed,
+              false
+            );
             await interceptExpiredToken(e);
-            alertCreate();
-            switchSaveState(false);
           }
         });
     }).then(async (e) => {
@@ -399,38 +221,33 @@ export default function ChatConfig(props) {
   };
 
   const confirmDeleteEvent = async (id) => {
+    finalizedDelete("warning", true, true, props.language.deleteAlert);
     switchEditState(false);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
     setIdDelete(id);
-  };
-
-  const showDeleteError = () => {
-    switchEditState(false);
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText(props.language.deleteAlertFailed);
-    setIsConfirmDelete(false);
   };
 
   const deleteChat = async (id) => {
     API.asynchronizeRequest(function () {
       CHATSERVICE.deleteChat(id)
-        .then(() => {
-          fetchChatPage(1);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
-          setIsConfirmDelete(false);
+        .then((e) => {
+          if (e) {
+            finalizedDelete(
+              "info",
+              true,
+              false,
+              props.language.deleteAlertCompleted
+            );
+          }
         })
         .catch(async (e) => {
           if (e) {
+            finalizedDelete(
+              "error",
+              true,
+              false,
+              props.language.deleteAlertFailed
+            );
             await interceptExpiredToken(e);
-            showDeleteError();
           }
         });
     }).then(async (e) => {
@@ -502,7 +319,7 @@ export default function ChatConfig(props) {
                   type="text"
                   name="chat_name"
                   id="ch_chat_name"
-                  placeholder="Name"
+                  placeholder={props.language.name}
                 />
               </td>
               <td>

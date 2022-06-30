@@ -17,6 +17,7 @@ export default function Scheduleeventslist(props) {
   const [isPop, setIsPop] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
 
   const [newStartDate] = useState();
   const [newEndDate] = useState();
@@ -43,28 +44,14 @@ export default function Scheduleeventslist(props) {
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
-  };
-
   const switchEditState = (state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100%";
-      document.getElementById("standard-modal").style.height = "100%";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "hidden";
     }
@@ -75,6 +62,33 @@ export default function Scheduleeventslist(props) {
     setPopup(true);
     setPopupText(props.language.connectionAlert);
     setPopupIcon("error");
+  };
+
+  const finalizedEdit = (type, icon, text, confirmDel) => {
+    fetchEvents(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
+  };
+
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchEvents(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchEvents(actualPage);
   };
 
   const fetchSubjects = () => {
@@ -111,6 +125,7 @@ export default function Scheduleeventslist(props) {
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.pagedEvents(pages).then((event) => {
         setMaxPages(event.data.total_pages);
+        setActualPage(event.data.page);
         setEvents(event.data.current_page);
         fetchSubjects();
         fetchUsers();
@@ -133,13 +148,6 @@ export default function Scheduleeventslist(props) {
       return true;
     });
     setSubjectEdit(list_subject);
-  };
-
-  const alertCreate = async () => {
-    switchEditState(false);
-    setPopupText(props.language.creationAlert);
-    setPopupType("error");
-    setPopup(true);
   };
 
   const AddNewEvent = async (e) => {
@@ -183,7 +191,7 @@ export default function Scheduleeventslist(props) {
         subject
       );
     } else {
-      alertCreate();
+      finalizedCreate("error", true, props.language.creationFailed, false);
       return;
     }
 
@@ -196,21 +204,23 @@ export default function Scheduleeventslist(props) {
       SCHEDULESERVICE.createEvent(eventJson)
         .then((e) => {
           if (e) {
-            if (e) {
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.creationCompleted);
-              fetchEvents(1);
-            }
+            finalizedCreate(
+              "info",
+              true,
+              props.language.creationCompleted,
+              false
+            );
           }
         })
         .catch(async (e) => {
           if (e) {
-            console.log(e);
+            finalizedCreate(
+              "error",
+              true,
+              props.language.creationFailed,
+              false
+            );
             await interceptExpiredToken(e);
-            setPopupText(props.language.creationFailed);
-            setPopupIcon("error");
-            setPopup(true);
           }
         });
     }).then(async (e) => {
@@ -222,739 +232,224 @@ export default function Scheduleeventslist(props) {
   };
 
   const isGlobalEvent = () => {
-    let checkbox = document.getElementById("e_isGlobal").checked;
-    setIsGlobal(checkbox);
+    setIsGlobal(document.getElementById("e_isGlobal").checked);
   };
 
   const isPopEvent = () => {
-    let checkbox = document.getElementById("e_isPop").checked;
-    setIsPop(checkbox);
+    setIsPop(document.getElementById("e_isPop").checked);
   };
 
   const confirmDeleteEvent = async (e) => {
     switchEditState(false);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
+    finalizedDelete("warning", true, true, props.language.deleteAlert);
     setIdDelete(e);
-  };
-
-  const showDeleteError = () => {
-    switchEditState(false);
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText(props.language.deleteFailed);
-    setIsConfirmDelete(false);
   };
 
   const deleteEvent = async (e) => {
     switchEditState(false);
     API.asynchronizeRequest(function () {
-      if (e.isGlobal && e.isPop) {
-        let user = localStorage
-          .getItem("offline_user")
-          .split("user_id")[1]
-          .split('":"')[1]
-          .split('"')[0];
-        USER_SERVICE.remove_global_events(user, e.id)
-          .then((x) => {
-            if (x) {
-              SCHEDULESERVICE.deleteEvent(e.id).then((f) => {
-                if (f) {
-                  setPopup(true);
-                  setPopupType("info");
-                  setPopupText(props.language.deleteAlertCompleted);
-                  setIsConfirmDelete(false);
-                  fetchEvents(1);
-                }
-              });
-            }
-          })
-          .catch(async (error) => {
+      SCHEDULESERVICE.deleteEvent(e.id)
+        .then((x) => {
+          if (x) {
+            finalizedDelete(
+              "info",
+              true,
+              false,
+              props.language.deleteAlertCompleted
+            );
+          }
+        })
+        .catch(async (error) => {
+          if (error) {
+            finalizedDelete(
+              "error",
+              true,
+              false,
+              props.language.deleteAlertFailed
+            );
             await interceptExpiredToken(error);
-            showDeleteError();
-          });
-      } else {
-        SCHEDULESERVICE.deleteEvent(e.id)
-          .then((x) => {
-            if (x) {
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.deleteAlertCompleted);
-              setIsConfirmDelete(false);
-              fetchEvents(1);
-            }
-          })
-          .catch(async (error) => {
-            await interceptExpiredToken(error);
-            showDeleteError();
-          });
-      }
+          }
+        });
     }).then(async (error) => {
       if (error) {
-        await interceptExpiredToken(error);
         connectionAlert();
+        await interceptExpiredToken(error);
       }
     });
   };
   const editEvent = (e, s) => {
     switchEditState(false);
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let startDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
-      let endDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
-      let subject =
-        e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
-      let isPop =
-        e.target.parentNode.parentNode.parentNode.childNodes[8].childNodes[0];
+    let inputName = document.getElementById("inputName_" + s.id).value;
+    let inputStartDate = document.getElementById(
+      "inputStartDate_" + s.id
+    ).value;
+    let inputEndDate = document.getElementById("inputEndDate_" + s.id).value;
+    let inputDescription = document.getElementById(
+      "inputDescription_" + s.id
+    ).value;
 
-      let inputName = document.getElementById("inputName_" + s.id).value;
-      let inputStartDate = document.getElementById(
-        "inputStartDate_" + s.id
-      ).value;
-      let inputEndDate = document.getElementById("inputEndDate_" + s.id).value;
-      let inputDescription = document.getElementById(
-        "inputDescription_" + s.id
-      ).value;
+    let editTitle,
+      editStartDate,
+      editEndDate,
+      editDescription,
+      editSubject,
+      editIsGlobal,
+      editIsPop;
 
-      let editTitle,
-        editStartDate,
-        editEndDate,
-        editDescription,
-        editSubject,
-        editIsGlobal,
-        editIsPop;
-
-      if (inputName !== "" && inputName !== s.annotation_title) {
-        editTitle = inputName;
-      } else {
-        editTitle = s.annotation_title;
-      }
-
-      if (inputStartDate !== "" && inputStartDate !== s.annotation_start_date) {
-        editStartDate = inputStartDate;
-      } else {
-        editStartDate = s.annotation_start_date;
-      }
-
-      if (inputEndDate !== "" && inputEndDate !== s.annotation_end_date) {
-        editEndDate = inputEndDate;
-      } else {
-        editEndDate = s.annotation_end_date;
-      }
-
-      if (
-        inputDescription !== "" &&
-        inputDescription !== s.annotation_description
-      ) {
-        editDescription = inputDescription;
-      } else {
-        editDescription = s.annotation_description;
-      }
-
-      if (subject !== undefined && subject !== null) {
-        let inputSubject = document.getElementById(
-          "inputSubjectID_" + s.id
-        ).value;
-
-        if (inputSubject !== "" && inputSubject !== s.subject_id) {
-          editSubject = inputSubject.split("_")[0];
-        } else {
-          editSubject = s.subject_id;
-        }
-        let inputPop = document.getElementById("inputIsPop_" + s.id).checked;
-
-        if (inputSubject.split("_")[1] !== "General") {
-          editIsGlobal = false;
-          editIsPop = inputPop;
-        } else {
-          editIsGlobal = true;
-          editIsPop = false;
-        }
-      }
-
-      API.asynchronizeRequest(function () {
-        SCHEDULESERVICE.editEvent({
-          id: s.id,
-          annotation_start_date: editStartDate,
-          annotation_end_date: editEndDate,
-          annotation_title: editTitle,
-          annotation_description: editDescription,
-          isGlobal: editIsGlobal,
-          isPop: editIsPop,
-          user_id: s.user_id,
-          subject_id: editSubject,
-        })
-          .then((c) => {
-            if (c) {
-              fetchEvents(1);
-              fetchSubjects();
-              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              startDate.disabled = true;
-              endDate.disabled = true;
-              description.disabled = true;
-              if (subject !== undefined && subject !== null) {
-                subject.disabled = true;
-              }
-              isPop.disabled = true;
-              setIsConfirmDelete(false);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
-            }
-          })
-          .catch(async (error) => {
-            if (error) {
-              await interceptExpiredToken(e);
-              setPopupText(props.language.editAlertFailed);
-              setPopupIcon("error");
-              setPopup(true);
-              setIsConfirmDelete(false);
-            }
-          });
-      }).catch(async (error) => {
-        if (error) {
-          await interceptExpiredToken(error);
-          connectionAlert();
-        }
-      });
+    if (inputName !== "" && inputName !== s.annotation_title) {
+      editTitle = inputName;
     } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
-            .childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[5]
-            .childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[7]
-            .childNodes[0];
-        let isPop =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[8]
-            .childNodes[0];
+      editTitle = s.annotation_title;
+    }
 
-        let inputName = document.getElementById("inputName_" + s.id).value;
-        let inputStartDate = document.getElementById(
-          "inputStartDate_" + s.id
-        ).value;
-        let inputEndDate = document.getElementById(
-          "inputEndDate_" + s.id
-        ).value;
-        let inputDescription = document.getElementById(
-          "inputDescription_" + s.id
-        ).value;
+    if (inputStartDate !== "" && inputStartDate !== s.annotation_start_date) {
+      editStartDate = inputStartDate;
+    } else {
+      editStartDate = s.annotation_start_date;
+    }
 
-        let editTitle,
-          editStartDate,
-          editEndDate,
-          editDescription,
-          editSubject,
-          editIsGlobal,
-          editIsPop;
+    if (inputEndDate !== "" && inputEndDate !== s.annotation_end_date) {
+      editEndDate = inputEndDate;
+    } else {
+      editEndDate = s.annotation_end_date;
+    }
 
-        if (inputName !== "" && inputName !== s.annotation_title) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.annotation_title;
-        }
+    if (
+      inputDescription !== "" &&
+      inputDescription !== s.annotation_description
+    ) {
+      editDescription = inputDescription;
+    } else {
+      editDescription = s.annotation_description;
+    }
 
-        if (
-          inputStartDate !== "" &&
-          inputStartDate !== s.annotation_start_date
-        ) {
-          editStartDate = inputStartDate;
-        } else {
-          editStartDate = s.annotation_start_date;
-        }
+    if (subject !== undefined && subject !== null) {
+      let inputSubject = document.getElementById(
+        "inputSubjectID_" + s.id
+      ).value;
 
-        if (inputEndDate !== "" && inputEndDate !== s.annotation_end_date) {
-          editEndDate = inputEndDate;
-        } else {
-          editEndDate = s.annotation_end_date;
-        }
-
-        if (
-          inputDescription !== "" &&
-          inputDescription !== s.annotation_description
-        ) {
-          editDescription = inputDescription;
-        } else {
-          editDescription = s.annotation_description;
-        }
-
-        if (subject !== undefined && subject !== null) {
-          let inputSubject = document.getElementById(
-            "inputSubjectID_" + s.id
-          ).value;
-
-          if (inputSubject !== s.subject_id) {
-            editSubject = inputSubject.split("_")[0];
-          } else {
-            editSubject = s.subject_id;
-          }
-
-          let inputPop = document.getElementById("inputIsPop_" + s.id).checked;
-
-          if (inputSubject.split("_")[1] !== "General") {
-            editIsGlobal = false;
-            editIsPop = inputPop;
-          } else {
-            editIsGlobal = true;
-            editIsPop = false;
-          }
-        }
-
-        API.asynchronizeRequest(function () {
-          SCHEDULESERVICE.editEvent({
-            id: s.id,
-            annotation_start_date: editStartDate,
-            annotation_end_date: editEndDate,
-            annotation_title: editTitle,
-            annotation_description: editDescription,
-            isGlobal: editIsGlobal,
-            isPop: editIsPop,
-            user_id: s.user_id,
-            subject_id: editSubject,
-          })
-            .then((c) => {
-              if (c) {
-                fetchEvents(1);
-                fetchSubjects();
-
-                let buttonDelete =
-                  e.target.parentNode.parentNode.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button =
-                  e.target.parentNode.parentNode.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-                startDate.disabled = true;
-                endDate.disabled = true;
-                description.disabled = true;
-                isPop.disabled = true;
-                if (subject !== undefined && subject !== null) {
-                  subject.disabled = true;
-                }
-                setIsConfirmDelete(false);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-              }
-            })
-            .catch(async (error) => {
-              if (error) {
-                await interceptExpiredToken(error);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                setPopup(true);
-              }
-            });
-        }).catch(async (error) => {
-          if (error) {
-            await interceptExpiredToken(error);
-            connectionAlert();
-          }
-        });
+      if (inputSubject.split("_")[0] !== s.subject_id) {
+        editSubject = inputSubject.split("_")[0];
       } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.childNodes[5].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
-        let isPop = e.target.parentNode.parentNode.childNodes[7].childNodes[0];
-
-        let inputName = document.getElementById("inputName_" + s.id).value;
-        let inputStartDate = document.getElementById(
-          "inputStartDate_" + s.id
-        ).value;
-        let inputEndDate = document.getElementById(
-          "inputEndDate_" + s.id
-        ).value;
-        let inputDescription = document.getElementById(
-          "inputDescription_" + s.id
-        ).value;
-
-        let editTitle,
-          editStartDate,
-          editEndDate,
-          editDescription,
-          editSubject,
-          editIsGlobal,
-          editIsPop;
-
-        if (inputName !== "" && inputName !== s.annotation_title) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.annotation_title;
-        }
-
-        if (
-          inputStartDate !== "" &&
-          inputStartDate !== s.annotation_start_date
-        ) {
-          editStartDate = inputStartDate;
-        } else {
-          editStartDate = s.annotation_start_date;
-        }
-
-        if (inputEndDate !== "" && inputEndDate !== s.annotation_end_date) {
-          editEndDate = inputEndDate;
-        } else {
-          editEndDate = s.annotation_end_date;
-        }
-
-        if (
-          inputDescription !== "" &&
-          inputDescription !== s.annotation_description
-        ) {
-          editDescription = inputDescription;
-        } else {
-          editDescription = s.annotation_description;
-        }
-
-        if (subject !== undefined && subject !== null) {
-          let inputSubject = document
-            .getElementById("inputSubjectID_" + s.id)
-            .value.split("_")[0];
-
-          if (inputSubject !== s.subject_id) {
-            editSubject = inputSubject;
-          } else {
-            editSubject = s.subject_id;
-          }
-
-          let inputPop = document.getElementById("inputIsPop_" + s.id).checked;
-
-          if (inputSubject.split("_")[1] !== "General") {
-            editIsGlobal = false;
-            console.log(newIsPop);
-            editIsPop = inputPop;
-          } else {
-            editIsGlobal = true;
-            editIsPop = false;
-          }
-        }
-
-        API.asynchronizeRequest(function () {
-          SCHEDULESERVICE.editEvent({
-            id: s.id,
-            annotation_start_date: editStartDate,
-            annotation_end_date: editEndDate,
-            annotation_title: editTitle,
-            annotation_description: editDescription,
-            isGlobal: editIsGlobal,
-            isPop: editIsPop,
-            user_id: s.user_id,
-            subject_id: editSubject,
-          })
-            .then((c) => {
-              if (c) {
-                setIsConfirmDelete(false);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                fetchEvents(1);
-                fetchSubjects();
-                let buttonDelete = e.target.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button = e.target.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton = e.target.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton = e.target.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-                startDate.disabled = true;
-                endDate.disabled = true;
-                description.disabled = true;
-                isPop.disabled = true;
-                if (subject !== undefined && subject !== null) {
-                  subject.disabled = true;
-                }
-              }
-            })
-            .catch(async (error) => {
-              if (error) {
-                await interceptExpiredToken(error);
-                console.log(error);
-                setIsConfirmDelete(false);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                setPopup(true);
-              }
-            });
-        }).catch(async (error) => {
-          if (error) {
-            await interceptExpiredToken(e);
-            connectionAlert();
-          }
-        });
+        editSubject = s.subject_id;
+      }
+      let inputPop = document.getElementById("inputIsPop_" + s.id).checked;
+      if (inputSubject.split("_")[1] !== "GEN") {
+        editIsGlobal = false;
+        editIsPop = false;
+      } else {
+        editIsGlobal = true;
+        editIsPop = inputPop;
       }
     }
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.editEvent({
+        id: s.id,
+        annotation_start_date: editStartDate,
+        annotation_end_date: editEndDate,
+        annotation_title: editTitle,
+        annotation_description: editDescription,
+        isGlobal: editIsGlobal,
+        isPop: editIsPop,
+        user_id: s.user.id,
+        subject_id: editSubject,
+      })
+        .then((c) => {
+          if (c) {
+            finalizedEdit(
+              "info",
+              true,
+              props.language.editAlertCompleted,
+              false
+            );
+            let num = 0;
+            while (num < 4) {
+              e.target.parentNode.childNodes[num].style.display === "block"
+                ? (e.target.parentNode.childNodes[num].style.display = "none")
+                : (e.target.parentNode.childNodes[num].style.display = "block");
+              num += 1;
+            }
+            let disable = 1;
+            while (disable < 9) {
+              if (disable !== 3 && disable !== 6) {
+                e.target.parentNode.parentNode.childNodes[
+                  disable
+                ].childNodes[0].disabled = true;
+              }
+              disable += 1;
+            }
+          }
+        })
+        .catch(async (error) => {
+          if (error) {
+            finalizedEdit("error", true, props.language.editAlertFailed, false);
+            await interceptExpiredToken(error);
+          }
+        });
+    }).catch(async (error) => {
+      if (error) {
+        connectionAlert();
+        await interceptExpiredToken(e);
+      }
+    });
   };
 
   const closeEditEvent = (e, s) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let startDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
-      let endDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
-      let subject =
-        e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
-      let isPop =
-        e.target.parentNode.parentNode.parentNode.childNodes[8].childNodes[0];
-
-      if (subject !== undefined) {
-        let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-        if (s.subject_id !== content.value) {
-          content = s.subject_id;
-        }
-        subject.disabled = true;
+    let disable = 1;
+    while (disable < 9) {
+      if (disable !== 3 && disable !== 6) {
+        e.target.parentNode.parentNode.childNodes[
+          disable
+        ].childNodes[0].disabled = true;
       }
-      name.disabled = true;
-      startDate.disabled = true;
-      endDate.disabled = true;
-      description.disabled = true;
-      isPop.disabled = true;
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[1].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[2].childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[4].childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[5].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[7].childNodes[0];
-        let isPop =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[8].childNodes[0];
-
-        if (subject !== undefined) {
-          let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-          if (s.subject_id !== content.value) {
-            content = s.subject_id;
-          }
-          subject.disabled = true;
-        }
-
-        name.disabled = true;
-        startDate.disabled = true;
-        endDate.disabled = true;
-        description.disabled = true;
-        isPop.disabled = true;
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.childNodes[5].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
-        let isPop = e.target.parentNode.parentNode.childNodes[8].childNodes[0];
-        if (subject !== undefined) {
-          let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-          if (s.subject_id !== content.value) {
-            content = s.subject_id;
-          }
-          subject.disabled = true;
-        }
-        name.disabled = true;
-        startDate.disabled = true;
-        endDate.disabled = true;
-        description.disabled = true;
-        isPop.disabled = true;
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      }
+      disable += 1;
+    }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
   const showEditOptionEvent = (e) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let startDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
-      let endDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
-      let subject =
-        e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
-
-      if (subject !== undefined) {
-        subject.disabled = false;
-        listSubject(subject.value);
-        if (subject.value.split("_")[1] === "GEN") {
-          let isPop =
-            e.target.parentNode.parentNode.parentNode.childNodes[8]
-              .childNodes[0];
-          isPop.disabled = false;
+    let disable = 1;
+    while (disable < 9) {
+      if (disable !== 3 && disable !== 6) {
+        if (disable === 8) {
+          listSubject(
+            e.target.parentNode.parentNode.childNodes[disable - 1].childNodes[0]
+              .value
+          );
+          if (
+            e.target.parentNode.parentNode.childNodes[
+              disable - 1
+            ].childNodes[0].value.split("_")[1] === "GEN"
+          ) {
+            e.target.parentNode.parentNode.childNodes[
+              disable
+            ].childNodes[0].disabled = false;
+          }
+        } else {
+          e.target.parentNode.parentNode.childNodes[
+            disable
+          ].childNodes[0].disabled = false;
         }
       }
 
-      name.disabled = false;
-      startDate.disabled = false;
-      endDate.disabled = false;
-      description.disabled = false;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[1];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode.parentNode.childNodes[0];
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
-            .childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[5]
-            .childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[7]
-            .childNodes[0];
-
-        if (subject !== undefined) {
-          subject.disabled = false;
-          listSubject(subject.value);
-          if (subject.value.split("_")[1] === "GEN") {
-            let isPop =
-              e.target.parentNode.parentNode.parentNode.parentNode.childNodes[8]
-                .childNodes[0];
-            isPop.disabled = false;
-          }
-        }
-        name.disabled = false;
-        startDate.disabled = false;
-        endDate.disabled = false;
-        description.disabled = false;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.childNodes[5].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
-
-        if (subject !== undefined) {
-          subject.disabled = false;
-          listSubject(subject.value);
-          if (subject.value.split("_")[1] === "GEN") {
-            let isPop =
-              e.target.parentNode.parentNode.childNodes[8].childNodes[0];
-            isPop.disabled = false;
-          }
-        }
-        name.disabled = false;
-        startDate.disabled = false;
-        endDate.disabled = false;
-        description.disabled = false;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-      }
+      disable += 1;
+    }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
@@ -964,15 +459,13 @@ export default function Scheduleeventslist(props) {
   };
 
   const handleChangeEndDate = (id) => {
-    let content = document.getElementById("inputEndDate_" + id);
     setChangeEndDate(true);
-    return content.value;
+    return document.getElementById("inputEndDate_" + id).value;
   };
 
   const handleChangeStartDate = (id) => {
-    let content = document.getElementById("inputStartDate_" + id);
     setChangeStartDate(true);
-    return content.value;
+    return document.getElementById("inputStartDate_" + id).value;
   };
 
   const handleChangeDescription = (id) => {
@@ -1075,7 +568,7 @@ export default function Scheduleeventslist(props) {
                 <Input
                   id="e_title"
                   type="text"
-                  placeholder="Title"
+                  placeholder={props.language.title}
                   className={"e_title"}
                 />
               </td>
@@ -1083,7 +576,7 @@ export default function Scheduleeventslist(props) {
                 <Input
                   id="e_description"
                   type="text"
-                  placeholder="Description"
+                  placeholder={props.language.description}
                   className={"e_description"}
                 />
               </td>
@@ -1091,14 +584,14 @@ export default function Scheduleeventslist(props) {
                 <input
                   id="e_start_date"
                   type="datetime-local"
-                  placeholder="Date"
+                  placeholder={props.language.startDate}
                 />
               </td>
               <td>
                 <input
                   id="e_end_date"
                   type="datetime-local"
-                  placeholder="Date"
+                  placeholder={props.language.endDate}
                 />
               </td>
               <td style={{ textAlign: "center" }}>
@@ -1245,15 +738,20 @@ export default function Scheduleeventslist(props) {
                           <td>
                             <select id={`inputSubjectID_${e.id}`} disabled>
                               <option
-                                defaultValue={e.subject.id}
-                                value={
+                                defaultValue={
                                   e.subject.id + "_" + e.subject.subject_code
                                 }
+                                value={e.id + "_" + e.subject_code}
                               >
                                 {e.subject.name}
                               </option>
                               {subjectEdit.map((s) => (
-                                <option key={s.id} value={s.id}>
+                                <option
+                                  key={s.id}
+                                  value={
+                                    s.subject.id + "_" + s.subject.subject_code
+                                  }
+                                >
                                   {s.name}
                                 </option>
                               ))}
@@ -1439,7 +937,9 @@ export default function Scheduleeventslist(props) {
                         <td>
                           <select id={`inputSubjectID_${e.id}`} disabled>
                             <option
-                              defaultValue={e.subject.id}
+                              defaultValue={
+                                e.subject.id + "_" + e.subject.subject_code
+                              }
                               value={
                                 e.subject.id + "_" + e.subject.subject_code
                               }
@@ -1447,7 +947,10 @@ export default function Scheduleeventslist(props) {
                               {e.subject.name}
                             </option>
                             {subjectEdit.map((s) => (
-                              <option key={s.id} value={s.id}>
+                              <option
+                                key={s.id}
+                                value={s.id + "_" + s.subject_code}
+                              >
                                 {s.name}
                               </option>
                             ))}
@@ -1576,12 +1079,10 @@ export default function Scheduleeventslist(props) {
           setPopup(false);
           setIsConfirmDelete(false);
           switchEditState(true);
-          switchSaveState(false);
         }}
         onCloseAction={() => {
           setPopup(false);
           setIsConfirmDelete(false);
-          switchSaveState(false);
           switchEditState(true);
         }}
         hasIconAnimation

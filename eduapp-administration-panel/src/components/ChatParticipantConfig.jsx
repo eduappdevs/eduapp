@@ -13,6 +13,7 @@ export default function ChatParticipantConfig(props) {
   const [chat, setChat] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
   const [search, setSearch] = useState("");
 
   const [showPopup, setPopup] = useState(false);
@@ -42,18 +43,23 @@ export default function ChatParticipantConfig(props) {
     setPopupIcon("error");
   };
 
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchParticipantsPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    switchEditState(false);
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchParticipantsPage(actualPage);
   };
 
   const fetchParticipantsPage = async (page) => {
@@ -62,6 +68,7 @@ export default function ChatParticipantConfig(props) {
         .then((res) => {
           setParticipant(res.data.current_page);
           setMaxPages(res.data.total_pages);
+          setActualPage(res.data.page);
           fetchUser();
           fetchChat();
         })
@@ -84,7 +91,6 @@ export default function ChatParticipantConfig(props) {
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
-          console.error(err);
         });
     }).then(async (e) => {
       if (e) {
@@ -102,7 +108,6 @@ export default function ChatParticipantConfig(props) {
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
-          console.error(err);
         });
     }).then(async (e) => {
       if (e) {
@@ -112,17 +117,8 @@ export default function ChatParticipantConfig(props) {
     });
   };
 
-  const alertCreate = async () => {
-    switchEditState(false);
-    setIsConfirmDelete(false);
-    setPopupText(props.language.creationAlert);
-    setPopupType("error");
-    setPopup(true);
-  };
-
   const addParticipant = async (e) => {
     e.preventDefault();
-    switchSaveState(true);
     switchEditState(false);
 
     const context = ["chat_base_id", "user_id", "isChatAdmin"];
@@ -136,9 +132,7 @@ export default function ChatParticipantConfig(props) {
     if (userId !== "Choose User" && chatId !== "") {
       json.push(chatId, userId, isAdmin);
     } else {
-      alertCreate();
-      switchSaveState(false);
-      return;
+      finalizedCreate("error", true, props.language.creationFailed, false);
     }
 
     let eventJson = {};
@@ -147,20 +141,25 @@ export default function ChatParticipantConfig(props) {
     }
     API.asynchronizeRequest(function () {
       CHATSERVICE.createParticipant(eventJson)
-        .then(() => {
-          fetchParticipantsPage(1);
-          setIsConfirmDelete(false);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.creationCompleted);
-          switchSaveState(false);
+        .then((x) => {
+          if (x) {
+            finalizedCreate(
+              "info",
+              true,
+              props.language.creationCompleted,
+              false
+            );
+          }
         })
         .catch(async (e) => {
           if (e) {
+            finalizedCreate(
+              "error",
+              true,
+              props.language.creationFailed,
+              false
+            );
             await interceptExpiredToken(e);
-            alertCreate();
-            setIsConfirmDelete(false);
-            switchSaveState(false);
           }
         });
     }).then(async (e) => {
@@ -174,17 +173,26 @@ export default function ChatParticipantConfig(props) {
   const deleteParticipant = async (id) => {
     API.asynchronizeRequest(function () {
       CHATSERVICE.deleteParticipant(id)
-        .then(() => {
-          fetchParticipantsPage(1);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+        .then((e) => {
+          if (e) {
+            finalizedDelete(
+              "info",
+              true,
+              false,
+              props.language.deleteAlertCompleted
+            );
+          }
         })
         .catch(async (err) => {
-          await interceptExpiredToken(err);
-          console.error(err);
+          if (err) {
+            finalizedDelete(
+              "error",
+              true,
+              false,
+              props.language.deleteAlertFailed
+            );
+            await interceptExpiredToken(err);
+          }
         });
     }).then(async (e) => {
       if (e) {
@@ -195,11 +203,8 @@ export default function ChatParticipantConfig(props) {
   };
 
   const confirmDeleteParticipant = async (id) => {
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
+    switchEditState(false);
+    finalizedDelete("warning", true, true, props.language.deleteAlert);
     setIdDelete(id);
   };
 

@@ -94,6 +94,7 @@ class CalendarAnnotationsController < ApplicationController
     if !check_perms_update!(get_user_roles.perms_events, false, :null)
       return
     end
+    puts "A: #{calendar_annotation_params}"
     if @calendar_annotation.update(calendar_annotation_params)
       render json: @calendar_annotation
     else

@@ -13,6 +13,7 @@ export default function CourseConfig(props) {
   const [institutions, setInstitutions] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
   const [search, setSearch] = useState("");
 
   const [changeName, setChangeName] = useState(false);
@@ -34,7 +35,7 @@ export default function CourseConfig(props) {
     } else {
       document.getElementById("scroll").scrollIntoView(true);
       document.getElementById("standard-modal").style.width = "100%";
-      document.getElementById("standard-modal").style.height = "100%";
+      document.getElementById("standard-modal").style.height = "110%";
 
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
@@ -48,253 +49,108 @@ export default function CourseConfig(props) {
     setPopupIcon("error");
   };
 
-  const showEditOptionCourse = async (e, id) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode;
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-      name.disabled = false;
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-
-        name.disabled = false;
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        name.disabled = false;
-      }
+  const showEditOptionCourse = async (e) => {
+    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = false;
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
-  const closeEditCourse = async (e, id) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-      name.disabled = true;
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-        name.disabled = true;
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-        name.disabled = true;
-      }
+  const closeEditCourse = async (e) => {
+    e.preventDefault();
+    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = true;
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
+  const finalizedEdit = (type, icon, pop, text, confirmDel) => {
+    fetchCoursePage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(pop);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
   };
 
-  const editCompleted = () => {
-    setIsConfirmDelete(false);
+  const finalizedCreate = (text, type) => {
+    fetchCoursePage(actualPage);
     setPopup(true);
-    setPopupType("info");
-    setPopupText(props.language.editAlertCompleted);
+    setPopupType(type);
+    setPopupText(text);
   };
-  const editFailed = () => {
-    setPopupText(props.language.editAlertFailed);
-    setPopupIcon("error");
-    switchSaveState(false);
+
+  const finalizedDelete = (type, icon, text, confirmDel) => {
+    setPopupType(type);
+    setPopupIcon(icon);
     setPopup(true);
-    setIsConfirmDelete(false);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchCoursePage(actualPage);
+    switchEditState(false);
   };
 
   const editCourse = async (e, c) => {
+    e.preventDefault();
     switchEditState(false);
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let value = document.getElementById("inputName_" + c.id);
-      if (value.value !== "") {
-        API.asynchronizeRequest(function () {
-          COURSESERVICE.editCourse({
-            id: c.id,
-            name: value.value,
-            institutions_id: c.institution_id,
+    let value = document.getElementById("inputName_" + c.id).value;
+    if (value.value !== "") {
+      API.asynchronizeRequest(function () {
+        COURSESERVICE.editCourse({
+          id: c.id,
+          name: value,
+          institutions_id: c.institution_id,
+        })
+          .then((x) => {
+            if (x) {
+              let num = 0;
+              while (num < 4) {
+                e.target.parentNode.childNodes[num].style.display === "block"
+                  ? (e.target.parentNode.childNodes[num].style.display = "none")
+                  : (e.target.parentNode.childNodes[num].style.display =
+                      "block");
+                num += 1;
+              }
+              e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = true;
+              finalizedEdit(
+                "info",
+                true,
+                true,
+                props.language.editAlertCompleted,
+                false
+              );
+            }
           })
-            .then((err) => {
-              if (err) {
-                fetchInstitutions();
-                fetchCoursePage(1);
-                let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button = e.target.parentNode.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton = e.target.parentNode.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-                editCompleted();
-              }
-            })
-            .catch(async (error) => {
-              if (error) {
-                await interceptExpiredToken(error);
-                editFailed();
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            connectionAlert();
-          }
-        });
-      }
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let value = document.getElementById("inputName_" + c.id);
-        if (value.value !== "") {
-          API.asynchronizeRequest(function () {
-            COURSESERVICE.editCourse({
-              id: c.id,
-              name: value.value,
-              institutions_id: c.institution_id,
-            })
-              .then(() => {
-                fetchInstitutions();
-                fetchCoursePage(1);
-
-                let buttonDelete =
-                  e.target.parentNode.parentNode.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button =
-                  e.target.parentNode.parentNode.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-                editCompleted();
-              })
-              .catch(async (error) => {
-                if (error) {
-                  await interceptExpiredToken(error);
-                  editFailed();
-                }
-              });
-          }).then(async (e) => {
-            if (e) {
-              await interceptExpiredToken(e);
-              connectionAlert();
+          .catch(async (error) => {
+            if (error) {
+              await interceptExpiredToken(error);
+              finalizedEdit(
+                "error",
+                true,
+                true,
+                props.language.editAlertFailed,
+                false
+              );
             }
           });
+      }).then(async (x) => {
+        if (x) {
+          await interceptExpiredToken(e);
+          connectionAlert();
         }
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let value = document.getElementById("inputName_" + c.id);
-        if (value.value !== "") {
-          API.asynchronizeRequest(function () {
-            COURSESERVICE.editCourse({
-              id: c.id,
-              name: value.value,
-              institutions_id: c.institution_id,
-            })
-              .then(() => {
-                let buttonDelete = e.target.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button = e.target.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton = e.target.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton = e.target.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-
-                fetchInstitutions();
-                fetchCoursePage(1);
-                editCompleted();
-              })
-              .catch(async (error) => {
-                if (error) {
-                  await interceptExpiredToken(error);
-                  editFailed();
-                }
-              });
-          }).then(async (e) => {
-            if (e) {
-              await interceptExpiredToken(e);
-              connectionAlert();
-            }
-          });
-        }
-      }
+      });
     }
   };
 
@@ -321,6 +177,7 @@ export default function CourseConfig(props) {
         .then((i) => {
           setCourses(i.data.current_page);
           setMaxPages(i.data.total_pages);
+          setActualPage(i.data.page);
           fetchInstitutions();
         })
         .catch(async (e) => {
@@ -334,19 +191,11 @@ export default function CourseConfig(props) {
     });
   };
 
-  const alertCreate = async () => {
-    switchEditState(false);
-    setPopupText(props.language.creationAlert);
-    setPopupType("error");
-    setPopup(true);
-  };
-
   const createCourse = (e) => {
     e.preventDefault();
     switchEditState(false);
     let cName = document.getElementById("c_name").value;
     let cInst = document.getElementById("institution_chooser").value;
-    console.log(cInst, cName);
     if (cName.length > 1 && cInst !== "--") {
       API.asynchronizeRequest(function () {
         COURSESERVICE.createCourse({
@@ -367,108 +216,93 @@ export default function CourseConfig(props) {
                 color: "#96ffb2",
                 course_id: x.data.id,
               })
-                .then(() => {
-                  fetchCoursePage(1);
-                  setPopup(true);
-                  setPopupType("info");
-                  setPopupText(props.language.creationCompleted);
-                  switchSaveState(false);
+                .then((e) => {
+                  if (e) {
+                    finalizedCreate(props.language.creationCompleted, "info");
+                  }
                 })
                 .catch(async (e) => {
                   if (e) {
                     await interceptExpiredToken(e);
-                    setPopupText(props.language.creationFailed);
-                    setPopupIcon("error");
-                    switchSaveState(false);
-                    setPopup(true);
-                    switchSaveState(false);
+                    finalizedCreate(props.language.creationFailed, "error");
                   }
                 });
             } else {
-              fetchCoursePage(1);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.creationCompleted);
-              switchSaveState(false);
+              finalizedCreate(props.language.creationCompleted, "info");
             }
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopupText(props.language.creationFailed);
-              setPopupIcon("error");
-              switchSaveState(false);
-              setPopup(true);
+              finalizedCreate(props.language.creationFailed, "error");
             }
           });
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setPopupText(props.language.connectionAlert);
-          setPopupIcon("error");
-          switchSaveState(false);
-          setPopup(true);
+          finalizedCreate(props.language.connectionAlert, "error");
         }
       });
     } else {
-      switchSaveState(false);
-      alertCreate();
+      finalizedCreate(props.language.creationAlert, "error");
     }
   };
 
   const confirmDeleteEvent = async (id) => {
-    switchEditState(false);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
+    finalizedDelete("warning", true, props.language.deleteAlert, true);
     setIdDelete(id);
-  };
-
-  const showDeleteError = () => {
-    switchEditState(false);
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText(props.language.deleteFailed);
-    setIsConfirmDelete(false);
   };
 
   const deleteCourse = (id) => {
     switchEditState(true);
     API.asynchronizeRequest(function () {
       if (courses.length === 1) {
-        API.asynchronizeRequest(function () {
-          COURSESERVICE.deleteCourse(id)
-            .then(() => {
-              fetchCoursePage(1);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.deleteAlertCompleted);
-              switchSaveState(false);
-              setIsConfirmDelete(false);
-            })
-            .catch(async (e) => {
-              if (e) {
-                await interceptExpiredToken(e);
-                showDeleteError();
-              }
-            });
-        });
+        COURSESERVICE.deleteCourse(id)
+          .then((e) => {
+            if (e) {
+              finalizedDelete(
+                "info",
+                true,
+                props.language.deleteAlertCompleted,
+                false
+              );
+            }
+          })
+          .catch(async (e) => {
+            if (e) {
+              await interceptExpiredToken(e);
+              finalizedDelete(
+                "error",
+                true,
+                props.language.deleteAlertFailed,
+                false
+              );
+            }
+          });
       } else {
-        API.asynchronizeRequest(function () {
-          COURSESERVICE.deleteCourse(id)
-            .then(() => {
-              fetchCoursePage(1);
-            })
-            .catch(async (e) => {
-              if (e) {
-                await interceptExpiredToken(e);
-                showDeleteError();
-              }
-            });
-        });
+        COURSESERVICE.deleteCourse(id)
+          .then((e) => {
+            if (e) {
+              finalizedDelete(
+                "info",
+                true,
+                props.language.deleteAlertCompleted,
+                false
+              );
+              fetchCoursePage(actualPage);
+            }
+          })
+          .catch(async (e) => {
+            if (e) {
+              await interceptExpiredToken(e);
+              finalizedDelete(
+                "error",
+                true,
+                props.language.deleteAlertFailed,
+                false
+              );
+            }
+          });
       }
     }).then(async (e) => {
       if (e) {
@@ -541,7 +375,11 @@ export default function CourseConfig(props) {
                 </button>
               </td>
               <td>
-                <input id="c_name" type="text" placeholder="Name" />
+                <input
+                  id="c_name"
+                  type="text"
+                  placeholder={props.language.name}
+                />
               </td>
               <td>
                 <select defaultValue={"--"} id="institution_chooser">
@@ -593,9 +431,9 @@ export default function CourseConfig(props) {
                             </td>
                             <td>
                               <input
+                                type="text"
                                 id={"inputName_" + c.id}
                                 disabled
-                                type="text"
                                 value={changeName === false ? c.name : newName}
                                 onChange={() => {
                                   handleChange(c.id);

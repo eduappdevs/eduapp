@@ -142,7 +142,7 @@ class EduappUserSessionsController < ApplicationController
     session_start_time = params[:session_start_date].split("T")[1]
     session_end_time = params[:session_end_date].split("T")[1]
     batch_id = SecureRandom.uuid
-    subjectId = Subject.where(subject_code: params[:subject_code]).first.id
+    subjectId = Subject.where(id: params[:subject_id]).first.id
 
     new_session_days.each do |day|
       @eduapp_user_session = EduappUserSession.new(

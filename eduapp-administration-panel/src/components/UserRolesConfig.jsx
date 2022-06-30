@@ -17,6 +17,7 @@ export default function UserRolesConfig({ language }) {
   const [newPermsDesc, setNewPermsDesc] = useState("");
 
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
 
   const [changesSaved, setChangesSaved] = useState(true);
   const [currentPermissions, setCurrentPermissions] = useState(null);
@@ -30,6 +31,7 @@ export default function UserRolesConfig({ language }) {
   const fetchRoles = async (page) => {
     const roles = await ROLE_SERVICE.pagedUserRoles(page);
     setMaxPages(roles.total_pages);
+    setActualPage(roles.current_page);
     setRoles(roles.current_page);
   };
 
@@ -317,7 +319,7 @@ export default function UserRolesConfig({ language }) {
           perms_tuitions: getPermsChecked("add_perm_tuitions"),
           perms_users: getPermsChecked("add_perm_users"),
         });
-        fetchRoles(1);
+        fetchRoles(actualPage);
         setShowPerms(false);
         showCreationDialog();
       } catch (err) {
@@ -349,7 +351,7 @@ export default function UserRolesConfig({ language }) {
     asynchronizeRequest(async () => {
       try {
         await ROLE_SERVICE.deleteRole(deleteId);
-        fetchRoles(1);
+        fetchRoles(actualPage);
         setDeleteId(null);
         showDeleteDialog();
       } catch (err) {
@@ -506,6 +508,7 @@ export default function UserRolesConfig({ language }) {
                       </td>
                       <td>
                         <button
+                          style={{ marginRight: "5px" }}
                           onClick={() => displayPermissions(true, role.id)}
                         >
                           <svg
@@ -522,10 +525,7 @@ export default function UserRolesConfig({ language }) {
                             />
                           </svg>
                         </button>
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={() => showConfirmDelete(role.id)}
-                        >
+                        <button onClick={() => showConfirmDelete(role.id)}>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"

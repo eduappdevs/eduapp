@@ -14,6 +14,7 @@ export default function EnrollConfig(props) {
 
   const [search, setSearch] = useState("");
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
 
   const [courseEdit, setCourseEdit] = useState([]);
   const [emailEdit, setEmailEdit] = useState([]);
@@ -32,31 +33,43 @@ export default function EnrollConfig(props) {
 
   let enrollment_filter = {};
 
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
-  };
-
   const switchEditState = (state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100%";
-      document.getElementById("standard-modal").style.height = "100%";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
+  };
+  const finalizedEdit = (type, icon, text, confirmDel) => {
+    fetchTuitions(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
+  };
+
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchTuitions(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchTuitions(actualPage);
   };
 
   const connectionAlert = async () => {
@@ -70,6 +83,7 @@ export default function EnrollConfig(props) {
     API.asynchronizeRequest(function () {
       TUITIONSSERVICE.pagedTuitions(pages)
         .then((ts) => {
+          setActualPage(ts.data.page);
           setTuitions(ts.data.current_page);
           setMaxPages(ts.data.total_pages);
           enrollment_filter.enroll = ts.data.current_page;
@@ -79,8 +93,8 @@ export default function EnrollConfig(props) {
         });
     }).then(async (e) => {
       if (e) {
-        await interceptExpiredToken(e);
         connectionAlert();
+        await interceptExpiredToken(e);
       }
     });
   };
@@ -142,7 +156,7 @@ export default function EnrollConfig(props) {
 
   const createTuition = (e) => {
     e.preventDefault();
-    switchEditState(true);
+    switchEditState(false);
 
     let user = document.getElementById("user_select").value;
     let course = document.getElementById("course_select").value;
@@ -162,7 +176,6 @@ export default function EnrollConfig(props) {
               setPopup(true);
               setPopupType("info");
               setPopupText(props.language.creationCompleted);
-              switchSaveState(false);
             }
           })
           .catch((e) => {
@@ -171,7 +184,6 @@ export default function EnrollConfig(props) {
               setPopup(true);
               setPopupType("info");
               setPopupText(props.language.creationAlert);
-              switchSaveState(false);
             }
           });
       }).then(async (e) => {
@@ -186,385 +198,130 @@ export default function EnrollConfig(props) {
   };
 
   const alertCreate = async () => {
-    switchEditState(false);
     setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
 
   const deleteTuition = (id) => {
+    switchEditState(false);
     API.asynchronizeRequest(function () {
       TUITIONSSERVICE.deleteTuition(id)
-        .then(() => {
-          fetchAll();
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+        .then((e) => {
+          if (e) {
+            finalizedDelete(
+              "info",
+              true,
+              false,
+              props.language.deleteAlertCompleted
+            );
+          }
         })
         .catch(async (e) => {
-          await interceptExpiredToken(e);
-          showDeleteError();
+          if (e) {
+            finalizedDelete(
+              "error",
+              true,
+              false,
+              props.language.deleteAlertFailed
+            );
+            await interceptExpiredToken(e);
+          }
         });
     }).then(async (e) => {
       if (e) {
-        await interceptExpiredToken(e);
         connectionAlert();
+        await interceptExpiredToken(e);
       }
     });
   };
 
   const confirmDeleteEvent = async (id) => {
-    switchEditState(true);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
+    switchEditState(false);
+    finalizedDelete("warning", true, true, props.language.deleteAlert);
     setIdDelete(id);
   };
 
-  const showDeleteError = () => {
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText(props.language.deleteFailed);
-    setIsConfirmDelete(false);
-  };
-
   const showEditOptionSession = (e) => {
-    if (e.target.tagName === "svg") {
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let course =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-
-      email.disabled = false;
-      course.disabled = false;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[1];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode.parentNode.childNodes[0];
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-      listCourse(course.value);
-      listUser(email.value);
-    } else {
-      if (e.target.tagName === "path") {
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let course =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-
-        email.disabled = false;
-        course.disabled = false;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        listCourse(course.value);
-        listUser(email.value);
-      } else {
-        let email = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let course = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        email.disabled = false;
-        course.disabled = false;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        listCourse(course.value);
-        listUser(email.value);
-      }
+    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = false;
+    listCourse(
+      e.target.parentNode.parentNode.childNodes[1].childNodes[0].value
+    );
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
   const editEnroll = (e, s) => {
     switchEditState(false);
-    if (e.target.tagName === "svg") {
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let course =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
+    let course = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
 
-      let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-      let inputCourse = document.getElementById("inputCourse_" + s.id).value;
+    let inputCourse = document.getElementById("inputCourse_" + s.id).value;
 
-      let editEmail, editCourse;
+    let editCourse;
 
-      if (inputEmail !== "" && inputEmail !== s.user_id) {
-        editEmail = inputEmail;
-      } else {
-        editEmail = s.user_id;
-      }
-
-      if (inputCourse !== "" && inputCourse !== s.session_start_date) {
-        editCourse = inputCourse;
-      } else {
-        editCourse = s.session_start_date;
-      }
-
-      API.asynchronizeRequest(function () {
-        TUITIONSSERVICE.editTuition({
-          id: s.id,
-          course_id: editCourse,
-          user_id: editEmail,
-        })
-          .then((error) => {
-            if (error) {
-              fetchAll();
-              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              email.disabled = true;
-              course.disabled = true;
-
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
-              switchSaveState(false);
-              setIsConfirmDelete(false);
-            }
-          })
-          .catch(async (e) => {
-            if (e) {
-              await interceptExpiredToken(e);
-              setPopupText(props.language.editAlertFailed);
-              setPopupIcon("error");
-              switchSaveState(false);
-              setPopup(true);
-              setIsConfirmDelete(false);
-            }
-          });
-      }).then(async (e) => {
-        if (e) {
-          await interceptExpiredToken(e);
-          alertCreate();
-        }
-      });
+    if (inputCourse !== "" && inputCourse !== s.session_start_date) {
+      editCourse = inputCourse;
     } else {
-      if (e.target.tagName === "path") {
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let course =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-
-        let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-        let inputCourse = document.getElementById("inputCourse_" + s.id).value;
-
-        let editEmail, editCourse;
-
-        if (inputEmail !== "" && inputEmail !== s.user_id) {
-          editEmail = inputEmail;
-        } else {
-          editEmail = s.user_id;
-        }
-
-        if (inputCourse !== "" && inputCourse !== s.session_start_date) {
-          editCourse = inputCourse;
-        } else {
-          editCourse = s.session_start_date;
-        }
-
-        API.asynchronizeRequest(function () {
-          TUITIONSSERVICE.editTuition({
-            id: s.id,
-            course_id: editCourse,
-            user_id: editEmail,
-          })
-            .then((error) => {
-              if (error) {
-                fetchAll();
-                let buttonDelete =
-                  e.target.parentNode.parentNode.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button =
-                  e.target.parentNode.parentNode.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                course.disabled = true;
-                email.disabled = true;
-                switchSaveState(false);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                setIsConfirmDelete(false);
-              }
-            })
-            .catch((e) => {
-              if (e) {
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-                setPopup(true);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            alertCreate();
-          }
-        });
-      } else {
-        let email = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let course = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-
-        let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-        let inputCourse = document.getElementById("inputCourse_" + s.id).value;
-
-        let editEmail, editCourse;
-
-        if (inputEmail !== "" && inputEmail !== s.user_id) {
-          editEmail = inputEmail;
-        } else {
-          editEmail = s.user_id;
-        }
-
-        if (inputCourse !== "" && inputCourse !== s.session_start_date) {
-          editCourse = inputCourse;
-        } else {
-          editCourse = s.session_start_date;
-        }
-
-        console.log(editEmail, editCourse);
-        API.asynchronizeRequest(function () {
-          TUITIONSSERVICE.editTuition({
-            id: s.id,
-            course_id: editCourse,
-            user_id: editEmail,
-          })
-            .then((error) => {
-              if (error) {
-                fetchAll();
-                let buttonDelete = e.target.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button = e.target.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton = e.target.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton = e.target.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                email.disabled = true;
-                course.disabled = true;
-
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-              }
-            })
-            .catch(async (e) => {
-              if (e) {
-                console.log(e);
-                await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-                setPopup(true);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            alertCreate();
-          }
-        });
-      }
+      editCourse = s.session_start_date;
     }
+
+    console.log(s, editCourse);
+    API.asynchronizeRequest(function () {
+      TUITIONSSERVICE.editTuition({
+        id: s.id,
+        course_id: editCourse,
+        user_id: s.user.id,
+      })
+        .then((error) => {
+          if (error) {
+            let num = 0;
+            while (num < 4) {
+              e.target.parentNode.childNodes[num].style.display === "block"
+                ? (e.target.parentNode.childNodes[num].style.display = "none")
+                : (e.target.parentNode.childNodes[num].style.display = "block");
+              num += 1;
+            }
+            course.disabled = true;
+            finalizedEdit(
+              "info",
+              true,
+              props.language.editAlertCompleted,
+              false
+            );
+          }
+        })
+        .catch(async (e) => {
+          if (e) {
+            finalizedEdit("error", true, props.language.editAlertFailed, false);
+            await interceptExpiredToken(e);
+          }
+        });
+    }).then(async (e) => {
+      if (e) {
+        alertCreate();
+        await interceptExpiredToken(e);
+      }
+    });
   };
 
   const closeEditSession = (e, s) => {
-    if (e.target.tagName === "svg") {
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let course =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
+    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = true;
 
-      email.disabled = true;
-      course.disabled = true;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-    } else {
-      if (e.target.tagName === "path") {
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[0].childNodes[0];
-        let course =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[1].childNodes[0];
-
-        email.disabled = true;
-        course.disabled = true;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      } else {
-        let email = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let course = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-
-        email.disabled = true;
-        course.disabled = true;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
@@ -577,17 +334,6 @@ export default function EnrollConfig(props) {
       return true;
     });
     setCourseEdit(list);
-  };
-
-  const listUser = (user) => {
-    let list = [];
-    users.map((c) => {
-      if (c.id !== parseInt(user)) {
-        list.push(c);
-      }
-      return true;
-    });
-    setEmailEdit(list);
   };
 
   useEffect(() => {
@@ -711,22 +457,11 @@ export default function EnrollConfig(props) {
                         return (
                           <tr key={t.id}>
                             <td>
-                              <select id={`inputEmail_${t.id}`} disabled>
-                                <option
-                                  value={t.user.id}
-                                  defaultValue={t.user.id}
-                                >
-                                  {t.user.email}
-                                </option>
-                                {emailEdit.map((e) => {
-                                  return (
-                                    <option key={e.id} value={e.id}>
-                                      {e.user.email}
-                                    </option>
-                                  );
-                                })}
-                                {}
-                              </select>
+                              <input
+                                type="text"
+                                disabled
+                                value={t.user.email}
+                              />
                             </td>
                             <td>
                               <select id={`inputCourse_${t.id}`} disabled>
@@ -840,22 +575,7 @@ export default function EnrollConfig(props) {
                       return (
                         <tr key={t.id}>
                           <td>
-                            <select id={`inputEmail_${t.id}`} disabled>
-                              <option
-                                value={t.user.id}
-                                defaultValue={t.user.id}
-                              >
-                                {t.user.email}
-                              </option>
-                              {emailEdit.map((e) => {
-                                return (
-                                  <option key={e.id} value={e.id}>
-                                    {e.user.email}
-                                  </option>
-                                );
-                              })}
-                              {}
-                            </select>
+                            <input type="text" disabled value={t.user.email} />
                           </td>
                           <td>
                             <select id={`inputCourse_${t.id}`} disabled>
@@ -988,7 +708,6 @@ export default function EnrollConfig(props) {
         }}
         onCloseAction={() => {
           setPopup(false);
-          switchSaveState(false);
           switchEditState(true);
         }}
         hasIconAnimation

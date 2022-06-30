@@ -17,6 +17,7 @@ export default function Schedulesessionslist(props) {
   const [subject, setSubject] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
 
   const [subjectEdit, setSubjectEdit] = useState([]);
   const [newStartDate] = useState();
@@ -57,11 +58,38 @@ export default function Schedulesessionslist(props) {
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100%";
-      document.getElementById("standard-modal").style.height = "100%";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
+  };
+
+  const finalizedEdit = (type, icon, text, confirmDel) => {
+    fetchSessions(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
+  };
+
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchSessions(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchSessions(actualPage);
   };
 
   const connectionAlert = async () => {
@@ -75,6 +103,7 @@ export default function Schedulesessionslist(props) {
     await API.asynchronizeRequest(function () {
       SCHEDULESERVICE.pagedSessions(pages)
         .then((e) => {
+          setActualPage(e.data.page);
           setMaxPages(e.data.total_pages);
           setSessions(e.data.current_page);
           sessions_filter.sessions = e.data.current_page;
@@ -109,7 +138,6 @@ export default function Schedulesessionslist(props) {
   };
 
   const alertCreate = async () => {
-    switchEditState(false);
     setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
@@ -140,17 +168,17 @@ export default function Schedulesessionslist(props) {
     let subject = document.getElementById("s_subjectId").value;
     let subject_id = subject.split("_")[1];
     let subject_code = subject.split("_")[0];
-
     if (
-      (name !== "" &&
-        start_date !== "" &&
-        end_date !== "" &&
-        resources !== "" &&
-        streaming !== "" &&
-        chat !== "" &&
-        subject_id !== `${props.language.chooseSubject}` &&
-        subject_id !== "",
-      subject_code !== `${props.language.chooseSubject}` && subject_code !== "")
+      name !== "" &&
+      start_date !== "" &&
+      end_date !== "" &&
+      resources !== "" &&
+      streaming !== "" &&
+      chat !== "" &&
+      subject_id !== `${props.language.chooseSubject}` &&
+      subject_id !== "" &&
+      subject_code !== `${props.language.chooseSubject}` &&
+      subject_code !== ""
     ) {
       json.push(
         name,
@@ -163,8 +191,7 @@ export default function Schedulesessionslist(props) {
         subject_code
       );
     } else {
-      alertCreate();
-      switchSaveState(false);
+      finalizedCreate("error", true, props.language.creationFailed, false);
       return;
     }
 
@@ -176,20 +203,24 @@ export default function Schedulesessionslist(props) {
       SCHEDULESERVICE.createSession(SessionJson)
         .then((error) => {
           if (error) {
-            fetchSessions(1);
-            setPopup(true);
-            setPopupType("info");
-            setPopupText(props.language.creationCompleted);
-            setIsConfirmDelete(false);
+            finalizedCreate(
+              "info",
+              true,
+              props.language.creationCompleted,
+              false
+            );
           }
         })
         .catch(async (error) => {
-          await interceptExpiredToken(error);
-          setPopup(true);
-          setPopupText(props.language.creationFailed);
-          setIsConfirmDelete(false);
-          setPopupIcon("error");
-          switchSaveState(false);
+          if (error) {
+            finalizedCreate(
+              "error",
+              true,
+              props.language.creationFailed,
+              false
+            );
+            await interceptExpiredToken(error);
+          }
         });
     }).then(async (error) => {
       if (error) {
@@ -200,14 +231,10 @@ export default function Schedulesessionslist(props) {
   };
 
   const confirmDeleteEvent = async (s) => {
-    switchEditState(false);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
+    finalizedDelete("warning", true, true, props.language.deleteAlert);
     setIdDelete(s.id);
     setIdBatch(s.batch_id);
+    switchEditState(false);
   };
 
   const deleteSession = async (id, batch_id) => {
@@ -217,21 +244,24 @@ export default function Schedulesessionslist(props) {
         SCHEDULESERVICE.deleteSession(id)
           .then((del) => {
             if (del) {
-              fetchSessions(1);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.deleteAlertCompleted);
-              setIsConfirmDelete(false);
-              switchSaveState(false);
+              finalizedDelete(
+                "info",
+                true,
+                false,
+                props.language.deleteAlertCompleted
+              );
             }
           })
           .catch(async (e) => {
-            await interceptExpiredToken(e);
-            setPopupType("error");
-            popupIcon(false);
-            setPopup(false);
-            setPopupText(props.language.deleteFailed);
-            setIsConfirmDelete(false);
+            if (e) {
+              finalizedDelete(
+                "error",
+                true,
+                false,
+                props.language.deleteAlertFailed
+              );
+              await interceptExpiredToken(e);
+            }
           });
       }).then(async (e) => {
         if (e) {
@@ -252,21 +282,26 @@ export default function Schedulesessionslist(props) {
     switchEditState(false);
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.deleteSession(selectInfo.id)
-        .then(() => {
-          fetchSessions(1);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
-          setIsConfirmDelete(false);
-          switchSaveState(false);
+        .then((e) => {
+          if (e) {
+            finalizedDelete(
+              "info",
+              true,
+              false,
+              props.language.deleteAlertCompleted
+            );
+          }
         })
         .catch(async (e) => {
-          await interceptExpiredToken(e);
-          setPopupType("error");
-          popupIcon(false);
-          setPopup(false);
-          setPopupText(props.language.deleteFailed);
-          setIsConfirmDelete(false);
+          if (e) {
+            finalizedDelete(
+              "error",
+              true,
+              false,
+              props.language.deleteAlertFailed
+            );
+            await interceptExpiredToken(e);
+          }
         });
     }).then(async (e) => {
       if (e) {
@@ -291,125 +326,113 @@ export default function Schedulesessionslist(props) {
     setSessions(filterSessions);
   };
 
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
-  };
-
   const editSession = (e, s) => {
     switchEditState(false);
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let startDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let endDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-      let streaming =
-        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
-      let resources =
-        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
-      let chat =
-        e.target.parentNode.parentNode.parentNode.childNodes[6].childNodes[0];
-      let subject =
-        e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
-      let inputName = document.getElementById("inputName_" + s.id).value;
-      let inputStartDate = document.getElementById(
-        "inputStartDate_" + s.id
-      ).value;
-      let inputEndDate = document.getElementById("inputEndDate_" + s.id).value;
-      let inputStreamPlatform = document.getElementById(
-        "inputStreamPlatform_" + s.id
-      ).value;
-      let inputResourcePlatform = document.getElementById(
-        "inputResourcePlatform_" + s.id
-      ).value;
-      let inputSessionChat = document.getElementById(
-        "inputSessionChat_" + s.id
-      ).value;
-      let inputSubject = document.getElementById(
-        "inputSubjectID_" + s.id
-      ).value;
-      let editTitle,
-        editStartDate,
-        editEndDate,
-        editChat,
-        editResources,
-        editStream,
-        editSubject,
-        editCode;
+    let inputName = document.getElementById("inputName_" + s.id).value;
+    let inputStartDate = document.getElementById(
+      "inputStartDate_" + s.id
+    ).value;
+    let inputEndDate = document.getElementById("inputEndDate_" + s.id).value;
+    let inputStreamPlatform = document.getElementById(
+      "inputStreamPlatform_" + s.id
+    ).value;
+    let inputResourcePlatform = document.getElementById(
+      "inputResourcePlatform_" + s.id
+    ).value;
+    let inputSessionChat = document.getElementById(
+      "inputSessionChat_" + s.id
+    ).value;
+    let inputSubject = document.getElementById("inputSubjectID_" + s.id).value;
 
-      if (inputName !== "" && inputName !== s.session_name) {
-        editTitle = inputName;
-      } else {
-        editTitle = s.session_name;
-      }
+    let editTitle,
+      editStartDate,
+      editEndDate,
+      editChat,
+      editResources,
+      editStream,
+      editSubject,
+      editCode;
 
-      if (inputStartDate !== "" && inputStartDate !== s.session_start_date) {
-        editStartDate = inputStartDate;
-      } else {
-        editStartDate = s.session_start_date;
-      }
+    if (inputName !== "" && inputName !== s.session_name) {
+      editTitle = inputName;
+    } else {
+      editTitle = s.session_name;
+    }
 
-      if (inputEndDate !== "" && inputEndDate !== s.session_end_date) {
-        editEndDate = inputEndDate;
-      } else {
-        editEndDate = s.session_end_date;
-      }
+    if (inputStartDate !== "" && inputStartDate !== s.session_start_date) {
+      editStartDate = inputStartDate;
+    } else {
+      editStartDate = s.session_start_date;
+    }
 
-      if (inputSessionChat !== "" && inputSessionChat !== s.session_chat_id) {
-        editChat = inputSessionChat;
-      } else {
-        editChat = s.session_chat_id;
-      }
+    if (inputEndDate !== "" && inputEndDate !== s.session_end_date) {
+      editEndDate = inputEndDate;
+    } else {
+      editEndDate = s.session_end_date;
+    }
 
-      if (
-        inputResourcePlatform !== "" &&
-        inputResourcePlatform !== s.resources_platform
-      ) {
-        editResources = inputResourcePlatform;
-      } else {
-        editResources = s.resources_platform;
-      }
+    if (inputSessionChat !== "" && inputSessionChat !== s.session_chat_id) {
+      editChat = inputSessionChat;
+    } else {
+      editChat = s.session_chat_id;
+    }
 
-      if (
-        inputStreamPlatform !== "" &&
-        inputStreamPlatform !== s.streaming_platform
-      ) {
-        editStream = inputStreamPlatform;
-      } else {
-        editStream = s.streaming_platform;
-      }
+    if (
+      inputResourcePlatform !== "" &&
+      inputResourcePlatform !== s.resources_platform
+    ) {
+      editResources = inputResourcePlatform;
+    } else {
+      editResources = s.resources_platform;
+    }
 
-      if (
-        inputSubject.split("_")[0] !== "" &&
-        inputSubject.split("_")[0] !== s.subject.id
-      ) {
-        editSubject = inputSubject.split("_")[0];
-      } else {
-        editSubject = s.subject.id;
-      }
+    if (
+      inputStreamPlatform !== "" &&
+      inputStreamPlatform !== s.streaming_platform
+    ) {
+      editStream = inputStreamPlatform;
+    } else {
+      editStream = s.streaming_platform;
+    }
 
-      if (
-        inputSubject.split("_")[1] !== "" &&
-        inputSubject.split("_")[1] !== s.subject.subject_code
-      ) {
-        editCode = inputSubject.split("_")[1];
-      } else {
-        editCode = s.subject.subject_code;
-      }
+    if (inputSubject !== "" && inputSubject !== s.subject.id) {
+      editSubject = inputSubject;
+    } else {
+      editSubject = s.subject.id;
+    }
+    if (
+      inputSubject.split("_")[0] !== "" &&
+      inputSubject.split("_")[0] !== s.subject.id
+    ) {
+      editSubject = inputSubject.split("_")[0];
+    } else {
+      editSubject = s.subject.id;
+    }
 
-      API.asynchronizeRequest(function () {
-        setSelectInfo({
+    if (
+      inputSubject.split("_")[1] !== "" &&
+      inputSubject.split("_")[1] !== s.subject.subject_code
+    ) {
+      editCode = inputSubject.split("_")[1];
+    } else {
+      editCode = s.subject.subject_code;
+    }
+
+    API.asynchronizeRequest(function () {
+      setSelectInfo({
+        id: s.id,
+        session_name: editTitle,
+        session_start_date: editStartDate,
+        session_end_date: editEndDate,
+        streaming_platform: editStream,
+        resources_platform: editResources,
+        session_chat_id: editChat,
+        subject_id: editSubject,
+        subject_code: editCode,
+        batch_id: s.batch_id,
+      });
+      if (s.batch_id === null) {
+        SCHEDULESERVICE.editSession({
           id: s.id,
           session_name: editTitle,
           session_start_date: editStartDate,
@@ -418,428 +441,54 @@ export default function Schedulesessionslist(props) {
           resources_platform: editResources,
           session_chat_id: editChat,
           subject_id: editSubject,
-          subject_code: editCode,
           batch_id: s.batch_id,
-        });
-        if (s.batch_id === null) {
-          SCHEDULESERVICE.editSession({
-            id: s.id,
-            session_name: editTitle,
-            session_start_date: editStartDate,
-            session_end_date: editEndDate,
-            streaming_platform: editStream,
-            resources_platform: editResources,
-            session_chat_id: editChat,
-            subject_id: editSubject,
+        })
+          .then((error) => {
+            if (error) {
+              let num = 0;
+              while (num < 4) {
+                e.target.parentNode.childNodes[num].style.display === "block"
+                  ? (e.target.parentNode.childNodes[num].style.display = "none")
+                  : (e.target.parentNode.childNodes[num].style.display =
+                      "block");
+                num += 1;
+              }
+              let disable = 1;
+              while (disable < 8) {
+                e.target.parentNode.parentNode.childNodes[
+                  disable
+                ].childNodes[0].disabled = true;
+                disable += 1;
+              }
+              finalizedEdit(
+                "info",
+                true,
+                props.language.editAlertCompleted,
+                false
+              );
+            }
           })
-            .then((error) => {
-              if (error) {
-                let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button = e.target.parentNode.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton = e.target.parentNode.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-                startDate.disabled = true;
-                endDate.disabled = true;
-                streaming.disabled = true;
-                resources.disabled = true;
-                chat.disabled = true;
-                subject.disabled = true;
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-                fetchSessions(1);
-              }
-            })
-            .catch(async (error) => {
-              if (error) {
-                await interceptExpiredToken(error);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-              }
-            });
-        } else {
-          setSelectType(true);
-          setSelectTypeModal(true);
-        }
-      }).then(async (error) => {
-        if (error) {
-          await interceptExpiredToken(error);
-          connectionAlert();
-        }
-      });
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
-            .childNodes[0];
-        let streaming =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
-            .childNodes[0];
-        let resources =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[5]
-            .childNodes[0];
-        let chat =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[6]
-            .childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[7]
-            .childNodes[0];
-
-        let inputName = document.getElementById("inputName_" + s.id).value;
-        let inputStartDate = document.getElementById(
-          "inputStartDate_" + s.id
-        ).value;
-        let inputEndDate = document.getElementById(
-          "inputEndDate_" + s.id
-        ).value;
-        let inputStreamPlatform = document.getElementById(
-          "inputStreamPlatform_" + s.id
-        ).value;
-        let inputResourcePlatform = document.getElementById(
-          "inputResourcePlatform_" + s.id
-        ).value;
-        let inputSessionChat = document.getElementById(
-          "inputSessionChat_" + s.id
-        ).value;
-        let inputSubject = document.getElementById(
-          "inputSubjectID_" + s.id
-        ).value;
-        let editTitle,
-          editStartDate,
-          editEndDate,
-          editChat,
-          editResources,
-          editStream,
-          editSubject,
-          editCode;
-
-        if (inputName !== "" && inputName !== s.session_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.session_name;
-        }
-
-        if (inputStartDate !== "" && inputStartDate !== s.session_start_date) {
-          editStartDate = inputStartDate;
-        } else {
-          editStartDate = s.session_start_date;
-        }
-
-        if (inputEndDate !== "" && inputEndDate !== s.session_end_date) {
-          editEndDate = inputEndDate;
-        } else {
-          editEndDate = s.session_end_date;
-        }
-
-        if (inputSessionChat !== "" && inputSessionChat !== s.session_chat_id) {
-          editChat = inputSessionChat;
-        } else {
-          editChat = s.session_chat_id;
-        }
-
-        if (
-          inputResourcePlatform !== "" &&
-          inputResourcePlatform !== s.resources_platform
-        ) {
-          editResources = inputResourcePlatform;
-        } else {
-          editResources = s.resources_platform;
-        }
-
-        if (
-          inputStreamPlatform !== "" &&
-          inputStreamPlatform !== s.streaming_platform
-        ) {
-          editStream = inputStreamPlatform;
-        } else {
-          editStream = s.streaming_platform;
-        }
-
-        if (
-          inputSubject.split("_")[0] !== "" &&
-          inputSubject.split("_")[0] !== s.subject.id
-        ) {
-          editSubject = inputSubject.split("_")[0];
-        } else {
-          editSubject = s.subject.id;
-        }
-
-        if (
-          inputSubject.split("_")[1] !== "" &&
-          inputSubject.split("_")[1] !== s.subject.subject_code
-        ) {
-          editCode = inputSubject.split("_")[1];
-        } else {
-          editCode = s.subject.subject_code;
-        }
-
-        API.asynchronizeRequest(function () {
-          setSelectInfo({
-            id: s.id,
-            session_name: editTitle,
-            session_start_date: editStartDate,
-            session_end_date: editEndDate,
-            streaming_platform: editStream,
-            resources_platform: editResources,
-            session_chat_id: editChat,
-            subject_id: editSubject,
-            subject_code: editCode,
-            batch_id: s.batch_id,
+          .catch(async (error) => {
+            if (error) {
+              finalizedEdit(
+                "error",
+                true,
+                props.language.editAlertFailed,
+                false
+              );
+              await interceptExpiredToken(error);
+            }
           });
-          if (s.batch_id === null) {
-            SCHEDULESERVICE.editSession({
-              id: s.id,
-              session_name: editTitle,
-              session_start_date: editStartDate,
-              session_end_date: editEndDate,
-              streaming_platform: editStream,
-              resources_platform: editResources,
-              session_chat_id: editChat,
-              subject_id: editSubject,
-            })
-              .then((error) => {
-                if (error) {
-                  let buttonDelete =
-                    e.target.parentNode.parentNode.parentNode.childNodes[0];
-                  buttonDelete.style.display = "block";
-                  let button =
-                    e.target.parentNode.parentNode.parentNode.childNodes[1];
-                  button.style.display = "block";
-                  let checkButton =
-                    e.target.parentNode.parentNode.parentNode.childNodes[2];
-                  checkButton.style.display = "none";
-                  let cancelButton =
-                    e.target.parentNode.parentNode.parentNode.childNodes[3];
-                  cancelButton.style.display = "none";
-                  name.disabled = true;
-                  startDate.disabled = true;
-                  endDate.disabled = true;
-                  streaming.disabled = true;
-                  resources.disabled = true;
-                  chat.disabled = true;
-                  subject.disabled = true;
-                  setPopupType("info");
-                  setPopupText(props.language.editAlertCompleted);
-                  setIsConfirmDelete(false);
-                  setPopup(true);
-                  fetchSessions(1);
-                }
-              })
-              .catch(async (error) => {
-                if (error) {
-                  await interceptExpiredToken(error);
-                  setPopupText(props.language.editAlertFailed);
-                  setPopupIcon("error");
-                  switchSaveState(false);
-                  setIsConfirmDelete(false);
-                  setPopup(true);
-                }
-              });
-          } else {
-            setSelectType(true);
-            setSelectTypeModal(true);
-          }
-        }).then(async (error) => {
-          if (error) {
-            await interceptExpiredToken(error);
-            connectionAlert();
-          }
-        });
       } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-        let streaming =
-          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-        let resources =
-          e.target.parentNode.parentNode.childNodes[5].childNodes[0];
-        let chat = e.target.parentNode.parentNode.childNodes[6].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
-
-        let inputName = document.getElementById("inputName_" + s.id).value;
-        let inputStartDate = document.getElementById(
-          "inputStartDate_" + s.id
-        ).value;
-        let inputEndDate = document.getElementById(
-          "inputEndDate_" + s.id
-        ).value;
-        let inputStreamPlatform = document.getElementById(
-          "inputStreamPlatform_" + s.id
-        ).value;
-        let inputResourcePlatform = document.getElementById(
-          "inputResourcePlatform_" + s.id
-        ).value;
-        let inputSessionChat = document.getElementById(
-          "inputSessionChat_" + s.id
-        ).value;
-        let inputSubject = document.getElementById(
-          "inputSubjectID_" + s.id
-        ).value;
-
-        let editTitle,
-          editStartDate,
-          editEndDate,
-          editChat,
-          editResources,
-          editStream,
-          editSubject,
-          editCode;
-
-        if (inputName !== "" && inputName !== s.session_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.session_name;
-        }
-
-        if (inputStartDate !== "" && inputStartDate !== s.session_start_date) {
-          editStartDate = inputStartDate;
-        } else {
-          editStartDate = s.session_start_date;
-        }
-
-        if (inputEndDate !== "" && inputEndDate !== s.session_end_date) {
-          editEndDate = inputEndDate;
-        } else {
-          editEndDate = s.session_end_date;
-        }
-
-        if (inputSessionChat !== "" && inputSessionChat !== s.session_chat_id) {
-          editChat = inputSessionChat;
-        } else {
-          editChat = s.session_chat_id;
-        }
-
-        if (
-          inputResourcePlatform !== "" &&
-          inputResourcePlatform !== s.resources_platform
-        ) {
-          editResources = inputResourcePlatform;
-        } else {
-          editResources = s.resources_platform;
-        }
-
-        if (
-          inputStreamPlatform !== "" &&
-          inputStreamPlatform !== s.streaming_platform
-        ) {
-          editStream = inputStreamPlatform;
-        } else {
-          editStream = s.streaming_platform;
-        }
-
-        if (inputSubject !== "" && inputSubject !== s.subject.id) {
-          editSubject = inputSubject;
-        } else {
-          editSubject = s.subject.id;
-        }
-        if (
-          inputSubject.split("_")[0] !== "" &&
-          inputSubject.split("_")[0] !== s.subject.id
-        ) {
-          editSubject = inputSubject.split("_")[0];
-        } else {
-          editSubject = s.subject.id;
-        }
-
-        if (
-          inputSubject.split("_")[1] !== "" &&
-          inputSubject.split("_")[1] !== s.subject.subject_code
-        ) {
-          editCode = inputSubject.split("_")[1];
-        } else {
-          editCode = s.subject.subject_code;
-        }
-
-        API.asynchronizeRequest(function () {
-          setSelectInfo({
-            id: s.id,
-            session_name: editTitle,
-            session_start_date: editStartDate,
-            session_end_date: editEndDate,
-            streaming_platform: editStream,
-            resources_platform: editResources,
-            session_chat_id: editChat,
-            subject_id: editSubject,
-            subject_code: editCode,
-            batch_id: s.batch_id,
-          });
-          if (s.batch_id === null) {
-            SCHEDULESERVICE.editSession({
-              id: s.id,
-              session_name: editTitle,
-              session_start_date: editStartDate,
-              session_end_date: editEndDate,
-              streaming_platform: editStream,
-              resources_platform: editResources,
-              session_chat_id: editChat,
-              subject_id: editSubject,
-              batch_id: s.batch_id,
-            })
-              .then((error) => {
-                if (error) {
-                  fetchSessions(1);
-                  let buttonDelete = e.target.parentNode.childNodes[0];
-                  buttonDelete.style.display = "block";
-                  let button = e.target.parentNode.childNodes[1];
-                  button.style.display = "block";
-                  let checkButton = e.target.parentNode.childNodes[2];
-                  checkButton.style.display = "none";
-                  let cancelButton = e.target.parentNode.childNodes[3];
-                  cancelButton.style.display = "none";
-                  name.disabled = true;
-                  startDate.disabled = true;
-                  endDate.disabled = true;
-                  streaming.disabled = true;
-                  resources.disabled = true;
-                  chat.disabled = true;
-                  subject.disabled = true;
-                  setPopupType("info");
-                  setPopupText(props.language.editAlertCompleted);
-                  switchSaveState(false);
-                  setIsConfirmDelete(false);
-                  setPopup(true);
-                }
-              })
-              .catch(async (error) => {
-                if (error) {
-                  await interceptExpiredToken(error);
-                  setPopupText(props.language.editAlertFailed);
-                  setPopupIcon("error");
-                  switchSaveState(false);
-                  setPopup(true);
-                  setIsConfirmDelete(false);
-                }
-              });
-          } else {
-            setSelectType(true);
-            setSelectTypeModal(true);
-          }
-        }).then(async (error) => {
-          if (error) {
-            await interceptExpiredToken(error);
-            connectionAlert();
-          }
-        });
+        setSelectType(true);
+        setSelectTypeModal(true);
       }
-    }
+    }).then(async (error) => {
+      if (error) {
+        await interceptExpiredToken(error);
+        connectionAlert();
+      }
+    });
   };
 
   const editGlobalSession = () => {
@@ -857,21 +506,18 @@ export default function Schedulesessionslist(props) {
       })
         .then((e) => {
           if (e) {
-            setPopup(true);
-            setPopupType("info");
-            setPopupText(props.language.editAlertCompleted);
-            switchSaveState(false);
-            setIsConfirmDelete(false);
-            fetchSessions(1);
+            finalizedEdit(
+              "info",
+              true,
+              props.language.editAlertCompleted,
+              false
+            );
           }
         })
-        .catch((e) => {
+        .catch(async (e) => {
           if (e) {
-            setPopupText(props.language.editAlertFailed);
-            setPopupIcon("error");
-            switchSaveState(false);
-            setPopup(true);
-            setIsConfirmDelete(false);
+            finalizedEdit("error", true, props.language.editAlertFailed, false);
+            await interceptExpiredToken(e);
           }
         });
     }).then(async (error) => {
@@ -895,21 +541,20 @@ export default function Schedulesessionslist(props) {
         subject_id: selectInfo.subject_id,
         batch_id: null,
       })
-        .then(() => {
-          fetchSessions(1);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.editAlertCompleted);
-          switchSaveState(false);
-          setIsConfirmDelete(false);
-        })
-        .catch((e) => {
+        .then((e) => {
           if (e) {
-            setPopupText(props.language.editAlertFailed);
-            setPopupIcon("error");
-            switchSaveState(false);
-            setPopup(true);
-            setIsConfirmDelete(false);
+            finalizedEdit(
+              "info",
+              true,
+              props.language.editAlertCompleted,
+              false
+            );
+          }
+        })
+        .catch(async (e) => {
+          if (e) {
+            finalizedEdit("error", true, props.language.editAlertFailed, false);
+            await interceptExpiredToken(e);
           }
         });
     }).then(async (e) => {
@@ -921,251 +566,73 @@ export default function Schedulesessionslist(props) {
   };
 
   const closeEditSession = (e, s) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let startDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let endDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-      let streaming =
-        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
-      let resources =
-        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
-      let chat =
-        e.target.parentNode.parentNode.parentNode.childNodes[6].childNodes[0];
-      let subject =
-        e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
-      name.disabled = true;
-      startDate.disabled = true;
-      endDate.disabled = true;
-      streaming.disabled = true;
-      resources.disabled = true;
-      chat.disabled = true;
-      subject.disabled = true;
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-      let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-      if (s.subject.id !== parseInt(content.value)) {
-        content = s.subject.id;
-      }
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[1].childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[2].childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[3].childNodes[0];
-        let streaming =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[4].childNodes[0];
-        let resources =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[5].childNodes[0];
-        let chat =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[6].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[7].childNodes[0];
-        name.disabled = true;
-        startDate.disabled = true;
-        endDate.disabled = true;
-        streaming.disabled = true;
-        resources.disabled = true;
-        chat.disabled = true;
-        subject.disabled = true;
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-        let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-        if (s.subject.id !== parseInt(content.value)) {
-          content = s.subject.id;
-        }
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-        let streaming =
-          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-        let resources =
-          e.target.parentNode.parentNode.childNodes[5].childNodes[0];
-        let chat = e.target.parentNode.parentNode.childNodes[6].childNodes[0];
-        let subjectValue =
-          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
-        name.disabled = true;
-        startDate.disabled = true;
-        endDate.disabled = true;
-        streaming.disabled = true;
-        resources.disabled = true;
-        chat.disabled = true;
-        subjectValue.disabled = true;
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-        let content = document.getElementById(`inputSubjectID_${s.id}`).value;
-        if (s.subject.id !== parseInt(content.value)) {
-          content = s.subject.id;
-        }
-      }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
+    }
+    let disable = 1;
+    while (disable < 8) {
+      e.target.parentNode.parentNode.childNodes[
+        disable
+      ].childNodes[0].disabled = true;
+      disable += 1;
     }
   };
 
   const showEditOptionSession = (e, S) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let startDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let endDate =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-      let streaming =
-        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
-      let resources =
-        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
-      let chat =
-        e.target.parentNode.parentNode.parentNode.childNodes[6].childNodes[0];
-      let subject =
-        e.target.parentNode.parentNode.parentNode.childNodes[7].childNodes[0];
-      name.disabled = false;
-      startDate.disabled = false;
-      endDate.disabled = false;
-      streaming.disabled = false;
-      resources.disabled = false;
-      chat.disabled = false;
-      subject.disabled = false;
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[1];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode.parentNode.childNodes[0];
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-      listSubject(subject.value);
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
-            .childNodes[0];
-        let streaming =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
-            .childNodes[0];
-        let resources =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[5]
-            .childNodes[0];
-        let chat =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[6]
-            .childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[7]
-            .childNodes[0];
-        name.disabled = false;
-        startDate.disabled = false;
-        endDate.disabled = false;
-        streaming.disabled = false;
-        resources.disabled = false;
-        chat.disabled = false;
-        subject.disabled = false;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        listSubject(subject.value);
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let startDate =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let endDate =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-        let streaming =
-          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-        let resources =
-          e.target.parentNode.parentNode.childNodes[5].childNodes[0];
-        let chat = e.target.parentNode.parentNode.childNodes[6].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.childNodes[7].childNodes[0];
-        name.disabled = false;
-        startDate.disabled = false;
-        endDate.disabled = false;
-        streaming.disabled = false;
-        resources.disabled = false;
-        chat.disabled = false;
-        subject.disabled = false;
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        listSubject(subject.value);
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
+    }
+    let disable = 1;
+    while (disable < 8) {
+      e.target.parentNode.parentNode.childNodes[
+        disable
+      ].childNodes[0].disabled = false;
+      if (disable === 7) {
+        listSubject(
+          e.target.parentNode.parentNode.childNodes[disable].childNodes[0].value
+        );
+        e.target.parentNode.parentNode.childNodes[
+          disable
+        ].childNodes[0].disabled = false;
       }
+      disable += 1;
     }
   };
 
   const deleteGlobalSession = async () => {
+    switchEditState(false);
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.deleteGlobal(idBatch)
         .then((e) => {
           if (e) {
-            fetchSessions(1);
-            setPopup(true);
-            setPopupType("info");
-            setPopupText(props.language.deleteAlertCompleted);
-            switchSaveState(false);
-            setSelectType(false);
-            fetchSessions(1);
+            finalizedDelete(
+              "info",
+              true,
+              false,
+              props.language.deleteAlertCompleted
+            );
           }
         })
         .catch((e) => {
           if (e) {
-            setPopupText(props.language.deleteFailed);
-            setPopupIcon("error");
-            switchSaveState(false);
-            setPopup(true);
-            setIsConfirmDelete(false);
+            finalizedDelete(
+              "error",
+              true,
+              false,
+              props.language.deleteAlertFailed
+            );
           }
         });
     }).then((e) => {
@@ -1217,6 +684,7 @@ export default function Schedulesessionslist(props) {
   };
 
   const showModal = async () => {
+    switchEditState(false);
     let subject_name = document.getElementById("s_subjectId").value;
     let name = document.getElementById("s_name").value;
     let streaming = document.getElementById("s_streaming").value;
@@ -1263,8 +731,6 @@ export default function Schedulesessionslist(props) {
   useEffect(() => {
     setSearch(props.search);
   }, [props.search]);
-
-  useEffect(() => {}, [props.language]);
 
   return (
     <>
@@ -1358,7 +824,9 @@ export default function Schedulesessionslist(props) {
                 <input
                   id="s_dailySession"
                   type="checkbox"
-                  onClick={showModal}
+                  onClick={() => {
+                    showModal();
+                  }}
                 />
               </th>
               <th>
@@ -1860,7 +1328,7 @@ export default function Schedulesessionslist(props) {
           if (box === true) {
             document.getElementById("s_dailySession").checked = false;
           }
-          fetchSessions(1);
+          fetchSessions(actualPage);
         }}
       ></SessionsModal>
       <StandardModal
@@ -1878,11 +1346,9 @@ export default function Schedulesessionslist(props) {
           setPopup(false);
           setSelectType(false);
           switchEditState(true);
-          switchSaveState(false);
         }}
         onCloseAction={() => {
           setPopup(false);
-          switchSaveState(false);
           setSelectType(false);
           switchEditState(true);
         }}

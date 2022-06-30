@@ -33,7 +33,9 @@ export default function UserConfig(props) {
 
   const [userPermRoles, setUserPermRoles] = useState([]);
   const [allSelected, setAllSelected] = useState(true);
+
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -44,32 +46,14 @@ export default function UserConfig(props) {
     }
   };
 
-  const switchSaveState = (state) => {
-    if (state) {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "scroll";
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
-  };
-
   const switchEditState = (state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100%";
-      document.getElementById("standard-modal").style.height = "100%";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
@@ -81,29 +65,38 @@ export default function UserConfig(props) {
     setPopupText(props.language.connectionAlert);
     setPopupIcon("error");
   };
+  const finalizedEdit = (type, icon, text, confirmDel) => {
+    fetchUserPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
+  };
 
-  const fetchUsers = () => {
-    asynchronizeRequest(function () {
-      USERSERVICE.pagedUserInfos(1)
-        .then((us) => {
-          setMaxPages(us.data.total_pages);
-          setUsers(us.data.current_page);
-        })
-        .catch(async (err) => {
-          await interceptExpiredToken(err);
-        });
-    }).then(async (e) => {
-      if (e) {
-        await interceptExpiredToken(e);
-        connectionAlert();
-      }
-    });
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchUserPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchUserPage(actualPage);
   };
 
   const fetchUserPage = (page) => {
     asynchronizeRequest(function () {
       USERSERVICE.pagedUserInfos(page)
         .then((us) => {
+          setActualPage(us.data.page);
           setMaxPages(us.data.total_pages);
           setUsers(us.data.current_page);
         })
@@ -112,8 +105,8 @@ export default function UserConfig(props) {
         });
     }).then(async (e) => {
       if (e) {
-        await interceptExpiredToken(e);
         connectionAlert();
+        await interceptExpiredToken(e);
       }
     });
   };
@@ -138,395 +131,120 @@ export default function UserConfig(props) {
 
   const confirmDeleteUser = async (id) => {
     switchEditState(false);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
+    finalizedDelete("warning", true, true, props.language.deleteAlert);
     setIdDelete(id);
-  };
-
-  const showDeleteError = () => {
-    switchEditState(false);
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText(props.language.deleteFailed);
-    setIsConfirmDelete(false);
   };
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
-    setPopupType("error");
-    setPopup(true);
+    finalizedCreate("error", true, props.language.creationFailed, false);
   };
 
   const editUser = (e, s) => {
     switchEditState(false);
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let isAdmin =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
 
-      let inputName = document.getElementById("inputName_" + s.user.id).value;
-      let inputEmail = document.getElementById("inputEmail_" + s.user.id).value;
+    let inputName = document.getElementById("inputName_" + s.user.id).value;
+    let inputEmail = document.getElementById("inputEmail_" + s.user.id).value;
 
-      let editTitle, editEmail;
+    let editTitle, editEmail;
 
-      if (inputName !== "" && inputName !== s.session_name) {
-        editTitle = inputName;
-      } else {
-        editTitle = s.session_name;
-      }
-
-      if (inputEmail !== "" && inputEmail !== s.email) {
-        editEmail = inputEmail;
-      } else {
-        editEmail = s.session_start_date;
-      }
-
-      API.asynchronizeRequest(function () {
-        USERSERVICE.editUser({
-          id: s.id,
-          user_name: editTitle,
-          isLoggedWithGoogle: s.isLoggedWithGoogle,
-          googleid: s.googleid,
-          user: {
-            id: s.user.id,
-            email: editEmail,
-          },
-        })
-          .then(() => {
-            fetchUsers();
-            let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-            buttonDelete.style.display = "block";
-            let button = e.target.parentNode.parentNode.childNodes[1];
-            button.style.display = "block";
-            let checkButton = e.target.parentNode.parentNode.childNodes[2];
-            checkButton.style.display = "none";
-            let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-            cancelButton.style.display = "none";
-            name.disabled = true;
-            email.disabled = true;
-            isAdmin.disabled = true;
-            setIsConfirmDelete(false);
-            setPopup(true);
-            setPopupType("info");
-            setPopupText(props.language.editAlertCompleted);
-            switchSaveState(false);
-          })
-          .catch((e) => {
-            if (e) {
-              setPopupText(props.language.editAlertFailed);
-              setPopupIcon("error");
-              switchSaveState(false);
-              setPopup(true);
-              setIsConfirmDelete(false);
-            }
-          });
-      }).then((e) => {
-        if (e) {
-          connectionAlert();
-        }
-      });
+    if (inputName !== "" && inputName !== s.session_name) {
+      editTitle = inputName;
     } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
-            .childNodes[0];
-
-        let inputName = document.getElementById("inputName_" + s.id).value;
-        let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-
-        let editTitle, editEmail, editisAdmin;
-
-        if (inputName !== "" && inputName !== s.session_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.session_name;
-        }
-
-        if (inputEmail !== "" && inputEmail !== s.email) {
-          editEmail = inputEmail;
-        } else {
-          editEmail = s.session_start_date;
-        }
-
-        API.asynchronizeRequest(function () {
-          USERSERVICE.editUser({
-            id: s.id,
-            user_name: editTitle,
-            isLoggedWithGoogle: s.isLoggedWithGoogle,
-            googleid: s.googleid,
-            user: {
-              id: s.user.id,
-              email: editEmail,
-            },
-          })
-            .then(() => {
-              fetchUsers();
-              let buttonDelete =
-                e.target.parentNode.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button =
-                e.target.parentNode.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              email.disabled = true;
-              isAdmin.disabled = true;
-
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
-              switchSaveState(false);
-              setIsConfirmDelete(false);
-            })
-            .catch((e) => {
-              if (e) {
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-                setIsConfirmDelete(false);
-              }
-            });
-        }).then((e) => {
-          if (e) {
-            connectionAlert();
-          }
-        });
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let email = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-
-        let inputName = document.getElementById("inputName_" + s.user.id).value;
-        let inputEmail = document.getElementById(
-          "inputEmail_" + s.user.id
-        ).value;
-
-        let editTitle, editEmail;
-
-        if (inputName !== "" && inputName !== s.session_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.session_name;
-        }
-
-        if (inputEmail !== "" && inputEmail !== s.email) {
-          editEmail = inputEmail;
-        } else {
-          editEmail = s.session_start_date;
-        }
-
-        API.asynchronizeRequest(function () {
-          USERSERVICE.editUser({
-            id: s.id,
-            user_id: s.user.id,
-            user_name: editTitle,
-            profile_image: s.profile_image,
-            teaching_list: s.teaching_list,
-            isLoggedWithGoogle: s.isLoggedWithGoogle,
-            googleid: s.googleid,
-          })
-            .then(() => {
-              fetchUsers();
-              switchEditState(false);
-              let buttonDelete = e.target.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              email.disabled = true;
-              isAdmin.disabled = true;
-
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
-              switchSaveState(false);
-              setIsConfirmDelete(false);
-            })
-            .catch((e) => {
-              if (e) {
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-                setPopup(true);
-              }
-            });
-        }).then((e) => {
-          if (e) {
-            connectionAlert();
-          }
-        });
-      }
+      editTitle = s.session_name;
     }
+
+    if (inputEmail !== "" && inputEmail !== s.email) {
+      editEmail = inputEmail;
+    } else {
+      editEmail = s.session_start_date;
+    }
+
+    API.asynchronizeRequest(function () {
+      USERSERVICE.editUser({
+        id: s.id,
+        user_id: s.user.id,
+        user_name: editTitle,
+        profile_image: s.profile_image,
+        teaching_list: s.teaching_list,
+        isLoggedWithGoogle: s.isLoggedWithGoogle,
+        googleid: s.googleid,
+      })
+        .then((x) => {
+          if (x) {
+            finalizedEdit(
+              "info",
+              true,
+              props.language.editAlertCompleted,
+              false
+            );
+            let num = 0;
+            while (num < 4) {
+              e.target.parentNode.childNodes[num].style.display === "block"
+                ? (e.target.parentNode.childNodes[num].style.display = "none")
+                : (e.target.parentNode.childNodes[num].style.display = "block");
+              num += 1;
+            }
+            let disable = 1;
+            while (disable < 4) {
+              e.target.parentNode.parentNode.childNodes[
+                disable
+              ].childNodes[0].disabled = true;
+              disable += 1;
+            }
+          }
+        })
+        .catch((e) => {
+          if (e) {
+            finalizedEdit("error", true, props.language.editAlertFailed, false);
+          }
+        });
+    }).then((e) => {
+      if (e) {
+        connectionAlert();
+      }
+    });
   };
 
   const closeEditUser = (e, s) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let emails =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let isAdmin =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-
-      name.disabled = true;
-      emails.disabled = true;
-      isAdmin.disabled = true;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[1].childNodes[0];
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[2].childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[3].childNodes[0];
-
-        name.disabled = true;
-        email.disabled = true;
-        isAdmin.disabled = true;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let email = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-
-        name.disabled = true;
-        email.disabled = true;
-        isAdmin.disabled = true;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      }
+    let disable = 1;
+    while (disable < 4) {
+      e.target.parentNode.parentNode.childNodes[
+        disable
+      ].childNodes[0].disabled = true;
+      disable += 1;
+    }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
   const showEditOptionUser = (e) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let isAdmin =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-
-      name.disabled = false;
-      email.disabled = false;
-      isAdmin.disabled = false;
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[1];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode.parentNode.childNodes[0];
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
-            .childNodes[0];
-
-        name.disabled = false;
-        email.disabled = false;
-        isAdmin.disabled = false;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let email = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-
-        name.disabled = false;
-        email.disabled = false;
-        isAdmin.disabled = false;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-      }
+    let disable = 1;
+    while (disable < 4) {
+      e.target.parentNode.parentNode.childNodes[
+        disable
+      ].childNodes[0].disabled = false;
+      disable += 1;
+    }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
   const createUser = (e) => {
-    e.preventDefault();
     switchEditState(false);
 
     let email = document.getElementById("u_email").value;
@@ -542,23 +260,27 @@ export default function UserConfig(props) {
           user_role: role,
         })
           .then(async (res) => {
-            await userEnroll(res.data.user.id);
-            fetchUsers();
-            document.getElementById("u_email").value = null;
-            document.getElementById("u_pass").value = null;
-            setPopup(true);
-            setPopupType("info");
-            setPopupText(props.language.creationCompleted);
-            switchSaveState(true);
+            if (res) {
+              document.getElementById("u_email").value = null;
+              document.getElementById("u_pass").value = null;
+              finalizedCreate(
+                "info",
+                true,
+                props.language.creationCompleted,
+                false
+              );
+              await userEnroll(res.data.user.id);
+            }
           })
           .catch(async (error) => {
-            await interceptExpiredToken(error);
             alertCreate();
+
+            await interceptExpiredToken(error);
           });
       }).then(async (e) => {
         if (e) {
-          await interceptExpiredToken(e);
           connectionAlert();
+          await interceptExpiredToken(e);
         }
       });
     } else {
@@ -596,22 +318,29 @@ export default function UserConfig(props) {
           USERSERVICE.deleteUser(id)
             .then((err) => {
               if (err) {
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.deleteAlertCompleted);
-                setIsConfirmDelete(false);
-                switchSaveState(false);
-                fetchUsers();
+                finalizedDelete(
+                  "info",
+                  true,
+                  false,
+                  props.language.deleteAlertCompleted
+                );
               }
             })
             .catch(async (err) => {
-              await interceptExpiredToken(err);
-              console.error(err);
+              if (err) {
+                finalizedDelete(
+                  "error",
+                  true,
+                  false,
+                  props.language.deleteAlertFailed
+                );
+                await interceptExpiredToken(err);
+              }
             });
         }).then(async (e) => {
           if (e) {
-            await interceptExpiredToken(e);
             connectionAlert();
+            await interceptExpiredToken(e);
           }
         });
       } else {
@@ -704,7 +433,7 @@ export default function UserConfig(props) {
   }, [props.userRole]);
 
   useEffect(() => {
-    fetchUsers();
+    fetchUserPage(1);
     fetchRoles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -730,7 +459,11 @@ export default function UserConfig(props) {
                   alignItems: "center",
                 }}
               >
-                <button onClick={createUser}>
+                <button
+                  onClick={() => {
+                    createUser();
+                  }}
+                >
                   <svg
                     id="add-svg"
                     xmlns="http://www.w3.org/2000/ svg"
@@ -1449,7 +1182,6 @@ export default function UserConfig(props) {
         }}
         onCloseAction={() => {
           setPopup(false);
-          switchSaveState();
           setIsConfirmDelete(false);
           switchEditState(true);
         }}

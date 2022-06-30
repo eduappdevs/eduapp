@@ -15,6 +15,7 @@ export default function ResourcesConfig(props) {
   const [resources, setResources] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
   const [search, setSearch] = useState("");
 
   const [resourceName, setResourceName] = useState();
@@ -31,7 +32,7 @@ export default function ResourcesConfig(props) {
 
   const [showModal, setShowModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [showModalEdit, setShowEditModal] = useState(false);
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [popupIcon, setPopupIcon] = useState("");
@@ -47,12 +48,11 @@ export default function ResourcesConfig(props) {
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100%";
-      document.getElementById("standard-modal").style.height = "100%";
-      document.getElementById("resources-modal-container").style.width =
-        "100vw";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
+      document.getElementById("resources-modal-container").style.width = "101%";
       document.getElementById("resources-modal-container").style.height =
-        "100vh";
+        "110%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
@@ -91,30 +91,78 @@ export default function ResourcesConfig(props) {
     });
   };
 
-  const showDeleteError = () => {
-    switchEditState(false);
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText(props.language.deleteFailed);
-    setIsConfirmDelete(false);
+  const finalizedCreate = (
+    type,
+    icon,
+    txt,
+    confirmDel,
+    showModal,
+    createModal,
+    editModal
+  ) => {
+    fetchResourcesPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+    setShowModal(showModal);
+    setShowCreateModal(createModal);
+    setShowEditModal(editModal);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchResourcesPage(actualPage);
+  };
+
+  const finalizedEdit = (
+    type,
+    icon,
+    text,
+    confirmDel,
+    showModal,
+    createModal,
+    editModal
+  ) => {
+    fetchResourcesPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
+    setShowModal(showModal);
+    setShowCreateModal(createModal);
+    setShowEditModal(editModal);
   };
 
   const deleteResources = async (id) => {
+    switchEditState(false);
     asynchronizeRequest(function () {
       RESOURCESERVICES.deleteResources(id)
         .then((e) => {
           if (e) {
-            fetchResourcesPage(1);
-            setPopup(true);
-            setPopupType("info");
-            setPopupText(props.language.deleteAlertCompleted);
-            setIsConfirmDelete(false);
+            finalizedDelete(
+              "info",
+              true,
+              false,
+              props.language.deleteAlertCompleted
+            );
           }
         })
-        .catch((e) => {
+        .catch(async (e) => {
           if (e) {
-            showDeleteError();
+            finalizedDelete(
+              "error",
+              true,
+              false,
+              props.language.deleteAlertFailed
+            );
+            await interceptExpiredToken(e);
           }
         });
     }).then(async (e) => {
@@ -125,29 +173,7 @@ export default function ResourcesConfig(props) {
     });
   };
 
-  const confirmModalCreate = async () => {
-    switchEditState(false);
-    fetchResourcesPage(1);
-    setShowModal(false);
-    setShowCreateModal(false);
-    setShowModalEdit(false);
-    setPopup(true);
-    setPopupType("info");
-    setPopupText(props.language.creationCompleted);
-  };
-  const confirmModalEdit = async () => {
-    switchEditState(false);
-    setShowModal(false);
-    setShowCreateModal(false);
-    setShowModalEdit(false);
-    fetchResourcesPage(1);
-    setPopup(true);
-    setPopupType("info");
-    setPopupText(props.language.editAlertCompleted);
-  };
-
   const alertCreate = async () => {
-    switchEditState(false);
     setPopupText(props.language.creationAlert);
     setPopupType("error");
     setPopup(true);
@@ -188,7 +214,7 @@ export default function ResourcesConfig(props) {
 
       setInfo(res);
       setShowModal(true);
-      setShowModalEdit(true);
+      setShowEditModal(true);
     } else {
       alertCreate();
     }
@@ -212,164 +238,57 @@ export default function ResourcesConfig(props) {
   };
 
   const confirmDeleteResource = (id) => {
-    switchEditState(false);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
+    finalizedDelete("warning", true, true, props.language.deleteAlert);
     setIdDelete(id);
   };
 
   const closeEditResource = (e) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let subject =
-        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
-      let resources =
-        e.target.parentNode.parentNode.parentNode.childNodes[5].childNodes[0];
-      name.disabled = true;
-      description.disabled = true;
-      resources.disabled = true;
-      subject.disabled = true;
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[1].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[2].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[4].childNodes[0];
-        let resources =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[5].childNodes[0];
-
-        name.disabled = true;
-        description.disabled = true;
-        resources.disabled = true;
-        subject.disabled = true;
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-        let resources =
-          e.target.parentNode.parentNode.childNodes[5].childNodes[0];
-
-        name.disabled = true;
-        description.disabled = true;
-        resources.disabled = true;
-        subject.disabled = true;
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
+    let disable = 1;
+    while (disable < 5) {
+      if (disable !== 3) {
+        e.target.parentNode.parentNode.childNodes[
+          disable
+        ].childNodes[0].disabled = true;
       }
+      disable += 1;
+    }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
   const showEditOptionResource = (e) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let description =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-
-      let subject =
-        e.target.parentNode.parentNode.parentNode.childNodes[4].childNodes[0];
-
-      name.disabled = false;
-      description.disabled = false;
-      subject.disabled = false;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[1];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode.parentNode.childNodes[0];
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-      listSubject(subject.value);
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[4]
-            .childNodes[0];
-
-        name.disabled = false;
-        description.disabled = false;
-        subject.disabled = false;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        listSubject(subject.value);
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let description =
-          e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let subject =
-          e.target.parentNode.parentNode.childNodes[4].childNodes[0];
-
-        name.disabled = false;
-        description.disabled = false;
-        subject.disabled = false;
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        listSubject(subject.value);
+    let disable = 1;
+    while (disable < 5) {
+      if (disable !== 3) {
+        e.target.parentNode.parentNode.childNodes[
+          disable
+        ].childNodes[0].disabled = false;
       }
+      if (disable === 4) {
+        e.target.parentNode.parentNode.childNodes[
+          disable
+        ].childNodes[0].disabled = false;
+        listSubject(
+          e.target.parentNode.parentNode.childNodes[disable].childNodes[0].value
+        );
+      }
+      disable += 1;
+    }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
@@ -379,6 +298,7 @@ export default function ResourcesConfig(props) {
         .then((us) => {
           setMaxPages(us.data.total_pages);
           setResources(us.data.current_page);
+          setActualPage(us.data.page);
           fetchSubjects();
           fetchUsers();
         })
@@ -825,17 +745,31 @@ export default function ResourcesConfig(props) {
         onCloseModal={() => {
           setShowModal(false);
           setShowCreateModal(false);
-          setShowModalEdit(false);
+          setShowEditModal(false);
           switchEditState(true);
         }}
         onAddModal={(c) => {
           if (c === "create") {
-            confirmModalCreate();
-            switchEditState(true);
+            finalizedCreate(
+              "info",
+              true,
+              props.language.creationCompleted,
+              false,
+              false,
+              false,
+              false
+            );
           }
           if (c === "edit") {
-            confirmModalEdit();
-            switchEditState(true);
+            finalizedEdit(
+              "info",
+              true,
+              props.language.editAlertCompleted,
+              false,
+              false,
+              false,
+              false
+            );
           }
         }}
         language={props.language}

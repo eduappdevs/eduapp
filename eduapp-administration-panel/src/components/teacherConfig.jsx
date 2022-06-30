@@ -13,6 +13,8 @@ export default function TeacherConfig(props) {
 
   const [search, setSearch] = useState("");
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
+
   const [teacherPages, setTeacherPages] = useState();
 
   const [showPopup, setPopup] = useState(false);
@@ -30,8 +32,8 @@ export default function TeacherConfig(props) {
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100%";
-      document.getElementById("standard-modal").style.height = "100%";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "hidden";
     }
@@ -91,7 +93,6 @@ export default function TeacherConfig(props) {
     let listAllTeacher = [];
     let teacher = [];
     for (var i = 0; i < allTeachers.length; i++) {
-      console.log(i);
       if (max === 9) {
         pages += 1;
         max = 0;
@@ -100,7 +101,6 @@ export default function TeacherConfig(props) {
         teacher = [];
       }
       if (max < 9) {
-        console.log("first");
         max += 1;
         teacher.push(allTeachers[i]);
       }
@@ -114,7 +114,6 @@ export default function TeacherConfig(props) {
     listAllTeacher.push(teacher);
     teacher = [];
     pages += 1;
-
     setMaxPages(pages);
     setTeacherPages(listAllTeacher);
     teacher_filter.teacher = allTeachers;
@@ -160,7 +159,7 @@ export default function TeacherConfig(props) {
             setPopupText(props.language.creationCompleted);
             switchSaveState(true);
             setIsConfirmDelete(false);
-            fetchTeacherPages(1);
+            fetchTeacherPages(actualPage);
             refreshTeachers();
           }
         })
