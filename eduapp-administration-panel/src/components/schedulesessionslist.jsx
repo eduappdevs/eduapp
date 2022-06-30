@@ -12,10 +12,13 @@ import SelectedModal from "./modals/selected-modal/SelectedModal";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
 import { getSessionFields } from "../constants/search_fields";
-import "../styles/schedulesessionslist.css";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import ExtraFields from "./ExtraFields";
+import "../styles/schedulesessionslist.css";
 
 export default function Schedulesessionslist(props) {
+  const [language] = useContext(LanguageCtx);
+
   const [sessions, setSessions] = useState(null);
   const [subject, setSubject] = useState([]);
 
@@ -55,7 +58,7 @@ export default function Schedulesessionslist(props) {
     sessions,
     null,
     SCHEDULESERVICE.filterSessions,
-    getSessionFields(props.language)
+    getSessionFields(language)
   );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
@@ -76,7 +79,7 @@ export default function Schedulesessionslist(props) {
   const connectionAlert = async () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -118,7 +121,7 @@ export default function Schedulesessionslist(props) {
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -156,9 +159,9 @@ export default function Schedulesessionslist(props) {
         resources !== "" &&
         streaming !== "" &&
         chat !== "" &&
-        subject_id !== `${props.language.chooseSubject}` &&
+        subject_id !== `${language.chooseSubject}` &&
         subject_id !== "",
-      subject_code !== `${props.language.chooseSubject}` && subject_code !== "")
+      subject_code !== `${language.chooseSubject}` && subject_code !== "")
     ) {
       json.push(
         name,
@@ -187,14 +190,14 @@ export default function Schedulesessionslist(props) {
             fetchSessions(1);
             setPopup(true);
             setPopupType("info");
-            setPopupText(props.language.creationCompleted);
+            setPopupText(language.creationCompleted);
             setIsConfirmDelete(false);
           }
         })
         .catch(async (error) => {
           await interceptExpiredToken(error);
           setPopup(true);
-          setPopupText(props.language.creationFailed);
+          setPopupText(language.creationFailed);
           setIsConfirmDelete(false);
           setPopupIcon("error");
           switchSaveState(false);
@@ -211,7 +214,7 @@ export default function Schedulesessionslist(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(s.id);
@@ -228,7 +231,7 @@ export default function Schedulesessionslist(props) {
               fetchSessions(1);
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.deleteAlertCompleted);
+              setPopupText(language.deleteAlertCompleted);
               setIsConfirmDelete(false);
               switchSaveState(false);
             }
@@ -238,7 +241,7 @@ export default function Schedulesessionslist(props) {
             setPopupType("error");
             popupIcon(false);
             setPopup(false);
-            setPopupText(props.language.deleteFailed);
+            setPopupText(language.deleteFailed);
             setIsConfirmDelete(false);
           });
       }).then(async (e) => {
@@ -264,7 +267,7 @@ export default function Schedulesessionslist(props) {
           fetchSessions(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
+          setPopupText(language.deleteAlertCompleted);
           setIsConfirmDelete(false);
           switchSaveState(false);
         })
@@ -273,7 +276,7 @@ export default function Schedulesessionslist(props) {
           setPopupType("error");
           popupIcon(false);
           setPopup(false);
-          setPopupText(props.language.deleteFailed);
+          setPopupText(language.deleteFailed);
           setIsConfirmDelete(false);
         });
     }).then(async (e) => {
@@ -444,7 +447,7 @@ export default function Schedulesessionslist(props) {
                 subject.disabled = true;
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
+                setPopupText(language.editAlertCompleted);
                 switchSaveState(false);
                 setIsConfirmDelete(false);
                 fetchSessions(1);
@@ -453,7 +456,7 @@ export default function Schedulesessionslist(props) {
             .catch(async (error) => {
               if (error) {
                 await interceptExpiredToken(error);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -627,7 +630,7 @@ export default function Schedulesessionslist(props) {
                   chat.disabled = true;
                   subject.disabled = true;
                   setPopupType("info");
-                  setPopupText(props.language.editAlertCompleted);
+                  setPopupText(language.editAlertCompleted);
                   setIsConfirmDelete(false);
                   setPopup(true);
                   fetchSessions(1);
@@ -636,7 +639,7 @@ export default function Schedulesessionslist(props) {
               .catch(async (error) => {
                 if (error) {
                   await interceptExpiredToken(error);
-                  setPopupText(props.language.editAlertFailed);
+                  setPopupText(language.editAlertFailed);
                   setPopupIcon("error");
                   switchSaveState(false);
                   setIsConfirmDelete(false);
@@ -805,7 +808,7 @@ export default function Schedulesessionslist(props) {
                   chat.disabled = true;
                   subject.disabled = true;
                   setPopupType("info");
-                  setPopupText(props.language.editAlertCompleted);
+                  setPopupText(language.editAlertCompleted);
                   switchSaveState(false);
                   setIsConfirmDelete(false);
                   setPopup(true);
@@ -814,7 +817,7 @@ export default function Schedulesessionslist(props) {
               .catch(async (error) => {
                 if (error) {
                   await interceptExpiredToken(error);
-                  setPopupText(props.language.editAlertFailed);
+                  setPopupText(language.editAlertFailed);
                   setPopupIcon("error");
                   switchSaveState(false);
                   setPopup(true);
@@ -852,7 +855,7 @@ export default function Schedulesessionslist(props) {
           if (e) {
             setPopup(true);
             setPopupType("info");
-            setPopupText(props.language.editAlertCompleted);
+            setPopupText(language.editAlertCompleted);
             switchSaveState(false);
             setIsConfirmDelete(false);
             fetchSessions(1);
@@ -860,7 +863,7 @@ export default function Schedulesessionslist(props) {
         })
         .catch((e) => {
           if (e) {
-            setPopupText(props.language.editAlertFailed);
+            setPopupText(language.editAlertFailed);
             setPopupIcon("error");
             switchSaveState(false);
             setPopup(true);
@@ -892,13 +895,13 @@ export default function Schedulesessionslist(props) {
           fetchSessions(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText(props.language.editAlertCompleted);
+          setPopupText(language.editAlertCompleted);
           switchSaveState(false);
           setIsConfirmDelete(false);
         })
         .catch((e) => {
           if (e) {
-            setPopupText(props.language.editAlertFailed);
+            setPopupText(language.editAlertFailed);
             setPopupIcon("error");
             switchSaveState(false);
             setPopup(true);
@@ -1146,7 +1149,7 @@ export default function Schedulesessionslist(props) {
             fetchSessions(1);
             setPopup(true);
             setPopupType("info");
-            setPopupText(props.language.deleteAlertCompleted);
+            setPopupText(language.deleteAlertCompleted);
             switchSaveState(false);
             setSelectType(false);
             fetchSessions(1);
@@ -1154,7 +1157,7 @@ export default function Schedulesessionslist(props) {
         })
         .catch((e) => {
           if (e) {
-            setPopupText(props.language.deleteFailed);
+            setPopupText(language.deleteFailed);
             setPopupIcon("error");
             switchSaveState(false);
             setPopup(true);
@@ -1225,7 +1228,7 @@ export default function Schedulesessionslist(props) {
     };
 
     if (
-      subject_name !== `${props.language.chooseSubject}` &&
+      subject_name !== `${language.chooseSubject}` &&
       name !== "" &&
       streaming !== "" &&
       resource !== "" &&
@@ -1250,10 +1253,10 @@ export default function Schedulesessionslist(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getSessionFields(props.language),
-      selectedField: getSessionFields(props.language)[0][0],
+      fields: getSessionFields(language),
+      selectedField: getSessionFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -1262,14 +1265,14 @@ export default function Schedulesessionslist(props) {
           <thead>
             <tr>
               <th></th>
-              <th>{props.language.name}</th>
-              <th>{props.language.streaming}</th>
-              <th>{props.language.resources}</th>
-              <th>{props.language.chatLink}</th>
-              <th>{props.language.subjects}</th>
-              <th>{props.language.repeated}</th>
-              <th>{props.language.startDate}</th>
-              <th>{props.language.endDate}</th>
+              <th>{language.name}</th>
+              <th>{language.streaming}</th>
+              <th>{language.resources}</th>
+              <th>{language.chatLink}</th>
+              <th>{language.subjects}</th>
+              <th>{language.repeated}</th>
+              <th>{language.startDate}</th>
+              <th>{language.endDate}</th>
             </tr>
           </thead>
           <tbody>
@@ -1308,7 +1311,7 @@ export default function Schedulesessionslist(props) {
                 <Input
                   id="s_name"
                   type="text"
-                  placeholder={props.language.name}
+                  placeholder={language.name}
                   autoComplete="off"
                 />
               </th>
@@ -1319,7 +1322,7 @@ export default function Schedulesessionslist(props) {
                 <Input
                   id="s_resources"
                   type="text"
-                  placeholder={props.language.resources}
+                  placeholder={language.resources}
                   autoComplete="off"
                 />
               </th>
@@ -1327,14 +1330,14 @@ export default function Schedulesessionslist(props) {
                 <Input
                   id="s_chatGroup"
                   type="text"
-                  placeholder={props.language.chatLink}
+                  placeholder={language.chatLink}
                   autoComplete="off"
                 />
               </th>
               <th className="subjecButton">
                 <select id="s_subjectId">
-                  <option defaultValue={props.language.chooseSubject}>
-                    {props.language.chooseSubject}
+                  <option defaultValue={language.chooseSubject}>
+                    {language.chooseSubject}
                   </option>
                   {subject.map((s) => (
                     <option key={s.id} value={`${s.subject_code}_${s.id}`}>
@@ -1354,7 +1357,7 @@ export default function Schedulesessionslist(props) {
                 <Input
                   id="s_start_date"
                   type="datetime-local"
-                  placeholder={props.language.startDate}
+                  placeholder={language.startDate}
                   autoComplete="off"
                 />
               </th>
@@ -1362,7 +1365,7 @@ export default function Schedulesessionslist(props) {
                 <Input
                   id="s_end_date"
                   type="datetime-local"
-                  placeholder={props.language.endDate}
+                  placeholder={language.endDate}
                   autoComplete="off"
                 />
               </th>
@@ -1381,15 +1384,15 @@ export default function Schedulesessionslist(props) {
               <table style={{ marginTop: "10px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.code}</th>
-                    <th>{props.language.name}</th>
-                    <th>{props.language.startDate}</th>
-                    <th>{props.language.endDate}</th>
-                    <th>{props.language.streaming}</th>
-                    <th>{props.language.resources}</th>
-                    <th>{props.language.chatLink}</th>
-                    <th>{props.language.subjects}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.code}</th>
+                    <th>{language.name}</th>
+                    <th>{language.startDate}</th>
+                    <th>{language.endDate}</th>
+                    <th>{language.streaming}</th>
+                    <th>{language.resources}</th>
+                    <th>{language.chatLink}</th>
+                    <th>{language.subjects}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1611,12 +1614,12 @@ export default function Schedulesessionslist(props) {
           setSelectType(false);
           switchEditState(true);
         }}
-        language={props.language}
+        language={language}
       />
 
       <SessionsModal
         show={showModalSession}
-        language={props.language}
+        language={language}
         info={sessionInfo}
         onCloseModal={() => {
           setShowModalSession(false);

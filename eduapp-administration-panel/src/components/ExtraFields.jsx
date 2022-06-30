@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import {
   getExtraFields,
@@ -6,8 +6,11 @@ import {
   updateExtraFields,
   deleteExtraFields,
 } from "../services/extrafields.service";
+import { LanguageCtx } from "../hooks/LanguageContext";
 
 export default function ExtraFields({ table, id }) {
+  const [language] = useContext(LanguageCtx);
+
   const [extraFields, setExtraFields] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteModal, setDeleteModal] = useState("");
@@ -188,8 +191,8 @@ export default function ExtraFields({ table, id }) {
                   let type = document.getElementById(
                     `new_fieldType_${id}`
                   ).value;
-                  name != "" &&
-                    type != "" &&
+
+                  if (name !== "" && type !== "")
                     PUSH_EXTRAFIELD({
                       name: name,
                       type: type,

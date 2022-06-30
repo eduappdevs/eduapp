@@ -7,10 +7,13 @@ import * as USER_SERVICE from "../services/user.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import PageSelect from "./pagination/PageSelect";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import useFilter from "../hooks/useFilter";
 import { getTeacherFields } from "../constants/search_fields";
 
-export default function TeacherConfig(props) {
+export default function TeacherConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [users, setUsers] = useState(null);
   const [subjects, setSubjects] = useState(null);
   const [teachers, setTeachers] = useState(null);
@@ -31,7 +34,7 @@ export default function TeacherConfig(props) {
     teachers,
     null,
     USER_SERVICE.filterTeachers,
-    getTeacherFields(props.language)
+    getTeacherFields(language)
   );
 
   const switchEditState = (state) => {
@@ -64,7 +67,7 @@ export default function TeacherConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -146,7 +149,7 @@ export default function TeacherConfig(props) {
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
     setIsConfirmDelete(false);
@@ -166,7 +169,7 @@ export default function TeacherConfig(props) {
           if (e) {
             setPopup(true);
             setPopupType("info");
-            setPopupText(props.language.creationCompleted);
+            setPopupText(language.creationCompleted);
             switchSaveState(true);
             setIsConfirmDelete(false);
             fetchTeacherPages(1);
@@ -208,7 +211,7 @@ export default function TeacherConfig(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setUserIdDelete(userId);
@@ -220,7 +223,7 @@ export default function TeacherConfig(props) {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText(props.language.deleteError);
+    setPopupText(language.deleteError);
     setIsConfirmDelete(false);
   };
 
@@ -234,7 +237,7 @@ export default function TeacherConfig(props) {
           fetchTeacherPages(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
+          setPopupText(language.deleteAlertCompleted);
           switchSaveState(false);
           setIsConfirmDelete(false);
         })
@@ -277,10 +280,10 @@ export default function TeacherConfig(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getTeacherFields(props.language),
-      selectedField: getTeacherFields(props.language)[0][0],
+      fields: getTeacherFields(language),
+      selectedField: getTeacherFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -288,9 +291,9 @@ export default function TeacherConfig(props) {
         <table>
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.user}</th>
-              <th>{props.language.subjectToTeach}</th>
+              <th>{language.add}</th>
+              <th>{language.user}</th>
+              <th>{language.subjectToTeach}</th>
             </tr>
           </thead>
           <tbody>
@@ -333,7 +336,7 @@ export default function TeacherConfig(props) {
               </td>
               <td>
                 <select defaultValue={"-"} id="user_select">
-                  <option value="-">{props.language.chooseUser}</option>
+                  <option value="-">{language.chooseUser}</option>
                   {users
                     ? users.map((u) => {
                         return (
@@ -347,7 +350,7 @@ export default function TeacherConfig(props) {
               </td>
               <td>
                 <select defaultValue={"-"} id="subject_select">
-                  <option value="-">{props.language.chooseSubject}</option>
+                  <option value="-">{language.chooseSubject}</option>
                   {subjects
                     ? subjects.map((s) => {
                         return (
@@ -374,9 +377,9 @@ export default function TeacherConfig(props) {
               <table style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.teacherName}</th>
-                    <th>{props.language.subjectName}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.teacherName}</th>
+                    <th>{language.subjectName}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>

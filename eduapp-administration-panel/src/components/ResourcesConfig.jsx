@@ -11,10 +11,13 @@ import { interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
 import { getResourceFields } from "../constants/search_fields";
-import "../styles/resourcesConfig.css";
 import ExtraFields from "./ExtraFields";
+import { LanguageCtx } from "../hooks/LanguageContext";
+import "../styles/resourcesConfig.css";
 
-export default function ResourcesConfig(props) {
+export default function ResourcesConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [users, setUsers] = useState([]);
   const [subject, setSubject] = useState([]);
   const [resources, setResources] = useState([]);
@@ -26,7 +29,7 @@ export default function ResourcesConfig(props) {
     resources,
     null,
     RESOURCESERVICES.filterResources,
-    getResourceFields(props.language)
+    getResourceFields(language)
   );
 
   const [resourceName, setResourceName] = useState();
@@ -73,7 +76,7 @@ export default function ResourcesConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -108,7 +111,7 @@ export default function ResourcesConfig(props) {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText(props.language.deleteFailed);
+    setPopupText(language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
@@ -120,7 +123,7 @@ export default function ResourcesConfig(props) {
             fetchResourcesPage(1);
             setPopup(true);
             setPopupType("info");
-            setPopupText(props.language.deleteAlertCompleted);
+            setPopupText(language.deleteAlertCompleted);
             setIsConfirmDelete(false);
           }
         })
@@ -145,7 +148,7 @@ export default function ResourcesConfig(props) {
     setShowModalEdit(false);
     setPopup(true);
     setPopupType("info");
-    setPopupText(props.language.creationCompleted);
+    setPopupText(language.creationCompleted);
   };
   const confirmModalEdit = async () => {
     switchEditState(false);
@@ -155,12 +158,12 @@ export default function ResourcesConfig(props) {
     fetchResourcesPage(1);
     setPopup(true);
     setPopupType("info");
-    setPopupText(props.language.editAlertCompleted);
+    setPopupText(language.editAlertCompleted);
   };
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -228,7 +231,7 @@ export default function ResourcesConfig(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
@@ -433,10 +436,10 @@ export default function ResourcesConfig(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getResourceFields(props.language),
-      selectedField: getResourceFields(props.language)[0][0],
+      fields: getResourceFields(language),
+      selectedField: getResourceFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -444,11 +447,11 @@ export default function ResourcesConfig(props) {
         <table>
           <thead>
             <tr>
-              <th>{props.language.name}</th>
-              <th>{props.language.description}</th>
-              <th>{props.language.author}</th>
-              <th>{props.language.subjects}</th>
-              <th>{props.language.files}</th>
+              <th>{language.name}</th>
+              <th>{language.description}</th>
+              <th>{language.author}</th>
+              <th>{language.subjects}</th>
+              <th>{language.files}</th>
             </tr>
           </thead>
           <tbody>
@@ -458,7 +461,7 @@ export default function ResourcesConfig(props) {
                   name="i_name"
                   id="i_name"
                   type="text"
-                  placeholder={props.language.name}
+                  placeholder={language.name}
                 />
               </td>
               <td>
@@ -466,12 +469,12 @@ export default function ResourcesConfig(props) {
                   name="i_description"
                   id="i_description"
                   type="text"
-                  placeholder={props.language.description}
+                  placeholder={language.description}
                 />
               </td>
               <td>
                 <select id="i_author">
-                  <option value="--">{props.language.chooseAuthor}</option>
+                  <option value="--">{language.chooseAuthor}</option>
                   {users.map((u) => (
                     <option key={u.id} value={u.user.id}>
                       {u.user.email}
@@ -481,7 +484,7 @@ export default function ResourcesConfig(props) {
               </td>
               <td>
                 <select id="i_subject">
-                  <option value="--">{props.language.chooseSubject}</option>
+                  <option value="--">{language.chooseSubject}</option>
                   {subject.map((s) => (
                     <option key={s.id} value={`${s.name}_${s.id}`}>
                       {s.name}
@@ -524,12 +527,12 @@ export default function ResourcesConfig(props) {
             <table style={{ marginTop: "15px" }} id="resources-config">
               <thead>
                 <tr>
-                  <th>{props.language.code}</th>
-                  <th>{props.language.name}</th>
-                  <th>{props.language.description}</th>
-                  <th>{props.language.author}</th>
-                  <th>{props.language.subjects}</th>
-                  <th>{props.language.actions}</th>
+                  <th>{language.code}</th>
+                  <th>{language.name}</th>
+                  <th>{language.description}</th>
+                  <th>{language.author}</th>
+                  <th>{language.subjects}</th>
+                  <th>{language.actions}</th>
                 </tr>
               </thead>
 
@@ -707,7 +710,7 @@ export default function ResourcesConfig(props) {
             switchEditState(true);
           }
         }}
-        language={props.language}
+        language={language}
         subject={resourceSubject}
         name={resourceName}
         description={resourceDescription}

@@ -1,5 +1,6 @@
 {
-  "en": {
+  "en_en": {
+    "lang_identifier": "en_en",
     "title": "Title",
     "description": "Description",
     "schedule": "Schedule",
@@ -127,7 +128,8 @@
     "roleDeleted": "Role deleted successfully.",
     "searchBy": "Search By "
   },
-  "es": {
+  "es_es": {
+    "lang_identifier": "es_es",
     "title": "Titulo",
     "description": "Descripción",
     "schedule": "Horario",
@@ -255,7 +257,8 @@
     "roleDeleted": "Rol eliminado.",
     "searchBy": "Buscar por "
   },
-  "pt": {
+  "pt_pt": {
+    "lang_identifier": "pt_pt",
     "title": "Título",
     "description": "Descrição",
     "schedule": "Agenda",

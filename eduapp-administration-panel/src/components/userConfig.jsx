@@ -16,9 +16,12 @@ import { useContext } from "react";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import { getUserFields } from "../constants/search_fields";
 import useFilter from "../hooks/useFilter";
+import { LanguageCtx } from "../hooks/LanguageContext";
 
 const system_user_name = "eduapp_system";
-export default function UserConfig(props) {
+export default function UserConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [users, setUsers] = useState(null);
 
   const [changeName, setChangeName] = useState(false);
@@ -39,7 +42,7 @@ export default function UserConfig(props) {
     users,
     null,
     USERSERVICE.filterUsers,
-    getUserFields(props.language)
+    getUserFields(language)
   );
 
   const [userPermRoles, setUserPermRoles] = useState([]);
@@ -88,7 +91,7 @@ export default function UserConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -148,7 +151,7 @@ export default function UserConfig(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
@@ -159,13 +162,13 @@ export default function UserConfig(props) {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText(props.language.deleteFailed);
+    setPopupText(language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -224,12 +227,12 @@ export default function UserConfig(props) {
             setIsConfirmDelete(false);
             setPopup(true);
             setPopupType("info");
-            setPopupText(props.language.editAlertCompleted);
+            setPopupText(language.editAlertCompleted);
             switchSaveState(false);
           })
           .catch((e) => {
             if (e) {
-              setPopupText(props.language.editAlertFailed);
+              setPopupText(language.editAlertFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -301,13 +304,13 @@ export default function UserConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
             .catch((e) => {
               if (e) {
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -369,13 +372,13 @@ export default function UserConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
             .catch((e) => {
               if (e) {
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setIsConfirmDelete(false);
@@ -554,7 +557,7 @@ export default function UserConfig(props) {
             document.getElementById("u_pass").value = null;
             setPopup(true);
             setPopupType("info");
-            setPopupText(props.language.creationCompleted);
+            setPopupText(language.creationCompleted);
             switchSaveState(true);
           })
           .catch(async (error) => {
@@ -604,7 +607,7 @@ export default function UserConfig(props) {
               if (err) {
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.deleteAlertCompleted);
+                setPopupText(language.deleteAlertCompleted);
                 setIsConfirmDelete(false);
                 switchSaveState(false);
                 fetchUsers();
@@ -684,10 +687,10 @@ export default function UserConfig(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getUserFields(props.language),
-      selectedField: getUserFields(props.language)[0][0],
+      fields: getUserFields(language),
+      selectedField: getUserFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -695,10 +698,10 @@ export default function UserConfig(props) {
         <table id="users_table_header">
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.email}</th>
-              <th>{props.language.password}</th>
-              <th>{props.language.userRole}</th>
+              <th>{language.add}</th>
+              <th>{language.email}</th>
+              <th>{language.password}</th>
+              <th>{language.userRole}</th>
             </tr>
           </thead>
           <tbody>
@@ -740,17 +743,13 @@ export default function UserConfig(props) {
                 </button>
               </td>
               <td>
-                <input
-                  id="u_email"
-                  type="email"
-                  placeholder={props.language.email}
-                />
+                <input id="u_email" type="email" placeholder={language.email} />
               </td>
               <td>
                 <input
                   id="u_pass"
                   type="password"
-                  placeholder={props.language.password}
+                  placeholder={language.password}
                 />
               </td>
               <td style={{ textAlign: "center" }}>
@@ -785,13 +784,13 @@ export default function UserConfig(props) {
                     <th>
                       <input type={"checkbox"} onChange={() => selectAll()} />
                     </th>
-                    <th>{props.language.userId}</th>
-                    <th>{props.language.name}</th>
-                    <th>{props.language.email}</th>
-                    <th>{props.language.userRole}</th>
-                    <th>{props.language.googleLinked}</th>
-                    <th>{props.language.lastConnection}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.userId}</th>
+                    <th>{language.name}</th>
+                    <th>{language.email}</th>
+                    <th>{language.userRole}</th>
+                    <th>{language.googleLinked}</th>
+                    <th>{language.lastConnection}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
 

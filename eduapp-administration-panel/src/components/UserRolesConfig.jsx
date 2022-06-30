@@ -6,11 +6,14 @@ import * as ROLE_SERVICE from "../services/role.service";
 import asynchronizeRequest from "../API";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import useFilter from "../hooks/useFilter";
 import { getRoleFields } from "../constants/search_fields";
 import "../styles/userRoles.css";
 
-export default function UserRolesConfig({ language }) {
+export default function UserRolesConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [showPerms, setShowPerms] = useState(false);
   const [roles, setRoles] = useState(null);
   const [isEditing, setIsEditing] = useState(false);

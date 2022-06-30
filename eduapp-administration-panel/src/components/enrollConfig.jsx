@@ -7,11 +7,14 @@ import * as COURSESERVICE from "../services/course.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import PageSelect from "./pagination/PageSelect";
 import useFilter from "../hooks/useFilter";
 import { getEnrollmentFields } from "../constants/search_fields";
 
-export default function EnrollConfig(props) {
+export default function EnrollConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [tuitions, setTuitions] = useState(null);
   const [users, setUsers] = useState(null);
   const [courses, setCourses] = useState(null);
@@ -31,7 +34,7 @@ export default function EnrollConfig(props) {
     tuitions,
     null,
     TUITIONSSERVICE.filterTuitions,
-    getEnrollmentFields(props.language)
+    getEnrollmentFields(language)
   );
 
   const [showPopup, setPopup] = useState(false);
@@ -71,7 +74,7 @@ export default function EnrollConfig(props) {
   const connectionAlert = async () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -144,7 +147,7 @@ export default function EnrollConfig(props) {
               fetchAll();
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.creationCompleted);
+              setPopupText(language.creationCompleted);
               switchSaveState(false);
             }
           })
@@ -153,7 +156,7 @@ export default function EnrollConfig(props) {
               interceptExpiredToken(e);
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.creationAlert);
+              setPopupText(language.creationAlert);
               switchSaveState(false);
             }
           });
@@ -170,7 +173,7 @@ export default function EnrollConfig(props) {
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -182,7 +185,7 @@ export default function EnrollConfig(props) {
           fetchAll();
           setPopup(true);
           setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
+          setPopupText(language.deleteAlertCompleted);
           switchSaveState(false);
           setIsConfirmDelete(false);
         })
@@ -202,7 +205,7 @@ export default function EnrollConfig(props) {
     switchEditState(true);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
@@ -212,7 +215,7 @@ export default function EnrollConfig(props) {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText(props.language.deleteFailed);
+    setPopupText(language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
@@ -329,7 +332,7 @@ export default function EnrollConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             }
@@ -337,7 +340,7 @@ export default function EnrollConfig(props) {
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopupText(props.language.editAlertFailed);
+              setPopupText(language.editAlertFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -402,13 +405,13 @@ export default function EnrollConfig(props) {
                 switchSaveState(false);
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
+                setPopupText(language.editAlertCompleted);
                 setIsConfirmDelete(false);
               }
             })
             .catch((e) => {
               if (e) {
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setIsConfirmDelete(false);
@@ -465,7 +468,7 @@ export default function EnrollConfig(props) {
 
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
+                setPopupText(language.editAlertCompleted);
                 switchSaveState(false);
                 setIsConfirmDelete(false);
               }
@@ -474,7 +477,7 @@ export default function EnrollConfig(props) {
               if (e) {
                 console.log(e);
                 await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setIsConfirmDelete(false);
@@ -578,10 +581,10 @@ export default function EnrollConfig(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getEnrollmentFields(props.language),
-      selectedField: getEnrollmentFields(props.language)[0][0],
+      fields: getEnrollmentFields(language),
+      selectedField: getEnrollmentFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -589,9 +592,9 @@ export default function EnrollConfig(props) {
         <table>
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.user}</th>
-              <th>{props.language.course}</th>
+              <th>{language.add}</th>
+              <th>{language.user}</th>
+              <th>{language.course}</th>
             </tr>
           </thead>
           <tbody>
@@ -631,13 +634,13 @@ export default function EnrollConfig(props) {
                     />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    {props.language.loading} ...
+                    {language.loading} ...
                   </div>
                 </button>
               </td>
               <td>
                 <select defaultValue={"-"} id="user_select">
-                  <option value="-">{props.language.chooseUser}</option>
+                  <option value="-">{language.chooseUser}</option>
                   {users
                     ? users.map((u) => {
                         return (
@@ -651,7 +654,7 @@ export default function EnrollConfig(props) {
               </td>
               <td>
                 <select defaultValue={"-"} id="course_select">
-                  <option value="-">{props.language.chooseCourse}</option>
+                  <option value="-">{language.chooseCourse}</option>
                   {courses
                     ? courses.map((c) => {
                         return (
@@ -678,9 +681,9 @@ export default function EnrollConfig(props) {
               <table style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.user}</th>
-                    <th>{props.language.course}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.user}</th>
+                    <th>{language.course}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>

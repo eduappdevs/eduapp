@@ -7,11 +7,14 @@ import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import useFilter from "../hooks/useFilter";
 import { getParticipantFields } from "../constants/search_fields";
 import "../styles/chatParticipant.css";
 
-export default function ChatParticipantConfig(props) {
+export default function ChatParticipantConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [participant, setParticipant] = useState([]);
   const [users, setUsers] = useState([]);
   const [chat, setChat] = useState([]);
@@ -23,7 +26,7 @@ export default function ChatParticipantConfig(props) {
     participant,
     null,
     CHATSERVICE.filterParticipants,
-    getParticipantFields(props.language)
+    getParticipantFields(language)
   );
 
   const [showPopup, setPopup] = useState(false);
@@ -49,7 +52,7 @@ export default function ChatParticipantConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -126,7 +129,7 @@ export default function ChatParticipantConfig(props) {
   const alertCreate = async () => {
     switchEditState(false);
     setIsConfirmDelete(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -163,7 +166,7 @@ export default function ChatParticipantConfig(props) {
           setIsConfirmDelete(false);
           setPopup(true);
           setPopupType("info");
-          setPopupText(props.language.creationCompleted);
+          setPopupText(language.creationCompleted);
           switchSaveState(false);
         })
         .catch(async (e) => {
@@ -189,7 +192,7 @@ export default function ChatParticipantConfig(props) {
           fetchParticipantsPage(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
+          setPopupText(language.deleteAlertCompleted);
           switchSaveState(false);
           setIsConfirmDelete(false);
         })
@@ -208,7 +211,7 @@ export default function ChatParticipantConfig(props) {
   const confirmDeleteParticipant = async (id) => {
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
@@ -219,10 +222,10 @@ export default function ChatParticipantConfig(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getParticipantFields(props.language),
-      selectedField: getParticipantFields(props.language)[0][0],
+      fields: getParticipantFields(language),
+      selectedField: getParticipantFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -230,10 +233,10 @@ export default function ChatParticipantConfig(props) {
         <table className="createTable">
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.user}</th>
-              <th>{props.language.chat}</th>
-              <th>{props.language.admin}</th>
+              <th>{language.add}</th>
+              <th>{language.user}</th>
+              <th>{language.chat}</th>
+              <th>{language.admin}</th>
             </tr>
           </thead>
           <tbody>
@@ -271,7 +274,7 @@ export default function ChatParticipantConfig(props) {
               <td>
                 <select name="chP_user" id="chP_user">
                   <option defaultValue="Choose user">
-                    {props.language.chooseUser}
+                    {language.chooseUser}
                   </option>
                   {users.map((s) => (
                     <option
@@ -286,7 +289,7 @@ export default function ChatParticipantConfig(props) {
               <td>
                 <select name="chP_chat" id="chP_chat">
                   <option defaultValue="Choose Group">
-                    {props.language.chooseGroup}
+                    {language.chooseGroup}
                   </option>
                   {chat.map((s) => (
                     <option key={s.id} value={s.id + "_" + s.chat_name}>
@@ -313,10 +316,10 @@ export default function ChatParticipantConfig(props) {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.email}</th>
-                    <th>{props.language.chatName}</th>
-                    <th>{props.language.admin}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.email}</th>
+                    <th>{language.chatName}</th>
+                    <th>{language.admin}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>

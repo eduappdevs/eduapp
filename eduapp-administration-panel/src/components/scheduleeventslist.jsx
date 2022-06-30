@@ -8,12 +8,15 @@ import Input from "./Input";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import PageSelect from "./pagination/PageSelect";
 import useFilter from "../hooks/useFilter";
 import { getEventFields } from "../constants/search_fields";
 import "../styles/scheduleeventslist.css";
 
-export default function Scheduleeventslist(props) {
+export default function Scheduleeventslist() {
+  const [language] = useContext(LanguageCtx);
+
   const [subject, setSubject] = useState([]);
   const [events, setEvents] = useState([]);
   const [users, setUsers] = useState([]);
@@ -47,7 +50,7 @@ export default function Scheduleeventslist(props) {
     events,
     null,
     SCHEDULESERVICE.filterEvents,
-    getEventFields(props.language)
+    getEventFields(language)
   );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
@@ -82,7 +85,7 @@ export default function Scheduleeventslist(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -145,7 +148,7 @@ export default function Scheduleeventslist(props) {
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -179,7 +182,7 @@ export default function Scheduleeventslist(props) {
       author !== "" &&
       start_date !== "" &&
       end_date !== "" &&
-      subject !== props.language.chooseSubject
+      subject !== language.chooseSubject
     ) {
       json.push(
         name,
@@ -214,7 +217,7 @@ export default function Scheduleeventslist(props) {
               if (x) {
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.creationCompleted);
+                setPopupText(language.creationCompleted);
                 fetchEvents(1);
               }
             });
@@ -224,7 +227,7 @@ export default function Scheduleeventslist(props) {
           if (e) {
             console.log(e);
             await interceptExpiredToken(e);
-            setPopupText(props.language.creationFailed);
+            setPopupText(language.creationFailed);
             setPopupIcon("error");
             setPopup(true);
           }
@@ -251,7 +254,7 @@ export default function Scheduleeventslist(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(e);
@@ -262,7 +265,7 @@ export default function Scheduleeventslist(props) {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText(props.language.deleteFailed);
+    setPopupText(language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
@@ -282,7 +285,7 @@ export default function Scheduleeventslist(props) {
                 if (f) {
                   setPopup(true);
                   setPopupType("info");
-                  setPopupText(props.language.deleteAlertCompleted);
+                  setPopupText(language.deleteAlertCompleted);
                   setIsConfirmDelete(false);
                   fetchEvents(1);
                 }
@@ -299,7 +302,7 @@ export default function Scheduleeventslist(props) {
             if (x) {
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.deleteAlertCompleted);
+              setPopupText(language.deleteAlertCompleted);
               setIsConfirmDelete(false);
               fetchEvents(1);
             }
@@ -432,13 +435,13 @@ export default function Scheduleeventslist(props) {
               setIsConfirmDelete(false);
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
             }
           })
           .catch(async (error) => {
             if (error) {
               await interceptExpiredToken(e);
-              setPopupText(props.language.editAlertFailed);
+              setPopupText(language.editAlertFailed);
               setPopupIcon("error");
               setPopup(true);
               setIsConfirmDelete(false);
@@ -582,13 +585,13 @@ export default function Scheduleeventslist(props) {
                 setIsConfirmDelete(false);
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
+                setPopupText(language.editAlertCompleted);
               }
             })
             .catch(async (error) => {
               if (error) {
                 await interceptExpiredToken(error);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 setPopup(true);
               }
@@ -700,7 +703,7 @@ export default function Scheduleeventslist(props) {
                 setIsConfirmDelete(false);
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
+                setPopupText(language.editAlertCompleted);
                 fetchEvents(1);
                 fetchSubjects();
                 let buttonDelete = e.target.parentNode.childNodes[0];
@@ -726,7 +729,7 @@ export default function Scheduleeventslist(props) {
                 await interceptExpiredToken(error);
                 console.log(error);
                 setIsConfirmDelete(false);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 setPopup(true);
               }
@@ -1010,10 +1013,10 @@ export default function Scheduleeventslist(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getEventFields(props.language),
-      selectedField: getEventFields(props.language)[0][0],
+      fields: getEventFields(language),
+      selectedField: getEventFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -1022,16 +1025,16 @@ export default function Scheduleeventslist(props) {
           <thead>
             <tr>
               <th></th>
-              <th>{props.language.title}</th>
-              <th>{props.language.author}</th>
-              <th>{props.language.description}</th>
-              <th>{props.language.startDate}</th>
-              <th>{props.language.endDate}</th>
-              <th>{props.language.isGlobal}</th>
+              <th>{language.title}</th>
+              <th>{language.author}</th>
+              <th>{language.description}</th>
+              <th>{language.startDate}</th>
+              <th>{language.endDate}</th>
+              <th>{language.isGlobal}</th>
               {isGlobal ? (
-                <th>{props.language.isPop}</th>
+                <th>{language.isPop}</th>
               ) : (
-                <th>{props.language.subjects}</th>
+                <th>{language.subjects}</th>
               )}
             </tr>
           </thead>
@@ -1077,9 +1080,7 @@ export default function Scheduleeventslist(props) {
               </td>
               <td>
                 <select id="e_author">
-                  <option defaultValue="--">
-                    {props.language.chooseAuthor}
-                  </option>
+                  <option defaultValue="--">{language.chooseAuthor}</option>
                   {users.map((u) => (
                     <option key={u.id} value={u.user.id}>
                       {u.user.email}
@@ -1124,7 +1125,7 @@ export default function Scheduleeventslist(props) {
                 <td className="subjecButton">
                   <select id="e_subjectId">
                     <option defaultValue="Choose subject">
-                      {props.language.chooseSubject}
+                      {language.chooseSubject}
                     </option>
                     {subject.map((s) => {
                       if (s.name !== "General") {
@@ -1156,16 +1157,16 @@ export default function Scheduleeventslist(props) {
             <table className="eventList" style={{ marginTop: "15px" }}>
               <thead>
                 <tr>
-                  <th>{props.language.code}</th>
-                  <th>{props.language.title}</th>
-                  <th>{props.language.description}</th>
-                  <th>{props.language.author}</th>
-                  <th>{props.language.startDate}</th>
-                  <th>{props.language.endDate}</th>
-                  <th>{props.language.isGlobal}</th>
-                  <th>{props.language.subjects}</th>
-                  <th>{props.language.isPop}</th>
-                  <th>{props.language.actions}</th>
+                  <th>{language.code}</th>
+                  <th>{language.title}</th>
+                  <th>{language.description}</th>
+                  <th>{language.author}</th>
+                  <th>{language.startDate}</th>
+                  <th>{language.endDate}</th>
+                  <th>{language.isGlobal}</th>
+                  <th>{language.subjects}</th>
+                  <th>{language.isPop}</th>
+                  <th>{language.actions}</th>
                 </tr>
               </thead>
               <tbody>

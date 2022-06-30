@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { asynchronizeRequest } from "../API";
 import * as INSTITUTIONSERVICE from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
@@ -9,10 +9,13 @@ import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import Input from "./Input";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
-import "../styles/institutionConfig.css";
 import ExtraFields from "./ExtraFields";
+import { LanguageCtx } from "../hooks/LanguageContext";
+import "../styles/institutionConfig.css";
 
-export default function InstitutionConfig(props) {
+export default function InstitutionConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [institutions, setInstitutions] = useState(null);
   const [editValue, setEditValue] = useState(false);
   const [nameValue, setNameValue] = useState();
@@ -40,7 +43,7 @@ export default function InstitutionConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -80,7 +83,7 @@ export default function InstitutionConfig(props) {
   const confirmModalCreate = async () => {
     setPopup(true);
     setPopupType("info");
-    setPopupText(props.language.creationCompleted);
+    setPopupText(language.creationCompleted);
   };
 
   const createInstitution = () => {
@@ -202,12 +205,12 @@ export default function InstitutionConfig(props) {
 
             setPopup(true);
             setPopupType("info");
-            setPopupText(props.language.creationCompleted);
+            setPopupText(language.creationCompleted);
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopupText(props.language.creationAlert);
+              setPopupText(language.creationAlert);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -256,12 +259,12 @@ export default function InstitutionConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
             })
             .catch(async (e) => {
               if (e) {
                 await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 setPopup(true);
               }
@@ -305,12 +308,12 @@ export default function InstitutionConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
             })
             .catch(async (e) => {
               if (e) {
                 await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 setPopup(true);
               }
@@ -395,9 +398,9 @@ export default function InstitutionConfig(props) {
         <table>
           <thead>
             <tr>
-              <th>{props.language.code}</th>
-              <th>{props.language.name}</th>
-              <th>{props.language.actions}</th>
+              <th>{language.code}</th>
+              <th>{language.name}</th>
+              <th>{language.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -437,7 +440,7 @@ export default function InstitutionConfig(props) {
                   <Input
                     name="i_name"
                     id="i_name"
-                    placeholder={props.language.name}
+                    placeholder={language.name}
                   />
                 </td>
               </tr>
@@ -484,7 +487,7 @@ export default function InstitutionConfig(props) {
                           />
                         </svg>
                         <div id="submit-loader" className="loader">
-                          {props.language.loading} ...
+                          {language.loading} ...
                         </div>
                       </button>
 
@@ -503,7 +506,7 @@ export default function InstitutionConfig(props) {
                           <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
                         </svg>
                         <div id="submit-loader" className="loader">
-                          {props.language.loading} ...
+                          {language.loading} ...
                         </div>
                       </button>
 

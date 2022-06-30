@@ -10,10 +10,13 @@ import PageSelect from "./pagination/PageSelect";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import useFilter from "../hooks/useFilter";
 import { getCourseFields } from "../constants/search_fields";
-import "../styles/courseConfig.css";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import ExtraFields from "./ExtraFields";
+import "../styles/courseConfig.css";
 
-export default function CourseConfig(props) {
+export default function CourseConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [courses, setCourses] = useState(null);
   const [institutions, setInstitutions] = useState([]);
 
@@ -34,7 +37,7 @@ export default function CourseConfig(props) {
     courses,
     null,
     COURSESERVICE.filterCourses,
-    getCourseFields(props.language)
+    getCourseFields(language)
   );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
@@ -56,7 +59,7 @@ export default function CourseConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -171,10 +174,10 @@ export default function CourseConfig(props) {
     setIsConfirmDelete(false);
     setPopup(true);
     setPopupType("info");
-    setPopupText(props.language.editAlertCompleted);
+    setPopupText(language.editAlertCompleted);
   };
   const editFailed = () => {
-    setPopupText(props.language.editAlertFailed);
+    setPopupText(language.editAlertFailed);
     setPopupIcon("error");
     switchSaveState(false);
     setPopup(true);
@@ -348,7 +351,7 @@ export default function CourseConfig(props) {
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -383,13 +386,13 @@ export default function CourseConfig(props) {
                   fetchCoursePage(1);
                   setPopup(true);
                   setPopupType("info");
-                  setPopupText(props.language.creationCompleted);
+                  setPopupText(language.creationCompleted);
                   switchSaveState(false);
                 })
                 .catch(async (e) => {
                   if (e) {
                     await interceptExpiredToken(e);
-                    setPopupText(props.language.creationFailed);
+                    setPopupText(language.creationFailed);
                     setPopupIcon("error");
                     switchSaveState(false);
                     setPopup(true);
@@ -400,14 +403,14 @@ export default function CourseConfig(props) {
               fetchCoursePage(1);
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.creationCompleted);
+              setPopupText(language.creationCompleted);
               switchSaveState(false);
             }
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopupText(props.language.creationFailed);
+              setPopupText(language.creationFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -416,7 +419,7 @@ export default function CourseConfig(props) {
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
-          setPopupText(props.language.connectionAlert);
+          setPopupText(language.connectionAlert);
           setPopupIcon("error");
           switchSaveState(false);
           setPopup(true);
@@ -432,7 +435,7 @@ export default function CourseConfig(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
@@ -443,7 +446,7 @@ export default function CourseConfig(props) {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText(props.language.deleteFailed);
+    setPopupText(language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
@@ -457,7 +460,7 @@ export default function CourseConfig(props) {
               fetchCoursePage(1);
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.deleteAlertCompleted);
+              setPopupText(language.deleteAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             })
@@ -500,10 +503,10 @@ export default function CourseConfig(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getCourseFields(props.language),
-      selectedField: getCourseFields(props.language)[0][0],
+      fields: getCourseFields(language),
+      selectedField: getCourseFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -512,8 +515,8 @@ export default function CourseConfig(props) {
           <thead>
             <tr>
               <th></th>
-              <th>{props.language.name}</th>
-              <th>{props.language.linkedInstitution}</th>
+              <th>{language.name}</th>
+              <th>{language.linkedInstitution}</th>
             </tr>
           </thead>
           <tbody>
@@ -559,7 +562,7 @@ export default function CourseConfig(props) {
               </td>
               <td>
                 <select defaultValue={"--"} id="institution_chooser">
-                  <option value="--">{props.language.chooseInstitution}</option>
+                  <option value="--">{language.chooseInstitution}</option>
                   {institutions.map((i) => {
                     return (
                       <option key={`${i.id}`} value={i.id}>
@@ -585,10 +588,10 @@ export default function CourseConfig(props) {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.code}</th>
-                    <th>{props.language.name}</th>
-                    <th>{props.language.linkedInstitution}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.code}</th>
+                    <th>{language.name}</th>
+                    <th>{language.linkedInstitution}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>

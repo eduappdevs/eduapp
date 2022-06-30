@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 
 /**
@@ -25,8 +26,9 @@ import { SearchBarCtx } from "../hooks/SearchBarContext";
        )
          return <></>;
  */
-export default function FieldSearcher({ language }) {
+export default function FieldSearcher() {
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
+  const [language] = useContext(LanguageCtx);
 
   return (
     <>

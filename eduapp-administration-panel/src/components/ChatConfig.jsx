@@ -6,12 +6,14 @@ import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import useFilter from "../hooks/useFilter";
 import { getChatFields } from "../constants/search_fields";
 import "../styles/chatConfig.css";
 
-export default function ChatConfig(props) {
+export default function ChatConfig() {
   const [chat, setChat] = useState([]);
+  const [language] = useContext(LanguageCtx);
 
   const [newName] = useState();
   const [changeName, setChangeName] = useState(false);
@@ -23,7 +25,7 @@ export default function ChatConfig(props) {
     chat,
     null,
     CHATSERVICE.filterChats,
-    getChatFields(props.language)
+    getChatFields(language)
   );
 
   const [showPopup, setPopup] = useState(false);
@@ -49,7 +51,7 @@ export default function ChatConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -188,7 +190,7 @@ export default function ChatConfig(props) {
               setIsConfirmDelete(false);
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
               fetchChatPage(1);
               setChangeName(false);
               let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
@@ -206,7 +208,7 @@ export default function ChatConfig(props) {
             if (e) {
               await interceptExpiredToken(e);
               setIsConfirmDelete(false);
-              setPopupText(props.language.editAlertFailed);
+              setPopupText(language.editAlertFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -244,7 +246,7 @@ export default function ChatConfig(props) {
                 setIsConfirmDelete(false);
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
+                setPopupText(language.editAlertCompleted);
                 fetchChatPage(1);
                 setChangeName(false);
 
@@ -267,7 +269,7 @@ export default function ChatConfig(props) {
               if (e) {
                 await interceptExpiredToken(e);
                 setIsConfirmDelete(false);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -311,7 +313,7 @@ export default function ChatConfig(props) {
                 setIsConfirmDelete(false);
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
+                setPopupText(language.editAlertCompleted);
                 fetchChatPage(1);
                 setChangeName(false);
               }
@@ -320,7 +322,7 @@ export default function ChatConfig(props) {
               if (e) {
                 await interceptExpiredToken(e);
                 setIsConfirmDelete(false);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -354,7 +356,7 @@ export default function ChatConfig(props) {
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -386,7 +388,7 @@ export default function ChatConfig(props) {
           fetchChatPage(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText(props.language.creationCompleted);
+          setPopupText(language.creationCompleted);
           switchSaveState(false);
         })
         .catch(async (e) => {
@@ -409,7 +411,7 @@ export default function ChatConfig(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
@@ -420,7 +422,7 @@ export default function ChatConfig(props) {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText(props.language.deleteAlertFailed);
+    setPopupText(language.deleteAlertFailed);
     setIsConfirmDelete(false);
   };
 
@@ -431,7 +433,7 @@ export default function ChatConfig(props) {
           fetchChatPage(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
+          setPopupText(language.deleteAlertCompleted);
           setIsConfirmDelete(false);
         })
         .catch(async (e) => {
@@ -458,10 +460,10 @@ export default function ChatConfig(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getChatFields(props.language),
-      selectedField: getChatFields(props.language)[0][0],
+      fields: getChatFields(language),
+      selectedField: getChatFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -469,9 +471,9 @@ export default function ChatConfig(props) {
         <table className="createTable">
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.name}</th>
-              <th>{props.language.group}</th>
+              <th>{language.add}</th>
+              <th>{language.name}</th>
+              <th>{language.group}</th>
             </tr>
           </thead>
           <tbody>
@@ -534,9 +536,9 @@ export default function ChatConfig(props) {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.name}</th>
-                    <th>{props.language.group}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.name}</th>
+                    <th>{language.group}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -9,10 +9,13 @@ import { SearchBarCtx } from "../hooks/SearchBarContext";
 import PageSelect from "./pagination/PageSelect";
 import useFilter from "../hooks/useFilter";
 import { getSubjectFields } from "../constants/search_fields";
-import "../styles/subjectsConfig.css";
 import ExtraFields from "./ExtraFields";
+import { LanguageCtx } from "../hooks/LanguageContext";
+import "../styles/subjectsConfig.css";
 
-export default function SubjectsConfig(props) {
+export default function SubjectsConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [subjects, setSubjects] = useState(null);
   const [courses, setCourses] = useState([]);
 
@@ -39,7 +42,7 @@ export default function SubjectsConfig(props) {
     subjects,
     null,
     SUBJECTSERVICE.filterCourses,
-    getSubjectFields(props.language)
+    getSubjectFields(language)
   );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
@@ -74,7 +77,7 @@ export default function SubjectsConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -93,7 +96,7 @@ export default function SubjectsConfig(props) {
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -130,7 +133,7 @@ export default function SubjectsConfig(props) {
               fetchSubjectPage(1);
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.creationCompleted);
+              setPopupText(language.creationCompleted);
               switchSaveState(true);
             }
           })
@@ -138,7 +141,7 @@ export default function SubjectsConfig(props) {
             if (e) {
               await interceptExpiredToken(e);
               setPopup(true);
-              setPopupText(props.language.creationFailed);
+              setPopupText(language.creationFailed);
               setPopupType("error");
               switchSaveState(true);
             }
@@ -158,7 +161,7 @@ export default function SubjectsConfig(props) {
     switchEditState(false);
     setPopupType("warning");
     setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
+    setPopupText(language.deleteAlert);
     setIsConfirmDelete(true);
     setPopup(true);
     setIdDelete(id);
@@ -169,7 +172,7 @@ export default function SubjectsConfig(props) {
     setPopupType("error");
     popupIcon(false);
     setPopup(false);
-    setPopupText(props.language.deleteFailed);
+    setPopupText(language.deleteFailed);
     setIsConfirmDelete(false);
   };
 
@@ -182,7 +185,7 @@ export default function SubjectsConfig(props) {
           fetchSubjectPage(1);
           setPopup(true);
           setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
+          setPopupText(language.deleteAlertCompleted);
           switchSaveState(false);
           setIsConfirmDelete(false);
         })
@@ -357,7 +360,7 @@ export default function SubjectsConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
               switchSaveState(false);
               setIsConfirmDelete(false);
             }
@@ -365,7 +368,7 @@ export default function SubjectsConfig(props) {
           .catch(async (error) => {
             if (error) {
               await interceptExpiredToken(e);
-              setPopupText(props.language.editAlertFailed);
+              setPopupText(language.editAlertFailed);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -461,7 +464,7 @@ export default function SubjectsConfig(props) {
                 color.disabled = true;
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
+                setPopupText(language.editAlertCompleted);
                 switchSaveState(false);
                 setIsConfirmDelete(false);
               }
@@ -469,7 +472,7 @@ export default function SubjectsConfig(props) {
             .catch(async (error) => {
               if (error) {
                 await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -554,7 +557,7 @@ export default function SubjectsConfig(props) {
                 color.disabled = true;
                 setPopup(true);
                 setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
+                setPopupText(language.editAlertCompleted);
                 switchSaveState(false);
                 setIsConfirmDelete(false);
               }
@@ -562,7 +565,7 @@ export default function SubjectsConfig(props) {
             .catch(async (error) => {
               if (error) {
                 await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 switchSaveState(false);
                 setPopup(true);
@@ -708,10 +711,10 @@ export default function SubjectsConfig(props) {
   useEffect(() => {
     setSearchParams({
       query: "",
-      fields: getSubjectFields(props.language),
-      selectedField: getSubjectFields(props.language)[0][0],
+      fields: getSubjectFields(language),
+      selectedField: getSubjectFields(language)[0][0],
     });
-  }, [props.language]);
+  }, [language]);
 
   return (
     <>
@@ -720,11 +723,11 @@ export default function SubjectsConfig(props) {
           <thead>
             <tr>
               <th></th>
-              <th>{props.language.subjectCode}</th>
-              <th>{props.language.name}</th>
-              <th>{props.language.description}</th>
-              <th>{props.language.color}</th>
-              <th>{props.language.linkedCourse}</th>
+              <th>{language.subjectCode}</th>
+              <th>{language.name}</th>
+              <th>{language.description}</th>
+              <th>{language.color}</th>
+              <th>{language.linkedCourse}</th>
             </tr>
           </thead>
 
@@ -765,7 +768,7 @@ export default function SubjectsConfig(props) {
                     />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    {props.language.loading} ...
+                    {language.loading} ...
                   </div>
                 </button>
               </td>
@@ -787,7 +790,7 @@ export default function SubjectsConfig(props) {
               </td>
               <td>
                 <select defaultValue={"-"} id="course_chooser">
-                  <option value="-">{props.language.chooseCourse}</option>
+                  <option value="-">{language.chooseCourse}</option>
                   {courses
                     ? courses.map((c) => {
                         return (
@@ -814,13 +817,13 @@ export default function SubjectsConfig(props) {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.code}</th>
-                    <th>{props.language.subjectCode}</th>
-                    <th>{props.language.name}</th>
-                    <th>{props.language.description}</th>
-                    <th>{props.language.color}</th>
-                    <th>{props.language.linkedCourse}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.code}</th>
+                    <th>{language.subjectCode}</th>
+                    <th>{language.name}</th>
+                    <th>{language.description}</th>
+                    <th>{language.color}</th>
+                    <th>{language.linkedCourse}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
