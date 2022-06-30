@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import jsreport from "@jsreport/browser-client";
 import logoeduapp from "../assets/eduappadmin.png";
 import API, { endpoints } from "../API";
@@ -8,12 +8,20 @@ import { fetchCourses } from "../services/course.service";
 import { fetchResourcesJson } from "../services/resource.service";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import "./componentStyles/languageSwitcher.css";
 import "../styles/navbar.css";
 
-export default function Navbar(props) {
+export default function Navbar({ locationState }) {
+  const [language] = useContext(LanguageCtx);
   const [activeSection, setActiveSection] = useState("");
+  const [location, setLocation] = locationState;
   const DISPLAY = false;
+
+  const toolbarLocation = (loc) => {
+    setLocation(loc);
+    localStorage.setItem("eduapp_last_viewed", loc);
+  };
 
   const generateResourcesReport = async () => {
     API.asynchronizeRequest(function () {
@@ -130,17 +138,11 @@ export default function Navbar(props) {
     setTimeout(displayClock, 1000);
   };
 
-  const switchLanguage = (lang) => {
-    props.switchLanguage(lang);
-  };
-
   useEffect(() => {
-    setActiveSection(props.location);
-  }, [props.location]);
+    setActiveSection(location);
+  }, [location]);
 
-  useEffect(() => {
-    displayClock();
-  }, []);
+  useEffect(() => displayClock(), []);
 
   return (
     <div className="navbar-container">
@@ -148,17 +150,17 @@ export default function Navbar(props) {
         <div className="logo">
           <img src={logoeduapp} alt="eduapplogo" />
         </div>
-        <LanguageSwitcher switchLanguage={switchLanguage} />
+        <LanguageSwitcher />
         <div id="liveClock" />
       </div>
       <div className="schedule-button-container button-container">
         <span>
-          <p>{props.language.schedule}</p>
+          <p>{language.schedule}</p>
         </span>
         <ul className={"suboptions"}>
           <li
             onClick={() => {
-              props.toolbarLocation("sessions");
+              toolbarLocation("sessions");
             }}
             className={
               activeSection === "sessions"
@@ -166,11 +168,11 @@ export default function Navbar(props) {
                 : "button-suboptions"
             }
           >
-            <p>{props.language.sessions}</p>
+            <p>{language.sessions}</p>
           </li>
           <li
             onClick={() => {
-              props.toolbarLocation("events");
+              toolbarLocation("events");
             }}
             className={
               activeSection === "events"
@@ -178,7 +180,7 @@ export default function Navbar(props) {
                 : "button-suboptions"
             }
           >
-            <p>{props.language.events}</p>
+            <p>{language.events}</p>
           </li>
         </ul>
       </div>
@@ -189,7 +191,7 @@ export default function Navbar(props) {
         <ul className={"suboptions"}>
           <li
             onClick={() => {
-              props.toolbarLocation("users");
+              toolbarLocation("users");
             }}
             className={
               activeSection === "users"
@@ -197,11 +199,11 @@ export default function Navbar(props) {
                 : "button-suboptions"
             }
           >
-            <p>{props.language.users}</p>
+            <p>{language.users}</p>
           </li>
           <li
             onClick={() => {
-              props.toolbarLocation("enroll");
+              toolbarLocation("enroll");
             }}
             className={
               activeSection === "enroll"
@@ -209,11 +211,11 @@ export default function Navbar(props) {
                 : "button-suboptions"
             }
           >
-            <p>{props.language.enrollment}</p>
+            <p>{language.enrollment}</p>
           </li>
           <li
             onClick={() => {
-              props.toolbarLocation("teachers");
+              toolbarLocation("teachers");
             }}
             className={
               activeSection === "teachers"
@@ -221,13 +223,13 @@ export default function Navbar(props) {
                 : "button-suboptions"
             }
           >
-            <p>{props.language.teachers}</p>
+            <p>{language.teachers}</p>
           </li>
         </ul>
       </div>
       <div className="settings-button-container button-container">
         <span>
-          <p>{props.language.management}</p>
+          <p>{language.management}</p>
         </span>
         <ul className={"suboptions"}>
           <li
@@ -239,15 +241,15 @@ export default function Navbar(props) {
           >
             <p
               onClick={() => {
-                props.toolbarLocation("courses");
+                toolbarLocation("courses");
               }}
             >
-              {props.language.courses}
+              {language.courses}
             </p>
           </li>
           <li
             onClick={() => {
-              props.toolbarLocation("subjects");
+              toolbarLocation("subjects");
             }}
             className={
               activeSection === "subjects"
@@ -255,11 +257,11 @@ export default function Navbar(props) {
                 : "button-suboptions"
             }
           >
-            <p>{props.language.subjects}</p>
+            <p>{language.subjects}</p>
           </li>
           <li
             onClick={() => {
-              props.toolbarLocation("resources");
+              toolbarLocation("resources");
             }}
             className={
               activeSection === "resources"
@@ -267,13 +269,13 @@ export default function Navbar(props) {
                 : "button-suboptions"
             }
           >
-            <p>{props.language.resources}</p>
+            <p>{language.resources}</p>
           </li>
         </ul>
       </div>
       <div className="settings-button-container button-container">
         <span>
-          <p>{props.language.settings}</p>
+          <p>{language.settings}</p>
         </span>
         <ul className={"suboptions"}>
           <li
@@ -285,10 +287,10 @@ export default function Navbar(props) {
           >
             <p
               onClick={() => {
-                props.toolbarLocation("institutions");
+                toolbarLocation("institutions");
               }}
             >
-              {props.language.institution}
+              {language.institution}
             </p>
           </li>
           <li
@@ -300,17 +302,17 @@ export default function Navbar(props) {
           >
             <p
               onClick={() => {
-                props.toolbarLocation("userRoles");
+                toolbarLocation("userRoles");
               }}
             >
-              {props.language.userRoles}
+              {language.userRoles}
             </p>
           </li>
         </ul>
       </div>
       <div className="chat-button-container button-container">
         <span>
-          <p>{props.language.chatSettings}</p>
+          <p>{language.chatSettings}</p>
         </span>
         <ul className="suboptions">
           <li
@@ -320,10 +322,10 @@ export default function Navbar(props) {
                 : "button-suboptions"
             }
             onClick={() => {
-              props.toolbarLocation("chatConfig");
+              toolbarLocation("chatConfig");
             }}
           >
-            <p>{props.language.chat}</p>
+            <p>{language.chat}</p>
           </li>
           <li
             className={
@@ -332,10 +334,10 @@ export default function Navbar(props) {
                 : "button-suboptions"
             }
             onClick={() => {
-              props.toolbarLocation("chatParticipant");
+              toolbarLocation("chatParticipant");
             }}
           >
-            <p>{props.language.participants}</p>
+            <p>{language.participants}</p>
           </li>
           {DISPLAY ? (
             <li
@@ -345,10 +347,10 @@ export default function Navbar(props) {
                   : "button-suboptions"
               }
               onClick={() => {
-                props.toolbarLocation("chatMessage");
+                toolbarLocation("chatMessage");
               }}
             >
-              <p>{props.language.message}</p>
+              <p>{language.message}</p>
             </li>
           ) : (
             <></>
@@ -357,7 +359,7 @@ export default function Navbar(props) {
       </div>
       {/* <div className="reports-button-container button-container">
         <span>
-          <p>{props.language.reports}</p>
+          <p>{language.reports}</p>
         </span>
         <ul className={"suboptions"}>
           <li className={"reports_options active"}>
@@ -366,7 +368,7 @@ export default function Navbar(props) {
                 await generateResourcesReport();
               }}
             >
-              {props.language.resources}
+              {language.resources}
             </p>
           </li>
           <li className={"reports_options active"}>
@@ -375,7 +377,7 @@ export default function Navbar(props) {
                 await generateMessagesReport();
               }}
             >
-              {props.language.chatMessages}
+              {language.chatMessages}
             </p>
           </li>
           <li className={"reports_options active"}>
@@ -384,7 +386,7 @@ export default function Navbar(props) {
                 await generateCoursesReport();
               }}
             >
-              {props.language.courses}
+              {language.courses}
             </p>
           </li>
         </ul>
