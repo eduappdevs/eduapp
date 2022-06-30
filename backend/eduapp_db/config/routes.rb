@@ -86,6 +86,8 @@ Rails.application.routes.draw do
 
   delete "#{@api_path}/users/remove/:id", to: "user_infos#destroyuser"
   get "#{@api_path}/google-login", to: "glogin#login"
-  get "#{@api_path}/ping", to: "static#home"
-  get "#{@api_path}/ping/admin", to: "static#created"
+
+  get "#{@api_path}/ping", to: "static#ping"
+  get "#{@api_path}/ping/admin", to: "static#admin"
+  get "#{@api_path}/ping/created", to: "static#created"
 end

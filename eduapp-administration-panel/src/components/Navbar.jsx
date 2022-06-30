@@ -2,20 +2,24 @@
 import { useContext, useEffect, useState } from "react";
 import jsreport from "@jsreport/browser-client";
 import logoeduapp from "../assets/eduappadmin.png";
-import API, { endpoints } from "../API";
+import asynchronizeRequest, { JSREPORT } from "../API";
 import { fetchMessage } from "../services/chat.service";
 import { fetchCourses } from "../services/course.service";
 import { fetchResourcesJson } from "../services/resource.service";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { LanguageCtx } from "../hooks/LanguageContext";
+import * as INSTITUTION_SERVICE from "../services/institution.service";
 import "./componentStyles/languageSwitcher.css";
 import "../styles/navbar.css";
 
 export default function Navbar({ locationState }) {
   const [language] = useContext(LanguageCtx);
-  const [activeSection, setActiveSection] = useState("");
   const [location, setLocation] = locationState;
+
+  const [activeSection, setActiveSection] = useState("");
+  const [institutionCreated, setInstitutionCreated] = useState(false);
+
   const DISPLAY = false;
 
   const toolbarLocation = (loc) => {
@@ -23,8 +27,9 @@ export default function Navbar({ locationState }) {
     localStorage.setItem("eduapp_last_viewed", loc);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const generateResourcesReport = async () => {
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       fetchResourcesJson
         .then((e) => {
           e.data.map((resource) => {
@@ -47,7 +52,7 @@ export default function Navbar({ locationState }) {
               },
             };
 
-            jsreport.serverUrl = endpoints.JSREPORT;
+            jsreport.serverUrl = JSREPORT;
             const report = jsreport.render({
               template: {
                 name: "ResourcesReport",
@@ -55,7 +60,7 @@ export default function Navbar({ locationState }) {
               data: JSON.stringify(payload),
             });
 
-            report.openInWindow({ title: "Resources Report" });
+            return report.openInWindow({ title: "Resources Report" });
           });
         })
         .catch(async (err) => {
@@ -65,8 +70,9 @@ export default function Navbar({ locationState }) {
     });
   };
 
+  // eslint-disable-next-line no-unused-vars
   const generateMessagesReport = async () => {
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       fetchMessage()
         .then((e) => {
           e.data.map((sms) => {
@@ -88,7 +94,7 @@ export default function Navbar({ locationState }) {
               },
             };
 
-            jsreport.serverUrl = endpoints.JSREPORT;
+            jsreport.serverUrl = JSREPORT;
             const report = jsreport.render({
               template: {
                 name: "ChatMessagesReport",
@@ -96,7 +102,7 @@ export default function Navbar({ locationState }) {
               data: JSON.stringify(payload),
             });
 
-            report.openInWindow({ title: "Chat Messages Report" });
+            return report.openInWindow({ title: "Chat Messages Report" });
           });
         })
         .catch(async (err) => {
@@ -106,15 +112,16 @@ export default function Navbar({ locationState }) {
     });
   };
 
+  // eslint-disable-next-line no-unused-vars
   const generateCoursesReport = async () => {
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       fetchCourses()
         .then((e) => {
           e.data.map((course) => {
             const payload = {
               data: course,
             };
-            jsreport.serverUrl = endpoints.JSREPORT;
+            jsreport.serverUrl = JSREPORT;
             const report = jsreport.render({
               template: {
                 name: "RegisteredCoursesReport",
@@ -122,7 +129,7 @@ export default function Navbar({ locationState }) {
               data: JSON.stringify(payload),
             });
 
-            report.openInWindow({ title: "Registered Courses Report" });
+            return report.openInWindow({ title: "Registered Courses Report" });
           });
         })
         .catch(async (err) => {
@@ -142,7 +149,21 @@ export default function Navbar({ locationState }) {
     setActiveSection(location);
   }, [location]);
 
-  useEffect(() => displayClock(), []);
+  useEffect(() => {
+    displayClock();
+
+    INSTITUTION_SERVICE.institutionCreated().then((created) =>
+      setInstitutionCreated(created)
+    );
+
+    window.addEventListener("institution_created", () =>
+      setInstitutionCreated(true)
+    );
+
+    return () => {
+      window.removeEventListener("institution_created", () => {});
+    };
+  }, []);
 
   return (
     <div className="navbar-container">
@@ -153,126 +174,177 @@ export default function Navbar({ locationState }) {
         <LanguageSwitcher />
         <div id="liveClock" />
       </div>
-      <div className="schedule-button-container button-container">
-        <span>
-          <p>{language.schedule}</p>
-        </span>
-        <ul className={"suboptions"}>
-          <li
-            onClick={() => {
-              toolbarLocation("sessions");
-            }}
-            className={
-              activeSection === "sessions"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{language.sessions}</p>
-          </li>
-          <li
-            onClick={() => {
-              toolbarLocation("events");
-            }}
-            className={
-              activeSection === "events"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{language.events}</p>
-          </li>
-        </ul>
-      </div>
-      <div className="users-button-container button-container">
-        <span>
-          <p>Users</p>
-        </span>
-        <ul className={"suboptions"}>
-          <li
-            onClick={() => {
-              toolbarLocation("users");
-            }}
-            className={
-              activeSection === "users"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{language.users}</p>
-          </li>
-          <li
-            onClick={() => {
-              toolbarLocation("enroll");
-            }}
-            className={
-              activeSection === "enroll"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{language.enrollment}</p>
-          </li>
-          <li
-            onClick={() => {
-              toolbarLocation("teachers");
-            }}
-            className={
-              activeSection === "teachers"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{language.teachers}</p>
-          </li>
-        </ul>
-      </div>
-      <div className="settings-button-container button-container">
-        <span>
-          <p>{language.management}</p>
-        </span>
-        <ul className={"suboptions"}>
-          <li
-            className={
-              activeSection === "courses"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-          >
-            <p
-              onClick={() => {
-                toolbarLocation("courses");
-              }}
-            >
-              {language.courses}
-            </p>
-          </li>
-          <li
-            onClick={() => {
-              toolbarLocation("subjects");
-            }}
-            className={
-              activeSection === "subjects"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-          >
-            <p>{language.subjects}</p>
-          </li>
-          <li
-            onClick={() => {
-              toolbarLocation("resources");
-            }}
-            className={
-              activeSection === "resources"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-          >
-            <p>{language.resources}</p>
-          </li>
-        </ul>
-      </div>
+      {institutionCreated && (
+        <>
+          <div className="schedule-button-container button-container">
+            <span>
+              <p>{language.schedule}</p>
+            </span>
+            <ul className={"suboptions"}>
+              <li
+                onClick={() => {
+                  toolbarLocation("sessions");
+                }}
+                className={
+                  activeSection === "sessions"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.sessions}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("events");
+                }}
+                className={
+                  activeSection === "events"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.events}</p>
+              </li>
+            </ul>
+          </div>
+          <div className="users-button-container button-container">
+            <span>
+              <p>Users</p>
+            </span>
+            <ul className={"suboptions"}>
+              <li
+                onClick={() => {
+                  toolbarLocation("users");
+                }}
+                className={
+                  activeSection === "users"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.users}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("enroll");
+                }}
+                className={
+                  activeSection === "enroll"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.enrollment}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("teachers");
+                }}
+                className={
+                  activeSection === "teachers"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.teachers}</p>
+              </li>
+            </ul>
+          </div>
+          <div className="management-button-container button-container">
+            <span>
+              <p>{language.management}</p>
+            </span>
+            <ul className={"suboptions"}>
+              <li
+                className={
+                  activeSection === "courses"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+              >
+                <p
+                  onClick={() => {
+                    toolbarLocation("courses");
+                  }}
+                >
+                  {language.courses}
+                </p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("subjects");
+                }}
+                className={
+                  activeSection === "subjects"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.subjects}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("resources");
+                }}
+                className={
+                  activeSection === "resources"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.resources}</p>
+              </li>
+            </ul>
+          </div>
+          <div className="chat-button-container button-container">
+            <span>
+              <p>{language.chatSettings}</p>
+            </span>
+            <ul className="suboptions">
+              <li
+                className={
+                  activeSection === "chatConfig"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+                onClick={() => {
+                  toolbarLocation("chatConfig");
+                }}
+              >
+                <p>{language.chat}</p>
+              </li>
+              <li
+                className={
+                  activeSection === "chatParticipant"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+                onClick={() => {
+                  toolbarLocation("chatParticipant");
+                }}
+              >
+                <p>{language.participants}</p>
+              </li>
+              {DISPLAY ? (
+                <li
+                  className={
+                    activeSection === "chatMessage"
+                      ? "active button-suboptions"
+                      : "button-suboptions"
+                  }
+                  onClick={() => {
+                    toolbarLocation("chatMessage");
+                  }}
+                >
+                  <p>{language.message}</p>
+                </li>
+              ) : (
+                <></>
+              )}
+            </ul>
+          </div>
+        </>
+      )}
       <div className="settings-button-container button-container">
         <span>
           <p>{language.settings}</p>
@@ -308,53 +380,6 @@ export default function Navbar({ locationState }) {
               {language.userRoles}
             </p>
           </li>
-        </ul>
-      </div>
-      <div className="chat-button-container button-container">
-        <span>
-          <p>{language.chatSettings}</p>
-        </span>
-        <ul className="suboptions">
-          <li
-            className={
-              activeSection === "chatConfig"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-            onClick={() => {
-              toolbarLocation("chatConfig");
-            }}
-          >
-            <p>{language.chat}</p>
-          </li>
-          <li
-            className={
-              activeSection === "chatParticipant"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-            onClick={() => {
-              toolbarLocation("chatParticipant");
-            }}
-          >
-            <p>{language.participants}</p>
-          </li>
-          {DISPLAY ? (
-            <li
-              className={
-                activeSection === "chatMessage"
-                  ? "active button-suboptions"
-                  : "button-suboptions"
-              }
-              onClick={() => {
-                toolbarLocation("chatMessage");
-              }}
-            >
-              <p>{language.message}</p>
-            </li>
-          ) : (
-            <></>
-          )}{" "}
         </ul>
       </div>
       {/* <div className="reports-button-container button-container">

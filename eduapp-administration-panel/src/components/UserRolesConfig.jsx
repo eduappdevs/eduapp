@@ -42,9 +42,13 @@ export default function UserRolesConfig() {
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
 
   const fetchRoles = async (page) => {
-    const roles = await ROLE_SERVICE.pagedUserRoles(page);
-    setMaxPages(roles.total_pages);
-    setRoles(roles.current_page);
+    try {
+      const roles = await ROLE_SERVICE.pagedUserRoles(page);
+      setMaxPages(roles.total_pages);
+      setRoles(roles.current_page);
+    } catch (err) {
+      await interceptExpiredToken(err);
+    }
   };
 
   const FIELDS = [

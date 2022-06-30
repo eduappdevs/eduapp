@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL, TOKEN } from "../API";
+import { API_URL, PING, TOKEN } from "../API";
 import { saveUserOffline } from "../utils/OfflineManager";
 import prefixUrl from "../utils/UrlPrefixer";
 export const USERS = `${API_URL}/users`;
@@ -27,7 +27,7 @@ export const login = async (body) => {
 };
 
 export const hasInit = async () => {
-  return await axios.get(`${API_URL}/ping/admin`);
+  return await axios.get(`${PING}/admin`);
 };
 
 export const logout = async () => {

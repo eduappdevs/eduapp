@@ -1,9 +1,13 @@
 import axios from "axios";
-import { API_URL, TOKEN } from "../API";
+import { API_URL, TOKEN, PING } from "../API";
 export const INSTITUTIONS = `${API_URL}/institutions`;
 const requestHeader = { eduauth: TOKEN };
 
 //Institutions
+export const institutionCreated = async () => {
+  return (await axios.get(`${PING}/created`)).data.created;
+};
+
 export const fetchInstitutions = async () => {
   return await axios.get(`${INSTITUTIONS}`, { headers: requestHeader });
 };

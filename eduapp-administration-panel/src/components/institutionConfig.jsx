@@ -49,9 +49,11 @@ export default function InstitutionConfig() {
 
   const fetchInstitutions = () => {
     asynchronizeRequest(function () {
-      INSTITUTIONSERVICE.fetchInstitutions().then((i) => {
-        setInstitutions(i.data);
-      });
+      INSTITUTIONSERVICE.fetchInstitutions()
+        .then((i) => {
+          setInstitutions(i.data);
+        })
+        .catch(async (err) => await interceptExpiredToken(err));
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
@@ -114,6 +116,7 @@ export default function InstitutionConfig() {
         setTimeout(() => {
           confirmModalCreate();
           fetchInstitutions();
+          window.dispatchEvent(new Event("institution_created"));
         }, 500);
       })
         .then(async (e) => {
