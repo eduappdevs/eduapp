@@ -438,6 +438,7 @@ export default function ResourcesConfig() {
       query: "",
       fields: getResourceFields(language),
       selectedField: getResourceFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

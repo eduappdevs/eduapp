@@ -282,6 +282,7 @@ export default function TeacherConfig() {
       query: "",
       fields: getTeacherFields(language),
       selectedField: getTeacherFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

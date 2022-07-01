@@ -1255,6 +1255,7 @@ export default function Schedulesessionslist(props) {
       query: "",
       fields: getSessionFields(language),
       selectedField: getSessionFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

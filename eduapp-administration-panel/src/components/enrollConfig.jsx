@@ -583,6 +583,7 @@ export default function EnrollConfig() {
       query: "",
       fields: getEnrollmentFields(language),
       selectedField: getEnrollmentFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

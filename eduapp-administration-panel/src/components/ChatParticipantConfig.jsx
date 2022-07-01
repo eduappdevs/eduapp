@@ -224,6 +224,7 @@ export default function ChatParticipantConfig() {
       query: "",
       fields: getParticipantFields(language),
       selectedField: getParticipantFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

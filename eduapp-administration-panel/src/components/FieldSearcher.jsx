@@ -11,26 +11,28 @@ import ExtraFieldsSearcher from "./ExtraFieldsSearcher";
  * 2. Import useFilter with searchParams with the corresponding parameters for local or remote filtering
  * 3. In an empty useEffect ([language]), empty the searchParams context (a)
  * 4. Finally In the main table render, add a few if statements to return empty if there is a filtered value and if the value does not match with the filter (b)
- * 
+ *
  * - (a) Example:
  * - setSearchParams({
  *   query: "",
  *   fields: getCourseFields(lang),
- *   selectedField: getCourseFields(lang)[0][0]
+ *   selectedField: getCourseFields(lang)[0][0],
+ *   extras: [["", ""]],
+ *
  * });
- * 
+ *
  * - (b) Example:
  * - if (filteredCourses !== null)
  * 		// Local Filtration
-      if (
-        filteredCourses.length > 0 &&
-        !filteredCourses.includes(c)
-      )
-			// Remote Filtration
-			if (
-        filteredCourses.find((fc) => fc.id === c.id) === undefined
-      )
-        return <></>;
+ *    if (
+ *      filteredCourses.length > 0 &&
+ *      !filteredCourses.includes(c)
+ *    )
+ *		// Remote Filtration
+ *		if (
+ *      filteredCourses.find((fc) => fc.id === c.id) === undefined
+ *    )
+ *      return <></>;
  */
 export default function FieldSearcher({ hasExtraFields }) {
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);

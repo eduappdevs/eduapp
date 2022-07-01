@@ -713,6 +713,7 @@ export default function SubjectsConfig() {
       query: "",
       fields: getSubjectFields(language),
       selectedField: getSubjectFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

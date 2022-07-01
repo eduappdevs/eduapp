@@ -1015,6 +1015,7 @@ export default function Scheduleeventslist() {
       query: "",
       fields: getEventFields(language),
       selectedField: getEventFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

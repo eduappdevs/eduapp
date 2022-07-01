@@ -462,6 +462,7 @@ export default function ChatConfig() {
       query: "",
       fields: getChatFields(language),
       selectedField: getChatFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

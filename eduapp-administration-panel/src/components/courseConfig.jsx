@@ -505,6 +505,7 @@ export default function CourseConfig() {
       query: "",
       fields: getCourseFields(language),
       selectedField: getCourseFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

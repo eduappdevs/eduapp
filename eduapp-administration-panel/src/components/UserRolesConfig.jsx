@@ -415,6 +415,7 @@ export default function UserRolesConfig() {
       query: "",
       fields: getRoleFields(language),
       selectedField: getRoleFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 
