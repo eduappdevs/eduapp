@@ -27,7 +27,7 @@ export default function Toolbar(props) {
                 </div>
               </div>
             </li>
-            <FieldSearcher language={language} />
+            <FieldSearcher hasExtraFields />
           </ul>
           {modalOpen === true ? (
             <SessionCSVModal
@@ -49,24 +49,24 @@ export default function Toolbar(props) {
         <>
           <ul className="scheduletoolbar-ul events-toolbar">
             <li>
-              <Batcher type="events" language={language} />
+              <Batcher type="events" />
             </li>
-            <FieldSearcher language={language} />
+            <FieldSearcher hasExtraFields />
           </ul>
         </>
       ) : props.location === "users" ? (
         <>
           <ul className="scheduletoolbar-ul users-toolbar">
             <li>
-              <Batcher type="users" language={language} />
+              <Batcher type="users" />
             </li>
-            <FieldSearcher language={language} />
+            <FieldSearcher hasExtraFields />
           </ul>
         </>
       ) : props.location === "resources" ? (
         <>
           <ul className="scheduletoolbar-ul resources-toolbar">
-            <FieldSearcher language={language} />
+            <FieldSearcher hasExtraFields />
           </ul>
         </>
       ) : props.location === "institutions" ? (
@@ -74,42 +74,42 @@ export default function Toolbar(props) {
       ) : props.location === "courses" ? (
         <>
           <ul className="scheduletoolbar-ul courses-toolbar">
-            <FieldSearcher language={language} />
+            <FieldSearcher hasExtraFields />
           </ul>
         </>
       ) : props.location === "subjects" ? (
         <>
           <ul className="scheduletoolbar-ul subjects-toolbar">
-            <FieldSearcher language={language} />
+            <FieldSearcher hasExtraFields />
           </ul>
         </>
       ) : props.location === "enroll" ? (
         <>
           <ul className="scheduletoolbar-ul enroll-toolbar">
-            <FieldSearcher language={language} />
+            <FieldSearcher />
           </ul>
         </>
       ) : props.location === "teachers" ? (
         <>
           <ul className="scheduletoolbar-ul teachers-toolbar">
-            <FieldSearcher language={language} />
+            <FieldSearcher />
           </ul>
         </>
       ) : props.location === "chatConfig" ? (
         <>
           <ul className="scheduletoolbar-ul chatConfig-toolbar">
-            <FieldSearcher language={language} />
+            <FieldSearcher />
           </ul>
         </>
       ) : props.location === "userRoles" ? (
         <>
           <ul className="scheduletoolbar-ul userRoles-toolbar">
-            <FieldSearcher language={language} />
+            <FieldSearcher />
           </ul>
         </>
       ) : props.location === "chatParticipant" ? (
         <ul className="scheduletoolbar-ul chatParticipant-toolbar">
-          <FieldSearcher language={language} />
+          <FieldSearcher />
         </ul>
       ) : (
         <h1>{language.configuration}</h1>

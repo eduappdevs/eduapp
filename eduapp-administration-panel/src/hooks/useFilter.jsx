@@ -1,6 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useContext } from "react";
-import { genericRequestParser } from "../constants/search_fields";
+import {
+  extraFieldsParser,
+  genericRequestParser,
+} from "../constants/search_fields";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 
 export default function useFilter(
@@ -32,7 +35,11 @@ export default function useFilter(
   };
 
   const remoteFilter = async () => {
-    if (searchParams.query === "") return setFilter(null);
+    if (
+      searchParams.query === "" &&
+      extraFieldsParser(searchParams.extras) === null
+    )
+      return setFilter(null);
     else if (requestFields === null)
       throw new Error("No fields provided for remote filtration.");
 
@@ -42,7 +49,8 @@ export default function useFilter(
           genericRequestParser(
             requestFields,
             searchParams.query,
-            searchParams.selectedField
+            searchParams.selectedField,
+            extraFieldsParser(searchParams.extras)
           )
         )
       ).data.filtration

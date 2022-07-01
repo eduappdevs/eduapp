@@ -49,7 +49,8 @@ class UserInfosController < ApplicationController
       end
     end
 
-    final_query = params[:extras] ? UserInfo.where(user_id: filter_extrafields(params[:extras], User)) : nil
+    extras = filter_extrafields(params[:extras], User)
+    final_query = params[:extras] ? (!extras.nil? ? UserInfo.where(user_id: extras) : nil) : nil
 
     if !infos_query.empty?
       query = nil
@@ -86,7 +87,7 @@ class UserInfosController < ApplicationController
 
     final_query = [] if final_query.nil?
 
-    if params[:page]
+    if params[:page] && !final_query.instance_of?(Array)
       final_query = query_paginate(final_query, params[:page])
       final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :user_id, :user_role_id, :googleid], [:user, :user_role])
     end
@@ -292,6 +293,6 @@ class UserInfosController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def user_info_params
-    params.permit(:user_name, :user_id, :user_role, :calendar_event, :profile_image, :teaching_list, :googleid, :isLoggedWithGoogle)
+    params.permit(:extras, :user_name, :user_id, :user_role, :calendar_event, :profile_image, :teaching_list, :googleid, :isLoggedWithGoogle)
   end
 end

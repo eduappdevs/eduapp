@@ -55,10 +55,11 @@ export const filterUsers = async ({
   order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/user_infos?user_id=${user_id}&user_name=${user_name}&email=${email}&role=${role}&page=${page}&order=${order}`,
+    `${FILTER_URL}/user_infos?user_id=${user_id}&user_name=${user_name}&email=${email}&role=${role}&page=${page}&order=${order}&extras=${btoa(
+      JSON.stringify(extras)
+    )}`,
     {
       headers: requestHeader,
-      data: extras,
     }
   );
 };

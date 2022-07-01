@@ -209,9 +209,17 @@ export function genericParser(x, field) {
   return x[field];
 }
 
-export function genericRequestParser(fields, query, field) {
-  let info = {};
+export function genericRequestParser(fields, query, field, extras = null) {
+  let info = { extras: extras };
   for (let f of fields) if (f[0] === field) info[field] = query;
 
   return info;
+}
+
+export function extraFieldsParser(efArray) {
+  let ef = {};
+  for (let field of efArray) {
+    if (field[0] !== "" && field.length > 0) ef[field[0]] = field[1];
+  }
+  return Object.keys(ef).length === 0 ? null : ef;
 }

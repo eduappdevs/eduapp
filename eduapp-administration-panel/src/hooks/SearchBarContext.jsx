@@ -8,6 +8,7 @@ export function SearchBarContextProvider({ children }) {
     query: "",
     fields: [],
     selectedField: "",
+    extras: [["", ""]],
   };
 
   const [searchParams, setSearchParams] = useState(defaultParams);

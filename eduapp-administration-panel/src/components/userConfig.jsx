@@ -689,6 +689,7 @@ export default function UserConfig() {
       query: "",
       fields: getUserFields(language),
       selectedField: getUserFields(language)[0][0],
+      extras: [["", ""]],
     });
   }, [language]);
 

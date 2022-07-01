@@ -84,7 +84,10 @@ class ApplicationController < ActionController::API
 
   def filter_extrafields(extras, table)
     check_extra_fields(table)
+    extras = JSON.parse(Base64.decode64(extras))
     valuable = table.where.not(extra_fields: [])
+
+    return nil if extras.nil?
 
     ids = []
     valuable.each do |entry|
@@ -101,7 +104,7 @@ class ApplicationController < ActionController::API
       end
     end
 
-    return table.where(id: ids)
+    return ids.length > 0 ? table.where(id: ids) : nil
   end
 
   private

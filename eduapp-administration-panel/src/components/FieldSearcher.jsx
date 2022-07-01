@@ -1,16 +1,17 @@
 import { useContext } from "react";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
+import ExtraFieldsSearcher from "./ExtraFieldsSearcher";
 
 /**
- * @param {JSON} language Component languages
+ * @param {Boolean} hasExtraFields Activates an extra button to filter with extra fields
  *
  * How to implement:
  * 1. Import at the top of the Component SearchBarCtx ([searchParams, setSearchParams])
- * 2. Import useFilter with searchParams, the main array of information, and the corresponding search_fields parser
- * 3. In the empty useEffect ([]) empty the searchParams (a)
+ * 2. Import useFilter with searchParams with the corresponding parameters for local or remote filtering
+ * 3. In an empty useEffect ([language]), empty the searchParams context (a)
  * 4. Finally In the main table render, add a few if statements to return empty if there is a filtered value and if the value does not match with the filter (b)
- *
+ * 
  * - (a) Example:
  * - setSearchParams({
  *   query: "",
@@ -20,13 +21,18 @@ import { SearchBarCtx } from "../hooks/SearchBarContext";
  * 
  * - (b) Example:
  * - if (filteredCourses !== null)
-       if (
-         filteredCourses.length > 0 &&
-         !filteredCourses.includes(c)
-       )
-         return <></>;
+ * 		// Local Filtration
+      if (
+        filteredCourses.length > 0 &&
+        !filteredCourses.includes(c)
+      )
+			// Remote Filtration
+			if (
+        filteredCourses.find((fc) => fc.id === c.id) === undefined
+      )
+        return <></>;
  */
-export default function FieldSearcher() {
+export default function FieldSearcher({ hasExtraFields }) {
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const [language] = useContext(LanguageCtx);
 
@@ -80,6 +86,7 @@ export default function FieldSearcher() {
           </select>
         </li>
       ) : null}
+      {hasExtraFields ? <ExtraFieldsSearcher /> : null}
     </>
   );
 }
