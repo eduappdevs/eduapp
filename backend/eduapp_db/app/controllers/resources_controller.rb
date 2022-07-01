@@ -44,7 +44,7 @@ class ResourcesController < ApplicationController
     final_query = params[:extras] ? filter_extrafields(params[:extras], Resource) : nil
 
     if !resources_query.empty?
-      query = nil
+      query = !final_query.nil? ? final_query : nil
 
       if resources_query["id"]
         ids = []

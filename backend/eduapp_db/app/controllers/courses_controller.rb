@@ -48,7 +48,7 @@ class CoursesController < ApplicationController
       Course.all.each do |c|
         ids << c.id if c.id.to_s =~ /^#{course_query["id"]}.*$/
       end
-      final_query = Course.where(id: ids)
+      final_query = !final_query.nil? ? final_query.where(id: ids) : Course.where(id: ids)
     end
 
     if course_query["name"]

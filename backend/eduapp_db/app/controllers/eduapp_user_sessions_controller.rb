@@ -47,7 +47,7 @@ class EduappUserSessionsController < ApplicationController
     final_query = params[:extras] ? filter_extrafields(params[:extras], EduappUSerSession) : nil
 
     if !sessions_query.empty?
-      query = nil
+      query = !final_query.nil? ? final_query : nil
 
       if sessions_query["id"]
         ids = []

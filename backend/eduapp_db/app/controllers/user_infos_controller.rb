@@ -53,7 +53,8 @@ class UserInfosController < ApplicationController
     final_query = params[:extras] ? (!extras.nil? ? UserInfo.where(user_id: extras) : nil) : nil
 
     if !infos_query.empty?
-      query = nil
+      query = !final_query.nil? ? final_query : nil
+
       if infos_query["user_id"]
         user_ids = []
         UserInfo.all.each do |u|

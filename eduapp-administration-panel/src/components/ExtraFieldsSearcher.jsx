@@ -35,16 +35,13 @@ export default function ExtraFieldsSearcher() {
   return (
     <>
       <StandardModal
-        customYes={language.search}
-        customNo={language.cancel}
+        customOkay={"Close"}
         text={"Custom fields"}
         show={showPopup}
         hasTransition
         hasIconAnimation
         type="info"
-        isQuestion
-        onYesAction={() => setShowPopup(false)}
-        onNoAction={() => setShowPopup(false)}
+        onCloseAction={() => setShowPopup(false)}
         isModalExtraFields
         form={
           <>
