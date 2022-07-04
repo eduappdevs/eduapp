@@ -27,6 +27,9 @@ export default function ExtraFieldsSearcher() {
       }
     }
 
+    if (extraFields.length === 1 && extraFields[0].length < 1)
+      setExtraFields([["", ""]]);
+
     let c = { ...searchParams };
     c.extras = extraFields;
     setSearchParams(c);

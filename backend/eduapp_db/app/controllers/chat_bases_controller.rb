@@ -7,7 +7,10 @@ class ChatBasesController < ApplicationController
 
   # GET /chat_bases
   def index
+    wants_complete_chat = false
+
     if params[:complete_chat_for]
+      wants_complete_chat = true
       if !check_user_in_chat(params[:complete_chat_for])
         return
       end
@@ -42,6 +45,16 @@ class ChatBasesController < ApplicationController
       @chat_bases = ChatBase.all
     end
 
+    if !wants_complete_chat
+      if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+        order = JSON.parse(Base64.decode64(params[:order]))
+        order["field"] = order["field"] == "name" ? "chat_name" : order["field"]
+        @chat_bases = @chat_bases.order({ order["field"] => order["order"] == "asc" ? :asc : :desc })
+      else
+        @chat_bases = @chat_bases.order(chat_name: :asc)
+      end
+    end
+
     if params[:page]
       @chat_bases = query_paginate(@chat_bases, params[:page])
     end
@@ -52,7 +65,7 @@ class ChatBasesController < ApplicationController
   def filter
     chat_query = {}
     params.each do |param|
-      next unless param[0] == "name"
+      next unless param[0] == "chat_name"
       next unless param[1] != "null" && param[1].length > 0
 
       chat_query.merge!({ param[0] => param[1] })
@@ -60,8 +73,8 @@ class ChatBasesController < ApplicationController
 
     final_query = nil
 
-    if chat_query["name"]
-      final_query = ChatBase.where("chat_name LIKE ?", "%#{chat_query["name"]}%")
+    if chat_query["chat_name"]
+      final_query = ChatBase.where("chat_name LIKE ?", "%#{chat_query["chat_name"]}%")
     end
 
     final_query = [] if final_query.nil?

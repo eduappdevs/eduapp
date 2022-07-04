@@ -13,6 +13,7 @@ import "../styles/chatConfig.css";
 
 export default function ChatConfig() {
   const [chat, setChat] = useState([]);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [language] = useContext(LanguageCtx);
 
   const [newName] = useState();
@@ -20,7 +21,7 @@ export default function ChatConfig() {
 
   const [maxPages, setMaxPages] = useState(1);
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredChats = useFilter(
     chat,
     null,
@@ -338,9 +339,9 @@ export default function ChatConfig() {
     }
   };
 
-  const fetchChatPage = async (page) => {
+  const fetchChatPage = async (page, order = null) => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.pagedChat(page)
+      CHATSERVICE.pagedChat(page, order)
         .then((res) => {
           setChat(res.data.current_page);
           setMaxPages(res.data.total_pages);
@@ -455,7 +456,10 @@ export default function ChatConfig() {
     return document.getElementById("inputName_" + id).value;
   };
 
-  useEffect(() => fetchChatPage(1), []);
+  useEffect(() => {
+    fetchChatPage(1);
+    setInitialFetch(true);
+  }, []);
 
   useEffect(() => {
     setSearchParams({
@@ -463,8 +467,18 @@ export default function ChatConfig() {
       fields: getChatFields(language),
       selectedField: getChatFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchChatPage(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>

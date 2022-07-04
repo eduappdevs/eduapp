@@ -14,13 +14,11 @@ export const filterResources = async ({
   subject_name = null,
   page = 1,
   extras = null,
-  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/resources?id=${id}&name=${name}&author=${author}&subject_name=${subject_name}&page=${page}&order=${order}`,
+    `${FILTER_URL}/resources?id=${id}&name=${name}&author=${author}&subject_name=${subject_name}&page=${page}&extras=${extras}`,
     {
       headers: requestHeader,
-      data: extras,
     }
   );
 };
@@ -41,8 +39,11 @@ export const fetchResourcesJson = async () => {
   return await (await fetch(RESOURCE)).json();
 };
 
-export const pagedResources = async (page) => {
-  return await axios.get(`${RESOURCE}?page=${page}`, {
-    headers: requestHeader,
-  });
+export const pagedResources = async (page, order = null) => {
+  return await axios.get(
+    `${RESOURCE}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    {
+      headers: requestHeader,
+    }
+  );
 };

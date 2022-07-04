@@ -9,25 +9,26 @@ export const fetchEvents = async () => {
   return await axios.get(EVENTS, { headers: requestHeader });
 };
 
-export const pagedEvents = async (page) => {
-  return await axios.get(`${EVENTS}?page=${page}`, {
-    headers: requestHeader,
-  });
+export const pagedEvents = async (page, order) => {
+  return await axios.get(
+    `${EVENTS}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    {
+      headers: requestHeader,
+    }
+  );
 };
 
-export const filterSessions = async ({
+export const filterEvents = async ({
   id = null,
-  session_name = null,
-  streaming_platform = null,
-  resources_platform = null,
-  session_chat_id = null,
+  annotation_title = null,
+  annotation_description = null,
+  event_author = null,
   subject_name = null,
   page = 1,
   extras = null,
-  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/sessions?id=${id}&session_name=${session_name}&streaming_platform=${streaming_platform}&resources_platform=${resources_platform}&session_chat_id=${session_chat_id}&subject_name=${subject_name}&page=${page}&order=${order}`,
+    `${FILTER_URL}/events?id=${id}&annotation_title=${annotation_title}&annotation_description=${annotation_description}&event_author=${event_author}&subject_name=${subject_name}&page=${page}`,
     {
       headers: requestHeader,
       data: extras,
@@ -53,27 +54,29 @@ export const fetchSessions = async () => {
   return await axios.get(SESSIONS, { headers: requestHeader });
 };
 
-export const pagedSessions = async (page) => {
-  return await axios.get(`${SESSIONS}?page=${page}`, {
-    headers: requestHeader,
-  });
+export const pagedSessions = async (page, order = null) => {
+  return await axios.get(
+    `${SESSIONS}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    {
+      headers: requestHeader,
+    }
+  );
 };
 
-export const filterEvents = async ({
+export const filterSessions = async ({
   id = null,
-  annotation_title = null,
-  annotation_description = null,
-  event_author = null,
+  session_name = null,
+  streaming_platform = null,
+  resources_platform = null,
+  session_chat_id = null,
   subject_name = null,
   page = 1,
   extras = null,
-  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/events?id=${id}&annotation_title=${annotation_title}&annotation_description=${annotation_description}&event_author=${event_author}&subject_name=${subject_name}&page=${page}&order=${order}`,
+    `${FILTER_URL}/sessions?id=${id}&session_name=${session_name}&streaming_platform=${streaming_platform}&resources_platform=${resources_platform}&session_chat_id=${session_chat_id}&subject_name=${subject_name}&page=${page}&extras=${extras}`,
     {
       headers: requestHeader,
-      data: extras,
     }
   );
 };

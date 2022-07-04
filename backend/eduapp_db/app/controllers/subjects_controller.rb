@@ -5,7 +5,10 @@ class SubjectsController < ApplicationController
 
   # GET /subjects
   def index
+    wants_info_for_calendar = false
+
     if params[:user_id]
+      wants_info_for_calendar = true
       if !check_perms_query_self!(get_user_roles.perms_subjects, params[:user_id])
         return
       end
@@ -49,6 +52,14 @@ class SubjectsController < ApplicationController
         return
       end
       @subjects = Subject.all
+    end
+
+    if !wants_info_for_calendar
+      if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+        @subjects = @subjects.order(parse_filter_order(params[:order]))
+      else
+        @subjects = @subjects.order(name: :asc)
+      end
     end
 
     if params[:page]

@@ -21,10 +21,11 @@ export default function ResourcesConfig() {
   const [users, setUsers] = useState([]);
   const [subject, setSubject] = useState([]);
   const [resources, setResources] = useState([]);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredResources = useFilter(
     resources,
     null,
@@ -389,9 +390,9 @@ export default function ResourcesConfig() {
     }
   };
 
-  const fetchResourcesPage = async (page) => {
+  const fetchResourcesPage = async (page, order = null) => {
     asynchronizeRequest(function () {
-      RESOURCESERVICES.pagedResources(page)
+      RESOURCESERVICES.pagedResources(page, order)
         .then((us) => {
           setMaxPages(us.data.total_pages);
           setResources(us.data.current_page);
@@ -431,7 +432,10 @@ export default function ResourcesConfig() {
     return document.getElementById(`inputDescription_${id}`).value;
   };
 
-  useEffect(() => fetchResourcesPage(1), []);
+  useEffect(() => {
+    fetchResourcesPage(1);
+    setInitialFetch(true);
+  }, []);
 
   useEffect(() => {
     setSearchParams({
@@ -439,8 +443,18 @@ export default function ResourcesConfig() {
       fields: getResourceFields(language),
       selectedField: getResourceFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchResourcesPage(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>

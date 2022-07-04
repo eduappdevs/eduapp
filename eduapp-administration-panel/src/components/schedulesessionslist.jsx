@@ -20,6 +20,7 @@ export default function Schedulesessionslist(props) {
   const [language] = useContext(LanguageCtx);
 
   const [sessions, setSessions] = useState(null);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [subject, setSubject] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
@@ -53,7 +54,7 @@ export default function Schedulesessionslist(props) {
   const [idDelete, setIdDelete] = useState();
   const [idBatch, setIdBatch] = useState();
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredSessions = useFilter(
     sessions,
     null,
@@ -83,9 +84,9 @@ export default function Schedulesessionslist(props) {
     setPopupIcon("error");
   };
 
-  const fetchSessions = async (pages) => {
+  const fetchSessions = async (page, order = null) => {
     await API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.pagedSessions(pages)
+      SCHEDULESERVICE.pagedSessions(page, order)
         .then((e) => {
           setMaxPages(e.data.total_pages);
           setSessions(e.data.current_page);
@@ -1248,6 +1249,7 @@ export default function Schedulesessionslist(props) {
   useEffect(() => {
     fetchSessions(1);
     fetchSubjects();
+    setInitialFetch(true);
   }, []);
 
   useEffect(() => {
@@ -1256,8 +1258,18 @@ export default function Schedulesessionslist(props) {
       fields: getSessionFields(language),
       selectedField: getSessionFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchSessions(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>

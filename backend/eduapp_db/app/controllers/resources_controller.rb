@@ -17,6 +17,12 @@ class ResourcesController < ApplicationController
       @resources = Resource.all
     end
 
+    if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+      @resources = @resources.order(parse_filter_order(params[:order]))
+    else
+      @resources = @resources.order(name: :asc)
+    end
+
     if params[:page]
       @resources = query_paginate(@resources, params[:page])
       @resources[:current_page] = serialize_each(@resources[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [:user, :subject])

@@ -20,6 +20,12 @@ class EduappUserSessionsController < ApplicationController
       @eduapp_user_sessions = EduappUserSession.all
     end
 
+    if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+      @eduapp_user_sessions = @eduapp_user_sessions.order(parse_filter_order(params[:order]))
+    else
+      @eduapp_user_sessions = @eduapp_user_sessions.order(session_name: :asc)
+    end
+
     if params[:page]
       @eduapp_user_sessions = query_paginate(@eduapp_user_sessions, params[:page])
       @eduapp_user_sessions[:current_page] = serialize_each(@eduapp_user_sessions[:current_page], [:created_at, :updated_at, :subject_id], [:subject])
@@ -44,7 +50,7 @@ class EduappUserSessionsController < ApplicationController
       end
     end
 
-    final_query = params[:extras] ? filter_extrafields(params[:extras], EduappUSerSession) : nil
+    final_query = params[:extras] ? filter_extrafields(params[:extras], EduappUserSession) : nil
 
     if !sessions_query.empty?
       query = !final_query.nil? ? final_query : nil

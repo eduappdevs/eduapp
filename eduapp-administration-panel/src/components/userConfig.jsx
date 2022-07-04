@@ -23,6 +23,7 @@ export default function UserConfig() {
   const [language] = useContext(LanguageCtx);
 
   const [users, setUsers] = useState(null);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
 
   const [changeName, setChangeName] = useState(false);
   const [changeEmail, setChangeEmail] = useState(false);
@@ -37,7 +38,7 @@ export default function UserConfig() {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredUsers = useFilter(
     users,
     null,
@@ -113,9 +114,9 @@ export default function UserConfig() {
     });
   };
 
-  const fetchUserPage = (page) => {
+  const fetchUserPage = (page, order = null) => {
     asynchronizeRequest(function () {
-      USERSERVICE.pagedUserInfos(page)
+      USERSERVICE.pagedUserInfos(page, order)
         .then((us) => {
           setMaxPages(us.data.total_pages);
           setUsers(us.data.current_page);
@@ -682,6 +683,7 @@ export default function UserConfig() {
   useEffect(() => {
     fetchUsers();
     fetchRoles();
+    setInitialFetch(true);
   }, []);
 
   useEffect(() => {
@@ -690,8 +692,18 @@ export default function UserConfig() {
       fields: getUserFields(language),
       selectedField: getUserFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchUserPage(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>

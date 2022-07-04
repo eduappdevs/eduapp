@@ -12,25 +12,20 @@ export const fetchChat = async () => {
   return await axios.get(`${CHAT}`, { headers: requestHeader });
 };
 
-export const filterChats = async ({
-  name = null,
-  page = 1,
-  extras = null,
-  order = "asc",
-}) => {
-  return await axios.get(
-    `${FILTER_URL}/chats?name=${name}&page=${page}&order=${order}`,
-    {
-      headers: requestHeader,
-      data: extras,
-    }
-  );
+export const filterChats = async ({ name = null, page = 1, extras = null }) => {
+  return await axios.get(`${FILTER_URL}/chats?chat_name=${name}&page=${page}`, {
+    headers: requestHeader,
+    data: extras,
+  });
 };
 
-export const pagedChat = async (page) => {
-  return await axios.get(`${CHAT}?page=${page}`, {
-    headers: requestHeader,
-  });
+export const pagedChat = async (page, order = null) => {
+  return await axios.get(
+    `${CHAT}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    {
+      headers: requestHeader,
+    }
+  );
 };
 
 export const findChatById = async (id) => {
@@ -69,10 +64,9 @@ export const filterParticipants = async ({
   chat_name = null,
   page = 1,
   extras = null,
-  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/chat_participants?chat_name=${chat_name}&email=${email}&page=${page}&order=${order}`,
+    `${FILTER_URL}/chat_participants?chat_name=${chat_name}&email=${email}&page=${page}`,
     {
       headers: requestHeader,
       data: extras,

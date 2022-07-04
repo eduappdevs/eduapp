@@ -210,7 +210,9 @@ export function genericParser(x, field) {
 }
 
 export function genericRequestParser(fields, query, field, extras = null) {
-  let info = { extras: extras };
+  let info = {
+    extras: btoa(JSON.stringify(extras)),
+  };
   for (let f of fields) if (f[0] === field) info[field] = query;
 
   return info;
@@ -222,4 +224,8 @@ export function extraFieldsParser(efArray) {
     if (field[0] !== "" && field.length > 0) ef[field[0]] = field[1];
   }
   return Object.keys(ef).length === 0 ? null : ef;
+}
+
+export function orderParser(order, orderBy) {
+  return { order: order, field: orderBy };
 }

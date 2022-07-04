@@ -9,6 +9,7 @@ export function SearchBarContextProvider({ children }) {
     fields: [],
     selectedField: "",
     extras: [["", ""]],
+    order: "asc",
   };
 
   const [searchParams, setSearchParams] = useState(defaultParams);

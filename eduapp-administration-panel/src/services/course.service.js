@@ -24,13 +24,11 @@ export const filterCourses = async ({
   name = null,
   page = 1,
   extras = null,
-  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/courses?id=${id}&name=${name}&page=${page}&order=${order}`,
+    `${FILTER_URL}/courses?id=${id}&name=${name}&page=${page}&extras=${extras}`,
     {
       headers: requestHeader,
-      data: extras,
     }
   );
 };
@@ -45,8 +43,11 @@ export const editCourse = async (body) => {
   });
 };
 
-export const pagedCourses = async (page) => {
-  return await axios.get(`${COURSES}?page=${page}`, {
-    headers: requestHeader,
-  });
+export const pagedCourses = async (page, order = null) => {
+  return await axios.get(
+    `${COURSES}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    {
+      headers: requestHeader,
+    }
+  );
 };

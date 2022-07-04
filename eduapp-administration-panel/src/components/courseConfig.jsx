@@ -18,6 +18,7 @@ export default function CourseConfig() {
   const [language] = useContext(LanguageCtx);
 
   const [courses, setCourses] = useState(null);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [institutions, setInstitutions] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
@@ -32,7 +33,7 @@ export default function CourseConfig() {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredCourses = useFilter(
     courses,
     null,
@@ -330,9 +331,9 @@ export default function CourseConfig() {
     });
   };
 
-  const fetchCoursePage = async (page) => {
+  const fetchCoursePage = async (page, order = null) => {
     API.asynchronizeRequest(function () {
-      COURSESERVICE.pagedCourses(page)
+      COURSESERVICE.pagedCourses(page, order)
         .then((i) => {
           setCourses(i.data.current_page);
           setMaxPages(i.data.total_pages);
@@ -498,7 +499,10 @@ export default function CourseConfig() {
     return document.getElementById("inputName_" + id).value;
   };
 
-  useEffect(() => fetchCoursePage(1), []);
+  useEffect(() => {
+    fetchCoursePage(1);
+    setInitialFetch(true);
+  }, []);
 
   useEffect(() => {
     setSearchParams({
@@ -506,8 +510,18 @@ export default function CourseConfig() {
       fields: getCourseFields(language),
       selectedField: getCourseFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchCoursePage(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>

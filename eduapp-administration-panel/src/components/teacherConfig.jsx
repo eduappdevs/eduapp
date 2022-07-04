@@ -283,6 +283,7 @@ export default function TeacherConfig() {
       fields: getTeacherFields(language),
       selectedField: getTeacherFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
 

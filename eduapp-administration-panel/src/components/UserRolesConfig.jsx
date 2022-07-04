@@ -16,6 +16,7 @@ export default function UserRolesConfig() {
 
   const [showPerms, setShowPerms] = useState(false);
   const [roles, setRoles] = useState(null);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
@@ -24,7 +25,7 @@ export default function UserRolesConfig() {
 
   const [maxPages, setMaxPages] = useState(1);
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredRoles = useFilter(
     roles,
     null,
@@ -41,9 +42,9 @@ export default function UserRolesConfig() {
   const [popupText, setPopupText] = useState("");
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
 
-  const fetchRoles = async (page) => {
+  const fetchRoles = async (page, order = null) => {
     try {
-      const roles = await ROLE_SERVICE.pagedUserRoles(page);
+      const roles = await ROLE_SERVICE.pagedUserRoles(page, order);
       setMaxPages(roles.total_pages);
       setRoles(roles.current_page);
     } catch (err) {
@@ -393,6 +394,7 @@ export default function UserRolesConfig() {
     )[0].style.overflowY = "scroll";
 
     fetchRoles(1);
+    setInitialFetch(true);
 
     return () => {
       document.getElementsByClassName(
@@ -416,8 +418,18 @@ export default function UserRolesConfig() {
       fields: getRoleFields(language),
       selectedField: getRoleFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchRoles(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>

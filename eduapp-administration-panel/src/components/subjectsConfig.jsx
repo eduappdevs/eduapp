@@ -17,6 +17,7 @@ export default function SubjectsConfig() {
   const [language] = useContext(LanguageCtx);
 
   const [subjects, setSubjects] = useState(null);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [courses, setCourses] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
@@ -37,7 +38,7 @@ export default function SubjectsConfig() {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredSubjects = useFilter(
     subjects,
     null,
@@ -660,9 +661,9 @@ export default function SubjectsConfig() {
     }
   };
 
-  const fetchSubjectPage = async (page) => {
+  const fetchSubjectPage = async (page, order = null) => {
     API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.pagedSubjects(page)
+      SUBJECTSERVICE.pagedSubjects(page, order)
         .then((us) => {
           setMaxPages(us.data.total_pages);
           setSubjects(us.data.current_page);
@@ -706,6 +707,7 @@ export default function SubjectsConfig() {
   useEffect(() => {
     fetchSubjectPage(1);
     fetchCourses();
+    setInitialFetch(true);
   }, []);
 
   useEffect(() => {
@@ -714,8 +716,18 @@ export default function SubjectsConfig() {
       fields: getSubjectFields(language),
       selectedField: getSubjectFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchSubjectPage(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>

@@ -51,7 +51,7 @@ export default function Toolbar(props) {
             <li>
               <Batcher type="events" />
             </li>
-            <FieldSearcher hasExtraFields />
+            <FieldSearcher />
           </ul>
         </>
       ) : props.location === "users" ? (

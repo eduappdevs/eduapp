@@ -4,24 +4,20 @@ export const ROLES = `${API_URL}/user_roles`;
 
 const requestHeader = { eduauth: TOKEN };
 
-export const pagedUserRoles = async (page) => {
-  return (await axios.get(`${ROLES}?page=${page}`, { headers: requestHeader }))
-    .data;
+export const pagedUserRoles = async (page, order = null) => {
+  return (
+    await axios.get(
+      `${ROLES}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+      { headers: requestHeader }
+    )
+  ).data;
 };
 
-export const filterRoles = async ({
-  name = null,
-  page = 1,
-  extras = null,
-  order = "asc",
-}) => {
-  return await axios.get(
-    `${FILTER_URL}/roles?name=${name}&page=${page}&order=${order}`,
-    {
-      headers: requestHeader,
-      data: extras,
-    }
-  );
+export const filterRoles = async ({ name = null, page = 1, extras = null }) => {
+  return await axios.get(`${FILTER_URL}/roles?name=${name}&page=${page}`, {
+    headers: requestHeader,
+    data: extras,
+  });
 };
 
 export const fetchRoles = async () => {

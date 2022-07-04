@@ -9,10 +9,13 @@ export const fetchUserInfos = async () => {
   return await axios.get(`${USERS_INFO}`, { headers: requestHeader });
 };
 
-export const pagedUserInfos = async (page) => {
-  return await axios.get(`${USERS_INFO}?page=${page}`, {
-    headers: requestHeader,
-  });
+export const pagedUserInfos = async (page, order = null) => {
+  return await axios.get(
+    `${USERS_INFO}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    {
+      headers: requestHeader,
+    }
+  );
 };
 
 export const createInfo = async (body) => {
@@ -52,12 +55,9 @@ export const filterUsers = async ({
   role = null,
   page = 1,
   extras = null,
-  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/user_infos?user_id=${user_id}&user_name=${user_name}&email=${email}&role=${role}&page=${page}&order=${order}&extras=${btoa(
-      JSON.stringify(extras)
-    )}`,
+    `${FILTER_URL}/user_infos?user_id=${user_id}&user_name=${user_name}&email=${email}&role=${role}&page=${page}&extras=${extras}`,
     {
       headers: requestHeader,
     }
@@ -69,10 +69,9 @@ export const filterTeachers = async ({
   subject_name = null,
   page = 1,
   extras = null,
-  order = "asc",
 }) => {
   return await axios.get(
-    `${FILTER_URL}/teachers?teacher_name=${teacher_name}&subject_name=${subject_name}&page=${page}&order=${order}`,
+    `${FILTER_URL}/teachers?teacher_name=${teacher_name}&subject_name=${subject_name}&page=${page}`,
     {
       headers: requestHeader,
       data: extras,

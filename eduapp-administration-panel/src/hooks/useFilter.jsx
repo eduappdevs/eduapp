@@ -5,6 +5,7 @@ import {
   genericRequestParser,
 } from "../constants/search_fields";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { interceptExpiredToken } from "../utils/OfflineManager";
 
 export default function useFilter(
   mainInfo,
@@ -43,18 +44,22 @@ export default function useFilter(
     else if (requestFields === null)
       throw new Error("No fields provided for remote filtration.");
 
-    setFilter(
-      (
-        await filterRequest(
-          genericRequestParser(
-            requestFields,
-            searchParams.query,
-            searchParams.selectedField,
-            extraFieldsParser(searchParams.extras)
+    try {
+      setFilter(
+        (
+          await filterRequest(
+            genericRequestParser(
+              requestFields,
+              searchParams.query,
+              searchParams.selectedField,
+              extraFieldsParser(searchParams.extras)
+            )
           )
-        )
-      ).data.filtration
-    );
+        ).data.filtration
+      );
+    } catch (err) {
+      await interceptExpiredToken(err);
+    }
   };
 
   const matchFilter = async () => {

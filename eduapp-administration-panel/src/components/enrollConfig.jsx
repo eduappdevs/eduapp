@@ -584,6 +584,7 @@ export default function EnrollConfig() {
       fields: getEnrollmentFields(language),
       selectedField: getEnrollmentFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
 

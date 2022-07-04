@@ -5,7 +5,10 @@ class CalendarAnnotationsController < ApplicationController
 
   # GET /calendar_annotations
   def index
+    wants_event_for_calendar = false
+
     if params[:user_id]
+      wants_event_for_calendar = true
       if !check_perms_query_self!(get_user_roles.perms_events, params[:user_id])
         return
       end
@@ -32,6 +35,14 @@ class CalendarAnnotationsController < ApplicationController
         return
       end
       @calendar_annotations = CalendarAnnotation.all
+    end
+
+    if !wants_event_for_calendar
+      if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+        @calendar_annotations = @calendar_annotations.order(parse_filter_order(params[:order]))
+      else
+        @calendar_annotations = @calendar_annotations.order(annotation_title: :asc)
+      end
     end
 
     if params[:page]

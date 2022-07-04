@@ -22,6 +22,12 @@ class UserRolesController < ApplicationController
       @user_roles = UserRole.all
     end
 
+    if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+      @user_roles = @user_roles.order(parse_filter_order(params[:order]))
+    else
+      @user_roles = @user_roles.order(name: :asc)
+    end
+
     if params[:page]
       @user_roles = query_paginate(@user_roles, params[:page])
     end

@@ -20,6 +20,12 @@ class UserInfosController < ApplicationController
       @user_infos = UserInfo.all
     end
 
+    if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+      @user_infos = @user_infos.order(parse_filter_order(params[:order]))
+    else
+      @user_infos = @user_infos.order(user_name: :asc)
+    end
+
     if params[:page]
       @user_infos = query_paginate(@user_infos, params[:page])
       @user_infos[:current_page] = serialize_each(@user_infos[:current_page], [:created_at, :googleid, :updated_at, :user_id, :user_role_id], [:user, :user_role])
@@ -27,6 +33,7 @@ class UserInfosController < ApplicationController
         user_info["user"]["last_sign_in_at"] = User.find(user_info["user"]["id"]).last_sign_in_at
       end
     end
+
     render json: @user_infos
   end
 
@@ -60,7 +67,7 @@ class UserInfosController < ApplicationController
         UserInfo.all.each do |u|
           user_ids << u.user_id if u.user_id.to_s =~ /^#{infos_query["user_id"]}.*$/
         end
-        query = UserInfo.where(user_id: user_ids)
+        query = !query.nil? ? final_query.where(user_id: user_ids) : UserInfo.where(user_id: user_ids)
       end
 
       if infos_query["user_name"]

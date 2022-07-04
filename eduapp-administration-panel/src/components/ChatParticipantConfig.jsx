@@ -225,6 +225,7 @@ export default function ChatParticipantConfig() {
       fields: getParticipantFields(language),
       selectedField: getParticipantFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
 

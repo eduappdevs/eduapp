@@ -24,6 +24,12 @@ class CoursesController < ApplicationController
       @courses = Course.all
     end
 
+    if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+      @courses = @courses.order(parse_filter_order(params[:order]))
+    else
+      @courses = @courses.order(name: :asc)
+    end
+
     if params[:page]
       @courses = query_paginate(@courses, params[:page])
       @courses[:current_page] = serialize_each(@courses[:current_page], [:created_at, :updated_at, :institution_id], [:institution])

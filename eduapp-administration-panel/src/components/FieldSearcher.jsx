@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import ExtraFieldsSearcher from "./ExtraFieldsSearcher";
@@ -38,6 +38,27 @@ export default function FieldSearcher({ hasExtraFields }) {
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const [language] = useContext(LanguageCtx);
 
+  const [canOrder, setCanOrder] = useState(true);
+
+  useEffect(() => {
+    switch (searchParams.selectedField) {
+      case "role":
+      case "subject_name":
+      case "event_author":
+      case "course_name":
+      case "user_email":
+      case "teacher_name":
+      case "author":
+      case "chat_name":
+      case "email":
+        setCanOrder(false);
+        break;
+      default:
+        setCanOrder(true);
+        break;
+    }
+  }, [searchParams.selectedField]);
+
   return (
     <>
       <li className="searchbar-container">
@@ -67,26 +88,45 @@ export default function FieldSearcher({ hasExtraFields }) {
         />
       </li>
       {searchParams.fields.length > 0 ? (
-        <li className="subjectbar-container">
-          <select
-            className="subjectOption"
-            onChange={(e) => {
-              let c = { ...searchParams };
-              c.selectedField = e.target.value;
-              setSearchParams(c);
-            }}
-            name="subject"
-            id="subject_id"
-          >
-            {searchParams.fields.map((f, i) => {
-              return (
-                <option key={i} value={f[0]}>
-                  {f[1]}
-                </option>
-              );
-            })}
-          </select>
-        </li>
+        <>
+          <li className="subjectbar-container">
+            <select
+              className="subjectOption"
+              onChange={(e) => {
+                let c = { ...searchParams };
+                c.selectedField = e.target.value;
+                setSearchParams(c);
+              }}
+            >
+              {searchParams.fields.map((f, i) => {
+                return (
+                  <option key={i} value={f[0]}>
+                    {f[1]}
+                  </option>
+                );
+              })}
+            </select>
+          </li>
+          <li className="subjectbar-container">
+            <select
+              className="subjectOption"
+              onChange={(e) => {
+                let c = { ...searchParams };
+                c.order = e.target.value;
+                setSearchParams(c);
+              }}
+            >
+              {canOrder ? (
+                <>
+                  <option value="asc">Order Filter by: Ascending</option>
+                  <option value="desc">Order Filter by: Descending</option>
+                </>
+              ) : (
+                <option value="--">Filter Order Not Supported</option>
+              )}
+            </select>
+          </li>
+        </>
       ) : null}
       {hasExtraFields ? <ExtraFieldsSearcher /> : null}
     </>

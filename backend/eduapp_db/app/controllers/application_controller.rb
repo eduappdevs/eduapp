@@ -194,6 +194,11 @@ class ApplicationController < ActionController::API
     return array.slice(Integer(page) > 0 ? Integer(page) - 1 : 0, limit)
   end
 
+  def parse_filter_order(order)
+    order = JSON.parse(Base64.decode64(order))
+    return { order["field"] => order["order"] == "asc" ? :asc : :desc }
+  end
+
   # PERMISSIONS
 
   def deny_perms_access!

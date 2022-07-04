@@ -18,6 +18,7 @@ export default function Scheduleeventslist() {
   const [language] = useContext(LanguageCtx);
 
   const [subject, setSubject] = useState([]);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [events, setEvents] = useState([]);
   const [users, setUsers] = useState([]);
   const [isGlobal, setIsGlobal] = useState(false);
@@ -45,7 +46,7 @@ export default function Scheduleeventslist() {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredEvents = useFilter(
     events,
     null,
@@ -119,9 +120,9 @@ export default function Scheduleeventslist() {
     });
   };
 
-  const fetchEvents = async (pages) => {
+  const fetchEvents = async (page, order = null) => {
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.pagedEvents(pages).then((event) => {
+      SCHEDULESERVICE.pagedEvents(page, order).then((event) => {
         setMaxPages(event.data.total_pages);
         setEvents(event.data.current_page);
         fetchSubjects();
@@ -1008,6 +1009,7 @@ export default function Scheduleeventslist() {
     fetchSubjects();
     fetchEvents(1);
     fetchUsers();
+    setInitialFetch(true);
   }, []);
 
   useEffect(() => {
@@ -1016,8 +1018,18 @@ export default function Scheduleeventslist() {
       fields: getEventFields(language),
       selectedField: getEventFields(language)[0][0],
       extras: [["", ""]],
+      order: "asc",
     });
   }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchEvents(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>
