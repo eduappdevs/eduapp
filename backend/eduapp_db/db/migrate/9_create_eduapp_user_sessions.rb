@@ -8,6 +8,7 @@ class CreateEduappUserSessions < ActiveRecord::Migration[6.1]
       t.string :resources_platform
       t.string :session_chat_id
       t.uuid :batch_id
+      t.uuid :user_id
       t.references :subject, null: false, foreign_key: true, type: :uuid
 
       t.timestamps

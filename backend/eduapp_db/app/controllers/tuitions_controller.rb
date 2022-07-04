@@ -26,7 +26,18 @@ class TuitionsController < ApplicationController
     end
     render json: @tuition
   end
-
+  def showStudents
+    if !check_perms_query!(get_user_roles.perms_tuitions)
+      return
+    end
+    @course_id = Subject.where(id: params[:subject_id]).pluck(:course_id)
+    @user_id = Tuition.where(course_id: @course_id).pluck(:user_id)
+    @tuition = []
+    for value in @user_id do
+      @tuition += Tuition.where(course_id: @course_id, user_id: value)
+    end
+    render json: @tuition
+  end
   # POST /tuitions
   def create
     if !check_perms_write!(get_user_roles.perms_tuitions)

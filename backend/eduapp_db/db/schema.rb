@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.string "resources_platform"
     t.string "session_chat_id"
     t.uuid "batch_id"
+    t.uuid "user_id"
     t.uuid "subject_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

@@ -19,3 +19,7 @@ export const deleteTuition = async (id) => {
 export const editTuition = async (body) => {
   return await axios.put(`${TUITIONS}/${body.id}`, body, { headers: requestHeader });
 };
+
+export const fetchStudents = async (subject_id) => {
+  return await axios.get(`${TUITIONS}/${subject_id}/students`, { headers: requestHeader })
+}

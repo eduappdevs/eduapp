@@ -71,13 +71,15 @@ export default function App() {
             await db.set(data.id, data, "events");
           });
           await db.getStorageInstance("eduapp-calendar-last-event", "last");
-          let key = await db.getStoreKeys();
-          if (key[0] !== e.data[e.data.length - 1].id) {
-            setCalendarInfo(e.data[e.data.length - 1]);
-            setShowNotification(true);
-          } else {
-            setShowNotification(false);
-            setCalendarInfo(e.data[e.data.length - 1]);
+          if (e.data < 0) {
+            let key = await db.getStoreKeys();
+            if (key[0] !== e.data[e.data.length - 1].id) {
+              setCalendarInfo(e.data[e.data.length - 1]);
+              setShowNotification(true);
+            } else {
+              setShowNotification(false);
+              setCalendarInfo(e.data[e.data.length - 1]);
+            }
           }
         }
       }

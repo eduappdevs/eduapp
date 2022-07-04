@@ -5,7 +5,7 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import Input from "./Input";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import SessionsModal from "./modals/sessions-modal/SessionsModal";
-import { interceptExpiredToken } from "../utils/OfflineManager";
+import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
 
 import "../styles/schedulesessionslist.css";
@@ -156,6 +156,7 @@ export default function Schedulesessionslist(props) {
       "session_chat_id",
       "subject_id",
       "subject_code",
+      "user_id",
     ];
 
     let json = [];
@@ -168,6 +169,7 @@ export default function Schedulesessionslist(props) {
     let subject = document.getElementById("s_subjectId").value;
     let subject_id = subject.split("_")[1];
     let subject_code = subject.split("_")[0];
+    let author = getOfflineUser().user.id;
     if (
       name !== "" &&
       start_date !== "" &&
@@ -188,7 +190,8 @@ export default function Schedulesessionslist(props) {
         resources,
         chat,
         subject_id,
-        subject_code
+        subject_code,
+        author
       );
     } else {
       finalizedCreate("error", true, props.language.creationFailed, false);
@@ -199,6 +202,7 @@ export default function Schedulesessionslist(props) {
     for (let i = 0; i <= context.length - 1; i++) {
       SessionJson[context[i]] = json[i];
     }
+    console.log(SessionJson);
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.createSession(SessionJson)
         .then((error) => {
