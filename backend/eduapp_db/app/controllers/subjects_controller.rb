@@ -41,12 +41,7 @@ class SubjectsController < ApplicationController
       @subjects = Subject.where(name: params[:name])
     elsif params[:user]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
-      @TuitionsUserId = Tuition.where(user_id: params[:user]).pluck(:course_id)
-      @subjects = []
-
-      for course in @TuitionsUserId
-        @subjects += Subject.where(course_id: course)
-      end
+      @subjects = Subject.where(course_id: Tuition.where(user_id: params[:user]).pluck(:course_id))
     else
       if !check_perms_all!(get_user_roles.perms_subjects)
         return

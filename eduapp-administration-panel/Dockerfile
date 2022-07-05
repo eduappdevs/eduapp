@@ -8,9 +8,14 @@ RUN npm install
 
 COPY . .
 
-# ENV REACT_APP_BACKEND_ENDPOINT=http://localhost:3000 \
-# 	REACT_APP_REPORTS_ENDPOINT=http://localhost:5488
+ENV REACT_APP_BACKEND_ENDPOINT="http://localhost:3000/api/v1"\
+	REACT_APP_EDUAPP_SYSTEM_USER_PWD="eduapp_system"\
+	# EXPRESS SERVER
+	EXP_HTTP_PORT=4221\
+	EXP_HTTPS_PORT=8443
 
-EXPOSE 3002
+RUN npm run build
 
-CMD [ "npm", "run", "dev" ]
+EXPOSE 4221
+
+CMD [ "node", "server/server.js" ]

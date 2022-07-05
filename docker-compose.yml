@@ -5,7 +5,7 @@ volumes:
   nginx_data:
 
 networks:
-  db-rails:
+  common:
     driver: bridge
 
 services:
@@ -17,7 +17,7 @@ services:
       - eduapp_db_data:/var/lib/postgresql/data/pgdata
     restart: unless-stopped
     networks:
-      - db-rails
+      - common
   api:
     build:
       context: ./backend/eduapp_db
@@ -30,16 +30,36 @@ services:
     links:
       - "db:db"
     networks:
-      - db-rails
+      - common
+  app:
+    build:
+      context: ./frontend
+    image: eduapp/app:latest
+    env_file:
+      - ./frontend/.env
+    restart: unless-stopped
+  admin:
+    build:
+      context: ./eduapp-administration-panel
+    image: eduapp/admin:latest
+    env_file:
+      - ./eduapp-administration-panel/.env
+    restart: unless-stopped
+    networks:
+    - common
   nginx:
     build:
       context: .
     image: eduapp/nginx:latest
     ports: 
-      - "8000:80"
+      - "8443:80"
     depends_on:
       - api
     volumes:
       - nginx_data:/etc/nginx/conf.d
+    links:
+      - "api:api"
+      - "app:app"
+      - "admin:admin"
     networks:
-      - db-rails
+      - common
