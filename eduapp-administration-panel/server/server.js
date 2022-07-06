@@ -4,7 +4,15 @@ const HTTPS = require("https");
 const fs = require("fs");
 const path = require("path");
 
-const IS_LOCAL = true;
+const IS_LOCAL = false;
+
+var HTTP = Express();
+
+HTTP.get("*", (req, res) =>
+  res.redirect("https://" + req.headers.host + req.url)
+);
+
+HTTP.listen(80);
 
 const APP = Express();
 const APP_PATH = path.join(__dirname, "..", "build");
@@ -16,17 +24,16 @@ APP.get("*", (_, res) => res.sendFile(path.join(APP_PATH, "index.html")));
 const CERTS = () => {
   try {
     return {
-      key: fs.readFileSync("server/.cert/certificate.key"),
-      cert: fs.readFileSync("server/.cert/certificate.crt"),
+      key: fs.readFileSync(path.join(__dirname, ".cert/eduapp.key")),
+      cert: fs.readFileSync(path.join(__dirname, ".cert/eduapp.crt")),
     };
   } catch (err) {
-    console.log("No certificates found.");
+    console.log("No certificates found: " + err);
   }
 };
-const PORT =
-  (IS_LOCAL ? process.env.EXP_HTTP_PORT : process.env.EXP_HTTPS_PORT) || 4112;
+const PORT = process.env.EXP_PORT || 443;
 const SERVER = HTTPS.createServer(CERTS(), APP);
 
 (IS_LOCAL ? APP : SERVER).listen(PORT, () =>
-  console.log("EduApp Admin App is running on port: " + PORT)
+  console.log("EduApp Admin is running on port: " + PORT)
 );

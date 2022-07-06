@@ -50,6 +50,7 @@ services:
   nginx:
     build:
       context: .
+      dockerfile: ./Subdomain-Dockerfile
     image: eduapp/nginx:latest
     ports: 
       - "8443:80"

@@ -1,0 +1,19 @@
+# BUILD NGINX
+
+FROM nginx:alpine as nginx-server
+
+# COPY --from=eduapp-web-stage /frontend/build /usr/share/nginx/html/eduapp/app
+# COPY --from=eduapp-admin-stage /eduapp-administration-panel/build /usr/share/nginx/html/eduapp/admin
+
+# COPY ./server-config/nginx.conf /etc/nginx/nginx.conf
+RUN rm /etc/nginx/conf.d/default.conf
+COPY ./server-config/configs/* /etc/nginx/conf.d
+
+COPY ./backend/eduapp_db/.cert/* /usr/shared/eduapp/certs
+
+# COPY ./server-config/eduapp-404.html /usr/share/nginx/html/eduapp/eduapp-404.html
+# COPY ./server-config/eduapp.html /usr/share/nginx/html/eduapp/eduapp.html
+
+EXPOSE 443
+
+CMD ["nginx", "-g", "daemon off;"]

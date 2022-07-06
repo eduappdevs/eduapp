@@ -1,0 +1,68 @@
+version: '3.1'
+
+volumes:
+  eduapp_db_data:
+  nginx_data:
+
+networks:
+  common:
+    driver: bridge
+
+services:
+  db:
+    image: postgres:14
+    env_file:
+      - ./backend/eduapp_db/postgres.production.env
+    volumes:
+      - eduapp_db_data:/var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+    networks:
+      - common
+  api:
+    build:
+      context: ./backend/eduapp_db
+    image: eduapp/api:latest 
+    env_file:
+      - ./backend/eduapp_db/production.env
+    restart: unless-stopped
+    depends_on:
+      - db
+    links:
+      - "db:db"
+    networks:
+      - common
+  app:
+    build:
+      context: ./frontend
+    image: eduapp/app:latest
+    env_file:
+      - ./frontend/.env
+    restart: unless-stopped
+    ports:
+      - "4010:443"
+  admin:
+    build:
+      context: ./eduapp-administration-panel
+    image: eduapp/admin:latest
+    env_file:
+      - ./eduapp-administration-panel/.env
+    restart: unless-stopped
+    ports:
+      - "5010:443"
+    networks:
+    - common
+  nginx:
+    build:
+      context: .
+      dockerfile: ./Ports-Dockerfile
+    image: eduapp/nginx:latest
+    ports: 
+      - "3010:443"
+    depends_on:
+      - api
+    volumes:
+      - nginx_data:/etc/nginx/conf.d
+    links:
+      - "api:api"
+    networks:
+      - common
