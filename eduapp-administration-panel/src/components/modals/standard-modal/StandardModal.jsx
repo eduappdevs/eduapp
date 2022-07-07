@@ -15,6 +15,8 @@ export default function StandardModal({
   showLoader,
   form,
   customOkay,
+  customYes,
+  customNo,
   isModalExtraFields,
 }) {
   iconFill = localStorage.darkMode === "1" ? true : iconFill || false;
@@ -143,10 +145,10 @@ export default function StandardModal({
         {isQuestion && !showLoader ? (
           <div className="standard-modal-btn-container">
             <div className="standard-modal-btn" onClick={onYesAction}>
-              Yes
+              {customYes ? customYes : "Yes"}
             </div>
             <div className="standard-modal-btn" onClick={onNoAction}>
-              No
+              {customNo ? customNo : "No"}
             </div>
           </div>
         ) : !isQuestion && !showLoader ? (

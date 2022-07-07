@@ -1,10 +1,13 @@
 class StaticController < ApplicationController
-  def home
-    render json: { status: 0 }
+  def ping
+    render json: { status: "Pong!" }
+  end
+
+  def admin
+    render json: { created: UserInfo.where(user_role_id: UserRole.find_by(name: "eduapp-admin").id).count > 0 } and return
   end
 
   def created
-    has_admin = UserInfo.all.where(user_role_id: UserRole.where(name: "eduapp-admin").first.id).count > 0
-    render json: { created: has_admin }
+    render json: { created: Institution.all.count > 0 } and return
   end
 end

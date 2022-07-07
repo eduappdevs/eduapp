@@ -61,6 +61,39 @@ class ChatParticipantsController < ApplicationController
     render json: @participants
   end
 
+  def filter
+    parts_query = {}
+    params.each do |param|
+      next unless param[0] == "email" || param[0] == "chat_name"
+      next unless param[1] != "null" && param[1].length > 0
+
+      parts_query.merge!({ param[0] => param[1] })
+    end
+
+    final_query = nil
+
+    if parts_query["email"]
+      final_query = ChatParticipant.where(user_id: User.where("email LIKE ?", "%#{parts_query["email"]}%"))
+    end
+
+    if parts_query["chat_name"]
+      if !final_query.nil?
+        final_query = final_query.where(chat_base_id: ChatBase.where("chat_name LIKE ?", "%#{parts_query["chat_name"]}%"))
+      else
+        final_query = ChatParticipant.where(chat_base_id: ChatBase.where("chat_name LIKE ?", "%#{parts_query["chat_name"]}%"))
+      end
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :user_id, :chat_base_base], [:chat_base, :user])
+    end
+
+    render json: { filtration: final_query }
+  end
+
   # GET /chat_participants/1
   def show
     if !check_perms_query!(get_user_roles.perms_chat_participants)

@@ -1,19 +1,27 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as COURSESERVICE from "../services/course.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
 import PageSelect from "./pagination/PageSelect";
+import useFilter from "../hooks/useFilter";
+import { getSubjectFields } from "../constants/search_fields";
+import ExtraFields from "./ExtraFields";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import "../styles/subjectsConfig.css";
 
-export default function SubjectsConfig(props) {
+export default function SubjectsConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [subjects, setSubjects] = useState(null);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [courses, setCourses] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState();
-  const [search, setSearch] = useState("");
 
   const [changeColor, setChangeColor] = useState(false);
   const [newColor] = useState();
@@ -31,7 +39,13 @@ export default function SubjectsConfig(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  let course_filter = {};
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
+  const filteredSubjects = useFilter(
+    subjects,
+    null,
+    SUBJECTSERVICE.filterCourses,
+    getSubjectFields(language)
+  );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -51,7 +65,7 @@ export default function SubjectsConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -70,7 +84,7 @@ export default function SubjectsConfig(props) {
 
   const alertCreate = async () => {
     switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -113,23 +127,13 @@ export default function SubjectsConfig(props) {
         })
           .then((e) => {
             if (e) {
-              finalizedCreate(
-                "info",
-                true,
-                props.language.creationCompleted,
-                false
-              );
+              finalizedCreate("info", true, language.creationCompleted, false);
             }
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              finalizedCreate(
-                "error",
-                true,
-                props.language.creationFailed,
-                false
-              );
+              finalizedCreate("error", true, language.creationFailed, false);
             }
           });
       }).then(async (e) => {
@@ -144,7 +148,7 @@ export default function SubjectsConfig(props) {
   };
 
   const confirmDeleteEvent = async (id) => {
-    finalizedDelete("warning", true, true, props.language.deleteAlert);
+    finalizedDelete("warning", true, true, language.deleteAlert);
     switchEditState(false);
     setIdDelete(id);
   };
@@ -166,22 +170,12 @@ export default function SubjectsConfig(props) {
       SUBJECTSERVICE.deleteSubject(id)
         .then((e) => {
           if (e) {
-            finalizedDelete(
-              "info",
-              true,
-              false,
-              props.language.deleteAlertCompleted
-            );
+            finalizedDelete("info", true, false, language.deleteAlertCompleted);
           }
         })
         .catch(async (e) => {
           if (e) {
-            finalizedDelete(
-              "error",
-              true,
-              false,
-              props.language.deleteAlertFailed
-            );
+            finalizedDelete("error", true, false, language.deleteAlertFailed);
             await interceptExpiredToken(e);
           }
         });
@@ -287,7 +281,7 @@ export default function SubjectsConfig(props) {
               "info",
               true,
               true,
-              props.language.editAlertCompleted,
+              language.editAlertCompleted,
               false
             );
           }
@@ -295,13 +289,7 @@ export default function SubjectsConfig(props) {
         .catch(async (error) => {
           if (error) {
             await interceptExpiredToken(e);
-            finalizedEdit(
-              "error",
-              true,
-              true,
-              props.language.editAlertFailed,
-              false
-            );
+            finalizedEdit("error", true, true, language.editAlertFailed, false);
           }
         });
     }).then(async (error) => {
@@ -330,15 +318,14 @@ export default function SubjectsConfig(props) {
     }
   };
 
-  const fetchSubjectPage = async (page) => {
+  const fetchSubjectPage = async (page, order = null) => {
     API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.pagedSubjects(page)
+      SUBJECTSERVICE.pagedSubjects(page, order)
         .then((us) => {
           setMaxPages(us.data.total_pages);
           setSubjects(us.data.current_page);
           setActualPage(us.data.page);
           fetchCourses();
-          course_filter.subject = us.data;
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
@@ -371,35 +358,30 @@ export default function SubjectsConfig(props) {
     return document.getElementById("inputSubjectCode_" + id).value;
   };
 
-  const courseFilter = (courseList) => {
-    let filter = [];
-    courseList.map((s) => {
-      if (
-        s.id ===
-        (course_filter.filter === -1 ? s.id : parseInt(course_filter.filter))
-      )
-        filter.push(s);
-      return true;
-    });
-    setSubjects(filter);
-    fetchSubjectPage(actualPage);
-  };
-
   useEffect(() => {
     fetchSubjectPage(1);
     fetchCourses();
-
-    document.addEventListener("filter_subject_course", (e) => {
-      e.stopImmediatePropagation();
-      course_filter.filter =
-        e.detail === props.language.chooseCourse ? -1 : e.detail.split("_")[0];
-      courseFilter(course_filter.subject);
-    });
+    setInitialFetch(true);
   }, []);
 
   useEffect(() => {
-    setSearch(props.search);
-  }, [props.search]);
+    setSearchParams({
+      query: "",
+      fields: getSubjectFields(language),
+      selectedField: getSubjectFields(language)[0][0],
+      extras: [["", ""]],
+      order: "asc",
+    });
+  }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchSubjectPage(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>
@@ -408,11 +390,11 @@ export default function SubjectsConfig(props) {
           <thead>
             <tr>
               <th></th>
-              <th>{props.language.subjectCode}</th>
-              <th>{props.language.name}</th>
-              <th>{props.language.description}</th>
-              <th>{props.language.color}</th>
-              <th>{props.language.linkedCourse}</th>
+              <th>{language.subjectCode}</th>
+              <th>{language.name}</th>
+              <th>{language.description}</th>
+              <th>{language.color}</th>
+              <th>{language.linkedCourse}</th>
             </tr>
           </thead>
 
@@ -453,7 +435,7 @@ export default function SubjectsConfig(props) {
                     />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    {props.language.loading} ...
+                    {language.loading} ...
                   </div>
                 </button>
               </td>
@@ -461,33 +443,29 @@ export default function SubjectsConfig(props) {
                 <input
                   type="text"
                   id="sj_subjectCode"
-                  placeholder={props.language.subjectCode}
+                  placeholder={language.subjectCode}
                 />
               </td>
               <td>
-                <input
-                  id="sj_name"
-                  type="text"
-                  placeholder={props.language.name}
-                />
+                <input id="sj_name" type="text" placeholder={language.name} />
               </td>
               <td>
                 <input
                   id="sj_desc"
                   type="text"
-                  placeholder={props.language.description}
+                  placeholder={language.description}
                 />
               </td>
               <td>
                 <input
                   id="sj_color"
                   type="color"
-                  placeholder={props.language.description}
+                  placeholder={language.description}
                 />
               </td>
               <td>
                 <select defaultValue={"-"} id="course_chooser">
-                  <option value="-">{props.language.chooseCourse}</option>
+                  <option value="-">{language.chooseCourse}</option>
                   {courses
                     ? courses.map((c) => {
                         return (
@@ -502,7 +480,6 @@ export default function SubjectsConfig(props) {
             </tr>
           </tbody>
         </table>
-
         {subjects && subjects.length !== 0 ? (
           <>
             <div className="notify-users">
@@ -515,328 +492,158 @@ export default function SubjectsConfig(props) {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.code}</th>
-                    <th>{props.language.subjectCode}</th>
-                    <th>{props.language.name}</th>
-                    <th>{props.language.description}</th>
-                    <th>{props.language.color}</th>
-                    <th>{props.language.linkedCourse}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.code}</th>
+                    <th>{language.subjectCode}</th>
+                    <th>{language.name}</th>
+                    <th>{language.description}</th>
+                    <th>{language.color}</th>
+                    <th>{language.linkedCourse}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {subjects.map((sj) => {
-                    if (search.length > 0) {
+                    if (filteredSubjects !== null)
                       if (
-                        sj.name.toLowerCase().includes(search.toLowerCase())
-                      ) {
-                        return (
-                          <tr key={sj.id}>
-                            <td>
-                              <input disabled type="text" value={sj.id} />
-                            </td>
-                            <td>
-                              <input
-                                id={`inputSubjectCode_${sj.id}`}
-                                disabled
-                                type="text"
-                                value={changeCode ? newCode : sj.subject_code}
-                                onChange={() => {
-                                  handleChangeCode(sj.id);
-                                }}
-                              />
-                            </td>
+                        filteredSubjects.find((fsj) => sj.id === fsj.id) ===
+                        undefined
+                      )
+                        return <Fragment key={sj.id} />;
+                    return (
+                      <tr key={sj.id}>
+                        <td>
+                          <input
+                            disabled
+                            type="text"
+                            value={shortUUID(sj.id)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputSubjectCode_${sj.id}`}
+                            disabled
+                            type="text"
+                            value={changeCode ? newCode : sj.subject_code}
+                            onChange={() => handleChangeCode(sj.id)}
+                          />
+                        </td>
 
-                            <td>
-                              <input
-                                id={`inputName_${sj.id}`}
-                                disabled
-                                type="text"
-                                value={changeName ? newName : sj.name}
-                                onChange={() => {
-                                  handleChangeName(sj.id);
-                                }}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                id={`inputDescription_${sj.id}`}
-                                disabled
-                                type="text"
-                                value={
-                                  changeDescription
-                                    ? newDescription
-                                    : sj.description
-                                }
-                                onChange={() => {
-                                  handleChangeDescription(sj.id);
-                                }}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                id={`inputColor_${sj.id}`}
-                                disabled
-                                type="color"
-                                value={changeColor ? newColor : sj.color}
-                                onChange={(e) => {
-                                  handleChangeColor(e, sj.id);
-                                }}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                disabled
-                                type="text"
-                                value={sj.course.name}
-                              />
-                            </td>
-                            <td
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                            >
-                              <button
-                                style={{ marginRight: "5px" }}
-                                onClick={() => {
-                                  confirmDeleteEvent(sj.id);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-trash3"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ marginRight: "5px" }}
-                                onClick={(e) => {
-                                  showEditOptionSubject(e, sj);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-pencil-square"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                  />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ marginRight: "5px", display: "none" }}
-                                onClick={(e) => {
-                                  editSubject(e, sj);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-check2"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ display: "none" }}
-                                onClick={(e) => {
-                                  closeEditSubject(e, sj);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-x-lg"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                                  />
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                                  />
-                                </svg>
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      }
-                    } else {
-                      return (
-                        <tr key={sj.id}>
-                          <td>
-                            <input
-                              disabled
-                              type="text"
-                              value={shortUUID(sj.id)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              id={`inputSubjectCode_${sj.id}`}
-                              disabled
-                              type="text"
-                              value={changeCode ? newCode : sj.subject_code}
-                              onChange={() => {
-                                handleChangeCode(sj.id);
-                              }}
-                            />
-                          </td>
-
-                          <td>
-                            <input
-                              id={`inputName_${sj.id}`}
-                              disabled
-                              type="text"
-                              value={changeName ? newName : sj.name}
-                              onChange={() => {
-                                handleChangeName(sj.id);
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              id={`inputDescription_${sj.id}`}
-                              disabled
-                              type="text"
-                              value={
-                                changeDescription
-                                  ? newDescription
-                                  : sj.description
-                              }
-                              onChange={() => {
-                                handleChangeDescription(sj.id);
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              id={`inputColor_${sj.id}`}
-                              disabled
-                              type="color"
-                              value={changeColor ? newColor : sj.color}
-                              onChange={(e) => {
-                                handleChangeColor(e, sj.id);
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              disabled
-                              type="text"
-                              value={sj.course.name}
-                            />
-                          </td>
-                          <td
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
+                        <td>
+                          <input
+                            id={`inputName_${sj.id}`}
+                            disabled
+                            type="text"
+                            value={changeName ? newName : sj.name}
+                            onChange={() => handleChangeName(sj.id)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputDescription_${sj.id}`}
+                            disabled
+                            type="text"
+                            value={
+                              changeDescription
+                                ? newDescription
+                                : sj.description
+                            }
+                            onChange={() => handleChangeDescription(sj.id)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            id={`inputColor_${sj.id}`}
+                            disabled
+                            type="color"
+                            value={changeColor ? newColor : sj.color}
+                            onChange={(e) => handleChangeColor(e, sj.id)}
+                          />
+                        </td>
+                        <td>
+                          <input disabled type="text" value={sj.course.name} />
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ExtraFields table="subjects" id={sj.id} />
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={() => confirmDeleteEvent(sj.id)}
                           >
-                            <button
-                              style={{ marginRight: "5px" }}
-                              onClick={() => {
-                                confirmDeleteEvent(sj.id);
-                              }}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-trash3"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px" }}
-                              onClick={(e) => {
-                                showEditOptionSubject(e, sj);
-                              }}
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={(e) => showEditOptionSubject(e, sj)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-pencil-square"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-pencil-square"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px", display: "none" }}
-                              onClick={(e) => {
-                                editSubject(e, sj);
-                              }}
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px", display: "none" }}
+                            onClick={(e) => editSubject(e, sj)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-check2"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-check2"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ display: "none" }}
-                              onClick={(e) => {
-                                closeEditSubject(e, sj);
-                              }}
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ display: "none" }}
+                            onClick={(e) => closeEditSubject(e, sj)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-x-lg"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-x-lg"
-                                viewBox="0 0 16 16"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                                />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                                />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    }
+                              <path
+                                fillRule="evenodd"
+                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                              />
+                              <path
+                                fillRule="evenodd"
+                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                              />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
                   })}
                 </tbody>
               </table>

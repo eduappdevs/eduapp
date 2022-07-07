@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  def return_table (table)
+  def return_table(table)
     case table
     when "users"
       t_name = User.find(params[:id])
@@ -18,13 +18,13 @@ class ApplicationController < ActionController::API
   end
 
   def get_extrafields
-    id = params[:id]
+    authenticate_user!
     table = return_table(params[:table])
-    puts "extrafields: #{table.extra_fields}"
     render json: table.extra_fields and return
   end
 
   def push_extrafields
+    authenticate_user!
     table = return_table(params[:table])
     body = request.body.read.to_s
 
@@ -33,24 +33,19 @@ class ApplicationController < ActionController::API
 
     if table.update(extra_fields: extrafields_body)
       table.save
-      render json: table.extra_fields and return 
+      render json: table.extra_fields and return
     else
       render json: { error: "Error updating extra fields" }, status: 422 and return
     end
   end
 
   def update_extrafield
+    authenticate_user!
     table = return_table(params[:table])
     body = JSON.parse(request.body.read)
-
-    puts "body: #{body}"
-
     extrafields = table.extra_fields
 
-    puts "extrafields: #{extrafields}"
-
     extrafields_updated = []
-
     extrafields.each do |extrafield|
       extrafield = JSON.parse(extrafield)
       if extrafield["name"] === body["name"]
@@ -67,13 +62,11 @@ class ApplicationController < ActionController::API
   end
 
   def delete_extrafield
+    authenticate_user!
     table = return_table(params[:table])
     name = params[:field] || params[:name]
 
-    puts "table: #{table}, name: #{name}"
-
     extrafields_updated = []
-
     extrafields = table.extra_fields
     extrafields.each do |extrafield|
       extrafield = JSON.parse(extrafield)
@@ -87,12 +80,40 @@ class ApplicationController < ActionController::API
     else
       render json: { error: "Error updating extra fields" }, status: 422 and return
     end
+  end
 
+  def filter_extrafields(extras, table)
+    check_extra_fields(table)
+    extras = JSON.parse(Base64.decode64(extras))
+    valuable = table.where.not(extra_fields: [])
+
+    return nil if extras.nil?
+
+    ids = []
+    valuable.each do |entry|
+      next if ids.include? entry.id
+      entry.extra_fields.each do |field|
+        break if ids.include? entry.id
+        extras.each do |extra_field|
+          break if ids.include? entry.id
+          extra_field = { extra_field[0] => extra_field[1] }
+          field = JSON.parse field
+
+          ids.push(entry.id) if field["value"] =~ /^#{extra_field[field["name"]]}.*$/ && !extra_field[field["name"]].nil?
+        end
+      end
+    end
+
+    return ids.length > 0 ? table.where(id: ids) : nil
   end
 
   private
 
   # AUTH
+
+  def check_extra_fields(table)
+    raise Exception.new "Table does is not elegible for extra fields." unless table.column_names.include?("extra_fields")
+  end
 
   def authenticate_user!(options = {})
     if request.headers["eduauth"].present?
@@ -167,6 +188,15 @@ class ApplicationController < ActionController::API
       return { :error => "Page cannot be less than 1" }
     end
     return { :current_page => query.limit(limit).offset((page - 1) * limit), :total_pages => (query.count.to_f / limit).ceil, :page => page }
+  end
+
+  def array_paginate(array, page, limit = 10)
+    return array.slice(Integer(page) > 0 ? Integer(page) - 1 : 0, limit)
+  end
+
+  def parse_filter_order(order)
+    order = JSON.parse(Base64.decode64(order))
+    return { order["field"] => order["order"] == "asc" ? :asc : :desc }
   end
 
   # PERMISSIONS

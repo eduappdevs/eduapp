@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import Resources from "./views/resources/Resources";
 import Login from "./views/login/Login";
 import Home from "./views/home/Home";

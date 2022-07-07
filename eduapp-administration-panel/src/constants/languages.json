@@ -1,5 +1,6 @@
 {
-  "en": {
+  "en_en": {
+    "lang_identifier": "en_en",
     "title": "Title",
     "description": "Description",
     "schedule": "Schedule",
@@ -12,7 +13,7 @@
     "institution": "Institution",
     "courses": "Courses",
     "subjects": "Subjects",
-    "chatSettings": "Chat settings",
+    "chatSettings": "Chat Settings",
     "chat": "Chat",
     "participants": "Participants",
     "chatParticipants": "Chat Participants",
@@ -124,9 +125,11 @@
     "calendar": "Calendar",
     "appViews": "App Views",
     "confirmDeleteRole": "Are you sure you want to delete this role?",
-    "roleDeleted": "Role deleted successfully."
+    "roleDeleted": "Role deleted successfully.",
+    "searchBy": "Search By "
   },
-  "es": {
+  "es_es": {
+    "lang_identifier": "es_es",
     "title": "Titulo",
     "description": "Descripción",
     "schedule": "Horario",
@@ -139,7 +142,7 @@
     "institution": "Institución",
     "courses": "Cursos",
     "subjects": "Materias",
-    "chatSettings": "Configuración de chat",
+    "chatSettings": "Configuración de Chat",
     "chat": "Chat",
     "participants": "Participantes",
     "reports": "Informes",
@@ -251,9 +254,11 @@
     "calendar": "Calendario",
     "appViews": "Vistas de la aplicación",
     "confirmDeleteRole": "¿Está seguro de eliminar este rol?",
-    "roleDeleted": "Rol eliminado."
+    "roleDeleted": "Rol eliminado.",
+    "searchBy": "Buscar por "
   },
-  "pt": {
+  "pt_pt": {
+    "lang_identifier": "pt_pt",
     "title": "Título",
     "description": "Descrição",
     "schedule": "Agenda",
@@ -266,7 +271,7 @@
     "institution": "Instituição",
     "courses": "Cursos",
     "subjects": "Disciplinas",
-    "chatSettings": "Configurações de chat",
+    "chatSettings": "Configurações de Chat",
     "chat": "Chat",
     "participants": "Participantes",
     "reports": "Relatórios",
@@ -378,6 +383,7 @@
     "appViews": "Seção do App",
     "confirmDeleteRole": "Você tem certeza de que deseja excluir este papel?",
     "roleDeleted": "Papel excluído com sucesso.",
-    "connectionError": "Erro de conexão. Tente novamente mais tarde."
+    "connectionError": "Erro de conexão. Tente novamente mais tarde.",
+    "searchBy": "Procurar por "
   }
 }

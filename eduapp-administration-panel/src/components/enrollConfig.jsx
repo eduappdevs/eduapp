@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as API from "../API";
 import * as TUITIONSSERVICE from "../services/enrollConfig.service";
 import * as USERSSERVICE from "../services/user.service";
 import * as COURSESERVICE from "../services/course.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import PageSelect from "./pagination/PageSelect";
+import useFilter from "../hooks/useFilter";
+import { getEnrollmentFields } from "../constants/search_fields";
 
-export default function EnrollConfig(props) {
+export default function EnrollConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [tuitions, setTuitions] = useState(null);
   const [users, setUsers] = useState(null);
   const [courses, setCourses] = useState(null);
 
-  const [search, setSearch] = useState("");
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState();
 
@@ -24,14 +30,20 @@ export default function EnrollConfig(props) {
   const [changeEmail, setChangeEmail] = useState(false);
   const [changeCourse, setChangeCourse] = useState(false);
 
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredTuitions = useFilter(
+    tuitions,
+    null,
+    TUITIONSSERVICE.filterTuitions,
+    getEnrollmentFields(language)
+  );
+
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [popupIcon, setPopupIcon] = useState("");
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
-
-  let enrollment_filter = {};
 
   const switchEditState = (state) => {
     if (state) {
@@ -75,7 +87,7 @@ export default function EnrollConfig(props) {
   const connectionAlert = async () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -86,7 +98,6 @@ export default function EnrollConfig(props) {
           setActualPage(ts.data.page);
           setTuitions(ts.data.current_page);
           setMaxPages(ts.data.total_pages);
-          enrollment_filter.enroll = ts.data.current_page;
         })
         .catch(async (err) => {
           interceptExpiredToken(err);
@@ -97,21 +108,6 @@ export default function EnrollConfig(props) {
         await interceptExpiredToken(e);
       }
     });
-  };
-
-  const enrollFilter = (EnrollList) => {
-    let filterEnroll = [];
-    EnrollList.map((s) => {
-      if (
-        s.course_id ===
-        (enrollment_filter.filter === -1
-          ? s.course_id
-          : parseInt(enrollment_filter.filter))
-      )
-        filterEnroll.push(s);
-      return true;
-    });
-    setTuitions(filterEnroll);
   };
 
   const fetchUsers = () => {
@@ -129,10 +125,7 @@ export default function EnrollConfig(props) {
 
   const fetchCourses = () => {
     API.asynchronizeRequest(function () {
-      COURSESERVICE.fetchCourses().then((cs) => {
-        setCourses(cs.data);
-        enrollment_filter.couses = cs.data;
-      });
+      COURSESERVICE.fetchCourses().then((cs) => setCourses(cs.data));
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
@@ -145,13 +138,6 @@ export default function EnrollConfig(props) {
     fetchCourses();
     fetchTuitions(1);
     fetchUsers();
-
-    document.addEventListener("filter_subject_enroll", (e) => {
-      e.stopImmediatePropagation();
-      enrollment_filter.filter =
-        e.detail === props.language.chooseCourse ? -1 : e.detail.split("_")[0];
-      enrollFilter(enrollment_filter.enroll);
-    });
   };
 
   const createTuition = (e) => {
@@ -175,7 +161,7 @@ export default function EnrollConfig(props) {
               fetchAll();
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.creationCompleted);
+              setPopupText(language.creationCompleted);
             }
           })
           .catch((e) => {
@@ -183,7 +169,7 @@ export default function EnrollConfig(props) {
               interceptExpiredToken(e);
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.creationAlert);
+              setPopupText(language.creationAlert);
             }
           });
       }).then(async (e) => {
@@ -198,7 +184,7 @@ export default function EnrollConfig(props) {
   };
 
   const alertCreate = async () => {
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
@@ -209,22 +195,12 @@ export default function EnrollConfig(props) {
       TUITIONSSERVICE.deleteTuition(id)
         .then((e) => {
           if (e) {
-            finalizedDelete(
-              "info",
-              true,
-              false,
-              props.language.deleteAlertCompleted
-            );
+            finalizedDelete("info", true, false, language.deleteAlertCompleted);
           }
         })
         .catch(async (e) => {
           if (e) {
-            finalizedDelete(
-              "error",
-              true,
-              false,
-              props.language.deleteAlertFailed
-            );
+            finalizedDelete("error", true, false, language.deleteAlertFailed);
             await interceptExpiredToken(e);
           }
         });
@@ -238,7 +214,7 @@ export default function EnrollConfig(props) {
 
   const confirmDeleteEvent = async (id) => {
     switchEditState(false);
-    finalizedDelete("warning", true, true, props.language.deleteAlert);
+    finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
   };
 
@@ -291,17 +267,12 @@ export default function EnrollConfig(props) {
               num += 1;
             }
             course.disabled = true;
-            finalizedEdit(
-              "info",
-              true,
-              props.language.editAlertCompleted,
-              false
-            );
+            finalizedEdit("info", true, language.editAlertCompleted, false);
           }
         })
         .catch(async (e) => {
           if (e) {
-            finalizedEdit("error", true, props.language.editAlertFailed, false);
+            finalizedEdit("error", true, language.editAlertFailed, false);
             await interceptExpiredToken(e);
           }
         });
@@ -341,10 +312,14 @@ export default function EnrollConfig(props) {
   }, []);
 
   useEffect(() => {
-    setSearch(props.search);
-  }, [props.search]);
-
-  useEffect(() => {}, [props.language]);
+    setSearchParams({
+      query: "",
+      fields: getEnrollmentFields(language),
+      selectedField: getEnrollmentFields(language)[0][0],
+      extras: [["", ""]],
+      order: "asc",
+    });
+  }, [language]);
 
   return (
     <>
@@ -352,9 +327,9 @@ export default function EnrollConfig(props) {
         <table>
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.user}</th>
-              <th>{props.language.course}</th>
+              <th>{language.add}</th>
+              <th>{language.user}</th>
+              <th>{language.course}</th>
             </tr>
           </thead>
           <tbody>
@@ -394,13 +369,13 @@ export default function EnrollConfig(props) {
                     />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    {props.language.loading} ...
+                    {language.loading} ...
                   </div>
                 </button>
               </td>
               <td>
                 <select defaultValue={"-"} id="user_select">
-                  <option value="-">{props.language.chooseUser}</option>
+                  <option value="-">{language.chooseUser}</option>
                   {users
                     ? users.map((u) => {
                         return (
@@ -414,7 +389,7 @@ export default function EnrollConfig(props) {
               </td>
               <td>
                 <select defaultValue={"-"} id="course_select">
-                  <option value="-">{props.language.chooseCourse}</option>
+                  <option value="-">{language.chooseCourse}</option>
                   {courses
                     ? courses.map((c) => {
                         return (
@@ -441,250 +416,142 @@ export default function EnrollConfig(props) {
               <table style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.user}</th>
-                    <th>{props.language.course}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.user}</th>
+                    <th>{language.course}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {tuitions.map((t) => {
-                    if (search.length > 0) {
+                    if (filteredTuitions !== null)
                       if (
-                        t.user.email
-                          .toLowerCase()
-                          .includes(search.toLowerCase())
-                      ) {
-                        return (
-                          <tr key={t.id}>
-                            <td>
-                              <input
-                                type="text"
-                                disabled
-                                value={t.user.email}
-                              />
-                            </td>
-                            <td>
-                              <select id={`inputCourse_${t.id}`} disabled>
-                                <option
-                                  defaultValue={t.course_id}
-                                  value={t.course_id}
-                                >
-                                  {t.course.name}
+                        filteredTuitions.find((ft) => t.id === ft.id) ===
+                        undefined
+                      )
+                        return <Fragment key={t.id} />;
+                    return (
+                      <tr key={t.id}>
+                        <td>
+                          <select id={`inputEmail_${t.id}`} disabled>
+                            <option value={t.user.id} defaultValue={t.user.id}>
+                              {t.user.email}
+                            </option>
+                            {emailEdit.map((e) => {
+                              return (
+                                <option key={e.id} value={e.id}>
+                                  {e.user.email}
                                 </option>
-                                {courseEdit.map((c) => {
-                                  console.log(c);
-                                  return (
-                                    <option key={c.id} value={c.id}>
-                                      {c.name}
-                                    </option>
-                                  );
-                                })}
-                              </select>
-                            </td>
-                            <td
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
+                              );
+                            })}
+                            {}
+                          </select>
+                        </td>
+                        <td>
+                          <select id={`inputCourse_${t.id}`} disabled>
+                            <option
+                              defaultValue={t.course_id}
+                              value={t.course_id}
                             >
-                              <button
-                                style={{ marginRight: "5px" }}
-                                onClick={() => {
-                                  confirmDeleteEvent(t.id);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-trash3"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ marginRight: "5px" }}
-                                onClick={(e) => {
-                                  showEditOptionSession(e, t);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-pencil-square"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                  />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ marginRight: "5px", display: "none" }}
-                                onClick={(e) => {
-                                  editEnroll(e, t);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-check2"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ display: "none" }}
-                                onClick={(e) => {
-                                  closeEditSession(e, t);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-x-lg"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                                  />
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                                  />
-                                </svg>
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      }
-                    } else {
-                      return (
-                        <tr key={t.id}>
-                          <td>
-                            <input type="text" disabled value={t.user.email} />
-                          </td>
-                          <td>
-                            <select id={`inputCourse_${t.id}`} disabled>
-                              <option
-                                defaultValue={t.course_id}
-                                value={t.course_id}
-                              >
-                                {t.course.name}
-                              </option>
-                              {courseEdit.map((c) => {
-                                return (
-                                  <option key={c.id} value={c.id}>
-                                    {c.name}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </td>
-                          <td
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
+                              {t.course.name}
+                            </option>
+                            {courseEdit.map((c) => {
+                              return (
+                                <option key={c.id} value={c.id}>
+                                  {c.name}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={() => {
+                              confirmDeleteEvent(t.id);
                             }}
                           >
-                            <button
-                              style={{ marginRight: "5px" }}
-                              onClick={() => {
-                                confirmDeleteEvent(t.id);
-                              }}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-trash3"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px" }}
-                              onClick={(e) => {
-                                showEditOptionSession(e, t);
-                              }}
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={(e) => {
+                              showEditOptionSession(e, t);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-pencil-square"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-pencil-square"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px", display: "none" }}
-                              onClick={(e) => {
-                                editEnroll(e, t);
-                              }}
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px", display: "none" }}
+                            onClick={(e) => {
+                              editEnroll(e, t);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-check2"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-check2"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ display: "none" }}
-                              onClick={(e) => {
-                                closeEditSession(e, t);
-                              }}
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ display: "none" }}
+                            onClick={(e) => {
+                              closeEditSession(e, t);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-x-lg"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-x-lg"
-                                viewBox="0 0 16 16"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                                />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                                />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    }
-                    return true;
+                              <path
+                                fillRule="evenodd"
+                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                              />
+                              <path
+                                fillRule="evenodd"
+                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                              />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
                   })}
                 </tbody>
               </table>

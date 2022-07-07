@@ -1,20 +1,34 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
+import useFilter from "../hooks/useFilter";
+import { getParticipantFields } from "../constants/search_fields";
 import "../styles/chatParticipant.css";
 
-export default function ChatParticipantConfig(props) {
+export default function ChatParticipantConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [participant, setParticipant] = useState([]);
   const [users, setUsers] = useState([]);
   const [chat, setChat] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState();
-  const [search, setSearch] = useState("");
+
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredParticipants = useFilter(
+    participant,
+    null,
+    CHATSERVICE.filterParticipants,
+    getParticipantFields(language)
+  );
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -39,7 +53,7 @@ export default function ChatParticipantConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -132,7 +146,7 @@ export default function ChatParticipantConfig(props) {
     if (userId !== "Choose User" && chatId !== "") {
       json.push(chatId, userId, isAdmin);
     } else {
-      finalizedCreate("error", true, props.language.creationFailed, false);
+      finalizedCreate("error", true, language.creationFailed, false);
     }
 
     let eventJson = {};
@@ -143,22 +157,12 @@ export default function ChatParticipantConfig(props) {
       CHATSERVICE.createParticipant(eventJson)
         .then((x) => {
           if (x) {
-            finalizedCreate(
-              "info",
-              true,
-              props.language.creationCompleted,
-              false
-            );
+            finalizedCreate("info", true, language.creationCompleted, false);
           }
         })
         .catch(async (e) => {
           if (e) {
-            finalizedCreate(
-              "error",
-              true,
-              props.language.creationFailed,
-              false
-            );
+            finalizedCreate("error", true, language.creationFailed, false);
             await interceptExpiredToken(e);
           }
         });
@@ -175,22 +179,12 @@ export default function ChatParticipantConfig(props) {
       CHATSERVICE.deleteParticipant(id)
         .then((e) => {
           if (e) {
-            finalizedDelete(
-              "info",
-              true,
-              false,
-              props.language.deleteAlertCompleted
-            );
+            finalizedDelete("info", true, false, language.deleteAlertCompleted);
           }
         })
         .catch(async (err) => {
           if (err) {
-            finalizedDelete(
-              "error",
-              true,
-              false,
-              props.language.deleteAlertFailed
-            );
+            finalizedDelete("error", true, false, language.deleteAlertFailed);
             await interceptExpiredToken(err);
           }
         });
@@ -204,13 +198,21 @@ export default function ChatParticipantConfig(props) {
 
   const confirmDeleteParticipant = async (id) => {
     switchEditState(false);
-    finalizedDelete("warning", true, true, props.language.deleteAlert);
+    finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
   };
 
+  useEffect(() => fetchParticipantsPage(1), []);
+
   useEffect(() => {
-    fetchParticipantsPage(1);
-  }, []);
+    setSearchParams({
+      query: "",
+      fields: getParticipantFields(language),
+      selectedField: getParticipantFields(language)[0][0],
+      extras: [["", ""]],
+      order: "asc",
+    });
+  }, [language]);
 
   return (
     <>
@@ -218,10 +220,10 @@ export default function ChatParticipantConfig(props) {
         <table className="createTable">
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.user}</th>
-              <th>{props.language.chat}</th>
-              <th>{props.language.admin}</th>
+              <th>{language.add}</th>
+              <th>{language.user}</th>
+              <th>{language.chat}</th>
+              <th>{language.admin}</th>
             </tr>
           </thead>
           <tbody>
@@ -259,7 +261,7 @@ export default function ChatParticipantConfig(props) {
               <td>
                 <select name="chP_user" id="chP_user">
                   <option defaultValue="Choose user">
-                    {props.language.chooseUser}
+                    {language.chooseUser}
                   </option>
                   {users.map((s) => (
                     <option
@@ -274,7 +276,7 @@ export default function ChatParticipantConfig(props) {
               <td>
                 <select name="chP_chat" id="chP_chat">
                   <option defaultValue="Choose Group">
-                    {props.language.chooseGroup}
+                    {language.chooseGroup}
                   </option>
                   {chat.map((s) => (
                     <option key={s.id} value={s.id + "_" + s.chat_name}>
@@ -301,14 +303,20 @@ export default function ChatParticipantConfig(props) {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.participantName}</th>
-                    <th>{props.language.chatName}</th>
-                    <th>{props.language.admin}</th>
-                    <th>{props.language.admin}</th>
+                    <th>{language.email}</th>
+                    <th>{language.chatName}</th>
+                    <th>{language.admin}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {participant.map((e) => {
+                    if (filteredParticipants !== null)
+                      if (
+                        filteredParticipants.find((fp) => fp.id === e.id) ===
+                        undefined
+                      )
+                        return <Fragment key={e.id} />;
                     return (
                       <tr key={e.id}>
                         <td>{e.user.email}</td>
