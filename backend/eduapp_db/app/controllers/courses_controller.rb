@@ -5,17 +5,15 @@ class CoursesController < ApplicationController
 
   # GET /courses
   def index
+    is_name = false
     if params[:user_id]
       if !check_perms_query_self!(get_user_roles.perms_course, params[:user_id])
         return
       end
-      @courses = []
-      @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
-      for course in @TuitionsUserId
-        @courses += Course.where(id: course)
-      end
+      @courses = Course.where(id: Tuition.where(user_id: params[:user_id]))
     elsif params[:name]
       # TODO: HANDLE PERMISSIONS FOR NAME QUERIES
+      is_name = true
       @courses = Course.where(name: params[:name]).first
     else
       if !check_perms_all!(get_user_roles.perms_course)
@@ -24,10 +22,12 @@ class CoursesController < ApplicationController
       @courses = Course.all
     end
 
-    if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
-      @courses = @courses.order(parse_filter_order(params[:order]))
-    else
-      @courses = @courses.order(name: :asc)
+    if !is_name
+      if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+        @courses = @courses.order(parse_filter_order(params[:order]))
+      else
+        @courses = @courses.order(name: :asc)
+      end
     end
 
     if params[:page]

@@ -12,7 +12,7 @@ services:
   db:
     image: postgres:14
     env_file:
-      - ./backend/eduapp_db/postgres.production.env
+      - ./backend/eduapp_db/postgres.docker-example.env
     volumes:
       - eduapp_db_data:/var/lib/postgresql/data/pgdata
     restart: unless-stopped
@@ -23,7 +23,7 @@ services:
       context: ./backend/eduapp_db
     image: eduapp/api:latest 
     env_file:
-      - ./backend/eduapp_db/production.env
+      - ./backend/eduapp_db/docker-example.env
     restart: unless-stopped
     depends_on:
       - db
@@ -36,19 +36,19 @@ services:
       context: ./frontend
     image: eduapp/app:latest
     env_file:
-      - ./frontend/.env
+      - ./frontend/docker-example.env
     restart: unless-stopped
     ports:
-      - "4010:443"
+      - "4010:443" # Change the first number for different port
   admin:
     build:
       context: ./eduapp-administration-panel
     image: eduapp/admin:latest
-    env_file:
-      - ./eduapp-administration-panel/.env
     restart: unless-stopped
+    env_file:
+      - ./eduapp-administration-panel/docker-example.env
     ports:
-      - "5010:443"
+      - "5010:443" # Change the first number for different port
     networks:
     - common
   nginx:
@@ -57,7 +57,8 @@ services:
       dockerfile: ./Ports-Dockerfile
     image: eduapp/nginx:latest
     ports: 
-      - "3010:443"
+      # - "80:80" # Exposes http so that it redirects to 443 if configured
+      - "3010:443" # Change the first number for different port
     depends_on:
       - api
     volumes:

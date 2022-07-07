@@ -55,7 +55,7 @@ export default function ControlPanel() {
 
   useEffect(() => {
     if (localStorage.getItem("eduapp_last_viewed") === null) {
-      localStorage.setItem("eduapp_last_viewed", "sessions");
+      localStorage.setItem("eduapp_last_viewed", "institutions");
       setLocation(localStorage.getItem("eduapp_last_viewed"));
     }
   }, []);

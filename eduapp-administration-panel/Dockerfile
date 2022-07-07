@@ -8,8 +8,8 @@ RUN npm install
 
 COPY . .
 
-ENV REACT_APP_BACKEND_ENDPOINT="http://localhost:3000/api/v1"\
-	REACT_APP_EDUAPP_SYSTEM_USER_PWD="eduapp_system"
+RUN rm .env
+RUN mv docker-example.env .env
 
 RUN npm run build
 
