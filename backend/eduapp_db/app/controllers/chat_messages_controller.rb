@@ -48,7 +48,7 @@ class ChatMessagesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /chat_messages/1
+  # PUT /chat_messages/1
   def update
     if !check_perms_update!(get_user_roles.perms_message, false, :null) && !check_action_owner!(@chat_message.user_id)
       return
@@ -71,6 +71,7 @@ class ChatMessagesController < ApplicationController
 
   private
 
+  # Checks if a user is in a certain ```ChatBase```.
   def check_user_in_chat(chat_base_id)
     if ChatParticipant.where(user_id: @current_user, chat_base_id: chat_base_id).count > 0 || get_user_roles.name == "eduapp_admin"
       return true

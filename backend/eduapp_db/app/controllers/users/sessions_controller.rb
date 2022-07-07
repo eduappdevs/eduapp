@@ -17,6 +17,7 @@ class Users::SessionsController < Devise::SessionsController
     respond_with @user_info
   end
 
+  # Revokes the logged out user's token with a new one.
   def destroy
     if !request.headers["eduauth"].present?
       render json: { error: "No auth provided." }, status: :unauthorized and return

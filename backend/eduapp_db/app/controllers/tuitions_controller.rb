@@ -18,6 +18,7 @@ class TuitionsController < ApplicationController
     render json: @tuitions
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     enroll_query = {}
     params.each do |param|

@@ -16,6 +16,7 @@ class User < ApplicationRecord
 
   @secret = ENV.fetch("RAILS_SECRET_KEY")
 
+  # Generates a new ```JtiMatchList``` entry for the user.
   def self.generate_jti(user, user_ip)
     iat, exp = self.gen_exp
     jti = self.gen_jti iat
@@ -33,21 +34,18 @@ class User < ApplicationRecord
     end
   end
 
+  # Generates a JWT Token for a user.
   def self.generate_token(user, user_ip)
     iat, exp = self.gen_exp
 
-    userTotalJti = JtiMatchList.where(user_id: user["user_id"])
-    if userTotalJti.count === 4
-      userTotalJti.last.destroy
-    end
+    userTotalJti = JtiMatchList.where(user_id: user["user_id"]).order(created_at: :desc)
+    userTotalJti.last.destroy if userTotalJti.count === 4 # Logs out the last connection's IP for a new connection.
 
     existingUserJti = JtiMatchList.where(user_id: user["user_id"], access_ip: user_ip)
     if existingUserJti.count > 0
       jti = existingUserJti.first.jti
     else
-      correctGen = self.generate_jti(user, user_ip)
-
-      if correctGen === true
+      if self.generate_jti(user, user_ip) === true
         existingUserJti = JtiMatchList.where(user_id: user["user_id"], access_ip: user_ip)
       else
         return { error: "Failed to generate token." }
@@ -55,9 +53,7 @@ class User < ApplicationRecord
     end
 
     user_role = UserRole.find(UserInfo.where(user_id: existingUserJti[0].user_id).first.user_role_id)
-    if !user_role
-      return { error: "Failed to find user role." }
-    end
+    return { error: "Failed to find user role." } if !user_role
 
     payload = {
       iat: iat,
@@ -74,6 +70,7 @@ class User < ApplicationRecord
     end
   end
 
+  # Decodes a JWT Token.
   def self.unlock_token(token)
     begin
       return JWT.decode token, @secret, true, { verify_jti: true, aud: "user", algorithm: "HS256" }
@@ -84,6 +81,7 @@ class User < ApplicationRecord
     end
   end
 
+  # Revokes a JWT Token from a user.
   def self.revoke_token(user, user_ip)
     revokedUserJti = JtiMatchList.where(user_id: user, access_ip: user_ip)
 
@@ -107,10 +105,12 @@ class User < ApplicationRecord
 
   private
 
+  # Generates an expiration for an hour in time.
   def self.gen_exp
     return Time.now.to_i, 1.hour.from_now.to_i # [iat, exp]
   end
 
+  # Returnes a newly signed JTI.
   def self.gen_jti(issued_at)
     return Digest::SHA256.hexdigest([@secret, issued_at].join(":").to_s)
   end

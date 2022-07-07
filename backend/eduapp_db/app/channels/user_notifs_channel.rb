@@ -44,6 +44,7 @@ class UserNotifsChannel < ApplicationCable::Channel
     end
   end
 
+  # If token check succeeds, checks if there is already a user in the websocket.
   def check_user
     if @notifs_user.nil?
       return false

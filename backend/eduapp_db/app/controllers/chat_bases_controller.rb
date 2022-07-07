@@ -9,6 +9,7 @@ class ChatBasesController < ApplicationController
   def index
     wants_complete_chat = false
 
+    # Made to return all necessary information for a chat.
     if params[:complete_chat_for]
       wants_complete_chat = true
       if !check_user_in_chat(params[:complete_chat_for])
@@ -62,6 +63,7 @@ class ChatBasesController < ApplicationController
     render json: @chat_bases
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     chat_query = {}
     params.each do |param|
@@ -97,6 +99,7 @@ class ChatBasesController < ApplicationController
     render json: @chat_basis
   end
 
+  # Checks if a user has an open ```ChatBase``` with the system user.
   def has_system_notifs
     if !check_perms_query!(get_user_roles.perms_chat)
       return
@@ -157,7 +160,7 @@ class ChatBasesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /chat_bases/1
+  # PUT /chat_bases/1
   def update
     if !check_perms_update!(get_user_roles.perms_chat, false, :null)
       return
@@ -179,6 +182,7 @@ class ChatBasesController < ApplicationController
 
   private
 
+  # Checks if a user is in a certain ```ChatBase```.
   def check_user_in_chat(chat_base_id)
     if ChatParticipant.where(user_id: @current_user, chat_base_id: chat_base_id).count > 0 || get_user_roles.name === "eduapp_admin"
       return true

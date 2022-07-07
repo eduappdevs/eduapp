@@ -31,6 +31,7 @@ class ResourcesController < ApplicationController
     render json: @resources
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     resources_query = {}
     subject_query = {}
@@ -97,7 +98,7 @@ class ResourcesController < ApplicationController
 
   # GET /resources/1
   def show
-    if !resource_in_user_course && get_user_roles.name != "eduapp-admin"
+    if !resource_in_user_course && get_user_roles.name != get_admin_role.name
       return deny_perms_access!
     end
     render json: @resource
@@ -147,7 +148,7 @@ class ResourcesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /resources/1
+  # PUT /resources/1
   def update
     if !check_perms_update!(get_user_roles.perms_resources, true, @resource.user_id)
       return
@@ -190,6 +191,7 @@ class ResourcesController < ApplicationController
     params.permit(permits)
   end
 
+  # Checks if ```Subject``` is present in the user's ```Course```.
   def subject_in_user_course(s_id)
     c_id = Subject.find(s_id).course_id
     if Tuition.where(user_id: @current_user, course_id: c_id).count > 0
@@ -198,6 +200,7 @@ class ResourcesController < ApplicationController
     return false
   end
 
+  # Checks if ```Resource``` is present in the user's ```Course```.
   def resource_in_user_course
     c_id = Subject.find(@resource.subject_id).course_id
     if Tuition.where(user_id: @current_user, course_id: c_id).count > 0

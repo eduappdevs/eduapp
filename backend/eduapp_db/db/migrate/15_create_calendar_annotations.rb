@@ -11,7 +11,7 @@ class CreateCalendarAnnotations < ActiveRecord::Migration[6.1]
       t.belongs_to :subject, foreign_key: true, type: :uuid
       t.timestamps
     end
-    change_column_null(:calendar_annotations, :subject_id, true)
 
+    change_column_null(:calendar_annotations, :subject_id, true)
   end
 end
