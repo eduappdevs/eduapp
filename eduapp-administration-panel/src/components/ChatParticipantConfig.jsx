@@ -1,19 +1,34 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
+import useFilter from "../hooks/useFilter";
+import { getParticipantFields } from "../constants/search_fields";
 import "../styles/chatParticipant.css";
 
-export default function ChatParticipantConfig(props) {
+export default function ChatParticipantConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [participant, setParticipant] = useState([]);
   const [users, setUsers] = useState([]);
   const [chat, setChat] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [search, setSearch] = useState("");
+  const [actualPage, setActualPage] = useState();
+
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredParticipants = useFilter(
+    participant,
+    null,
+    CHATSERVICE.filterParticipants,
+    getParticipantFields(language)
+  );
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -28,8 +43,8 @@ export default function ChatParticipantConfig(props) {
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100vw";
-      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("standard-modal").style.width = "100%";
+      document.getElementById("standard-modal").style.height = "100%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
@@ -38,22 +53,27 @@ export default function ChatParticipantConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchParticipantsPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    switchEditState(false);
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchParticipantsPage(actualPage);
   };
 
   const fetchParticipantsPage = async (page) => {
@@ -62,6 +82,7 @@ export default function ChatParticipantConfig(props) {
         .then((res) => {
           setParticipant(res.data.current_page);
           setMaxPages(res.data.total_pages);
+          setActualPage(res.data.page);
           fetchUser();
           fetchChat();
         })
@@ -84,7 +105,6 @@ export default function ChatParticipantConfig(props) {
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
-          console.error(err);
         });
     }).then(async (e) => {
       if (e) {
@@ -102,7 +122,6 @@ export default function ChatParticipantConfig(props) {
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
-          console.error(err);
         });
     }).then(async (e) => {
       if (e) {
@@ -112,17 +131,8 @@ export default function ChatParticipantConfig(props) {
     });
   };
 
-  const alertCreate = async () => {
-    switchEditState(false);
-    setIsConfirmDelete(false);
-    setPopupText(props.language.creationAlert);
-    setPopupType("error");
-    setPopup(true);
-  };
-
   const addParticipant = async (e) => {
     e.preventDefault();
-    switchSaveState(true);
     switchEditState(false);
 
     const context = ["chat_base_id", "user_id", "isChatAdmin"];
@@ -136,9 +146,7 @@ export default function ChatParticipantConfig(props) {
     if (userId !== "Choose User" && chatId !== "") {
       json.push(chatId, userId, isAdmin);
     } else {
-      alertCreate();
-      switchSaveState(false);
-      return;
+      finalizedCreate("error", true, language.creationFailed, false);
     }
 
     let eventJson = {};
@@ -147,20 +155,15 @@ export default function ChatParticipantConfig(props) {
     }
     API.asynchronizeRequest(function () {
       CHATSERVICE.createParticipant(eventJson)
-        .then(() => {
-          fetchParticipantsPage(1);
-          setIsConfirmDelete(false);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.creationCompleted);
-          switchSaveState(false);
+        .then((x) => {
+          if (x) {
+            finalizedCreate("info", true, language.creationCompleted, false);
+          }
         })
         .catch(async (e) => {
           if (e) {
+            finalizedCreate("error", true, language.creationFailed, false);
             await interceptExpiredToken(e);
-            alertCreate();
-            setIsConfirmDelete(false);
-            switchSaveState(false);
           }
         });
     }).then(async (e) => {
@@ -174,17 +177,16 @@ export default function ChatParticipantConfig(props) {
   const deleteParticipant = async (id) => {
     API.asynchronizeRequest(function () {
       CHATSERVICE.deleteParticipant(id)
-        .then(() => {
-          fetchParticipantsPage(1);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+        .then((e) => {
+          if (e) {
+            finalizedDelete("info", true, false, language.deleteAlertCompleted);
+          }
         })
         .catch(async (err) => {
-          await interceptExpiredToken(err);
-          console.error(err);
+          if (err) {
+            finalizedDelete("error", true, false, language.deleteAlertFailed);
+            await interceptExpiredToken(err);
+          }
         });
     }).then(async (e) => {
       if (e) {
@@ -195,17 +197,22 @@ export default function ChatParticipantConfig(props) {
   };
 
   const confirmDeleteParticipant = async (id) => {
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
+    switchEditState(false);
+    finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
   };
 
+  useEffect(() => fetchParticipantsPage(1), []);
+
   useEffect(() => {
-    fetchParticipantsPage(1);
-  }, []);
+    setSearchParams({
+      query: "",
+      fields: getParticipantFields(language),
+      selectedField: getParticipantFields(language)[0][0],
+      extras: [["", ""]],
+      order: "asc",
+    });
+  }, [language]);
 
   return (
     <>
@@ -213,10 +220,10 @@ export default function ChatParticipantConfig(props) {
         <table className="createTable">
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.user}</th>
-              <th>{props.language.chat}</th>
-              <th>{props.language.admin}</th>
+              <th>{language.add}</th>
+              <th>{language.user}</th>
+              <th>{language.chat}</th>
+              <th>{language.admin}</th>
             </tr>
           </thead>
           <tbody>
@@ -254,7 +261,7 @@ export default function ChatParticipantConfig(props) {
               <td>
                 <select name="chP_user" id="chP_user">
                   <option defaultValue="Choose user">
-                    {props.language.chooseUser}
+                    {language.chooseUser}
                   </option>
                   {users.map((s) => (
                     <option
@@ -269,7 +276,7 @@ export default function ChatParticipantConfig(props) {
               <td>
                 <select name="chP_chat" id="chP_chat">
                   <option defaultValue="Choose Group">
-                    {props.language.chooseGroup}
+                    {language.chooseGroup}
                   </option>
                   {chat.map((s) => (
                     <option key={s.id} value={s.id + "_" + s.chat_name}>
@@ -296,14 +303,20 @@ export default function ChatParticipantConfig(props) {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.participantName}</th>
-                    <th>{props.language.chatName}</th>
-                    <th>{props.language.admin}</th>
-                    <th>{props.language.admin}</th>
+                    <th>{language.email}</th>
+                    <th>{language.chatName}</th>
+                    <th>{language.admin}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {participant.map((e) => {
+                    if (filteredParticipants !== null)
+                      if (
+                        filteredParticipants.find((fp) => fp.id === e.id) ===
+                        undefined
+                      )
+                        return <Fragment key={e.id} />;
                     return (
                       <tr key={e.id}>
                         <td>{e.user.email}</td>

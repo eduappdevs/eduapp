@@ -28,10 +28,8 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100vw";
-      document.getElementById("standard-modal").style.height = "100vw";
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "100%";
     }
   };
 
@@ -55,7 +53,6 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
     let numberRepeat = parseInt(document.getElementById("number-repeat").value);
     let startDateHour = startDate + "T" + startHour;
     let endDateHour = endDate + "T" + endHour;
-
     if (
       name === "" &&
       streamingLink === "" &&
@@ -105,6 +102,7 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
           week_repeat:
             numberRepeat < 1 ? 0 : numberRepeat < 2 ? 2 : numberRepeat,
         };
+
         asynchronizeRequest(function () {
           SCHEDULESERVICE.createSessionBatch(session)
             .then((response) => {

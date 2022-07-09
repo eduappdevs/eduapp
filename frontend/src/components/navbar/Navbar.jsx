@@ -166,7 +166,7 @@ export default function Navbar({ mobile, badgeCount }) {
           </ul>
         </div>
         <p id="wip">EduApp W.I.P</p>
-        {/* <div
+        <div
           className="notifications-button"
           onClick={() => {
             window.location.href = "/notifications";
@@ -186,7 +186,7 @@ export default function Navbar({ mobile, badgeCount }) {
               </svg>
             </div>
           </div>
-        </div> */}
+        </div>
 
         <div
           className="profile-button"

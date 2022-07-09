@@ -1,6 +1,6 @@
 {
   "name": "eduapp-frontend",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "private": true,
   "dependencies": {
     "@devexpress/dx-react-core": "^2.7.6",
@@ -22,7 +22,10 @@
     "axios": "^0.24.0",
     "buffer": "^6.0.3",
     "dompurify": "^2.3.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
     "firebase": "^9.6.9",
+    "https": "^1.0.0",
     "hybrid-crypto-js": "^0.2.4",
     "idb-keyval": "^6.1.0",
     "react": "^17.0.2",
@@ -58,7 +61,8 @@
     "dev": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "nodemon server/server.js"
   },
   "eslintConfig": {
     "extends": [

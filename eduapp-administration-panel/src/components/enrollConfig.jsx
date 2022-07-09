@@ -1,19 +1,26 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Fragment, useContext, useEffect, useState } from "react";
 import * as API from "../API";
 import * as TUITIONSSERVICE from "../services/enrollConfig.service";
 import * as USERSSERVICE from "../services/user.service";
 import * as COURSESERVICE from "../services/course.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import PageSelect from "./pagination/PageSelect";
+import useFilter from "../hooks/useFilter";
+import { getEnrollmentFields } from "../constants/search_fields";
 
-export default function EnrollConfig(props) {
+export default function EnrollConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [tuitions, setTuitions] = useState(null);
   const [users, setUsers] = useState(null);
   const [courses, setCourses] = useState(null);
 
-  const [search, setSearch] = useState("");
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
 
   const [courseEdit, setCourseEdit] = useState([]);
   const [emailEdit, setEmailEdit] = useState([]);
@@ -23,6 +30,14 @@ export default function EnrollConfig(props) {
   const [changeEmail, setChangeEmail] = useState(false);
   const [changeCourse, setChangeCourse] = useState(false);
 
+  const [, setSearchParams] = useContext(SearchBarCtx);
+  const filteredTuitions = useFilter(
+    tuitions,
+    null,
+    TUITIONSSERVICE.filterTuitions,
+    getEnrollmentFields(language)
+  );
+
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [popupIcon, setPopupIcon] = useState("");
@@ -30,39 +45,49 @@ export default function EnrollConfig(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  let enrollment_filter = {};
-
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
-  };
-
   const switchEditState = (state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100vw";
-      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
+  };
+  const finalizedEdit = (type, icon, text, confirmDel) => {
+    fetchTuitions(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
+  };
+
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchTuitions(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchTuitions(actualPage);
   };
 
   const connectionAlert = async () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
@@ -70,34 +95,19 @@ export default function EnrollConfig(props) {
     API.asynchronizeRequest(function () {
       TUITIONSSERVICE.pagedTuitions(pages)
         .then((ts) => {
+          setActualPage(ts.data.page);
           setTuitions(ts.data.current_page);
           setMaxPages(ts.data.total_pages);
-          enrollment_filter.enroll = ts.data.current_page;
         })
         .catch(async (err) => {
           interceptExpiredToken(err);
         });
     }).then(async (e) => {
       if (e) {
-        await interceptExpiredToken(e);
         connectionAlert();
+        await interceptExpiredToken(e);
       }
     });
-  };
-
-  const enrollFilter = (EnrollList) => {
-    let filterEnroll = [];
-    EnrollList.map((s) => {
-      if (
-        s.course_id ===
-        (enrollment_filter.filter === -1
-          ? s.course_id
-          : parseInt(enrollment_filter.filter))
-      )
-        filterEnroll.push(s);
-      return true;
-    });
-    setTuitions(filterEnroll);
   };
 
   const fetchUsers = () => {
@@ -115,10 +125,7 @@ export default function EnrollConfig(props) {
 
   const fetchCourses = () => {
     API.asynchronizeRequest(function () {
-      COURSESERVICE.fetchCourses().then((cs) => {
-        setCourses(cs.data);
-        enrollment_filter.couses = cs.data;
-      });
+      COURSESERVICE.fetchCourses().then((cs) => setCourses(cs.data));
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
@@ -131,18 +138,11 @@ export default function EnrollConfig(props) {
     fetchCourses();
     fetchTuitions(1);
     fetchUsers();
-
-    document.addEventListener("filter_subject_enroll", (e) => {
-      e.stopImmediatePropagation();
-      enrollment_filter.filter =
-        e.detail === props.language.chooseCourse ? -1 : e.detail.split("_")[0];
-      enrollFilter(enrollment_filter.enroll);
-    });
   };
 
   const createTuition = (e) => {
     e.preventDefault();
-    switchEditState(true);
+    switchEditState(false);
 
     let user = document.getElementById("user_select").value;
     let course = document.getElementById("course_select").value;
@@ -161,8 +161,7 @@ export default function EnrollConfig(props) {
               fetchAll();
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.creationCompleted);
-              switchSaveState(false);
+              setPopupText(language.creationCompleted);
             }
           })
           .catch((e) => {
@@ -170,8 +169,7 @@ export default function EnrollConfig(props) {
               interceptExpiredToken(e);
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.creationAlert);
-              switchSaveState(false);
+              setPopupText(language.creationAlert);
             }
           });
       }).then(async (e) => {
@@ -186,385 +184,115 @@ export default function EnrollConfig(props) {
   };
 
   const alertCreate = async () => {
-    switchEditState(false);
-    setPopupText(props.language.creationAlert);
+    setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
   };
 
   const deleteTuition = (id) => {
+    switchEditState(false);
     API.asynchronizeRequest(function () {
       TUITIONSSERVICE.deleteTuition(id)
-        .then(() => {
-          fetchAll();
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
-          switchSaveState(false);
-          setIsConfirmDelete(false);
+        .then((e) => {
+          if (e) {
+            finalizedDelete("info", true, false, language.deleteAlertCompleted);
+          }
         })
         .catch(async (e) => {
-          await interceptExpiredToken(e);
-          showDeleteError();
+          if (e) {
+            finalizedDelete("error", true, false, language.deleteAlertFailed);
+            await interceptExpiredToken(e);
+          }
         });
     }).then(async (e) => {
       if (e) {
-        await interceptExpiredToken(e);
         connectionAlert();
+        await interceptExpiredToken(e);
       }
     });
   };
 
   const confirmDeleteEvent = async (id) => {
-    switchEditState(true);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
+    switchEditState(false);
+    finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
   };
 
-  const showDeleteError = () => {
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText(props.language.deleteFailed);
-    setIsConfirmDelete(false);
-  };
-
   const showEditOptionSession = (e) => {
-    if (e.target.tagName === "svg") {
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let course =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-
-      email.disabled = false;
-      course.disabled = false;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[1];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode.parentNode.childNodes[0];
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-      listCourse(course.value);
-      listUser(email.value);
-    } else {
-      if (e.target.tagName === "path") {
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let course =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-
-        email.disabled = false;
-        course.disabled = false;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        listCourse(course.value);
-        listUser(email.value);
-      } else {
-        let email = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let course = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        email.disabled = false;
-        course.disabled = false;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        listCourse(course.value);
-        listUser(email.value);
-      }
+    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = false;
+    listCourse(
+      e.target.parentNode.parentNode.childNodes[1].childNodes[0].value
+    );
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
   const editEnroll = (e, s) => {
     switchEditState(false);
-    if (e.target.tagName === "svg") {
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let course =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
+    let course = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
 
-      let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-      let inputCourse = document.getElementById("inputCourse_" + s.id).value;
+    let inputCourse = document.getElementById("inputCourse_" + s.id).value;
 
-      let editEmail, editCourse;
+    let editCourse;
 
-      if (inputEmail !== "" && inputEmail !== s.user_id) {
-        editEmail = inputEmail;
-      } else {
-        editEmail = s.user_id;
-      }
-
-      if (inputCourse !== "" && inputCourse !== s.session_start_date) {
-        editCourse = inputCourse;
-      } else {
-        editCourse = s.session_start_date;
-      }
-
-      API.asynchronizeRequest(function () {
-        TUITIONSSERVICE.editTuition({
-          id: s.id,
-          course_id: editCourse,
-          user_id: editEmail,
-        })
-          .then((error) => {
-            if (error) {
-              fetchAll();
-              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              email.disabled = true;
-              course.disabled = true;
-
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
-              switchSaveState(false);
-              setIsConfirmDelete(false);
-            }
-          })
-          .catch(async (e) => {
-            if (e) {
-              await interceptExpiredToken(e);
-              setPopupText(props.language.editAlertFailed);
-              setPopupIcon("error");
-              switchSaveState(false);
-              setPopup(true);
-              setIsConfirmDelete(false);
-            }
-          });
-      }).then(async (e) => {
-        if (e) {
-          await interceptExpiredToken(e);
-          alertCreate();
-        }
-      });
+    if (inputCourse !== "" && inputCourse !== s.session_start_date) {
+      editCourse = inputCourse;
     } else {
-      if (e.target.tagName === "path") {
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let course =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-
-        let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-        let inputCourse = document.getElementById("inputCourse_" + s.id).value;
-
-        let editEmail, editCourse;
-
-        if (inputEmail !== "" && inputEmail !== s.user_id) {
-          editEmail = inputEmail;
-        } else {
-          editEmail = s.user_id;
-        }
-
-        if (inputCourse !== "" && inputCourse !== s.session_start_date) {
-          editCourse = inputCourse;
-        } else {
-          editCourse = s.session_start_date;
-        }
-
-        API.asynchronizeRequest(function () {
-          TUITIONSSERVICE.editTuition({
-            id: s.id,
-            course_id: editCourse,
-            user_id: editEmail,
-          })
-            .then((error) => {
-              if (error) {
-                fetchAll();
-                let buttonDelete =
-                  e.target.parentNode.parentNode.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button =
-                  e.target.parentNode.parentNode.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                course.disabled = true;
-                email.disabled = true;
-                switchSaveState(false);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                setIsConfirmDelete(false);
-              }
-            })
-            .catch((e) => {
-              if (e) {
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-                setPopup(true);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            alertCreate();
-          }
-        });
-      } else {
-        let email = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let course = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-
-        let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-        let inputCourse = document.getElementById("inputCourse_" + s.id).value;
-
-        let editEmail, editCourse;
-
-        if (inputEmail !== "" && inputEmail !== s.user_id) {
-          editEmail = inputEmail;
-        } else {
-          editEmail = s.user_id;
-        }
-
-        if (inputCourse !== "" && inputCourse !== s.session_start_date) {
-          editCourse = inputCourse;
-        } else {
-          editCourse = s.session_start_date;
-        }
-
-        console.log(editEmail, editCourse);
-        API.asynchronizeRequest(function () {
-          TUITIONSSERVICE.editTuition({
-            id: s.id,
-            course_id: editCourse,
-            user_id: editEmail,
-          })
-            .then((error) => {
-              if (error) {
-                fetchAll();
-                let buttonDelete = e.target.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button = e.target.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton = e.target.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton = e.target.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                email.disabled = true;
-                course.disabled = true;
-
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-              }
-            })
-            .catch(async (e) => {
-              if (e) {
-                console.log(e);
-                await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-                setPopup(true);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            alertCreate();
-          }
-        });
-      }
+      editCourse = s.session_start_date;
     }
+
+    console.log(s, editCourse);
+    API.asynchronizeRequest(function () {
+      TUITIONSSERVICE.editTuition({
+        id: s.id,
+        course_id: editCourse,
+        user_id: s.user.id,
+      })
+        .then((error) => {
+          if (error) {
+            let num = 0;
+            while (num < 4) {
+              e.target.parentNode.childNodes[num].style.display === "block"
+                ? (e.target.parentNode.childNodes[num].style.display = "none")
+                : (e.target.parentNode.childNodes[num].style.display = "block");
+              num += 1;
+            }
+            course.disabled = true;
+            finalizedEdit("info", true, language.editAlertCompleted, false);
+          }
+        })
+        .catch(async (e) => {
+          if (e) {
+            finalizedEdit("error", true, language.editAlertFailed, false);
+            await interceptExpiredToken(e);
+          }
+        });
+    }).then(async (e) => {
+      if (e) {
+        alertCreate();
+        await interceptExpiredToken(e);
+      }
+    });
   };
 
   const closeEditSession = (e, s) => {
-    if (e.target.tagName === "svg") {
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let course =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
+    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = true;
 
-      email.disabled = true;
-      course.disabled = true;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-    } else {
-      if (e.target.tagName === "path") {
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[0].childNodes[0];
-        let course =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[1].childNodes[0];
-
-        email.disabled = true;
-        course.disabled = true;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      } else {
-        let email = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let course = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-
-        email.disabled = true;
-        course.disabled = true;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
@@ -579,26 +307,19 @@ export default function EnrollConfig(props) {
     setCourseEdit(list);
   };
 
-  const listUser = (user) => {
-    let list = [];
-    users.map((c) => {
-      if (c.id !== parseInt(user)) {
-        list.push(c);
-      }
-      return true;
-    });
-    setEmailEdit(list);
-  };
-
   useEffect(() => {
     fetchAll();
   }, []);
 
   useEffect(() => {
-    setSearch(props.search);
-  }, [props.search]);
-
-  useEffect(() => {}, [props.language]);
+    setSearchParams({
+      query: "",
+      fields: getEnrollmentFields(language),
+      selectedField: getEnrollmentFields(language)[0][0],
+      extras: [["", ""]],
+      order: "asc",
+    });
+  }, [language]);
 
   return (
     <>
@@ -606,9 +327,9 @@ export default function EnrollConfig(props) {
         <table>
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.user}</th>
-              <th>{props.language.course}</th>
+              <th>{language.add}</th>
+              <th>{language.user}</th>
+              <th>{language.course}</th>
             </tr>
           </thead>
           <tbody>
@@ -648,13 +369,13 @@ export default function EnrollConfig(props) {
                     />
                   </svg>
                   <div id="submit-loader" className="loader">
-                    {props.language.loading} ...
+                    {language.loading} ...
                   </div>
                 </button>
               </td>
               <td>
                 <select defaultValue={"-"} id="user_select">
-                  <option value="-">{props.language.chooseUser}</option>
+                  <option value="-">{language.chooseUser}</option>
                   {users
                     ? users.map((u) => {
                         return (
@@ -668,7 +389,7 @@ export default function EnrollConfig(props) {
               </td>
               <td>
                 <select defaultValue={"-"} id="course_select">
-                  <option value="-">{props.language.chooseCourse}</option>
+                  <option value="-">{language.chooseCourse}</option>
                   {courses
                     ? courses.map((c) => {
                         return (
@@ -695,276 +416,142 @@ export default function EnrollConfig(props) {
               <table style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.user}</th>
-                    <th>{props.language.course}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.user}</th>
+                    <th>{language.course}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {tuitions.map((t) => {
-                    if (search.length > 0) {
+                    if (filteredTuitions !== null)
                       if (
-                        t.user.email
-                          .toLowerCase()
-                          .includes(search.toLowerCase())
-                      ) {
-                        return (
-                          <tr key={t.id}>
-                            <td>
-                              <select id={`inputEmail_${t.id}`} disabled>
-                                <option
-                                  value={t.user.id}
-                                  defaultValue={t.user.id}
-                                >
-                                  {t.user.email}
+                        filteredTuitions.find((ft) => t.id === ft.id) ===
+                        undefined
+                      )
+                        return <Fragment key={t.id} />;
+                    return (
+                      <tr key={t.id}>
+                        <td>
+                          <select id={`inputEmail_${t.id}`} disabled>
+                            <option value={t.user.id} defaultValue={t.user.id}>
+                              {t.user.email}
+                            </option>
+                            {emailEdit.map((e) => {
+                              return (
+                                <option key={e.id} value={e.id}>
+                                  {e.user.email}
                                 </option>
-                                {emailEdit.map((e) => {
-                                  return (
-                                    <option key={e.id} value={e.id}>
-                                      {e.user.email}
-                                    </option>
-                                  );
-                                })}
-                                {}
-                              </select>
-                            </td>
-                            <td>
-                              <select id={`inputCourse_${t.id}`} disabled>
-                                <option
-                                  defaultValue={t.course_id}
-                                  value={t.course_id}
-                                >
-                                  {t.course.name}
-                                </option>
-                                {courseEdit.map((c) => {
-                                  console.log(c);
-                                  return (
-                                    <option key={c.id} value={c.id}>
-                                      {c.name}
-                                    </option>
-                                  );
-                                })}
-                              </select>
-                            </td>
-                            <td
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
+                              );
+                            })}
+                            {}
+                          </select>
+                        </td>
+                        <td>
+                          <select id={`inputCourse_${t.id}`} disabled>
+                            <option
+                              defaultValue={t.course_id}
+                              value={t.course_id}
                             >
-                              <button
-                                style={{ marginRight: "5px" }}
-                                onClick={() => {
-                                  confirmDeleteEvent(t.id);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-trash3"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ marginRight: "5px" }}
-                                onClick={(e) => {
-                                  showEditOptionSession(e, t);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-pencil-square"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                  />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ marginRight: "5px", display: "none" }}
-                                onClick={(e) => {
-                                  editEnroll(e, t);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-check2"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ display: "none" }}
-                                onClick={(e) => {
-                                  closeEditSession(e, t);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-x-lg"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                                  />
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                                  />
-                                </svg>
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      }
-                    } else {
-                      return (
-                        <tr key={t.id}>
-                          <td>
-                            <select id={`inputEmail_${t.id}`} disabled>
-                              <option
-                                value={t.user.id}
-                                defaultValue={t.user.id}
-                              >
-                                {t.user.email}
-                              </option>
-                              {emailEdit.map((e) => {
-                                return (
-                                  <option key={e.id} value={e.id}>
-                                    {e.user.email}
-                                  </option>
-                                );
-                              })}
-                              {}
-                            </select>
-                          </td>
-                          <td>
-                            <select id={`inputCourse_${t.id}`} disabled>
-                              <option
-                                defaultValue={t.course_id}
-                                value={t.course_id}
-                              >
-                                {t.course.name}
-                              </option>
-                              {courseEdit.map((c) => {
-                                return (
-                                  <option key={c.id} value={c.id}>
-                                    {c.name}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </td>
-                          <td
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
+                              {t.course.name}
+                            </option>
+                            {courseEdit.map((c) => {
+                              return (
+                                <option key={c.id} value={c.id}>
+                                  {c.name}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={() => {
+                              confirmDeleteEvent(t.id);
                             }}
                           >
-                            <button
-                              style={{ marginRight: "5px" }}
-                              onClick={() => {
-                                confirmDeleteEvent(t.id);
-                              }}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-trash3"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px" }}
-                              onClick={(e) => {
-                                showEditOptionSession(e, t);
-                              }}
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={(e) => {
+                              showEditOptionSession(e, t);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-pencil-square"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-pencil-square"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px", display: "none" }}
-                              onClick={(e) => {
-                                editEnroll(e, t);
-                              }}
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px", display: "none" }}
+                            onClick={(e) => {
+                              editEnroll(e, t);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-check2"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-check2"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ display: "none" }}
-                              onClick={(e) => {
-                                closeEditSession(e, t);
-                              }}
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ display: "none" }}
+                            onClick={(e) => {
+                              closeEditSession(e, t);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-x-lg"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-x-lg"
-                                viewBox="0 0 16 16"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                                />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                                />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    }
-                    return true;
+                              <path
+                                fillRule="evenodd"
+                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                              />
+                              <path
+                                fillRule="evenodd"
+                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                              />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
                   })}
                 </tbody>
               </table>
@@ -988,7 +575,6 @@ export default function EnrollConfig(props) {
         }}
         onCloseAction={() => {
           setPopup(false);
-          switchSaveState(false);
           switchEditState(true);
         }}
         hasIconAnimation

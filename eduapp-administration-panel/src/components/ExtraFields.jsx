@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import {
   getExtraFields,
@@ -6,22 +6,21 @@ import {
   updateExtraFields,
   deleteExtraFields,
 } from "../services/extrafields.service";
+import { LanguageCtx } from "../hooks/LanguageContext";
 
-export default function ExtraFields(props) {
+export default function ExtraFields({ table, id }) {
+  const [language] = useContext(LanguageCtx);
+
   const [extraFields, setExtraFields] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteModal, setDeleteModal] = useState("");
   const [show, setShow] = useState(false);
-  let table = props.table;
-  let id = props.id;
 
   const extrafields_parser = (data) => {
     if (typeof data === "object") {
       let extrafields = [];
       if (data.length > 1) {
-        data.map((extrafield) => {
-          extrafields.push(JSON.parse(extrafield));
-        });
+        data.map((extrafield) => extrafields.push(JSON.parse(extrafield)));
       } else if (data.length === 1) {
         try {
           extrafields.push(JSON.parse(data));
@@ -38,8 +37,8 @@ export default function ExtraFields(props) {
 
   const GET_EXTRAFIELDS = async () => {
     setLoading(true);
+    switchEditState(false);
 
-    console.log(table, id);
     await getExtraFields({ table, id }).then((res) => {
       if (!res.data) {
         return false;
@@ -51,7 +50,7 @@ export default function ExtraFields(props) {
 
   const UPDATE_EXTRAFIELD = (body) => {
     let ex = extraFields.find((f) => f.name === body.name);
-    ex.value = body.value;
+    ex.value = body.type === "number" ? parseFloat(body.value) : body.value;
 
     updateExtraFields(
       {
@@ -72,9 +71,36 @@ export default function ExtraFields(props) {
       }
     ).then(
       GET_EXTRAFIELDS(),
-      (document.getElementById(`new_fieldName_${props.id}`).value = ""),
-      (document.getElementById(`new_fieldType_${props.id}`).value = "")
+      (document.getElementById(`new_fieldName_${id}`).value = ""),
+      (document.getElementById(`new_fieldType_${id}`).value = "")
     );
+  };
+  const switchEditState = (state) => {
+    if (state) {
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
+    } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
+      document.getElementById("controlPanelContentContainer").style.overflow =
+        "hidden";
+    }
+  };
+
+  const prepareModal = (inOut) => {
+    if (inOut) {
+      document.getElementsByClassName(
+        "controlPanel-content-container"
+      )[0].scrollLeft = 0;
+      document.getElementsByClassName(
+        "controlPanel-content-container"
+      )[0].style.overflowX = "hidden";
+    } else {
+      document.getElementsByClassName(
+        "controlPanel-content-container"
+      )[0].style.overflowX = "scroll";
+    }
   };
 
   return (
@@ -108,12 +134,13 @@ export default function ExtraFields(props) {
         icon="success"
         onCloseAction={() => {
           setShow(false);
+          switchEditState(true);
+          prepareModal(false);
         }}
         isModalExtraFields
         form={
           <>
             <ul className="list">
-              {" "}
               {extraFields &&
                 extraFields.map((field, index) => {
                   return (
@@ -128,7 +155,11 @@ export default function ExtraFields(props) {
                           onChange={(e) =>
                             UPDATE_EXTRAFIELD({
                               name: field.name,
-                              value: e.target.value,
+                              value:
+                                field.type === "checkbox"
+                                  ? e.target.checked
+                                  : e.target.value,
+                              type: field.type,
                             })
                           }
                         />
@@ -158,9 +189,9 @@ export default function ExtraFields(props) {
               <input
                 type="text"
                 placeholder="Name"
-                id={`new_fieldName_${props.id}`}
+                id={`new_fieldName_${id}`}
               />
-              <select id={`new_fieldType_${props.id}`}>
+              <select id={`new_fieldType_${id}`}>
                 <option value="text">Text</option>
                 <option value="number">Number</option>
                 <option value="date">Date</option>
@@ -169,13 +200,13 @@ export default function ExtraFields(props) {
               <button
                 onClick={() => {
                   let name = document.getElementById(
-                    `new_fieldName_${props.id}`
+                    `new_fieldName_${id}`
                   ).value;
                   let type = document.getElementById(
-                    `new_fieldType_${props.id}`
+                    `new_fieldType_${id}`
                   ).value;
-                  name != "" &&
-                    type != "" &&
+
+                  if (name !== "" && type !== "")
                     PUSH_EXTRAFIELD({
                       name: name,
                       type: type,
@@ -190,10 +221,12 @@ export default function ExtraFields(props) {
       />
       <button
         onClick={() => {
+          prepareModal(true);
           setShow(true);
           GET_EXTRAFIELDS();
         }}
         className="extrafields_open_modal"
+        style={{ marginRight: "5px" }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -1,19 +1,34 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
 import * as API from "../API";
-import "../styles/chatConfig.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
+import useFilter from "../hooks/useFilter";
+import { getChatFields } from "../constants/search_fields";
+import "../styles/chatConfig.css";
 
-export default function ChatConfig(props) {
+export default function ChatConfig() {
   const [chat, setChat] = useState([]);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
+  const [language] = useContext(LanguageCtx);
 
   const [newName] = useState();
   const [changeName, setChangeName] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [search, setSearch] = useState("");
+  const [actualPage, setActualPage] = useState();
+
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
+  const filteredChats = useFilter(
+    chat,
+    null,
+    CHATSERVICE.filterChats,
+    getChatFields(language)
+  );
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -28,314 +43,129 @@ export default function ChatConfig(props) {
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100vw";
-      document.getElementById("standard-modal").style.height = "100vh";
+      document.getElementById("standard-modal").style.width = "100%";
+      document.getElementById("standard-modal").style.height = "100%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
   };
 
+  const fetchChatPage = async (page, order = null) => {
+    API.asynchronizeRequest(function () {
+      CHATSERVICE.pagedChat(page, order)
+        .then((res) => {
+          setChat(res.data.current_page);
+          setMaxPages(res.data.total_pages);
+          setActualPage(res.data.page);
+        })
+        .catch(async (err) => await interceptExpiredToken(err));
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
+    });
+  };
+
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
-  const switchSaveState = (state) => {
-    if (state) {
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
-    } else {
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
-    }
+  const finalizedEdit = (type, icon, text, confirmDel) => {
+    fetchChatPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
   };
 
-  const showEditOptionChat = async (e, id) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode;
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-      name.disabled = false;
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchChatPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
 
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    switchEditState(false);
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchChatPage(actualPage);
+  };
 
-        name.disabled = false;
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-        name.disabled = false;
-      }
+  const showEditOptionChat = async (e) => {
+    e.target.parentNode.parentNode.childNodes[0].childNodes[0].disabled = false;
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
   const closeEditChat = async (e) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-      name.disabled = true;
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-        name.disabled = true;
-      } else {
-        let name =
-          e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0]
-            .childNodes[0];
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-        name.disabled = true;
-      }
+    e.preventDefault();
+    e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0].childNodes[0].disabled = true;
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
   const editChat = async (e, data) => {
     switchEditState(false);
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0];
+    let inputName = document.getElementById("inputName_" + data.id).value;
 
-      let inputName = document.getElementById("inputName_" + data.id).value;
+    let editTitle;
 
-      let editTitle;
-
-      if (inputName !== "" && inputName !== data.chat_name) {
-        editTitle = inputName;
-      } else {
-        editTitle = data.chat_name;
-      }
-
-      API.asynchronizeRequest(function () {
-        CHATSERVICE.editChat({
-          id: data.id,
-          chat_name: editTitle,
-          isGroup: data.isGroup,
-        })
-          .then((e) => {
-            if (e) {
-              setIsConfirmDelete(false);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
-              fetchChatPage(1);
-              setChangeName(false);
-              let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-            }
-          })
-          .catch(async (e) => {
-            if (e) {
-              await interceptExpiredToken(e);
-              setIsConfirmDelete(false);
-              setPopupText(props.language.editAlertFailed);
-              setPopupIcon("error");
-              switchSaveState(false);
-              setPopup(true);
-            }
-          });
-      }).then(async (e) => {
-        if (e) {
-          await interceptExpiredToken(e);
-          connectionAlert();
-        }
-      });
+    if (inputName !== "" && inputName !== data.chat_name) {
+      editTitle = inputName;
     } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[0]
-            .childNodes[0];
-        let inputName = document.getElementById("inputName_" + data.id).value;
-
-        let editTitle;
-
-        if (inputName !== "" && inputName !== data.chat_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = data.chat_name;
-        }
-
-        API.asynchronizeRequest(function () {
-          CHATSERVICE.editChat({
-            id: data.id,
-            chat_name: editTitle,
-            isGroup: data.isGroup,
-          })
-            .then((e) => {
-              if (e) {
-                setIsConfirmDelete(false);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                fetchChatPage(1);
-                setChangeName(false);
-
-                let buttonDelete =
-                  e.target.parentNode.parentNode.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button =
-                  e.target.parentNode.parentNode.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton =
-                  e.target.parentNode.parentNode.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-              }
-            })
-            .catch(async (e) => {
-              if (e) {
-                await interceptExpiredToken(e);
-                setIsConfirmDelete(false);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            connectionAlert();
-          }
-        });
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[0].childNodes[0];
-        let inputName = document.getElementById("inputName_" + data.id).value;
-
-        let editTitle;
-
-        if (inputName !== "" && inputName !== data.chat_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = data.chat_name;
-        }
-
-        API.asynchronizeRequest(function () {
-          CHATSERVICE.editChat({
-            id: data.id,
-            chat_name: editTitle,
-            isGroup: data.isGroup,
-          })
-            .then(() => {
-              if (e) {
-                let buttonDelete = e.target.parentNode.childNodes[0];
-                buttonDelete.style.display = "block";
-                let button = e.target.parentNode.childNodes[1];
-                button.style.display = "block";
-                let checkButton = e.target.parentNode.childNodes[2];
-                checkButton.style.display = "none";
-                let cancelButton = e.target.parentNode.childNodes[3];
-                cancelButton.style.display = "none";
-                name.disabled = true;
-                setIsConfirmDelete(false);
-                setPopup(true);
-                setPopupType("info");
-                setPopupText(props.language.editAlertCompleted);
-                fetchChatPage(1);
-                setChangeName(false);
-              }
-            })
-            .catch(async (e) => {
-              if (e) {
-                await interceptExpiredToken(e);
-                setIsConfirmDelete(false);
-                setPopupText(props.language.editAlertFailed);
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-              }
-            });
-        }).then(async (e) => {
-          if (e) {
-            await interceptExpiredToken(e);
-            connectionAlert();
-          }
-        });
-      }
+      editTitle = data.chat_name;
     }
-  };
 
-  const fetchChatPage = async (page) => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.pagedChat(page)
-        .then((res) => {
-          setChat(res.data.current_page);
-          console.log(res.data.current_page);
-          setMaxPages(res.data.total_pages);
+      CHATSERVICE.editChat({
+        id: data.id,
+        chat_name: editTitle,
+        isGroup: data.isGroup,
+      })
+        .then((x) => {
+          if (x) {
+            let num = 0;
+            while (num < 4) {
+              e.target.parentNode.childNodes[num].style.display === "block"
+                ? (e.target.parentNode.childNodes[num].style.display = "none")
+                : (e.target.parentNode.childNodes[num].style.display = "block");
+              num += 1;
+            }
+            e.target.parentNode.parentNode.childNodes[0].childNodes[0].disabled = true;
+            finalizedEdit("info", true, language.editAlertCompleted, false);
+            setChangeName(false);
+          }
         })
-        .catch(async (err) => {
-          await interceptExpiredToken(err);
-          console.error(err);
+        .catch(async (x) => {
+          if (x) {
+            finalizedEdit("error", true, language.editAlertFailed, false);
+            await interceptExpiredToken(e);
+          }
         });
     }).then(async (e) => {
       if (e) {
@@ -345,16 +175,8 @@ export default function ChatConfig(props) {
     });
   };
 
-  const alertCreate = async () => {
-    switchEditState(false);
-    setPopupText(props.language.creationAlert);
-    setPopupType("error");
-    setPopup(true);
-  };
-
   const addChat = async (e) => {
-    switchSaveState(false);
-
+    switchEditState(false);
     e.preventDefault();
     const context = ["chat_name", "isGroup"];
     let json = [];
@@ -364,8 +186,7 @@ export default function ChatConfig(props) {
     if (name !== "" && isGroup !== null) {
       json.push(name, isGroup);
     } else {
-      alertCreate();
-      switchSaveState(false);
+      finalizedCreate("error", true, language.creationFailed, false);
       return;
     }
 
@@ -375,18 +196,15 @@ export default function ChatConfig(props) {
     }
     API.asynchronizeRequest(function () {
       CHATSERVICE.createChat(eventJson)
-        .then(() => {
-          fetchChatPage(1);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.creationCompleted);
-          switchSaveState(false);
+        .then((x) => {
+          if (x) {
+            finalizedCreate("info", true, language.creationCompleted, false);
+          }
         })
         .catch(async (e) => {
           if (e) {
+            finalizedCreate("error", true, language.creationFailed, false);
             await interceptExpiredToken(e);
-            alertCreate();
-            switchSaveState(false);
           }
         });
     }).then(async (e) => {
@@ -399,38 +217,23 @@ export default function ChatConfig(props) {
   };
 
   const confirmDeleteEvent = async (id) => {
+    finalizedDelete("warning", true, true, language.deleteAlert);
     switchEditState(false);
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText(props.language.deleteAlert);
-    setIsConfirmDelete(true);
-    setPopup(true);
     setIdDelete(id);
-  };
-
-  const showDeleteError = () => {
-    switchEditState(false);
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText(props.language.deleteAlertFailed);
-    setIsConfirmDelete(false);
   };
 
   const deleteChat = async (id) => {
     API.asynchronizeRequest(function () {
       CHATSERVICE.deleteChat(id)
-        .then(() => {
-          fetchChatPage(1);
-          setPopup(true);
-          setPopupType("info");
-          setPopupText(props.language.deleteAlertCompleted);
-          setIsConfirmDelete(false);
+        .then((e) => {
+          if (e) {
+            finalizedDelete("info", true, false, language.deleteAlertCompleted);
+          }
         })
         .catch(async (e) => {
           if (e) {
+            finalizedDelete("error", true, false, language.deleteAlertFailed);
             await interceptExpiredToken(e);
-            showDeleteError();
           }
         });
     }).then(async (e) => {
@@ -448,11 +251,27 @@ export default function ChatConfig(props) {
 
   useEffect(() => {
     fetchChatPage(1);
+    setInitialFetch(true);
   }, []);
 
   useEffect(() => {
-    setSearch(props.search);
-  }, [props.search]);
+    setSearchParams({
+      query: "",
+      fields: getChatFields(language),
+      selectedField: getChatFields(language)[0][0],
+      extras: [["", ""]],
+      order: "asc",
+    });
+  }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchChatPage(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>
@@ -460,9 +279,9 @@ export default function ChatConfig(props) {
         <table className="createTable">
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.name}</th>
-              <th>{props.language.group}</th>
+              <th>{language.add}</th>
+              <th>{language.name}</th>
+              <th>{language.group}</th>
             </tr>
           </thead>
           <tbody>
@@ -502,7 +321,7 @@ export default function ChatConfig(props) {
                   type="text"
                   name="chat_name"
                   id="ch_chat_name"
-                  placeholder="Name"
+                  placeholder={language.name}
                 />
               </td>
               <td>
@@ -525,246 +344,129 @@ export default function ChatConfig(props) {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
-                    <th>{props.language.name}</th>
-                    <th>{props.language.group}</th>
-                    <th>{props.language.actions}</th>
+                    <th>{language.name}</th>
+                    <th>{language.group}</th>
+                    <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {chat.map((e) => {
-                    if (search.length > 0) {
+                    if (filteredChats !== null)
                       if (
-                        e.chat_name.toLowerCase().includes(search.toLowerCase())
-                      ) {
-                        return (
-                          <tr key={e.id}>
-                            <td>
-                              <input
-                                id={"inputName_" + e.id}
-                                disabled
-                                type="text"
-                                value={
-                                  changeName === false ? e.chat_name : newName
-                                }
-                                onChange={() => {
-                                  handleChange(e.id);
-                                }}
-                              />
-                            </td>
-                            <td style={{ textAlign: "center" }}>
-                              {e.isGroup ? (
-                                <input type="checkbox" disabled checked />
-                              ) : (
-                                <input type="checkbox" disabled />
-                              )}
-                            </td>
-                            <td
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                            >
-                              <button
-                                style={{ marginRight: "5px" }}
-                                id={e.id}
-                                onClick={() => {
-                                  confirmDeleteEvent(e.id);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-trash3"
-                                  viewBox="0 0 16 16"
-                                  id="ins-delete-icon"
-                                >
-                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ marginRight: "5px" }}
-                                onClick={(event) => {
-                                  showEditOptionChat(event);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-pencil-square"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                  />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ marginRight: "5px", display: "none" }}
-                                onClick={(event) => {
-                                  editChat(event, e);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-check2"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                                </svg>
-                              </button>
-                              <button
-                                style={{ display: "none" }}
-                                onClick={(e) => {
-                                  closeEditChat(e);
-                                }}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-x-lg"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                                  />
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                                  />
-                                </svg>
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      }
-                    } else {
-                      return (
-                        <tr key={e.id}>
-                          <td>
-                            <input
-                              id={"inputName_" + e.id}
-                              disabled
-                              type="text"
-                              value={
-                                changeName === false ? e.chat_name : newName
-                              }
-                              onChange={() => {
-                                handleChange(e.id);
-                              }}
-                            />
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {e.isGroup ? (
-                              <input type="checkbox" disabled checked />
-                            ) : (
-                              <input type="checkbox" disabled />
-                            )}
-                          </td>
-                          <td
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
+                        filteredChats.find((fc) => fc.id === e.id) === undefined
+                      )
+                        return <Fragment key={e.id} />;
+                    return (
+                      <tr key={e.id}>
+                        <td>
+                          <input
+                            id={"inputName_" + e.id}
+                            disabled
+                            type="text"
+                            value={changeName === false ? e.chat_name : newName}
+                            onChange={() => {
+                              handleChange(e.id);
+                            }}
+                          />
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          {e.isGroup ? (
+                            <input type="checkbox" disabled checked />
+                          ) : (
+                            <input type="checkbox" disabled />
+                          )}
+                        </td>
+                        <td
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <button
+                            style={{ marginRight: "5px" }}
+                            id={e.id}
+                            onClick={() => {
+                              confirmDeleteEvent(e.id);
                             }}
                           >
-                            <button
-                              style={{ marginRight: "5px" }}
-                              id={e.id}
-                              onClick={() => {
-                                confirmDeleteEvent(e.id);
-                              }}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-trash3"
+                              viewBox="0 0 16 16"
+                              id="ins-delete-icon"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-trash3"
-                                viewBox="0 0 16 16"
-                                id="ins-delete-icon"
-                              >
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px" }}
-                              onClick={(event) => {
-                                showEditOptionChat(event);
-                              }}
+                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px" }}
+                            onClick={(event) => {
+                              showEditOptionChat(event);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-pencil-square"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-pencil-square"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px", display: "none" }}
-                              onClick={(event) => {
-                                editChat(event, e);
-                              }}
+                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ marginRight: "5px", display: "none" }}
+                            onClick={(event) => {
+                              editChat(event, e);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-check2"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-check2"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ display: "none" }}
-                              onClick={(e) => {
-                                closeEditChat(e);
-                              }}
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                            </svg>
+                          </button>
+                          <button
+                            style={{ display: "none" }}
+                            onClick={(e) => {
+                              closeEditChat(e);
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              className="bi bi-x-lg"
+                              viewBox="0 0 16 16"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-x-lg"
-                                viewBox="0 0 16 16"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                                />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                                />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    }
+                              <path
+                                fillRule="evenodd"
+                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                              />
+                              <path
+                                fillRule="evenodd"
+                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                              />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
                   })}
                 </tbody>
               </table>

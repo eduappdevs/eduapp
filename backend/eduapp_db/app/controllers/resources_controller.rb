@@ -17,12 +17,82 @@ class ResourcesController < ApplicationController
       @resources = Resource.all
     end
 
+    if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+      @resources = @resources.order(parse_filter_order(params[:order]))
+    else
+      @resources = @resources.order(name: :asc)
+    end
+
     if params[:page]
       @resources = query_paginate(@resources, params[:page])
       @resources[:current_page] = serialize_each(@resources[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [:user, :subject])
     end
 
     render json: @resources
+  end
+
+  def filter
+    resources_query = {}
+    subject_query = {}
+    params.each do |param|
+      next if param[0] == "controller" || param[0] == "action" || param[0] == "extras" || param[0] == "resource"
+      next unless param[1] != "null" && param[1].length > 0
+
+      query = { param[0] => param[1] }
+      case param[0]
+      when "id", "name", "author"
+        resources_query.merge!(query)
+      when "subject_name"
+        subject_query.merge!(query)
+      end
+    end
+
+    final_query = params[:extras] ? filter_extrafields(params[:extras], Resource) : nil
+
+    if !resources_query.empty?
+      query = !final_query.nil? ? final_query : nil
+
+      if resources_query["id"]
+        ids = []
+        Resource.all.each do |r|
+          ids << r.id if r.id.to_s =~ /^#{resources_query["id"]}.*$/
+        end
+        query = Resource.where(id: ids)
+      end
+
+      if resources_query["name"]
+        if !query.nil?
+          query = query.where("name LIKE ?", "%#{resources_query["name"]}%")
+        else
+          query = Resource.where("name LIKE ?", "%#{resources_query["name"]}%")
+        end
+      end
+
+      if resources_query["author"]
+        if !query.nil?
+          query = query.where(user_id: User.where("email LIKE ?", "%#{resources_query["author"]}%"))
+        else
+          query = Resource.where(user_id: User.where("email LIKE ?", "%#{resources_query["author"]}%"))
+        end
+      end
+
+      final_query = query
+    end
+
+    if !final_query.nil? && !subject_query.empty?
+      final_query = final_query.where(subject_id: Subject.where("name LIKE ?", "%#{subject_query["subject_name"]}%"))
+    elsif !subject_query.empty?
+      final_query = Resource.where(subject_id: Subject.where("name LIKE ?", "%#{subject_query["subject_name"]}%"))
+    end
+
+    final_query = [] if final_query.nil?
+
+    if params[:page]
+      final_query = query_paginate(final_query, params[:page])
+      final_query = serialize_each(final_query[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [:user, :subject])
+    end
+
+    render json: { filtration: final_query }
   end
 
   # GET /resources/1

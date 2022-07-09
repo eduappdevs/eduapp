@@ -1,6 +1,6 @@
 {
   "name": "eduapp-administration-panel",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "dependencies": {
     "@jsreport/browser-client": "^3.1.0",
@@ -9,6 +9,9 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.24.0",
     "buffer": "^6.0.3",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "https": "^1.0.0",
     "hybrid-crypto-js": "^0.2.4",
     "react": "^17.0.2",
     "react-csv-reader": "^3.4.0",
@@ -23,7 +26,8 @@
     "dev": "PORT=3002 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "nodemon server/server.js"
   },
   "eslintConfig": {
     "extends": [

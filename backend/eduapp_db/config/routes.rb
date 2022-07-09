@@ -18,6 +18,18 @@ Rails.application.routes.draw do
   resources :eduapp_user_sessions, :path => "#{@api_path}/eduapp_user_sessions"
   resources :user_infos, :path => "#{@api_path}/user_infos"
 
+  get "#{@api_path}/filter/user_infos", to: "user_infos#filter"
+  get "#{@api_path}/filter/courses", to: "courses#filter"
+  get "#{@api_path}/filter/subjects", to: "subjects#filter"
+  get "#{@api_path}/filter/resources", to: "resources#filter"
+  get "#{@api_path}/filter/sessions", to: "eduapp_user_sessions#filter"
+  get "#{@api_path}/filter/events", to: "calendar_annotations#filter"
+  get "#{@api_path}/filter/tuitions", to: "tuitions#filter"
+  get "#{@api_path}/filter/teachers", to: "user_infos#teacher_filter"
+  get "#{@api_path}/filter/roles", to: "user_roles#filter"
+  get "#{@api_path}/filter/chats", to: "chat_bases#filter"
+  get "#{@api_path}/filter/chat_participants", to: "chat_participants#filter"
+
   delete "#{@api_path}/chat_participants/remove/:user_id/:chat_base_id", to: "chat_participants#remove_participant"
 
   post "#{@api_path}/eduapp_user_sessions/batch_load", to: "eduapp_user_sessions#session_batch_load"
@@ -33,6 +45,9 @@ Rails.application.routes.draw do
   post "#{@api_path}/user_infos/global_events/:user_id", to: "user_infos#add_events"
   delete "#{@api_path}/user_infos/remove_global_events/:user_id/:calendar_event", to: "user_infos#remove_event"
   get "#{@api_path}/calendar_annotations/all_id", to: "calendar_annotations#calendar_info"
+  delete "#{@api_path}/user_infos/remove_global_events/:user_id", to: "user_infos#remove_event"
+  get "#{@api_path}/calendar_annotations/:user_id/event_pop", to: "calendar_annotations#show_calendar_event"
+  get "#{@api_path}/calendar_annotations/:user_id/all", to: "calendar_annotations#calendar_info"
 
   devise_for :users,
              controllers: {
@@ -74,6 +89,8 @@ Rails.application.routes.draw do
 
   delete "#{@api_path}/users/remove/:id", to: "user_infos#destroyuser"
   get "#{@api_path}/google-login", to: "glogin#login"
-  get "#{@api_path}/ping", to: "static#home"
-  get "#{@api_path}/ping/admin", to: "static#created"
+
+  get "#{@api_path}/ping", to: "static#ping"
+  get "#{@api_path}/ping/admin", to: "static#admin"
+  get "#{@api_path}/ping/created", to: "static#created"
 end

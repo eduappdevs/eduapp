@@ -1,22 +1,35 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import jsreport from "@jsreport/browser-client";
 import logoeduapp from "../assets/eduappadmin.png";
-import API, { endpoints } from "../API";
+import asynchronizeRequest, { JSREPORT } from "../API";
 import { fetchMessage } from "../services/chat.service";
 import { fetchCourses } from "../services/course.service";
 import { fetchResourcesJson } from "../services/resource.service";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import { LanguageCtx } from "../hooks/LanguageContext";
+import * as INSTITUTION_SERVICE from "../services/institution.service";
 import "./componentStyles/languageSwitcher.css";
 import "../styles/navbar.css";
 
-export default function Navbar(props) {
+export default function Navbar({ locationState }) {
+  const [language] = useContext(LanguageCtx);
+  const [location, setLocation] = locationState;
+
   const [activeSection, setActiveSection] = useState("");
+  const [institutionCreated, setInstitutionCreated] = useState(false);
+
   const DISPLAY = false;
 
+  const toolbarLocation = (loc) => {
+    setLocation(loc);
+    localStorage.setItem("eduapp_last_viewed", loc);
+  };
+
+  // eslint-disable-next-line no-unused-vars
   const generateResourcesReport = async () => {
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       fetchResourcesJson
         .then((e) => {
           e.data.map((resource) => {
@@ -39,7 +52,7 @@ export default function Navbar(props) {
               },
             };
 
-            jsreport.serverUrl = endpoints.JSREPORT;
+            jsreport.serverUrl = JSREPORT;
             const report = jsreport.render({
               template: {
                 name: "ResourcesReport",
@@ -47,7 +60,7 @@ export default function Navbar(props) {
               data: JSON.stringify(payload),
             });
 
-            report.openInWindow({ title: "Resources Report" });
+            return report.openInWindow({ title: "Resources Report" });
           });
         })
         .catch(async (err) => {
@@ -57,8 +70,9 @@ export default function Navbar(props) {
     });
   };
 
+  // eslint-disable-next-line no-unused-vars
   const generateMessagesReport = async () => {
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       fetchMessage()
         .then((e) => {
           e.data.map((sms) => {
@@ -80,7 +94,7 @@ export default function Navbar(props) {
               },
             };
 
-            jsreport.serverUrl = endpoints.JSREPORT;
+            jsreport.serverUrl = JSREPORT;
             const report = jsreport.render({
               template: {
                 name: "ChatMessagesReport",
@@ -88,7 +102,7 @@ export default function Navbar(props) {
               data: JSON.stringify(payload),
             });
 
-            report.openInWindow({ title: "Chat Messages Report" });
+            return report.openInWindow({ title: "Chat Messages Report" });
           });
         })
         .catch(async (err) => {
@@ -98,15 +112,16 @@ export default function Navbar(props) {
     });
   };
 
+  // eslint-disable-next-line no-unused-vars
   const generateCoursesReport = async () => {
-    API.asynchronizeRequest(function () {
+    asynchronizeRequest(function () {
       fetchCourses()
         .then((e) => {
           e.data.map((course) => {
             const payload = {
               data: course,
             };
-            jsreport.serverUrl = endpoints.JSREPORT;
+            jsreport.serverUrl = JSREPORT;
             const report = jsreport.render({
               template: {
                 name: "RegisteredCoursesReport",
@@ -114,7 +129,7 @@ export default function Navbar(props) {
               data: JSON.stringify(payload),
             });
 
-            report.openInWindow({ title: "Registered Courses Report" });
+            return report.openInWindow({ title: "Registered Courses Report" });
           });
         })
         .catch(async (err) => {
@@ -130,16 +145,24 @@ export default function Navbar(props) {
     setTimeout(displayClock, 1000);
   };
 
-  const switchLanguage = (lang) => {
-    props.switchLanguage(lang);
-  };
-
   useEffect(() => {
-    setActiveSection(props.location);
-  }, [props.location]);
+    setActiveSection(location);
+  }, [location]);
 
   useEffect(() => {
     displayClock();
+
+    INSTITUTION_SERVICE.institutionCreated().then((created) =>
+      setInstitutionCreated(created)
+    );
+
+    window.addEventListener("institution_created", () =>
+      setInstitutionCreated(true)
+    );
+
+    return () => {
+      window.removeEventListener("institution_created", () => {});
+    };
   }, []);
 
   return (
@@ -148,132 +171,183 @@ export default function Navbar(props) {
         <div className="logo">
           <img src={logoeduapp} alt="eduapplogo" />
         </div>
-        <LanguageSwitcher switchLanguage={switchLanguage} />
+        <LanguageSwitcher />
         <div id="liveClock" />
       </div>
-      <div className="schedule-button-container button-container">
-        <span>
-          <p>{props.language.schedule}</p>
-        </span>
-        <ul className={"suboptions"}>
-          <li
-            onClick={() => {
-              props.toolbarLocation("sessions");
-            }}
-            className={
-              activeSection === "sessions"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{props.language.sessions}</p>
-          </li>
-          <li
-            onClick={() => {
-              props.toolbarLocation("events");
-            }}
-            className={
-              activeSection === "events"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{props.language.events}</p>
-          </li>
-        </ul>
-      </div>
-      <div className="users-button-container button-container">
-        <span>
-          <p>Users</p>
-        </span>
-        <ul className={"suboptions"}>
-          <li
-            onClick={() => {
-              props.toolbarLocation("users");
-            }}
-            className={
-              activeSection === "users"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{props.language.users}</p>
-          </li>
-          <li
-            onClick={() => {
-              props.toolbarLocation("enroll");
-            }}
-            className={
-              activeSection === "enroll"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{props.language.enrollment}</p>
-          </li>
-          <li
-            onClick={() => {
-              props.toolbarLocation("teachers");
-            }}
-            className={
-              activeSection === "teachers"
-                ? "active button-suboption"
-                : "button-suboptions"
-            }
-          >
-            <p>{props.language.teachers}</p>
-          </li>
-        </ul>
-      </div>
+      {institutionCreated && (
+        <>
+          <div className="schedule-button-container button-container">
+            <span>
+              <p>{language.schedule}</p>
+            </span>
+            <ul className={"suboptions"}>
+              <li
+                onClick={() => {
+                  toolbarLocation("sessions");
+                }}
+                className={
+                  activeSection === "sessions"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.sessions}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("events");
+                }}
+                className={
+                  activeSection === "events"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.events}</p>
+              </li>
+            </ul>
+          </div>
+          <div className="users-button-container button-container">
+            <span>
+              <p>Users</p>
+            </span>
+            <ul className={"suboptions"}>
+              <li
+                onClick={() => {
+                  toolbarLocation("users");
+                }}
+                className={
+                  activeSection === "users"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.users}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("enroll");
+                }}
+                className={
+                  activeSection === "enroll"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.enrollment}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("teachers");
+                }}
+                className={
+                  activeSection === "teachers"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.teachers}</p>
+              </li>
+            </ul>
+          </div>
+          <div className="management-button-container button-container">
+            <span>
+              <p>{language.management}</p>
+            </span>
+            <ul className={"suboptions"}>
+              <li
+                className={
+                  activeSection === "courses"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+              >
+                <p
+                  onClick={() => {
+                    toolbarLocation("courses");
+                  }}
+                >
+                  {language.courses}
+                </p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("subjects");
+                }}
+                className={
+                  activeSection === "subjects"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.subjects}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("resources");
+                }}
+                className={
+                  activeSection === "resources"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.resources}</p>
+              </li>
+            </ul>
+          </div>
+          <div className="chat-button-container button-container">
+            <span>
+              <p>{language.chatSettings}</p>
+            </span>
+            <ul className="suboptions">
+              <li
+                className={
+                  activeSection === "chatConfig"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+                onClick={() => {
+                  toolbarLocation("chatConfig");
+                }}
+              >
+                <p>{language.chat}</p>
+              </li>
+              <li
+                className={
+                  activeSection === "chatParticipant"
+                    ? "active button-suboptions"
+                    : "button-suboptions"
+                }
+                onClick={() => {
+                  toolbarLocation("chatParticipant");
+                }}
+              >
+                <p>{language.participants}</p>
+              </li>
+              {DISPLAY ? (
+                <li
+                  className={
+                    activeSection === "chatMessage"
+                      ? "active button-suboptions"
+                      : "button-suboptions"
+                  }
+                  onClick={() => {
+                    toolbarLocation("chatMessage");
+                  }}
+                >
+                  <p>{language.message}</p>
+                </li>
+              ) : (
+                <></>
+              )}
+            </ul>
+          </div>
+        </>
+      )}
       <div className="settings-button-container button-container">
         <span>
-          <p>{props.language.management}</p>
-        </span>
-        <ul className={"suboptions"}>
-          <li
-            className={
-              activeSection === "courses"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-          >
-            <p
-              onClick={() => {
-                props.toolbarLocation("courses");
-              }}
-            >
-              {props.language.courses}
-            </p>
-          </li>
-          <li
-            onClick={() => {
-              props.toolbarLocation("subjects");
-            }}
-            className={
-              activeSection === "subjects"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-          >
-            <p>{props.language.subjects}</p>
-          </li>
-          <li
-            onClick={() => {
-              props.toolbarLocation("resources");
-            }}
-            className={
-              activeSection === "resources"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-          >
-            <p>{props.language.resources}</p>
-          </li>
-        </ul>
-      </div>
-      <div className="settings-button-container button-container">
-        <span>
-          <p>{props.language.settings}</p>
+          <p>{language.settings}</p>
         </span>
         <ul className={"suboptions"}>
           <li
@@ -285,10 +359,10 @@ export default function Navbar(props) {
           >
             <p
               onClick={() => {
-                props.toolbarLocation("institutions");
+                toolbarLocation("institutions");
               }}
             >
-              {props.language.institution}
+              {language.institution}
             </p>
           </li>
           <li
@@ -300,64 +374,17 @@ export default function Navbar(props) {
           >
             <p
               onClick={() => {
-                props.toolbarLocation("userRoles");
+                toolbarLocation("userRoles");
               }}
             >
-              {props.language.userRoles}
+              {language.userRoles}
             </p>
           </li>
         </ul>
       </div>
-      <div className="chat-button-container button-container">
-        <span>
-          <p>{props.language.chatSettings}</p>
-        </span>
-        <ul className="suboptions">
-          <li
-            className={
-              activeSection === "chatConfig"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-            onClick={() => {
-              props.toolbarLocation("chatConfig");
-            }}
-          >
-            <p>{props.language.chat}</p>
-          </li>
-          <li
-            className={
-              activeSection === "chatParticipant"
-                ? "active button-suboptions"
-                : "button-suboptions"
-            }
-            onClick={() => {
-              props.toolbarLocation("chatParticipant");
-            }}
-          >
-            <p>{props.language.participants}</p>
-          </li>
-          {DISPLAY ? (
-            <li
-              className={
-                activeSection === "chatMessage"
-                  ? "active button-suboptions"
-                  : "button-suboptions"
-              }
-              onClick={() => {
-                props.toolbarLocation("chatMessage");
-              }}
-            >
-              <p>{props.language.message}</p>
-            </li>
-          ) : (
-            <></>
-          )}{" "}
-        </ul>
-      </div>
       {/* <div className="reports-button-container button-container">
         <span>
-          <p>{props.language.reports}</p>
+          <p>{language.reports}</p>
         </span>
         <ul className={"suboptions"}>
           <li className={"reports_options active"}>
@@ -366,7 +393,7 @@ export default function Navbar(props) {
                 await generateResourcesReport();
               }}
             >
-              {props.language.resources}
+              {language.resources}
             </p>
           </li>
           <li className={"reports_options active"}>
@@ -375,7 +402,7 @@ export default function Navbar(props) {
                 await generateMessagesReport();
               }}
             >
-              {props.language.chatMessages}
+              {language.chatMessages}
             </p>
           </li>
           <li className={"reports_options active"}>
@@ -384,7 +411,7 @@ export default function Navbar(props) {
                 await generateCoursesReport();
               }}
             >
-              {props.language.courses}
+              {language.courses}
             </p>
           </li>
         </ul>

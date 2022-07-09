@@ -1,4 +1,3 @@
-import React from "react";
 import logogeduapp from "../assets/eduappadmin.png";
 import * as USER_SERVICE from "../services/user.service";
 import "../styles/Initialization.css";

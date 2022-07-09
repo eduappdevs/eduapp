@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL, TOKEN } from "../API";
+import { API_URL, FILTER_URL, TOKEN } from "../API";
 export const TUITIONS = `${API_URL}/tuitions`;
 const requestHeader = { eduauth: TOKEN };
 
@@ -13,6 +13,22 @@ export const pagedTuitions = async (page) => {
   });
 };
 
+export const filterTuitions = async ({
+  user_email = null,
+  course_name = null,
+  page = 1,
+  extras = null,
+  order = "asc",
+}) => {
+  return await axios.get(
+    `${FILTER_URL}/tuitions?course_name=${course_name}&user_email=${user_email}&page=${page}&order=${order}`,
+    {
+      headers: requestHeader,
+      data: extras,
+    }
+  );
+};
+
 export const createTuition = async (body) => {
   return await axios.post(TUITIONS, body, { headers: requestHeader });
 };
@@ -22,7 +38,6 @@ export const deleteTuition = async (id) => {
 };
 
 export const editTuition = async (body) => {
-  console.log(body)
   return await axios.put(`${TUITIONS}/${body.id}`, body, {
     headers: requestHeader,
   });

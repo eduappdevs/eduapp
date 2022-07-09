@@ -1,15 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, Fragment } from "react";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import PageSelect from "./pagination/PageSelect";
 import * as ROLE_SERVICE from "../services/role.service";
 import asynchronizeRequest from "../API";
 import { interceptExpiredToken } from "../utils/OfflineManager";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { LanguageCtx } from "../hooks/LanguageContext";
+import useFilter from "../hooks/useFilter";
+import { getRoleFields } from "../constants/search_fields";
 import "../styles/userRoles.css";
 
-export default function UserRolesConfig({ language }) {
+export default function UserRolesConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [showPerms, setShowPerms] = useState(false);
   const [roles, setRoles] = useState(null);
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
@@ -17,6 +24,15 @@ export default function UserRolesConfig({ language }) {
   const [newPermsDesc, setNewPermsDesc] = useState("");
 
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
+
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
+  const filteredRoles = useFilter(
+    roles,
+    null,
+    ROLE_SERVICE.filterRoles,
+    getRoleFields(language)
+  );
 
   const [changesSaved, setChangesSaved] = useState(true);
   const [currentPermissions, setCurrentPermissions] = useState(null);
@@ -27,10 +43,15 @@ export default function UserRolesConfig({ language }) {
   const [popupText, setPopupText] = useState("");
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
 
-  const fetchRoles = async (page) => {
-    const roles = await ROLE_SERVICE.pagedUserRoles(page);
-    setMaxPages(roles.total_pages);
-    setRoles(roles.current_page);
+  const fetchRoles = async (page, order = null) => {
+    try {
+      const roles = await ROLE_SERVICE.pagedUserRoles(page, order);
+      setMaxPages(roles.total_pages);
+      setActualPage(roles.current_page);
+      setRoles(roles.current_page);
+    } catch (err) {
+      await interceptExpiredToken(err);
+    }
   };
 
   const FIELDS = [
@@ -317,7 +338,7 @@ export default function UserRolesConfig({ language }) {
           perms_tuitions: getPermsChecked("add_perm_tuitions"),
           perms_users: getPermsChecked("add_perm_users"),
         });
-        fetchRoles(1);
+        fetchRoles(actualPage);
         setShowPerms(false);
         showCreationDialog();
       } catch (err) {
@@ -349,7 +370,7 @@ export default function UserRolesConfig({ language }) {
     asynchronizeRequest(async () => {
       try {
         await ROLE_SERVICE.deleteRole(deleteId);
-        fetchRoles(1);
+        fetchRoles(actualPage);
         setDeleteId(null);
         showDeleteDialog();
       } catch (err) {
@@ -375,6 +396,7 @@ export default function UserRolesConfig({ language }) {
     )[0].style.overflowY = "scroll";
 
     fetchRoles(1);
+    setInitialFetch(true);
 
     return () => {
       document.getElementsByClassName(
@@ -391,6 +413,25 @@ export default function UserRolesConfig({ language }) {
       return () => clearTimeout(searchTimeout);
     }
   }, [currentPermissions]);
+
+  useEffect(() => {
+    setSearchParams({
+      query: "",
+      fields: getRoleFields(language),
+      selectedField: getRoleFields(language)[0][0],
+      extras: [["", ""]],
+      order: "asc",
+    });
+  }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchRoles(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>
@@ -494,6 +535,12 @@ export default function UserRolesConfig({ language }) {
               </thead>
               <tbody>
                 {roles.map((role) => {
+                  if (filteredRoles !== null)
+                    if (
+                      filteredRoles.find((fr) => role.id === fr.id) ===
+                      undefined
+                    )
+                      return <Fragment key={role.id} />;
                   return (
                     <tr key={role.id}>
                       <td>
@@ -506,6 +553,7 @@ export default function UserRolesConfig({ language }) {
                       </td>
                       <td>
                         <button
+                          style={{ marginRight: "5px" }}
                           onClick={() => displayPermissions(true, role.id)}
                         >
                           <svg
@@ -522,10 +570,7 @@ export default function UserRolesConfig({ language }) {
                             />
                           </svg>
                         </button>
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={() => showConfirmDelete(role.id)}
-                        >
+                        <button onClick={() => showConfirmDelete(role.id)}>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
