@@ -26,6 +26,7 @@ import { useEffect } from "react";
 
 export default function ProfileSettings() {
   const language = useLanguage();
+  let user = getOfflineUser().user;
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let isAdmin = useRole(userInfo, "eduapp-admin");
   let isTeacher = useRole(userInfo, "eduapp-teacher");

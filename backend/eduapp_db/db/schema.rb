@@ -207,8 +207,10 @@ ActiveRecord::Schema.define(version: 16) do
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "surname"
     t.string "email", default: "", null: false
-    t.string "username", default: "", null: false
+    t.string "username"
     t.string "encrypted_password", default: "", null: false
     t.string "encrypted_googleid"
     t.string "reset_password_token"
@@ -227,6 +229,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["encrypted_googleid"], name: "index_users_on_encrypted_googleid", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

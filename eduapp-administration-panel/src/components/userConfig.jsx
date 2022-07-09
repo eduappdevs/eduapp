@@ -866,6 +866,7 @@ export default function UserConfig(props) {
                 <input type={"checkbox"} onChange={() => selectAll()} />
               </th>
               <th>{props.language.userId}</th>
+              <th>Username</th>
               <th>{props.language.name}</th>
               <th>{props.language.email}</th>
               <th>{props.language.userRole}</th>
@@ -878,6 +879,7 @@ export default function UserConfig(props) {
             {users
               ? // eslint-disable-next-line array-callback-return
                 users.map((u) => {
+                  console.log(u);
                   if (search.length > 0) {
                     if (
                       (u.user_name.includes(search) ||
@@ -890,9 +892,9 @@ export default function UserConfig(props) {
                             <input
                               id={`check_${u.user.id}`}
                               type={"checkbox"}
-                              disabled={u.user_name === system_user_name}
+                              disabled={u.user.username === system_user_name}
                               name={
-                                u.user_name === system_user_name
+                                u.user.username === system_user_name
                                   ? null
                                   : "user-check"
                               }
@@ -1039,9 +1041,9 @@ export default function UserConfig(props) {
                           <input
                             id={`check_${u.user.id}`}
                             type={"checkbox"}
-                            disabled={u.user_name === system_user_name}
+                            disabled={u.user.username === system_user_name}
                             name={
-                              u.user_name === system_user_name
+                              u.user.username === system_user_name
                                 ? null
                                 : "user-check"
                             }
@@ -1182,7 +1184,7 @@ export default function UserConfig(props) {
 
                   if (search.length > 0) {
                     if (
-                      (u.user_name.includes(search) ||
+                      (u.user.username.includes(search) ||
                         u.user.email.includes(search)) &
                       filterUsersWithRole(userRole, u)
                     ) {

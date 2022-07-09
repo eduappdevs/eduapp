@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const Mailer = (props) => {
   async function sendemail() {
-    let email = document.getElementById("email").value;
+    let email;
     let validmail = /^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/;
     if (email === "" || email.match(!validmail)) {
       console.log("Please Enter Valid Email");
@@ -24,7 +24,7 @@ export const Mailer = (props) => {
 
   useEffect(() => {
     props.sendEmail && sendemail();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.sendEmail]);
 
   return (
@@ -37,8 +37,6 @@ export const Mailer = (props) => {
             id="email"
             name="email"
             placeholder={props.language.email}
-            defaultValue={props.email && props.email}
-            required
           />
         </div>
       </div>

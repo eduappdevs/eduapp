@@ -3,9 +3,11 @@
 class DeviseCreateUsers < ActiveRecord::Migration[6.1]
   def change
     create_table :users, id: :uuid do |t|
+      t.string :name
+      t.string :surname
       ## Database authenticatable
       t.string :email, null: false, default: "", index: { unique: true }
-      t.string :username, null:false, default:""
+      t.string :username, null:true,index:{unique:true}
       t.string :encrypted_password, null: false, default: ""
       t.string :encrypted_googleid, null:true, index: { unique: true }
 

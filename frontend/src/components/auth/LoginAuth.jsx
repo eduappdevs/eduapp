@@ -8,6 +8,7 @@ import useLanguage from "../../hooks/useLanguage";
 
 export default function LoginAuth() {
   const [email, setEmail] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [forgotModalShow, setForgotModalShow] = useState(false);
   const [sendEmail, setSendEmail] = useState(false);
@@ -21,12 +22,15 @@ export default function LoginAuth() {
     try {
       const userData = new FormData();
 
-      userData.append("user[email]", email);
+      userData.append(
+        `user[${login.includes("@") ? "email" : "username"}]`,
+        login
+      );
       userData.append("user[password]", password);
 
       await AUTH_SERVICE.login(userData);
     } catch (error) {
-      console.log(error);
+      console.log("here", error);
     }
   };
 
@@ -40,15 +44,14 @@ export default function LoginAuth() {
   return (
     <form className="login_form" onSubmit={handleSubmit}>
       <h1>{language.login_title}</h1>
-      <label htmlFor="email">{language.email}</label>
+      <label htmlFor="login">{language.email}</label>
       <input
-        data-testid="email"
-        type="email"
-        name="email"
+        data-testid="login"
+        type="text"
+        name="login"
         onChange={(e) => {
-          setEmail(e.target.value);
+          setLogin(e.target.value);
         }}
-        required
       />
       <label htmlFor="password">{language.password}</label>
       <input
@@ -75,7 +78,6 @@ export default function LoginAuth() {
           <Mailer
             language={language}
             showEmailSentModal={showEmailSentModal}
-            email={email}
             sendEmail={sendEmail}
           />
         }
