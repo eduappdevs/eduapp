@@ -67,6 +67,12 @@ export const delist_teacher = async (uId, subject_id) => {
   );
 };
 
+export const del_event = async (uid) => {
+  return await axios.delete(`${USERS_INFO}/remove_global_events/${uid}`, {
+    headers: requestHeader
+  });
+};
+
 export const findByName = async (name) => {
   return await axios.get(`${USERS_INFO}?name=${name}`, {
     headers: requestHeader,

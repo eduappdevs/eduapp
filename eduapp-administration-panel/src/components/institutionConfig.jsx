@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useContext, useEffect, useState } from "react";
 import { asynchronizeRequest } from "../API";
 import * as INSTITUTIONSERVICE from "../services/institution.service";
 import * as COURSESERVICE from "../services/course.service";
@@ -6,11 +7,15 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import Input from "./Input";
-import "../styles/institutionConfig.css";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
+import ExtraFields from "./ExtraFields";
+import { LanguageCtx } from "../hooks/LanguageContext";
+import "../styles/institutionConfig.css";
 
-export default function InstitutionConfig(props) {
+export default function InstitutionConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [institutions, setInstitutions] = useState(null);
   const [editValue, setEditValue] = useState(false);
   const [nameValue, setNameValue] = useState();
@@ -28,8 +33,8 @@ export default function InstitutionConfig(props) {
         "auto";
     } else {
       document.getElementById("scroll").scrollIntoView(true);
-      document.getElementById("standard-modal").style.width = "100vw";
-      document.getElementById("standard-modal").style.height = "100vw";
+      document.getElementById("standard-modal").style.width = "100%";
+      document.getElementById("standard-modal").style.height = "100%";
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "hidden";
     }
@@ -38,15 +43,17 @@ export default function InstitutionConfig(props) {
   const connectionAlert = () => {
     switchEditState(false);
     setPopup(true);
-    setPopupText(props.language.connectionAlert);
+    setPopupText(language.connectionAlert);
     setPopupIcon("error");
   };
 
   const fetchInstitutions = () => {
     asynchronizeRequest(function () {
-      INSTITUTIONSERVICE.fetchInstitutions().then((i) => {
-        setInstitutions(i.data);
-      });
+      INSTITUTIONSERVICE.fetchInstitutions()
+        .then((i) => {
+          setInstitutions(i.data);
+        })
+        .catch(async (err) => await interceptExpiredToken(err));
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
@@ -65,20 +72,17 @@ export default function InstitutionConfig(props) {
 
     asynchronizeRequest(function () {
       ENROLLSERVICE.createTuition(payload)
-        .then(() => {
-          console.log("User tuition has been completed successfully!");
-        })
-        .catch(async (err) => {
-          await interceptExpiredToken(err);
-          console.error(err);
-        });
+      .catch(async (err) => {
+        await interceptExpiredToken(err);
+        console.error(err);
+      });
     });
   };
 
   const confirmModalCreate = async () => {
     setPopup(true);
     setPopupType("info");
-    setPopupText(props.language.creationCompleted);
+    setPopupText(language.creationCompleted);
   };
 
   const createInstitution = () => {
@@ -109,6 +113,7 @@ export default function InstitutionConfig(props) {
         setTimeout(() => {
           confirmModalCreate();
           fetchInstitutions();
+          window.dispatchEvent(new Event("institution_created"));
         }, 500);
       })
         .then(async (e) => {
@@ -200,12 +205,12 @@ export default function InstitutionConfig(props) {
 
             setPopup(true);
             setPopupType("info");
-            setPopupText(props.language.creationCompleted);
+            setPopupText(language.creationCompleted);
           })
           .catch(async (e) => {
             if (e) {
               await interceptExpiredToken(e);
-              setPopupText(props.language.creationAlert);
+              setPopupText(language.creationAlert);
               setPopupIcon("error");
               switchSaveState(false);
               setPopup(true);
@@ -254,12 +259,12 @@ export default function InstitutionConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
             })
             .catch(async (e) => {
               if (e) {
                 await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 setPopup(true);
               }
@@ -303,12 +308,12 @@ export default function InstitutionConfig(props) {
 
               setPopup(true);
               setPopupType("info");
-              setPopupText(props.language.editAlertCompleted);
+              setPopupText(language.editAlertCompleted);
             })
             .catch(async (e) => {
               if (e) {
                 await interceptExpiredToken(e);
-                setPopupText(props.language.editAlertFailed);
+                setPopupText(language.editAlertFailed);
                 setPopupIcon("error");
                 setPopup(true);
               }
@@ -385,9 +390,7 @@ export default function InstitutionConfig(props) {
     }
   };
 
-  useEffect(() => {
-    fetchInstitutions();
-  }, []);
+  useEffect(() => fetchInstitutions(), []);
 
   return (
     <>
@@ -395,9 +398,9 @@ export default function InstitutionConfig(props) {
         <table>
           <thead>
             <tr>
-              <th>{props.language.code}</th>
-              <th>{props.language.name}</th>
-              <th>{props.language.actions}</th>
+              <th>{language.code}</th>
+              <th>{language.name}</th>
+              <th>{language.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -437,7 +440,7 @@ export default function InstitutionConfig(props) {
                   <Input
                     name="i_name"
                     id="i_name"
-                    placeholder={props.language.name}
+                    placeholder={language.name}
                   />
                 </td>
               </tr>
@@ -460,7 +463,6 @@ export default function InstitutionConfig(props) {
                         disabled
                       />
                     </td>
-
                     <td
                       style={{
                         display: "flex",
@@ -468,11 +470,8 @@ export default function InstitutionConfig(props) {
                         alignItems: "center",
                       }}
                     >
-                      <button
-                        onClick={(e) => {
-                          showEditOptionInstitution(e);
-                        }}
-                      >
+                      <ExtraFields table="institutions" id={x.id} />
+                      <button onClick={(e) => showEditOptionInstitution(e)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"
@@ -488,15 +487,13 @@ export default function InstitutionConfig(props) {
                           />
                         </svg>
                         <div id="submit-loader" className="loader">
-                          {props.language.loading} ...
+                          {language.loading} ...
                         </div>
                       </button>
 
                       <button
                         style={{ marginRight: "5px", display: "none" }}
-                        onClick={(e) => {
-                          editInstitution(e, x);
-                        }}
+                        onClick={(e) => editInstitution(e, x)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -509,15 +506,13 @@ export default function InstitutionConfig(props) {
                           <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
                         </svg>
                         <div id="submit-loader" className="loader">
-                          {props.language.loading} ...
+                          {language.loading} ...
                         </div>
                       </button>
 
                       <button
                         style={{ marginRight: "5px", display: "none" }}
-                        onClick={(e) => {
-                          closeEditInstitutions(e);
-                        }}
+                        onClick={(e) => closeEditInstitutions(e)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

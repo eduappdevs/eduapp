@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
 import Toolbar from "../components/toolbar";
 import Navbar from "../components/Navbar";
 import Schedulesessionslist from "../components/schedulesessionslist";
@@ -9,127 +10,66 @@ import SubjectsConfig from "../components/subjectsConfig";
 import UserConfig from "../components/userConfig";
 import EnrollConfig from "../components/enrollConfig";
 import ChatConfig from "../components/ChatConfig";
-import ChatMessageConfig from "../components/ChatMessageConfig";
 import ChatParticipantConfig from "../components/ChatParticipantConfig";
-import * as SUBJECTSERVICE from "../services/subject.service";
 import TeacherConfig from "../components/teacherConfig";
-import * as API from "../API";
-import LANGUAGES from "../constants/languages";
-import * as COURSESERVICE from "../services/course.service";
 import ResourcesConfig from "../components/ResourcesConfig";
+import UserRolesConfig from "../components/UserRolesConfig";
 import "../styles/users.css";
 import "../styles/controlPanel.css";
-import UserRolesConfig from "../components/UserRolesConfig";
 
 export default function ControlPanel() {
-  const [location, setLocation] = useState("sessions");
-  const [search, setSearch] = useState("");
-  const [userRole, setUserRole] = useState(null);
-  const [language, setLanguage] = useState("en");
-  const [subjects, setSubjects] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const [location, setLocation] = useState(
+    localStorage.getItem("eduapp_last_viewed")
+  );
 
-  const changeToolbarLocation = (incoming) => setLocation(incoming);
-
-  const fetchSubject = () => {
-    API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubjects().then((i) => {
-        setSubjects(i.data);
-      });
-    });
-  };
-
-  const fetchCourse = () => {
-    API.asynchronizeRequest(function () {
-      COURSESERVICE.fetchCourses().then((i) => {
-        setCourses(i.data);
-      });
-    });
-  };
-
-  useEffect(() => {
-    fetchSubject();
-    fetchCourse();
-  }, []);
-
-  const searchFilter = (search) => {
-    setSearch(search);
-  };
-
-  const userRoleFilter = (role) => {
-    console.log(role);
-    console.log(role === "ADMIN" ? 1 : role === "STUDENT" ? 0 : null);
-    setUserRole(role === "ADMIN" ? 1 : role === "STUDENT" ? 0 : null);
-  };
-
-  const switchLanguage = (language) => {
-    switch (language) {
-      case "es":
-        setLanguage(LANGUAGES.es);
-        break;
-      case "pt":
-        setLanguage(LANGUAGES.pt);
-        break;
+  const ComponentManager = () => {
+    switch (location) {
+      case "sessions":
+        return <Schedulesessionslist />;
+      case "events":
+        return <Scheduleeventslist />;
+      case "institutions":
+        return <InstitutionConfig />;
+      case "courses":
+        return <CourseConfig />;
+      case "subjects":
+        return <SubjectsConfig />;
+      case "users":
+        return <UserConfig />;
+      case "teachers":
+        return <TeacherConfig />;
+      case "chatConfig":
+        return <ChatConfig />;
+      case "chatParticipant":
+        return <ChatParticipantConfig />;
+      case "resources":
+        return <ResourcesConfig />;
+      case "enroll":
+        return <EnrollConfig />;
+      case "userRoles":
+        return <UserRolesConfig />;
       default:
-        setLanguage(LANGUAGES.en);
-        break;
+        return <></>;
     }
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("eduapp_last_viewed") === null) {
+      localStorage.setItem("eduapp_last_viewed", "institutions");
+      setLocation(localStorage.getItem("eduapp_last_viewed"));
+    }
+  }, []);
+
   return (
     <div className="users-main-container">
-      <Navbar
-        toolbarLocation={changeToolbarLocation}
-        switchLanguage={switchLanguage}
-        location={location}
-        language={language}
-      />
+      <Navbar locationState={[location, setLocation]} />
       <div className="main-section">
-        <Toolbar
-          location={location}
-          search={searchFilter}
-          userRole={userRoleFilter}
-          subjects={subjects}
-          courses={courses}
-          language={language}
-        />
+        <Toolbar location={location} />
         <div
           className="controlPanel-content-container"
           id="controlPanelContentContainer"
         >
-          {location === "sessions" ? (
-            <Schedulesessionslist search={search} language={language} />
-          ) : location === "events" ? (
-            <Scheduleeventslist search={search} language={language} />
-          ) : location === "institutions" ? (
-            <InstitutionConfig search={search} language={language} />
-          ) : location === "courses" ? (
-            <CourseConfig search={search} language={language} />
-          ) : location === "subjects" ? (
-            <SubjectsConfig search={search} language={language} />
-          ) : location === "users" ? (
-            <UserConfig
-              search={search}
-              userRole={userRole}
-              language={language}
-            />
-          ) : location === "enroll" ? (
-            <EnrollConfig search={search} language={language} />
-          ) : location === "teachers" ? (
-            <TeacherConfig search={search} language={language} />
-          ) : location === "chatConfig" ? (
-            <ChatConfig search={search} language={language} />
-          ) : location === "chatMessage" ? (
-            <ChatMessageConfig search={search} language={language} />
-          ) : location === "chatParticipant" ? (
-            <ChatParticipantConfig search={search} language={language} />
-          ) : location === "resources" ? (
-            <ResourcesConfig search={search} language={language} />
-          ) : location === "userRoles" ? (
-            <UserRolesConfig language={language} />
-          ) : (
-            <></>
-          )}
+          <ComponentManager />
         </div>
       </div>
     </div>

@@ -1,14 +1,21 @@
 import React from "react";
 
-export default function Input(props) {
+export default function Input({
+  type,
+  id,
+  className,
+  autoComplete,
+  placeholder,
+  disabled,
+}) {
   return (
     <input
-      type={props.type}
-      id={props.id}
-      className={props.className}
-      autoComplete={props.autoComplete}
-      placeholder={String(props.placeholder)}
-      disabled={props.disabled}
+      type={type}
+      id={id}
+      className={className}
+      autoComplete={autoComplete}
+      placeholder={String(placeholder)}
+      disabled={disabled}
     />
   );
 }

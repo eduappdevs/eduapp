@@ -8,9 +8,11 @@ RUN npm install
 
 COPY . .
 
-# ENV REACT_APP_BACKEND_ENDPOINT=http://localhost:3000 \
-# 	REACT_APP_REPORTS_ENDPOINT=http://localhost:5488
+RUN rm .env
+RUN mv docker-example.env .env
 
-EXPOSE 3002
+RUN npm run build
 
-CMD [ "npm", "run", "dev" ]
+EXPOSE 4221
+
+CMD [ "node", "server/server.js" ]

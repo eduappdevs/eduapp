@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { Fragment, useEffect, useState } from "react";
 import * as USERSERVICE from "../services/user.service";
 import * as ENROLLSERVICE from "../services/enrollConfig.service";
 import * as API from "../API";
@@ -11,13 +12,18 @@ import asynchronizeRequest from "../API";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 import EncryptionUtils from "../utils/EncryptionUtils";
 import PageSelect from "./pagination/PageSelect";
+import { useContext } from "react";
+import { SearchBarCtx } from "../hooks/SearchBarContext";
+import { getUserFields } from "../constants/search_fields";
+import useFilter from "../hooks/useFilter";
+import { LanguageCtx } from "../hooks/LanguageContext";
 
 const system_user_name = "eduapp_system";
-export default function UserConfig(props) {
+export default function UserConfig() {
+  const [language] = useContext(LanguageCtx);
+
   const [users, setUsers] = useState(null);
-  const [search, setSearch] = useState("");
-  const [userRole, setUserRole] = useState(null);
-  let selectedUsers = [];
+  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
 
   const [changeName, setChangeName] = useState(false);
   const [changeEmail, setChangeEmail] = useState(false);
@@ -34,9 +40,19 @@ export default function UserConfig(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
+  const filteredUsers = useFilter(
+    users,
+    null,
+    USERSERVICE.filterUsers,
+    getUserFields(language)
+  );
+
   const [userPermRoles, setUserPermRoles] = useState([]);
   const [allSelected, setAllSelected] = useState(true);
+
   const [maxPages, setMaxPages] = useState(1);
+  const [actualPage, setActualPage] = useState();
 
   const [notifyModal, setNotifyModal] = useState(false);
   const [notifyMsg, setNotifyMsg] = useState("");
@@ -45,64 +61,70 @@ export default function UserConfig(props) {
 
   const selectAll = () => {
     setAllSelected(!allSelected);
-    for (let c of document.getElementsByName("user-check")) {
+    for (let c of document.getElementsByName("user-check"))
       c.checked = allSelected;
-    }
   };
 
-  const switchSaveState = (state) => {
+  const switchEditState = (state) => {
     if (state) {
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "scroll";
-      document
-        .getElementById("commit-loader-2")
-        .classList.remove("commit-loader-hide");
-      document.getElementById("add-svg").classList.add("commit-loader-hide");
+      document.getElementById("controlPanelContentContainer").style.overflowX =
+        "auto";
     } else {
+      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("standard-modal").style.width = "101%";
+      document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
-      document.getElementById("add-svg").classList.remove("commit-loader-hide");
-      document
-        .getElementById("commit-loader-2")
-        .classList.add("commit-loader-hide");
     }
   };
 
-  const fetchUsers = () => {
-    asynchronizeRequest(function () {
-      USERSERVICE.pagedUserInfos(1)
-        .then((us) => {
-          setMaxPages(us.data.total_pages);
-          setUsers(us.data.current_page);
-        })
-        .catch(async (err) => {
-          await interceptExpiredToken(err);
-          console.error(err);
-        });
-    }).then(async (e) => {
-      if (e) {
-        await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The users could not be showed, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        switchSaveState(false);
-      }
-    });
+  const connectionAlert = () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(language.connectionAlert);
+    setPopupIcon("error");
+  };
+  const finalizedEdit = (type, icon, text, confirmDel) => {
+    fetchUserPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
   };
 
-  const fetchUserPage = (page) => {
+  const finalizedCreate = (type, icon, txt, confirmDel) => {
+    fetchUserPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  };
+
+  const finalizedDelete = (type, icon, confirmDel, text) => {
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchUserPage(actualPage);
+  };
+
+  const fetchUserPage = (page, order = null) => {
     asynchronizeRequest(function () {
-      USERSERVICE.pagedUserInfos(page)
+      USERSERVICE.pagedUserInfos(page, order)
         .then((us) => {
+          setActualPage(us.data.page);
           setMaxPages(us.data.total_pages);
           setUsers(us.data.current_page);
         })
-        .catch(async (err) => {
-          await interceptExpiredToken(err);
-          console.error(err);
-        });
+        .catch(async (err) => await interceptExpiredToken(err));
+    }).then(async (e) => {
+      if (e) {
+        connectionAlert();
+        await interceptExpiredToken(e);
+      }
     });
   };
 
@@ -120,446 +142,118 @@ export default function UserConfig(props) {
   };
 
   const confirmDeleteUser = async (id) => {
-    setPopupType("warning");
-    setPopupIcon(true);
-    setPopupText("Are you sure you want to delete this user?");
-    setIsConfirmDelete(true);
-    setPopup(true);
+    switchEditState(false);
+    finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
   };
 
-  const showDeleteError = () => {
-    setPopupType("error");
-    popupIcon(false);
-    setPopup(false);
-    setPopupText("The user could not be deleted.");
-    setIsConfirmDelete(false);
-  };
-
   const alertCreate = async () => {
-    setPopupText("Required information is missing.");
-    setPopupType("error");
-    setPopup(true);
+    switchEditState(false);
+    finalizedCreate("error", true, language.creationFailed, false);
   };
 
   const editUser = (e, s) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let isAdmin =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
+    switchEditState(false);
 
-      let inputName = document.getElementById("inputName_" + s.user.id).value;
-      let inputEmail = document.getElementById("inputEmail_" + s.user.id).value;
-      let inputIsAdmin = document.getElementById(
-        "inputIsAdmin_" + s.user.id
-      ).value;
+    let inputName = document.getElementById("inputName_" + s.user.id).value;
+    let inputEmail = document.getElementById("inputEmail_" + s.user.id).value;
 
-      let editTitle, editEmail, editisAdmin;
+    let editTitle, editEmail;
 
-      if (inputName !== "" && inputName !== s.session_name) {
-        editTitle = inputName;
-      } else {
-        editTitle = s.session_name;
-      }
-
-      if (inputEmail !== "" && inputEmail !== s.email) {
-        editEmail = inputEmail;
-      } else {
-        editEmail = s.session_start_date;
-      }
-
-      if (inputIsAdmin !== "" && inputIsAdmin !== s.session_end_date) {
-        editisAdmin = inputIsAdmin;
-      } else {
-        editisAdmin = s.session_end_date;
-      }
-
-      API.asynchronizeRequest(function () {
-        USERSERVICE.editUser({
-          id: s.id,
-          user_name: editTitle,
-          isAdmin: editisAdmin,
-          isLoggedWithGoogle: s.isLoggedWithGoogle,
-          googleid: s.googleid,
-          user: {
-            id: s.user.id,
-            email: editEmail,
-          },
-        })
-          .then(() => {
-            fetchUsers();
-            let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-            buttonDelete.style.display = "block";
-            let button = e.target.parentNode.parentNode.childNodes[1];
-            button.style.display = "block";
-            let checkButton = e.target.parentNode.parentNode.childNodes[2];
-            checkButton.style.display = "none";
-            let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-            cancelButton.style.display = "none";
-            name.disabled = true;
-            email.disabled = true;
-            isAdmin.disabled = true;
-            setIsConfirmDelete(false);
-            setPopup(true);
-            setPopupType("info");
-            setPopupText("The user was edited successfully.");
-            switchSaveState(false);
-          })
-          .catch((e) => {
-            if (e) {
-              setPopupText(
-                "The user could not be edited, check if you entered the correct fields."
-              );
-              setPopupIcon("error");
-              switchSaveState(false);
-              setPopup(true);
-              setIsConfirmDelete(false);
-            }
-          });
-      }).then((e) => {
-        if (e) {
-          setPopup(true);
-          setPopupText(
-            "The user could not be edited, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
-          setIsConfirmDelete(false);
-        }
-      });
+    if (inputName !== "" && inputName !== s.session_name) {
+      editTitle = inputName;
     } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
-            .childNodes[0];
-
-        let inputName = document.getElementById("inputName_" + s.id).value;
-        let inputEmail = document.getElementById("inputEmail_" + s.id).value;
-        let inputIsAdmin = document.getElementById(
-          "inputIsAdmin_" + s.id
-        ).value;
-
-        let editTitle, editEmail, editisAdmin;
-
-        if (inputName !== "" && inputName !== s.session_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.session_name;
-        }
-
-        if (inputEmail !== "" && inputEmail !== s.email) {
-          editEmail = inputEmail;
-        } else {
-          editEmail = s.session_start_date;
-        }
-
-        if (inputIsAdmin !== "" && inputIsAdmin !== s.session_end_date) {
-          editisAdmin = inputIsAdmin;
-        } else {
-          editisAdmin = s.session_end_date;
-        }
-
-        API.asynchronizeRequest(function () {
-          USERSERVICE.editUser({
-            id: s.id,
-            user_name: editTitle,
-            isAdmin: editisAdmin,
-            isLoggedWithGoogle: s.isLoggedWithGoogle,
-            googleid: s.googleid,
-            user: {
-              id: s.user.id,
-              email: editEmail,
-            },
-          })
-            .then(() => {
-              fetchUsers();
-              let buttonDelete =
-                e.target.parentNode.parentNode.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button =
-                e.target.parentNode.parentNode.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton =
-                e.target.parentNode.parentNode.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              email.disabled = true;
-              isAdmin.disabled = true;
-
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The user was edited successfully.");
-              switchSaveState(false);
-              setIsConfirmDelete(false);
-            })
-            .catch((e) => {
-              if (e) {
-                setPopupText(
-                  "The user could not be edited, check if you entered the correct fields."
-                );
-                setPopupIcon("error");
-                switchSaveState(false);
-                setPopup(true);
-                setIsConfirmDelete(false);
-              }
-            });
-        }).then((e) => {
-          if (e) {
-            setPopup(true);
-            setPopupText(
-              "The user could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-            setIsConfirmDelete(false);
-          }
-        });
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let email = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-
-        let inputName = document.getElementById("inputName_" + s.user.id).value;
-        let inputEmail = document.getElementById(
-          "inputEmail_" + s.user.id
-        ).value;
-        let inputIsAdmin = document.getElementById(
-          "inputIsAdmin_" + s.user.id
-        ).checked;
-
-        let editTitle, editEmail, editisAdmin;
-
-        if (inputName !== "" && inputName !== s.session_name) {
-          editTitle = inputName;
-        } else {
-          editTitle = s.session_name;
-        }
-
-        if (inputEmail !== "" && inputEmail !== s.email) {
-          editEmail = inputEmail;
-        } else {
-          editEmail = s.session_start_date;
-        }
-
-        if (inputIsAdmin !== "" && inputIsAdmin !== s.session_end_date) {
-          editisAdmin = inputIsAdmin;
-        } else {
-          editisAdmin = s.session_end_date;
-        }
-
-        API.asynchronizeRequest(function () {
-          USERSERVICE.editUser({
-            id: s.id,
-            user_id: s.user.id,
-            user_name: editTitle,
-            isAdmin: editisAdmin,
-            profile_image: s.profile_image,
-            teaching_list: s.teaching_list,
-            isLoggedWithGoogle: s.isLoggedWithGoogle,
-            googleid: s.googleid,
-          })
-            .then(() => {
-              fetchUsers();
-              let buttonDelete = e.target.parentNode.childNodes[0];
-              buttonDelete.style.display = "block";
-              let button = e.target.parentNode.childNodes[1];
-              button.style.display = "block";
-              let checkButton = e.target.parentNode.childNodes[2];
-              checkButton.style.display = "none";
-              let cancelButton = e.target.parentNode.childNodes[3];
-              cancelButton.style.display = "none";
-              name.disabled = true;
-              email.disabled = true;
-              isAdmin.disabled = true;
-
-              setPopup(true);
-              setPopupType("info");
-              setPopupText("The user was edited successfully.");
-              switchSaveState(false);
-              setIsConfirmDelete(false);
-            })
-            .catch((e) => {
-              console.log(e);
-              if (e) {
-                setPopupText(
-                  "The user could not be edited, check if you entered the correct fields."
-                );
-                setPopupIcon("error");
-                switchSaveState(false);
-                setIsConfirmDelete(false);
-                setPopup(true);
-              }
-            });
-        }).then((e) => {
-          if (e) {
-            setPopup(true);
-            setIsConfirmDelete(false);
-
-            setPopupText(
-              "The user could not be edited, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(false);
-          }
-        });
-      }
+      editTitle = s.session_name;
     }
+
+    if (inputEmail !== "" && inputEmail !== s.email) {
+      editEmail = inputEmail;
+    } else {
+      editEmail = s.session_start_date;
+    }
+
+    API.asynchronizeRequest(function () {
+      USERSERVICE.editUser({
+        id: s.id,
+        user_id: s.user.id,
+        user_name: editTitle,
+        profile_image: s.profile_image,
+        teaching_list: s.teaching_list,
+        isLoggedWithGoogle: s.isLoggedWithGoogle,
+        googleid: s.googleid,
+      })
+        .then((x) => {
+          if (x) {
+            finalizedEdit("info", true, language.editAlertCompleted, false);
+            let num = 0;
+            while (num < 4) {
+              e.target.parentNode.childNodes[num].style.display === "block"
+                ? (e.target.parentNode.childNodes[num].style.display = "none")
+                : (e.target.parentNode.childNodes[num].style.display = "block");
+              num += 1;
+            }
+            let disable = 1;
+            while (disable < 4) {
+              e.target.parentNode.parentNode.childNodes[
+                disable
+              ].childNodes[0].disabled = true;
+              disable += 1;
+            }
+          }
+        })
+        .catch((e) => {
+          if (e) {
+            finalizedEdit("error", true, language.editAlertFailed, false);
+          }
+        });
+    }).then((e) => {
+      if (e) {
+        connectionAlert();
+      }
+    });
   };
 
   const closeEditUser = (e, s) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let emails =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let isAdmin =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-
-      name.disabled = true;
-      emails.disabled = true;
-      isAdmin.disabled = true;
-
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[0];
-      buttonDelete.style.display = "block";
-      let button = e.target.parentNode.parentNode.childNodes[1];
-      button.style.display = "block";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "none";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "none";
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[1].childNodes[0];
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[2].childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.parentNode.parentNode.parentNode
-            .childNodes[0].childNodes[3].childNodes[0];
-
-        name.disabled = true;
-        email.disabled = true;
-        isAdmin.disabled = true;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.parentNode.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let email = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-
-        name.disabled = true;
-        email.disabled = true;
-        isAdmin.disabled = true;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "block";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "block";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "none";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "none";
-      }
+    let disable = 1;
+    while (disable < 4) {
+      e.target.parentNode.parentNode.childNodes[
+        disable
+      ].childNodes[0].disabled = true;
+      disable += 1;
+    }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
   const showEditOptionUser = (e) => {
-    if (e.target.tagName === "svg") {
-      let name =
-        e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0];
-      let email =
-        e.target.parentNode.parentNode.parentNode.childNodes[2].childNodes[0];
-      let isAdmin =
-        e.target.parentNode.parentNode.parentNode.childNodes[3].childNodes[0];
-
-      name.disabled = false;
-      email.disabled = false;
-      isAdmin.disabled = false;
-      let buttonDelete = e.target.parentNode.parentNode.childNodes[1];
-      buttonDelete.style.display = "none";
-      let button = e.target.parentNode.parentNode.childNodes[0];
-      button.style.display = "none";
-      let checkButton = e.target.parentNode.parentNode.childNodes[2];
-      checkButton.style.display = "block";
-      let cancelButton = e.target.parentNode.parentNode.childNodes[3];
-      cancelButton.style.display = "block";
-    } else {
-      if (e.target.tagName === "path") {
-        let name =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[1]
-            .childNodes[0];
-        let email =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[2]
-            .childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.parentNode.parentNode.childNodes[3]
-            .childNodes[0];
-
-        name.disabled = false;
-        email.disabled = false;
-        isAdmin.disabled = false;
-
-        let buttonDelete =
-          e.target.parentNode.parentNode.parentNode.childNodes[0];
-
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.parentNode;
-        button.style.display = "none";
-        let checkButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton =
-          e.target.parentNode.parentNode.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-      } else {
-        let name = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
-        let email = e.target.parentNode.parentNode.childNodes[2].childNodes[0];
-        let isAdmin =
-          e.target.parentNode.parentNode.childNodes[3].childNodes[0];
-
-        name.disabled = false;
-        email.disabled = false;
-        isAdmin.disabled = false;
-
-        let buttonDelete = e.target.parentNode.childNodes[0];
-        buttonDelete.style.display = "none";
-        let button = e.target.parentNode.childNodes[1];
-        button.style.display = "none";
-        let checkButton = e.target.parentNode.childNodes[2];
-        checkButton.style.display = "block";
-        let cancelButton = e.target.parentNode.childNodes[3];
-        cancelButton.style.display = "block";
-      }
+    let disable = 1;
+    while (disable < 4) {
+      e.target.parentNode.parentNode.childNodes[
+        disable
+      ].childNodes[0].disabled = false;
+      disable += 1;
+    }
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+        ? (e.target.parentNode.childNodes[num].style.display = "none")
+        : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
     }
   };
 
-  const createUser = () => {
+  const createUser = (e) => {
+    switchEditState(false);
+
     let email = document.getElementById("u_email").value;
     let pass = document.getElementById("u_pass").value;
     let role = document.getElementById("u_role").value;
@@ -571,25 +265,24 @@ export default function UserConfig(props) {
           email: email,
           password: pass,
           user_role: role,
-        }).then(async (res) => {
-          await userEnroll(res.data.user.id);
-          fetchUsers();
-          document.getElementById("u_email").value = null;
-          document.getElementById("u_pass").value = null;
-          setPopup(true);
-          setPopupType("info");
-          setPopupText("The new user was created successfully.");
-          switchSaveState(true);
-        });
+        })
+          .then(async (res) => {
+            if (res) {
+              document.getElementById("u_email").value = null;
+              document.getElementById("u_pass").value = null;
+              finalizedCreate("info", true, language.creationCompleted, false);
+              await userEnroll(res.data.user.id);
+            }
+          })
+          .catch(async (error) => {
+            alertCreate();
+
+            await interceptExpiredToken(error);
+          });
       }).then(async (e) => {
         if (e) {
+          connectionAlert();
           await interceptExpiredToken(e);
-          setPopup(true);
-          setPopupText(
-            "The new user could not be published, check if you have an internet connection."
-          );
-          setPopupIcon("error");
-          switchSaveState(false);
         }
       });
     } else {
@@ -606,9 +299,7 @@ export default function UserConfig(props) {
     payload.append("user_id", uId);
 
     API.asynchronizeRequest(function () {
-      ENROLLSERVICE.createTuition(payload).then(() => {
-        console.log("User tuition has been completed successfully!");
-      });
+      ENROLLSERVICE.createTuition(payload);
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
@@ -628,26 +319,35 @@ export default function UserConfig(props) {
       if (id !== getOfflineUser().user.id) {
         asynchronizeRequest(function () {
           USERSERVICE.deleteUser(id)
-            .then(() => {
-              fetchUsers();
+            .then((err) => {
+              if (err) {
+                finalizedDelete(
+                  "info",
+                  true,
+                  false,
+                  language.deleteAlertCompleted
+                );
+              }
             })
             .catch(async (err) => {
-              await interceptExpiredToken(err);
-              console.error(err);
+              if (err) {
+                finalizedDelete(
+                  "error",
+                  true,
+                  false,
+                  language.deleteAlertFailed
+                );
+                await interceptExpiredToken(err);
+              }
             });
         }).then(async (e) => {
           if (e) {
+            connectionAlert();
             await interceptExpiredToken(e);
-            setPopup(true);
-            setPopupText(
-              "The user could not be deleted, check if you have an internet connection."
-            );
-            setPopupIcon("error");
-            switchSaveState(true);
           }
         });
       } else {
-        alert("Dumbass");
+        alert("Cannot delete yourself.");
       }
     } else {
       alert("Cannot delete system user.");
@@ -706,43 +406,30 @@ export default function UserConfig(props) {
     }
   };
 
-  const filterUsersWithRole = (role, user) => {
-    switch (role) {
-      case null:
-        if (user.isAdmin || !user.isAdmin) {
-          return true;
-        }
-        break;
-      case 0:
-        if (user.isAdmin) {
-          return false;
-        } else {
-          return true;
-        }
-
-      case 1:
-        if (!user.isAdmin) {
-          return false;
-        } else {
-          return true;
-        }
-      default:
-        break;
-    }
-  };
-
   useEffect(() => {
-    setSearch(props.search);
-  }, [props.search]);
-
-  useEffect(() => {
-    setUserRole(props.userRole);
-  }, [props.userRole]);
-
-  useEffect(() => {
-    fetchUsers();
+    fetchUserPage(1);
     fetchRoles();
+    setInitialFetch(true);
   }, []);
+
+  useEffect(() => {
+    setSearchParams({
+      query: "",
+      fields: getUserFields(language),
+      selectedField: getUserFields(language)[0][0],
+      extras: [["", ""]],
+      order: "asc",
+    });
+  }, [language]);
+
+  useEffect(() => {
+    if (hasDoneInitialFetch) {
+      fetchUserPage(1, {
+        field: searchParams.selectedField,
+        order: searchParams.order,
+      });
+    }
+  }, [searchParams.order]);
 
   return (
     <>
@@ -778,10 +465,10 @@ export default function UserConfig(props) {
         <table id="users_table_header">
           <thead>
             <tr>
-              <th>{props.language.add}</th>
-              <th>{props.language.email}</th>
-              <th>{props.language.password}</th>
-              <th>{props.language.userRole}</th>
+              <th>{language.add}</th>
+              <th>{language.email}</th>
+              <th>{language.password}</th>
+              <th>{language.userRole}</th>
             </tr>
           </thead>
           <tbody>
@@ -793,7 +480,11 @@ export default function UserConfig(props) {
                   alignItems: "center",
                 }}
               >
-                <button onClick={createUser}>
+                <button
+                  onClick={() => {
+                    createUser();
+                  }}
+                >
                   <svg
                     id="add-svg"
                     xmlns="http://www.w3.org/2000/ svg"
@@ -823,17 +514,13 @@ export default function UserConfig(props) {
                 </button>
               </td>
               <td>
-                <input
-                  id="u_email"
-                  type="email"
-                  placeholder={props.language.email}
-                />
+                <input id="u_email" type="email" placeholder={language.email} />
               </td>
               <td>
                 <input
                   id="u_pass"
                   type="password"
-                  placeholder={props.language.password}
+                  placeholder={language.password}
                 />
               </td>
               <td style={{ textAlign: "center" }}>
@@ -850,191 +537,43 @@ export default function UserConfig(props) {
             </tr>
           </tbody>
         </table>
-        <div className="notify-users">
-          <PageSelect
-            onPageChange={async (p) => fetchUserPage(p)}
-            maxPages={maxPages}
-          />
-          <button onClick={() => setNotifyModal(true)}>
-            Notify Selected Users
-          </button>
-        </div>
-        <table style={{ marginTop: "25px" }}>
-          <thead>
-            <tr>
-              <th>
-                <input type={"checkbox"} onChange={() => selectAll()} />
-              </th>
-              <th>{props.language.userId}</th>
-              <th>Username</th>
-              <th>{props.language.name}</th>
-              <th>{props.language.email}</th>
-              <th>{props.language.userRole}</th>
-              <th>{props.language.googleLinked}</th>
-              <th></th>
-              <th>{props.language.actions}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users
-              ? // eslint-disable-next-line array-callback-return
-                users.map((u) => {
-                  console.log(u);
-                  if (search.length > 0) {
-                    if (
-                      (u.user_name.includes(search) ||
-                        u.user.email.includes(search)) &
-                      filterUsersWithRole(userRole, u)
-                    ) {
-                      return (
-                        <tr key={u.id}>
-                          <td>
-                            <input
-                              id={`check_${u.user.id}`}
-                              type={"checkbox"}
-                              disabled={u.user.username === system_user_name}
-                              name={
-                                u.user.username === system_user_name
-                                  ? null
-                                  : "user-check"
-                              }
-                            />
-                          </td>
-                          <td>{shortUUID(u.user.id)}</td>
-                          <td>
-                            <input
-                              id={`inputName_${u.user.id}`}
-                              type="text"
-                              disabled
-                              value={
-                                changeName === false ? u.user_name : newName
-                              }
-                              onChange={() => {
-                                handleChangeName(u.user.id);
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              id={`inputEmail_${u.user.id}`}
-                              type="text"
-                              disabled
-                              value={
-                                changeEmail === false ? u.user.email : newEmail
-                              }
-                              onChange={() => {
-                                handleChangeEmail(u.user.id);
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              disabled
-                              value={u.user_role.name}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              disabled
-                              placeholder="=> Link in App"
-                            />
-                          </td>
-                          <td>
-                            <ExtraFields id={u.user.id} table={"users"} />
-                          </td>
-                          <td
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <button
-                              style={{ marginRight: "5px" }}
-                              onClick={() => {
-                                confirmDeleteUser(u.user.id);
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-trash3"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px" }}
-                              onClick={(e) => {
-                                showEditOptionUser(e, u);
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-pencil-square"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                                />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ marginRight: "5px", display: "none" }}
-                              onClick={(e) => {
-                                editUser(e, u);
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-check2"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                              </svg>
-                            </button>
-                            <button
-                              style={{ display: "none" }}
-                              onClick={(e) => {
-                                closeEditUser(e, u);
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-x-lg"
-                                viewBox="0 0 16 16"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                                />
-                                <path
-                                  fillRule="evenodd"
-                                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                                />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    }
-                  } else if (filterUsersWithRole(userRole, u)) {
+        {users && users.length !== 0 ? (
+          <>
+            <div className="notify-users">
+              <PageSelect
+                onPageChange={async (p) => fetchUserPage(p)}
+                maxPages={maxPages}
+              />
+              <button onClick={() => notifyUsers()}>
+                Notify Selected Users
+              </button>
+            </div>
+            <div className="schedule-table-info">
+              <table style={{ marginTop: "10px" }}>
+                <thead>
+                  <tr>
+                    <th>
+                      <input type={"checkbox"} onChange={() => selectAll()} />
+                    </th>
+                    <th>{language.userId}</th>
+                    <th>{language.name}</th>
+                    <th>{language.email}</th>
+                    <th>{language.userRole}</th>
+                    <th>{language.googleLinked}</th>
+                    <th>{language.lastConnection}</th>
+                    <th>{language.actions}</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {users.map((u) => {
+                    let user = u.user.last_sign_in_at;
+                    if (filteredUsers !== null)
+                      if (
+                        filteredUsers.find((fu) => fu.user.id === u.user.id) ===
+                        undefined
+                      )
+                        return <Fragment key={u.id} />;
                     return (
                       <tr key={u.id}>
                         <td>
@@ -1089,7 +628,11 @@ export default function UserConfig(props) {
                           />
                         </td>
                         <td>
-                          <ExtraFields id={u.user.id} table={"users"} />
+                          <input
+                            type="datetime"
+                            disabled
+                            value={user.split(".")[0]}
+                          />
                         </td>
                         <td
                           style={{
@@ -1098,11 +641,10 @@ export default function UserConfig(props) {
                             alignItems: "center",
                           }}
                         >
+                          <ExtraFields table="users" id={u.user.id} />
                           <button
                             style={{ marginRight: "5px" }}
-                            onClick={() => {
-                              confirmDeleteUser(u.user.id);
-                            }}
+                            onClick={() => confirmDeleteUser(u.user.id)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -1117,9 +659,7 @@ export default function UserConfig(props) {
                           </button>
                           <button
                             style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionUser(e, u);
-                            }}
+                            onClick={(e) => showEditOptionUser(e, u)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -1137,10 +677,11 @@ export default function UserConfig(props) {
                             </svg>
                           </button>
                           <button
-                            style={{ marginRight: "5px", display: "none" }}
-                            onClick={(e) => {
-                              editUser(e, u);
+                            style={{
+                              marginRight: "5px",
+                              display: "none",
                             }}
+                            onClick={(e) => editUser(e, u)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -1155,9 +696,7 @@ export default function UserConfig(props) {
                           </button>
                           <button
                             style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditUser(e, u);
-                            }}
+                            onClick={(e) => closeEditUser(e, u)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -1180,283 +719,12 @@ export default function UserConfig(props) {
                         </td>
                       </tr>
                     );
-                  }
-
-                  if (search.length > 0) {
-                    if (
-                      (u.user.username.includes(search) ||
-                        u.user.email.includes(search)) &
-                      filterUsersWithRole(userRole, u)
-                    ) {
-                      return (
-                        <tr key={u.id}>
-                          <td>
-                            <input
-                              id={`check_${u.user.id}`}
-                              type={"checkbox"}
-                              disabled={u.user_name === system_user_name}
-                              name={
-                                u.user_name === system_user_name
-                                  ? null
-                                  : "user-check"
-                              }
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              disabled
-                              value={shortUUID(u.user.id)}
-                            />
-                          </td>
-                          <td>
-                            <input type="text" disabled value={u.user_name} />
-                          </td>
-                          <td>
-                            <input type="text" disabled value={u.user.email} />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              disabled
-                              value={u.user_role.name}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              disabled
-                              placeholder="=> Link in App"
-                            />
-                          </td>
-                          <td>
-                            <ExtraFields id={u.user.id} table={"users"} />
-                          </td>
-                          <td
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <button
-                              onClick={() => {
-                                deleteUser(u.user.id);
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-trash3"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    }
-                  } else if (filterUsersWithRole(userRole, u)) {
-                    return (
-                      <tr key={u.id}>
-                        <td>
-                          <input
-                            id={`check_${u.user.id}`}
-                            type={"checkbox"}
-                            disabled={u.user_name === system_user_name}
-                            name={
-                              u.user_name === system_user_name
-                                ? null
-                                : "user-check"
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            value={shortUUID(u.user.id)}
-                          />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user_name} />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user.email} />
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <input type="checkbox" disabled checked={u.isAdmin} />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            placeholder="=> Link in App"
-                          />
-                        </td>
-                        <td>
-                          <ExtraFields id={u.user.id} table={"users"} />
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              deleteUser(u.user.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }
-
-                  if (search.length > 0) {
-                    if (
-                      (u.user_name.includes(search) ||
-                        u.user.email.includes(search)) &
-                      filterUsersWithRole(userRole, u)
-                    ) {
-                      return (
-                        <tr key={u.id}>
-                          <td>
-                            <input
-                              type="checkbox"
-                              name="select_user"
-                              disabled
-                              id={`select_user_${u.user.id}`}
-                            />
-                          </td>
-                          <td>
-                            <input type="text" disabled value={u.user_name} />
-                          </td>
-                          <td>
-                            <input type="text" disabled value={u.user.email} />
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            <input
-                              type="checkbox"
-                              disabled
-                              checked={u.isAdmin}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              disabled
-                              placeholder="=> Link in App"
-                            />
-                          </td>
-                          <td>
-                            <ExtraFields id={u.user.id} table={"users"} />
-                          </td>
-                          <td
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <button
-                              onClick={() => {
-                                deleteUser(u.user.id);
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-trash3"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    }
-                  } else if (filterUsersWithRole(userRole, u)) {
-                    return (
-                      <tr key={u.id}>
-                        <td>
-                          <input
-                            type="checkbox"
-                            name="select_user"
-                            disabled
-                            id={`select_user_${u.user.id}`}
-                          />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user_name} />
-                        </td>
-                        <td>
-                          <input type="text" disabled value={u.user.email} />
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <input type="checkbox" disabled checked={u.isAdmin} />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            placeholder="=> Link in App"
-                          />
-                        </td>
-                        <td>
-                          <ExtraFields id={u.user.id} table={"users"} />
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            onClick={() => {
-                              deleteUser(u.user.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  } else {
-                    return null;
-                  }
-                })
-              : null}
-          </tbody>
-        </table>
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : null}
       </div>
       <StandardModal
         show={showPopup}
@@ -1481,7 +749,6 @@ export default function UserConfig(props) {
         }}
         onCloseAction={() => {
           setPopup(false);
-          switchSaveState();
           setIsConfirmDelete(false);
           document.getElementById(
             "controlPanelContentContainer"

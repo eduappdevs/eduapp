@@ -30,18 +30,22 @@ export default class IDBManager {
     } catch (error) {
       console.log("Error updating, trying to do it by ahother way...")
       try {
-        await idb.del(key,this.store)
-        await idb.set(key,value, this.store)
+        await idb.del(key, this.store)
+        await idb.set(key, value, this.store)
       } catch (error) {
         console.log("An error ocurring when trying to delete and set the new keyvalue")
-        
+
       }
-      
+
     }
   }
 
   async delete(key) {
     return await idb.del(key, this.store);
+  }
+
+  async getMany(keys) {
+    return await idb.getMany(keys, this.store)
   }
 
   async deleteMany(keys) {
@@ -52,6 +56,7 @@ export default class IDBManager {
     return await idb.keys(this.store);
   }
 
+<<<<<<< HEAD
   async keyExists(key){
     let response = false
     await idb.keys(this.store).then((res)=>{
@@ -59,5 +64,12 @@ export default class IDBManager {
         if(res===key){response= true}})
       })
     return response
+=======
+  async keyExists(key) {
+    await idb.keys(this.store).then((res) => { return Array.from(res).includes(key) })
+  }
+  async clear() {
+    return await idb.clear(this.store);
+>>>>>>> c94b7869afacdf3bcacc7968f8c8c4c12f673740
   }
 }

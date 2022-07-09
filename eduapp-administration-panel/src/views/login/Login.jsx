@@ -8,9 +8,9 @@ export default function Login() {
   const [hasInit, setHasInit] = React.useState(true);
 
   useEffect(() => {
-    AUTH_SERVICE.hasInit().then((res) => {
-      setHasInit(res.data.created);
-    });
+    if (localStorage.getItem("eduapp_language") === null)
+      localStorage.setItem("eduapp_language", "en_en");
+    AUTH_SERVICE.hasInit().then((res) => setHasInit(res.data.created));
   }, []);
 
   return hasInit ? (
