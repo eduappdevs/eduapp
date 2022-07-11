@@ -1,6 +1,13 @@
 import { incrementBadgeCount } from "../../App";
 let unreadMessagesCount = 0;
 
+/**
+ * Pushes a new noticication to the user.
+ *
+ * @param {String} text The text of the notification.
+ * @param {Object} image Display image if any.
+ * @param {String} name Serves as a title for the notification.
+ */
 export default function pushNotify(text, image, name) {
   if (!text) {
     return false;
@@ -14,7 +21,7 @@ export default function pushNotify(text, image, name) {
 
   switch (Notification.permission) {
     case "granted":
-      var notify = new Notification("EduApp", {
+      new Notification("EduApp", {
         body: `${name}: ${text}`,
         image: image,
       });
@@ -27,8 +34,7 @@ export default function pushNotify(text, image, name) {
           var notify = new Notification("EduApp", {
             body: text,
           });
-          notify.onshow = () => console.log("SHOWN");
-          incrementBadgeCount();
+          notify.onshow = () => incrementBadgeCount();
         }
       });
       break;
@@ -38,7 +44,9 @@ export default function pushNotify(text, image, name) {
   }
 }
 
-// Badge
+/**
+ * Creates a new badge counter for the app.
+ */
 async function instanceBadge() {
   try {
     if (navigator)

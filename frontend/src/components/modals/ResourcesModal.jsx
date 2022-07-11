@@ -6,9 +6,17 @@ import { interceptExpiredToken } from "../../utils/OfflineManager";
 import "./ResourcesModal.css";
 
 let finalData = new FormData();
+
+/**
+ * A modal used to upload resources.
+ *
+ * @param {Object} userInfo The user's information.
+ * @param {String} subject The subject's ID.
+ * @param {Object} language The language to use.
+ */
 export default function ResourcesModal({ userInfo, subject, language }) {
   const [filesToUpload, setFilesToUpload] = useState([]);
-  const [firstFile, setFirstFile] = useState(true);
+  const [firstFile] = useState(true);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");

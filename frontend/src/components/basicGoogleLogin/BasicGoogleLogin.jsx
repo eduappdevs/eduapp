@@ -2,6 +2,11 @@ import React from "react";
 import { GoogleLogin } from "react-google-login";
 import API, { asynchronizeRequest } from "../../API";
 
+/**
+ * A component used for logining in with google for the login page.
+ *
+ * @param {Object} language The language to use.
+ */
 export default function BasicGoogleLogin({ language }) {
   const responseGoogle = async (response) => {
     try {

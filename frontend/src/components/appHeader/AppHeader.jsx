@@ -3,6 +3,25 @@ import "../../views/resources/openedResource/OpenedResource.css";
 import "./headerStyles/ChatHeader.css";
 import "./headerStyles/DefaultHeader.css";
 
+/**
+ *
+ * The app's main header component.
+ *
+ * @param {String} type The type of header that is going to be used
+ * @param {Function} closeHandler Funtion to execute when the header wants to close
+ * @param {Boolean} canAction Resources: defines it can delete or not
+ * @param {String} resourceName Resources: the resource's name
+ * @param {Function} editResource Resources: function to execute when it wants to edit
+ * @param {Function} deleteResource Resources: function to execute when it wants to delete
+ * @param {String} chatImage Chat: the chat's image
+ * @param {String} chatName Chat: the chat's name
+ * @param {Function} extrasHandler Chat: function to open the chat options
+ * @param {String} tabName The header's title
+ * @param {Function} leaveChat Chat: Function to leave chat
+ * @param {Function} openChatInfo Chat: Opens the chat information
+ * @param {Function} imageNameClick Chat: Function to do something on image click
+ * @param {Object} language The header's title
+ */
 export default function AppHeader({
   type,
   closeHandler,

@@ -5,8 +5,14 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import { IMG_FLBK_USER } from "../../config";
 import "./Navbar.css";
 
+/**
+ * The desktop navbar of the app.
+ *
+ * @param {Boolean} mobile Tests for mobile or desktop display.
+ * @param {String} badgeCount Count for unread notifications for chats.
+ */
 export default function Navbar({ mobile, badgeCount }) {
-  const [ProfileMenuOpened, setProfileMenuOpened] = useState(false);
+  const [, setProfileMenuOpened] = useState(false);
   const [inHome, setInHome] = useState(false);
   const [inResources, setInResources] = useState(false);
   const [inCalendar, setInCalendar] = useState(false);

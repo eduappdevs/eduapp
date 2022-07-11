@@ -6,6 +6,9 @@ import { Mailer } from "../Mailer";
 import Notification from "../notifications/notifications";
 import useLanguage from "../../hooks/useLanguage";
 
+/**
+ * A login form component for login in users.
+ */
 export default function LoginAuth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

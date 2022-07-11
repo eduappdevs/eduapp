@@ -1,3 +1,6 @@
+/**
+ * Handles the theme of the app.
+ */
 const DarkModeChanger = (mode) => {
   if (parseInt(mode)) {
     localStorage.setItem("darkMode", "1");

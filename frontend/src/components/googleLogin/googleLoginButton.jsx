@@ -7,6 +7,12 @@ import useLanguage from "../../hooks/useLanguage";
 import "./googleLogin.css";
 
 let finalData = new FormData();
+
+/**
+ * A component used for logining in with google.
+ *
+ * @param {String} useType How the button is going to be used (link, login).
+ */
 export default function GoogleLoginButton(useType) {
   const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);

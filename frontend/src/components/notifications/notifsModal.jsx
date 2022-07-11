@@ -1,3 +1,7 @@
+/**
+ * Creates a notification with data to display
+ * at the top of the app on mobile.
+ */
 const instanceModal = (data) => {
   const root = document.getElementById("root");
   const container = document.createElement("div");

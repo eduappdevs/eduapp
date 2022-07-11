@@ -1,5 +1,8 @@
 import { availableLanguages } from "../hooks/useLanguage";
 
+/**
+ * A simple select dropdown that allows you to change the language with ease.
+ */
 export default function LanguageManager() {
   return (
     <div>
