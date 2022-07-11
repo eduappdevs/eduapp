@@ -10,6 +10,20 @@ class User < ApplicationRecord
 
   has_one :user_info
 
+  # Allow user to login either with username and email
+
+  attr_writer :login
+
+  def login
+    @login || self.username || self.email
+  end
+
+  def self.find_for_database_authentication(warden_conditions)
+    conditions = warden_conditions.dup
+    login = conditions.delete(:login)
+    where(conditions).where(["lower(username) = :value OR lower(email) = :value", { :value => login.strip.downcase }]).first
+  end
+
   # JWT Management
 
   @secret = ENV.fetch("RAILS_SECRET_KEY")

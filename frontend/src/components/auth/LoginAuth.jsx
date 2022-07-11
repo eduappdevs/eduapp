@@ -22,10 +22,7 @@ export default function LoginAuth() {
     try {
       const userData = new FormData();
 
-      userData.append(
-        `user[${login.includes("@") ? "email" : "username"}]`,
-        login
-      );
+      userData.append(`user[login]`, login);
       userData.append("user[password]", password);
 
       await AUTH_SERVICE.login(userData);

@@ -67,7 +67,7 @@ Rails.application.routes.draw do
     match "#{@api_path}/users/cancel" => "users/registrations#cancel", via: [:get]
     match "#{@api_path}/users/sign_up" => "users/registrations#new", via: [:get]
     match "#{@api_path}/users/edit" => "users/registrations#edit", via: [:get]
-    match "#{@api_path}/users/edit" => "users/registrations#edit", via: [:get]
+    match "#{@api_path}/users/edit" => "users/registrations#edit_user", via: [:put]
     match "#{@api_path}/users" => "users/registrations#update", via: [:patch, :put]
     match "#{@api_path}/users" => "users/registrations#destroy", via: [:delete]
     match "#{@api_path}/users" => "users/registrations#create", via: [:post]
@@ -90,8 +90,6 @@ Rails.application.routes.draw do
   end
 
   delete "#{@api_path}/users/remove/:id", to: "user_infos#destroyuser"
-  get "#{@api_path}/ping", to: "static#home"
-  get "#{@api_path}/ping/admin", to: "static#created"
   get "#{@api_path}/google-login", to: "glogin#login"
 
   get "#{@api_path}/ping", to: "static#ping"

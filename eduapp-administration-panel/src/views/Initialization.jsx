@@ -18,6 +18,7 @@ export default function Initialization() {
           email: form.admin_user.value,
           password: form.admin_pswd.value,
           user_role: "eduapp-admin",
+          username: form.admin_user.value.split("@")[0] + "_eduapp-admin",
         });
         window.location.reload();
       } catch (err) {

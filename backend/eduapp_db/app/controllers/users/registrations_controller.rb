@@ -12,6 +12,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       end
     end
 
+    puts "email: #{params[:email]} ,password: #{params[:password]}"
+
     build_resource({ email: params[:email], password: params[:password] })
 
     begin
@@ -44,6 +46,22 @@ class Users::RegistrationsController < Devise::RegistrationsController
       end
     else
       render json: { errors: "Couldn't generate jti." }, status: :unprocessable_entity
+    end
+  end
+
+  def edit_user
+    begin
+      user = User.find(params[:id])
+      payload = params.select {|k,v| ['name','surname','username'].include?(k) }
+      payload.each do |p|
+        user.update_attribute(p[0],p[1])
+      end
+    rescue => error
+      render json: { errors: error}, status: :unprocessable_entity
+      return
+    else
+      render json: {status: 'Updated'}, status: 200
+      return
     end
   end
 

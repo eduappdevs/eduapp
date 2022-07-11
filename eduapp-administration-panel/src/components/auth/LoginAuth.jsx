@@ -6,7 +6,7 @@ export default class LoginAuth extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
+      login: "",
       password: "",
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -17,10 +17,10 @@ export default class LoginAuth extends Component {
     event.preventDefault();
 
     try {
-      const { email, password } = this.state;
+      const { login, password } = this.state;
       const userData = new FormData();
 
-      userData.append("user[email]", email);
+      userData.append("user[login]", login);
       userData.append("user[password]", password);
 
       await AUTH_SERVICE.login(userData);
@@ -39,11 +39,11 @@ export default class LoginAuth extends Component {
     return (
       <form className="login_form" onSubmit={this.handleSubmit}>
         <h1>LOG IN</h1>
-        <label htmlFor="email">Email</label>
+        <label htmlFor="login">Email or username</label>
         <input
-          data-testid="email"
-          type="email"
-          name="email"
+          data-testid="login"
+          type="text"
+          name="login"
           onChange={this.handleChange}
           required
         />

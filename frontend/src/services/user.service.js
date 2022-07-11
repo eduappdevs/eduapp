@@ -41,7 +41,9 @@ export const deleteUser = async (id) => {
     headers: requestHeader,
   });
 };
-
+export const editUser = async (uId,body) =>{
+  return await axios.put(`${USERS}/edit?id=${uId}`,body,{headers: requestHeader})
+}
 export const editUserInfo = async (uId, body) => {
   let info = await axios.get(`${USERS_INFO}?user_id=${uId}`, {
     headers: requestHeader,
