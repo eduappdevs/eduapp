@@ -5,30 +5,25 @@ class SubjectsController < ApplicationController
 
   # GET /subjects
   def index
+    wants_info_for_calendar = false
+
     if params[:user_id]
+      wants_info_for_calendar = true
       if !check_perms_query_self!(get_user_roles.perms_subjects, params[:user_id])
         return
       end
-      @Subjects = []
+
+      now = Time.now.to_i
+      tuitions = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
+      @Subjects = Subject.where(course_id: tuitions)
+      @todaySessions = EduappUserSession.where(subject_id: @Subjects).pluck(:session_start_date, :session_end_date, :id)
       @Sessions = []
-      @Today = Time.now.strftime("%F")
-      @TodayHourNow = Time.now.strftime("%H")
-      @todaySessions = []
-
-      @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
-
-      for course in @TuitionsUserId
-        @Subjects += Subject.where(course_id: course)
-      end
-
-      for subject in @Subjects
-        @todaySessions += EduappUserSession.where(subject_id: subject).pluck(:session_start_date)
-      end
-
       for hour in @todaySessions
-        if (hour.split("T")[1].split(":")[0] == @TodayHourNow or hour.split("T")[1].split(":")[0] >= @TodayHourNow and hour.split("T")[0] == @Today)
-          @Sessions += EduappUserSession.where(subject_id: @Subjects, session_start_date: hour)
-        else
+        stime = hour[0].to_time.to_i
+        etime = hour[1].to_time.to_i
+        id = hour[2]
+        if stime >= now or now <= etime
+          @Sessions += EduappUserSession.where(id: id)
         end
       end
 
@@ -38,12 +33,7 @@ class SubjectsController < ApplicationController
       @subjects = Subject.where(name: params[:name])
     elsif params[:user]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
-      @TuitionsUserId = Tuition.where(user_id: params[:user]).pluck(:course_id)
-      @subjects = []
-
-      for course in @TuitionsUserId
-        @subjects += Subject.where(course_id: course)
-      end
+      @subjects = Subject.where(course_id: Tuition.where(user_id: params[:user]).pluck(:course_id))
     else
       if !check_perms_all!(get_user_roles.perms_subjects)
         return
@@ -51,9 +41,17 @@ class SubjectsController < ApplicationController
       @subjects = Subject.all
     end
 
+    if !wants_info_for_calendar
+      if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
+        @subjects = @subjects.order(parse_filter_order(params[:order]))
+      else
+        @subjects = @subjects.order(name: :asc)
+      end
+    end
+
     if params[:page]
       @subjects = query_paginate(@subjects, params[:page])
-      @subjects[:current_page] = serialize_each(@subjects[:current_page], [:created_at, :updated_at, :course], [ :course])
+      @subjects[:current_page] = serialize_each(@subjects[:current_page], [:created_at, :updated_at, :course], [:course])
     end
 
     render json: @subjects
@@ -84,7 +82,6 @@ class SubjectsController < ApplicationController
         render json: @subject.errors, status: :unprocessable_entity
       end
     end
-
   end
 
   # PATCH/PUT /subjects/1

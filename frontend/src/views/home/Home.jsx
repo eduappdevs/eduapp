@@ -11,8 +11,12 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useLanguage from "../../hooks/useLanguage";
 import "./Home.css";
+import TeacherView from "../../components/teacherView/TeacherView";
+import { fetchStudents } from "../../services/enrollment.service";
+import useRole from "../../hooks/useRole";
 
 export default function Home() {
+  const [subject, setSubject] = useState(null);
   const [editFields, setFields] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const [sessions, setSessions] = useState([]);
@@ -24,6 +28,10 @@ export default function Home() {
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let sessionsSorted;
 
+  let userinfo = FetchUserInfo(getOfflineUser().user.id);
+  let isTeacher = useRole(userinfo, "eduapp-teacher");
+  let isAdmin = useRole(userinfo, "eduapp-admin");
+
   const language = useLanguage();
   const navigate = useNavigate();
 
@@ -31,6 +39,25 @@ export default function Home() {
     document
       .getElementsByClassName("ModalSessionAdd__main")[0]
       .classList.remove("ModalSession__hidden");
+  };
+
+  const teacherView = async (info) => {
+    let a = await fetchStudents(info);
+    if (a) {
+      setSubject(a.data);
+
+      setTimeout(() => {
+        document.getElementById("teacher-view").style.display = "flex";
+      }, 1);
+      setTimeout(() => {
+        document
+          .getElementById("teacher-view")
+          .classList.add("view-box-opened");
+        document
+          .getElementById("teacher-view")
+          .classList.remove("view-box-closed");
+      }, 150);
+    }
   };
 
   const openEditSession = async (id) => {
@@ -82,6 +109,7 @@ export default function Home() {
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
       let date = startDate.split("T")[1] + " - " + endDate.split("T")[1];
+      let subject_id = e.subject.id;
 
       sessionsPreSorted.push({
         id,
@@ -92,6 +120,7 @@ export default function Home() {
         resourcesPlatform,
         chat,
         date,
+        subject_id,
       });
 
       return true;
@@ -145,15 +174,11 @@ export default function Home() {
     });
   };
 
-  const openSession = (e) => {
-    e.preventDefault();
-    const after = document.getElementById(
-      "session-after" + e.target.id.substring(3)
-    );
-    const img = document.getElementById("button" + e.target.id.substring(3));
+  const openSession = (id) => {
+    const after = document.getElementById("session-after" + id);
+    const img = document.getElementById("button" + id);
     setTimeout(() => {
       try {
-        // const session = document.querySelector(e.target.id);
         if (after.classList.contains("hidden")) {
           after.classList.remove("hidden");
           img.classList.add("rotate");
@@ -163,6 +188,7 @@ export default function Home() {
         }
       } catch (error) {
         console.log(error);
+        console.log(id);
       }
     }, 100);
   };
@@ -269,12 +295,15 @@ export default function Home() {
                               ? "home__firstSession sessions-container"
                               : "sessions-container"
                           }
-                          onClick={openSession}
                           id={"ses" + data.id}
                         >
                           <div className="sessions-closed" id={"ses" + data.id}>
                             <div className="session-before">
-                              <div id={"button" + data.id} className="arrow">
+                              <div
+                                id={"button" + data.id}
+                                className="arrow"
+                                onClick={() => openSession(data.id)}
+                              >
                                 <svg xmlns="http://www.w3.org/2000/svg">
                                   <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                                 </svg>
@@ -312,7 +341,7 @@ export default function Home() {
                                     className="bi bi-camera-video"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
-                                      navigate(data.streaming_platform);
+                                      navigate(`"${data.streaming_platform}"`);
                                     }}
                                   >
                                     <path
@@ -335,6 +364,31 @@ export default function Home() {
                                   >
                                     <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
                                     <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
+                                  </svg>
+                                </p>
+                                <p
+                                  className={
+                                    isAdmin ||
+                                    (isTeacher &&
+                                      userinfo.teaching_list.includes(
+                                        data.subject_id
+                                      ))
+                                      ? null
+                                      : "hidden"
+                                  }
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="32"
+                                    height="32"
+                                    fill="currentColor"
+                                    className="bi bi-people"
+                                    viewBox="0 0 16 16"
+                                    onClick={async () => {
+                                      await teacherView(data.subject_id);
+                                    }}
+                                  >
+                                    <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
                                   </svg>
                                 </p>
                               </div>
@@ -424,6 +478,7 @@ export default function Home() {
         <SessionEdit fields={editFields} />
         <SessionAdd />
       </div>
+      <TeacherView info={subject} />
     </>
   );
 }
