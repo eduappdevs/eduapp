@@ -1,6 +1,9 @@
 import { createContext, useState } from "react";
 import LANGUAGES from "../constants/languages";
 
+/**
+ * React context used to globalize the language objects.
+ */
 export const LanguageCtx = createContext();
 
 export function LanguageContextProvider({ children }) {

@@ -2,6 +2,9 @@ import logogeduapp from "../assets/eduappadmin.png";
 import * as USER_SERVICE from "../services/user.service";
 import "../styles/Initialization.css";
 
+/**
+ * View used to initialize the database if it has not been.
+ */
 export default function Initialization() {
   const handleSubmit = async (form) => {
     form.preventDefault();

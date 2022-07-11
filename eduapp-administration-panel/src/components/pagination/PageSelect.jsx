@@ -1,6 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import "../componentStyles/PageSelect.css";
 
+/**
+ * Component used to display pagination in tables.
+ *
+ * @param {Function} onPageChange Function to executes when the page changes. Mostly used to refetch a page on change.
+ * @param {Number} maxPages Max number of pages available to page.
+ */
 export default function PageSelect({ onPageChange, maxPages }) {
   const minPages = 1;
   const [page, setPage] = useState(1);
