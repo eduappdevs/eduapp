@@ -21,6 +21,7 @@ export default function Home() {
   const [userImage, setUserImage] = useState(null);
 
   const sessionsPreSorted = [];
+  let user = getOfflineUser().user;
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let sessionsSorted;
 
@@ -226,7 +227,7 @@ export default function Home() {
                   />
                 </div>
                 <div className="user-name">
-                  <h1>{userInfo.user_name}</h1>
+                  <h1>{user.username || user.email.split("@")[0]}</h1>
                   <div className="edit" onClick={activeEditMenu}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
