@@ -147,7 +147,7 @@ export default function ChangePasswordButton() {
   return (
     <>
       <button
-        className="button"
+        className="button changepassword_button"
         onClick={() => {
           setShowModal(!showModal);
         }}

@@ -9,7 +9,6 @@ import MenuHeader from "../menuHeader/MenuHeader";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { GetCourses } from "../../../hooks/GetCourses";
 import GoogleLoginButton from "../../../components/googleLogin/googleLinkButton";
-import NameCapitalizer from "../../../utils/NameCapitalizer";
 import {
   getOfflineUser,
   updateUserImageOffline,
@@ -27,17 +26,21 @@ import { useEffect } from "react";
 export default function ProfileSettings() {
   const language = useLanguage();
   let user = getOfflineUser().user;
-  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let userInfo = FetchUserInfo(user.id);
   let isAdmin = useRole(userInfo, "eduapp-admin");
   let isTeacher = useRole(userInfo, "eduapp-teacher");
-  let courses = GetCourses(getOfflineUser().user.id);
+  let courses = GetCourses(user.id);
 
-  const [userName, setUserName] = useState(null);
+  const [name, setName] = useState(null);
+  const [surname, setSurname] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [username, setUsername] = useState(null);
   const [changeImage, setChangeImage] = useState(null);
   const [displayImageWarning, setWarnDisplay] = useState("none");
   const [imageWarningText, setWarningText] = useState(language.image_too_big);
   const [saveText, setSaveText] = useState(language.save);
   const [showPopup, setPopup] = useState(false);
+  const [changesUnsaved, setChangesUnsaved] = useState(false);
 
   const changeImagePreview = (newPreview) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
@@ -53,6 +56,7 @@ export default function ProfileSettings() {
             );
           setWarnDisplay("none");
           setChangeImage(newPreview.target.files[0]);
+          setChangesUnsaved(true);
         } else displayWarning(language.image_too_big);
       } else displayWarning(language.chat_no_image);
     } else displayWarning(language.file_not_image);
@@ -71,12 +75,9 @@ export default function ProfileSettings() {
       getDownloadURL(snap.ref).then((url) => {
         userFormData.append("profile_image", url);
         asynchronizeRequest(function () {
-          USER_SERVICE.editUserInfo(
-            getOfflineUser().user.id,
-            userFormData
-          ).then(() => {
+          USER_SERVICE.editUserInfo(user.id, userFormData).then(() => {
             updateUserImageOffline(url).then(() => {
-              window.location.href = "/home";
+              window.location.reload();
             });
           });
         });
@@ -103,21 +104,25 @@ export default function ProfileSettings() {
     switchSaveState(true);
 
     const newUserInfo = new FormData();
-    if (userName != null) {
-      newUserInfo.append("user_name", userName);
+    if (username) {
+      newUserInfo.append("username", username);
+    }
+    if (name) {
+      newUserInfo.append("name", name);
+    }
+    if (surname) {
+      newUserInfo.append("surname", surname);
     }
 
     let newImg = null;
     if (changeImage != null) {
       newImg = FirebaseStorage.getRef(
-        "user_profiles/" + getOfflineUser().user.id + "/" + changeImage.name
+        "user_profiles/" + user.id + "/" + changeImage.name
       );
     }
 
     if (newImg) {
-      list(
-        FirebaseStorage.getRef("user_profiles/" + getOfflineUser().user.id)
-      ).then((snap) => {
+      list(FirebaseStorage.getRef("user_profiles/" + user.id)).then((snap) => {
         if (snap.items.length !== 0) {
           deleteObject(snap.items[0]).then(() => {
             uploadImg(newImg, changeImage, newUserInfo);
@@ -126,17 +131,17 @@ export default function ProfileSettings() {
       });
     } else {
       asynchronizeRequest(async function () {
-        USER_SERVICE.editUserInfo(getOfflineUser().user.id, newUserInfo).then(
-          () => {
-            window.location.href = "/home";
+        try {
+          await USER_SERVICE.editUser(user.id, newUserInfo);
+          setChangesUnsaved(true);
+          window.location.href = "/";
+        } catch (error) {
+          if (error) {
+            switchSaveState(false);
+            setPopup(true);
           }
-        );
-      }).then((error) => {
-        if (error) {
-          switchSaveState(false);
-          setPopup(true);
         }
-      });
+      }).catch((error) => {});
     }
   };
 
@@ -164,6 +169,11 @@ export default function ProfileSettings() {
             setPopup(false);
           }}
         />
+        {isAdmin && (
+          <div className="youareadmin">
+            <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
+          </div>
+        )}
         {userInfo && (
           <div className="userProfileImg">
             <img
@@ -187,27 +197,40 @@ export default function ProfileSettings() {
             />
           </div>
         )}
-        <div
-          className="userName_input"
-          style={{
-            marginBottom: displayImageWarning === "none" ? "30px" : "0",
-          }}
-        >
+        <div className="name_input profile_info_input">
+          <span>Name</span>
           <input
             type="text"
-            value={
-              userName === null
-                ? NameCapitalizer(
-                    userInfo.user_name === undefined ? "" : userInfo.user_name
-                  )
-                : userName
-            }
+            value={name || user.name}
             onChange={(e) => {
-              setUserName(
-                e.target.value.includes(" ")
-                  ? NameCapitalizer(e.target.value)
-                  : e.target.value
-              );
+              setName(e.target.value);
+              setChangesUnsaved(true);
+            }}
+          />
+        </div>
+        <div className="surname_input profile_info_input">
+          <span>Surname</span>
+          <input
+            type="text"
+            value={surname || user.surname}
+            onChange={(e) => {
+              setSurname(e.target.value);
+              setChangesUnsaved(true);
+            }}
+          />
+        </div>
+        <div className="email_input profile_info_input">
+          <span>Email</span>
+          <input type="text" value={user.email} disabled />
+        </div>
+        <div className="username_input profile_info_input">
+          <span>Username</span>
+          <input
+            type="text"
+            value={username || user.username}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              setChangesUnsaved(true);
             }}
           />
         </div>
@@ -217,7 +240,11 @@ export default function ProfileSettings() {
         >
           <p>{imageWarningText}</p>
         </div>
-        <div className="commitChanges" onClick={commitChanges}>
+        <ChangePasswordButton />
+        <div
+          className={changesUnsaved ? "commitChanges" : "hidden"}
+          onClick={commitChanges}
+        >
           <span>{saveText}</span>
           <svg
             id="commit-loader"
@@ -235,13 +262,7 @@ export default function ProfileSettings() {
             />
           </svg>
         </div>
-        <ChangePasswordButton />
         <GoogleLoginButton useType={"merge"} />
-        {isAdmin && (
-          <div className="youareadmin">
-            <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
-          </div>
-        )}
         <div className="coursesContainer">
           <img className="coursesLogo" src="/assets/book.svg" alt="book" />
           <ul className="coursesList">
