@@ -36,14 +36,13 @@ import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
 import EventPop from "./components/eventPop/EventPop";
 import IDBManager from "./utils/IDBManager";
 
+const notifs = new NotifsAC();
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
   const [needsLoader, setNeedsLoader] = useState(true);
   const [ItsMobileDevice, setItsMobileDevice] = useState(null);
   const [showNotification, setShowNotification] = useState(true);
   const [calendarInfo, setCalendarInfo] = useState([]);
-
-  const notifs = new NotifsAC();
 
   let userinfo = FetchUserInfo(
     getOfflineUser().user === null ? -1 : getOfflineUser().user.id
@@ -116,9 +115,6 @@ export default function App() {
       )
     );
     activeNotification();
-
-    if (userinfo) {
-    }
 
     if (new RegExp("/(resource/[0-9]+)$").test(window.location.href)) {
       window.addEventListener("canLoadResource", () => {

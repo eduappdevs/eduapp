@@ -1,6 +1,8 @@
-import React from "react";
 import { GoogleLogin } from "react-google-login";
-import API, { asynchronizeRequest } from "../../API";
+import GoogleSettings, { asynchronizeRequest } from "../../API";
+import * as AUTH_SERVICE from "../../services/auth.service";
+import * as TUITION_SERVICE from "../../services/enrollment.service";
+import * as USER_SERVICE from "../../services/user.service";
 
 /**
  * A component used for logining in with google for the login page.
@@ -10,7 +12,7 @@ import API, { asynchronizeRequest } from "../../API";
 export default function BasicGoogleLogin({ language }) {
   const responseGoogle = async (response) => {
     try {
-      const google = await API.chechToken(response.accessToken);
+      const google = await GoogleSettings.chechToken(response.accessToken);
 
       if (!google.email) {
         throw new Error("Google account is not verified");
@@ -20,27 +22,24 @@ export default function BasicGoogleLogin({ language }) {
         formData.append("user[email]", google.email);
         formData.append("user[password]", response.profileObj.googleId);
 
-        await API.login(formData).then(() => {
-          window.location.href = "/";
-        });
+        await AUTH_SERVICE.login(formData);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const userEnroll = (uId) => {
+  const userEnroll = async (uId) => {
     const payload = new FormData();
     payload.append("course_id", 1);
     payload.append("user_id", uId);
 
-    API.default.enrollUser(payload).then(() => {
-      console.log("User tuition has been completed successfully!");
-    });
+    await TUITION_SERVICE.createTuition(payload);
   };
+
   const registerGoogle = async (response) => {
     try {
-      const google = await API.chechToken(response.accessToken);
+      const google = await GoogleSettings.chechToken(response.accessToken);
 
       if (!google.email) {
         throw new Error("Google account is not verified");
@@ -50,24 +49,16 @@ export default function BasicGoogleLogin({ language }) {
         payload.append("user[email]", google.email);
         payload.append("user[password]", response.profileObj.googleId);
 
-        asynchronizeRequest(function () {
-          API.createUser(payload).then((res) => {
-            const payload = new FormData();
-            payload.append("user_id", res.data.message.id);
-            payload.append("user_name", res.data.message.email.split("@")[0]);
-            payload.append("user_role", "eduapp-student");
-            userEnroll(res.data.message.id);
+        asynchronizeRequest(async function () {
+          const newUser = await USER_SERVICE.createUser(payload);
 
-            const userData = new FormData();
+          const enroll = new FormData();
+          enroll.append("user_id", newUser.data.message.id);
+          enroll.append("user_name", newUser.data.message.email.split("@")[0]);
+          enroll.append("user_role", "eduapp-student");
+          userEnroll(newUser.data.message.id);
 
-            userData.append("user[email]", google.email);
-            userData.append("user[password]", response.profileObj.googleId);
-
-            API.login(userData).then((res) => {
-              console.log(res);
-              window.location.href = "/";
-            });
-          });
+          await AUTH_SERVICE.login(payload);
         });
       }
     } catch (error) {

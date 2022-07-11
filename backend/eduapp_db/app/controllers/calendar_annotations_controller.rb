@@ -64,7 +64,7 @@ class CalendarAnnotationsController < ApplicationController
   end
 
   def calendar_info
-    if !check_perms_query!(get_user_roles.perms_events)
+    if !check_perms_query_self!(get_user_roles.perms_events, params[:user_id])
       return
     end
     annotation = CalendarAnnotation.where(isGlobal: true, isPop: true).order(:created_at).pluck(:annotation_start_date, :annotation_end_date)

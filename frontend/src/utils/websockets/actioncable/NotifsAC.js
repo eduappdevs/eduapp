@@ -6,6 +6,9 @@ import * as NOTIFSMODAL from "../../../components/notifications/notifsModal";
 import pushNotify from "../../../components/notifications/notifications";
 import IDBManager from "../../IDBManager";
 
+/**
+ * The action cable manager for the Notifications websocket.
+ */
 export default class NotifsAC extends ACManager {
   idbm = new IDBManager();
 
@@ -72,7 +75,7 @@ export default class NotifsAC extends ACManager {
 
     this.connection.received = (data) => this.defaultReceived(data);
 
-    this.connection.rejected = () => this.defaultRejected("/chat");
+    this.connection.rejected = () => this.defaultRejected();
 
     this.connection.disconnected = () => this.defaultDisconnected();
 
@@ -96,7 +99,7 @@ export default class NotifsAC extends ACManager {
           this.generateChannelConnection(this.to).then(() => {
             this.sendChannelCmd(cmd);
           });
-
+          break;
         default:
           break;
       }

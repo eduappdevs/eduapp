@@ -16,8 +16,8 @@ class SubjectsController < ApplicationController
       # tuitions = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
       # @Subjects = Subject.where(course_id: tuitions)
       # @todaySessions = EduappUserSession.where(subject_id: @Subjects).pluck(:session_start_date)
-      # @Sessions = []
-      #
+      # @Sessions = []
+      
       # for hour in @todaySessions
       #   if (hour.split("T")[1].split(":")[0] == @TodayHourNow or hour.split("T")[1].split(":")[0] >= @TodayHourNow and hour.split("T")[0] == @Today)
       #     @Sessions += EduappUserSession.where(subject_id: @Subjects, session_start_date: hour)

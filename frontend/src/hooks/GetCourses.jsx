@@ -1,6 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import * as COURSE_SERVICE from "../services/course.service";
 
+/**
+ * Fetches courses dynamically based on the user's id.
+ *
+ * @param {String} userId The user's UUID.
+ * @return {Object} courses
+ */
 export const GetCourses = (userId) => {
   const [courses, setCourses] = useState([]);
 

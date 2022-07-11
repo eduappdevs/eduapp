@@ -3,6 +3,13 @@ import * as USER_SERVICE from "../services/user.service";
 import * as AUTH_SERVICE from "../services/auth.service";
 import { getOfflineUser, saveUserOffline } from "../utils/OfflineManager";
 
+/**
+ * Dynamically fetches the user information when the userId changes.
+ *
+ * @param {String} userId The user's UUID.
+ *
+ * @return {Object} userInfo
+ */
 export const FetchUserInfo = (userId) => {
   const [userInfo, setUserInfo] = useState({});
 
