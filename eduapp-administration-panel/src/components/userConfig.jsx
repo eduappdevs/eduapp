@@ -70,7 +70,7 @@ export default function UserConfig() {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
     } else {
-      document.getElementById("scroll").scrollIntoView(true);
+      document.getElementById("scroll")?.scrollIntoView(true);
       document.getElementById("standard-modal").style.width = "101%";
       document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflow =
@@ -308,7 +308,7 @@ export default function UserConfig() {
           "The new user could not be published, check if you have an internet connection."
         );
         setPopupIcon("error");
-        switchSaveState(false);
+        // switchSaveState(false);
       }
     });
   };
