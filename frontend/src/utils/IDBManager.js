@@ -56,20 +56,10 @@ export default class IDBManager {
     return await idb.keys(this.store);
   }
 
-<<<<<<< HEAD
-  async keyExists(key){
-    let response = false
-    await idb.keys(this.store).then((res)=>{
-      Array.from(res).map((res)=>{
-        if(res===key){response= true}})
-      })
-    return response
-=======
   async keyExists(key) {
     await idb.keys(this.store).then((res) => { return Array.from(res).includes(key) })
   }
   async clear() {
     return await idb.clear(this.store);
->>>>>>> c94b7869afacdf3bcacc7968f8c8c4c12f673740
   }
 }

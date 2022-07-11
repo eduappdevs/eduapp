@@ -4,6 +4,7 @@ import ACManager from "../ACManager";
 import EncryptionUtils from "../../EncryptionUtils";
 import * as NOTIFSMODAL from "../../../components/notifications/notifsModal";
 import pushNotify from "../../../components/notifications/notifications";
+import IDBManager from "../../IDBManager";
 
 export default class NotifsAC extends ACManager {
   idbm = new IDBManager();
