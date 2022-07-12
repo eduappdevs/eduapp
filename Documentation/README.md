@@ -74,7 +74,7 @@ The tables elegible for extra fields are Users, Courses, Sessions, Institutions,
 
 Helper methods for these are located as well in the Application Controller.
 
-## Filtration
+## Filtration
 
 Each controller has it's own way of filtrating. Every controller follows a pattern:
 
@@ -83,7 +83,7 @@ Each controller has it's own way of filtrating. Every controller follows a patte
 - Order by ascending if no order is specified
 - Return the first page if not page of information is specified
 
-## Encryption
+## Encryption
 
 EduApp has it's own encryption utility inside ```lib/edu_app_utils/encrypt_utils.rb```.
 
@@ -109,7 +109,7 @@ This all depends on WorkBox to register and save to browser cache the compiled a
 
 To save the user's important information for offline use, we use the ```OfflineManager.js``` utility. This helps us saving and updating any information when needed so that we have always the most updated user information at all types.
 
-## Utilities
+## Utilities
 
 The different types of utilities we use are:
 - ```OfflineManager```
@@ -127,7 +127,7 @@ The workflow used is to always store information offline when received from the 
 
 ```getOfflineUser()``` is the main function you will want to use for accessing a user's information online or offline. It all depends on the information in it.
 
-### IDBManager
+### IDBManager
 
 The IDBManager uses a library @jakearchibald called ```idb-keyval``` which converts all IndexedDB functions into asynchronous, for ease of use.
 
@@ -141,7 +141,7 @@ MediaFixer is a small function used to correct files from Rails ActiveStorage fr
 
 This is used to upload any files used to a Firebase Storage bucket in case ActiveStorage fails. As of now, only profile images are uploaded to Firebase.
 
-### UrlPrefixer
+### UrlPrefixer
 
 This is used in case you change your domains base name to a new mount point.
 
@@ -165,7 +165,7 @@ The main topics we will cover:
 - Login
 - Components
 
-## Initialization
+## Initialization
 
 When creating and intializing the backend, frontend and administration for the first time, you will be prompted to create a new administrator user. Once done, you may login with your new administration account.
 
@@ -179,7 +179,7 @@ To unlock the other administrative sections, you must first create your an Insti
 
 Only users who have an ```admin-query``` or ```admin``` role are able to have access to the web app by default. You may change this inside the authentication service inside ```services```.
 
-## Components
+## Components
 
 The administration panel constitutes of one main parent view with rotating child components. This means that ControlPanel is the parent view that never changes, and the only components that change are the inside/body of the main page.
 
