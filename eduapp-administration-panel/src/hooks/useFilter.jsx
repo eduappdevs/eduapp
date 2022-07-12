@@ -7,6 +7,15 @@ import {
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 
+/**
+ * Custom hook used to retrieve a filtrated list of the information passed.
+ *
+ * @param {Object} mainInfo The main information to filter.
+ * @param {*} fieldParserFn Parser used for local filtration.
+ * @param {*} filterRequest Request to be executed for remote filtration.
+ * @param {*} requestFields Fields to be sent for filtration.
+ * @returns {Object[]} filter
+ */
 export default function useFilter(
   mainInfo,
   fieldParserFn = null,

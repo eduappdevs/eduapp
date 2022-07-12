@@ -4,6 +4,12 @@ import { LanguageCtx } from "../hooks/LanguageContext";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
 import StandardModal from "./modals/standard-modal/StandardModal";
 
+/**
+ * A custom search field used for searching extra fields created by the end user.
+ *
+ * Works in a similar way as the ```FieldSearcher``` does. Instead, it searches for existing fields
+ * and it's values in the extra fields column in the backend.
+ */
 export default function ExtraFieldsSearcher() {
   const [language] = useContext(LanguageCtx);
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);

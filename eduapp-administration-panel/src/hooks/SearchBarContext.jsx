@@ -1,5 +1,8 @@
 import { createContext, useState } from "react";
 
+/**
+ * React context used to relay the search information for the different filters.
+ */
 export const SearchBarCtx = createContext();
 
 export function SearchBarContextProvider({ children }) {

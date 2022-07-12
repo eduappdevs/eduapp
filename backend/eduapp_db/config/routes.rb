@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   @api_path = "/api/#{ENV.fetch("API_VERSION")}"
 
   default_url_options :host => @api_path
+
+  # Base url for mounting the ActionCable websocket.
   mount ActionCable.server => "#{@api_path}/websocket"
 
   resources :user_roles, :path => "#{@api_path}/user_roles"
@@ -18,6 +20,7 @@ Rails.application.routes.draw do
   resources :eduapp_user_sessions, :path => "#{@api_path}/eduapp_user_sessions"
   resources :user_infos, :path => "#{@api_path}/user_infos"
 
+  # All filter paths.
   get "#{@api_path}/filter/user_infos", to: "user_infos#filter"
   get "#{@api_path}/filter/courses", to: "courses#filter"
   get "#{@api_path}/filter/subjects", to: "subjects#filter"
@@ -30,18 +33,24 @@ Rails.application.routes.draw do
   get "#{@api_path}/filter/chats", to: "chat_bases#filter"
   get "#{@api_path}/filter/chat_participants", to: "chat_participants#filter"
 
+  # Remove participant from a chat.
   delete "#{@api_path}/chat_participants/remove/:user_id/:chat_base_id", to: "chat_participants#remove_participant"
 
+  # Batch loading routes for sessions.
   post "#{@api_path}/eduapp_user_sessions/batch_load", to: "eduapp_user_sessions#session_batch_load"
   delete "#{@api_path}/eduapp_user_sessions/batch_delete/:batch_id", to: "eduapp_user_sessions#destroy_batch"
   put "#{@api_path}/eduapp_user_sessions/batch_update/:batch_id", to: "eduapp_user_sessions#update_batch"
 
+  # Checks if a user has system notifications.
   get "#{@api_path}/system/chat/notifications", to: "chat_bases#has_system_notifs"
+  # Returns the system user's information.
   get "#{@api_path}/system/user/", to: "user_infos#system_user"
 
+  # Add or remove a teacher from teaching a subject.
   post "#{@api_path}/user_infos/add_subject/:user_id/:subject_id", to: "user_infos#add_subject"
   delete "#{@api_path}/user_infos/remove_subject/:user_id/:subject_id", to: "user_infos#remove_subject"
 
+  # Calendar event handling routes.
   post "#{@api_path}/user_infos/global_events/:user_id", to: "user_infos#add_events"
   delete "#{@api_path}/user_infos/remove_global_events/:user_id/:calendar_event", to: "user_infos#remove_event"
   get "#{@api_path}/calendar_annotations/all_id", to: "calendar_annotations#calendar_info"
@@ -49,6 +58,7 @@ Rails.application.routes.draw do
   get "#{@api_path}/calendar_annotations/:user_id/event_pop", to: "calendar_annotations#show_calendar_event"
   get "#{@api_path}/calendar_annotations/:user_id/all", to: "calendar_annotations#calendar_info"
 
+  # Devise configuration routs.
   devise_for :users,
              controllers: {
                sessions: "users/sessions",
@@ -89,9 +99,12 @@ Rails.application.routes.draw do
 
   end
 
+  # Deletes a user.
   delete "#{@api_path}/users/remove/:id", to: "user_infos#destroyuser"
+  # Google login route.
   get "#{@api_path}/google-login", to: "glogin#login"
 
+  # StaticController methods.
   get "#{@api_path}/ping", to: "static#ping"
   get "#{@api_path}/ping/admin", to: "static#admin"
   get "#{@api_path}/ping/created", to: "static#created"

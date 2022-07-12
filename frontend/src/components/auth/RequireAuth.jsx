@@ -2,6 +2,11 @@ import * as AUTH_SERVICE from "../../services/auth.service";
 import { TOKEN } from "../../API";
 import { getOfflineUser } from "../../utils/OfflineManager";
 
+/**
+ * A function used to test authentication in the app.
+ *
+ * @returns Boolean
+ */
 export default function RequireAuth() {
   if (TOKEN !== "Bearer undefined" && getOfflineUser().user !== null) {
     const parseJwt = (token) => {

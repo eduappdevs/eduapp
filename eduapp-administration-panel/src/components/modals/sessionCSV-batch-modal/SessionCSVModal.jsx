@@ -5,6 +5,12 @@ import sessionsTemplate from "../../../assets/sessionsTemplate.png";
 import sessionsTemplateBatch from "../../../assets/sessionsTemplateBatch.png";
 import ImageModal from "../../ImageModal";
 import "./SessionCSVModal.css";
+
+/**
+ * Modal used to upload sessions to the databse from a CSV file.
+ *
+ * @param {Function} closed Executes a function on modal closed.
+ */
 export default function SessionCSVModal({ closed }) {
   const [template, setTemplate] = useState("");
   const [modalActive, setModalActive] = useState(false);
@@ -16,9 +22,8 @@ export default function SessionCSVModal({ closed }) {
   };
   const beforeLoad = (data) => {
     data.map((x) => {
-      if (x[0] !== "") {
-        setCsvData((csvData) => [...csvData, x]);
-      }
+      if (x[0] !== "") return setCsvData((csvData) => [...csvData, x]);
+      return false;
     });
     setModalActive(true);
   };

@@ -3,6 +3,9 @@ import React from "react";
 import { EDUAPP_SESSIONS } from "../../../config";
 import "./SessionModal.css";
 
+/**
+ * @deprecated
+ */
 export default function SessionEdit({ fields }) {
   const close = () => {
     document

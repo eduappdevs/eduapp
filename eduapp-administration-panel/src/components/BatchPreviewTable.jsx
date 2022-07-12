@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as SCHEDULESERVICE from "../services/schedule.service";
@@ -5,13 +6,17 @@ import * as SUBJECTSERVICE from "../services/subject.service";
 import * as API from "../API";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 
+/**
+ * Preview table used when previewing information to batch load.
+ *
+ * @param {String} type Type of preview table to use.
+ */
 export default function BatchPreviewTable(props) {
   const [data, setData] = useState(null);
-  const [subject, setSubject] = useState();
+  const [, setSubject] = useState();
 
   const confirmAndUpload = () => {
     data.map((x) => {
-      console.log(props.type);
       switch (props.type) {
         case "users":
           createUser(x);
@@ -28,8 +33,8 @@ export default function BatchPreviewTable(props) {
         default:
           break;
       }
-      setTimeout(() => {
-        // window.location.reload();
+      return setTimeout(() => {
+        window.location.reload();
       }, 2000);
     });
   };

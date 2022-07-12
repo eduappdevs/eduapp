@@ -6,6 +6,9 @@ import CSVReader from "react-csv-reader";
 import ImageModal from "./ImageModal";
 import BatchPreviewTable from "./BatchPreviewTable";
 
+/**
+ * Used for the ```Batcher``` component.
+ */
 export default function BatcherButtonTemplate({ type }) {
   const [modalActive, setModalActive] = useState(false);
   const [csvTemplateActive, setCsvTemplateActive] = useState(false);

@@ -2,7 +2,7 @@ class Users::PasswordsController < Devise::PasswordsController
   # When the auth is implemented use this
   # before_action :authenticate_user! , only: [:get_reset_password_token,:do_reset_password]
 
-  # Function to send confirmation code to user
+  # Sends a confirmation code via email to the user.
   def send_change_password_instructions
     old_password = params[:old_password]
     @user = User.find_by(email: params[:email])
@@ -20,7 +20,7 @@ class Users::PasswordsController < Devise::PasswordsController
     end
   end
 
-  # Function to change password using confirmation code
+  # Changes the user's password via a confirmation code method.
   def change_password
     # Use below when the auth is implemented
     # user = current_user
@@ -46,6 +46,7 @@ class Users::PasswordsController < Devise::PasswordsController
     end
   end
 
+  # Resets a user's password.
   def do_reset_password
     user = User.find_by(email: params[:email])
     if user.reset_password_token == params[:token]
@@ -56,6 +57,7 @@ class Users::PasswordsController < Devise::PasswordsController
     end
   end
 
+  # Sends a password reset link to the user's email.
   def send_reset_password_link
     user = User.find_by(email: params[:email])
     if user.present?

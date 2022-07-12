@@ -1,6 +1,13 @@
 import React from "react";
 import "./eventPop.css";
 
+/**
+ * An alert popup used to notify about an event.
+ *
+ * @param {Boolean} show Show alert of a new event.
+ * @param {Function} close The close function.
+ * @param {Object} data Data to display.
+ */
 export default function EventPop({ show, close, data }) {
   return data.length !== 0 ? (
     <>

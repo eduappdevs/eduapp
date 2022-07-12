@@ -1,6 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../API";
 
+/**
+ * Used for sending emails to a user. Dependant on backend.
+ */
 export const Mailer = (props) => {
   async function sendemail() {
     let email;
@@ -8,7 +13,7 @@ export const Mailer = (props) => {
     if (email === "" || email.match(!validmail)) {
       console.log("Please Enter Valid Email");
     } else {
-      let http_request_url = `http://localhost:3000/reset_password?email=${email}`;
+      let http_request_url = `${API_URL}/reset_password?email=${email}`;
       await axios
         .get(http_request_url)
         .then((res) => {
@@ -22,10 +27,7 @@ export const Mailer = (props) => {
     }
   }
 
-  useEffect(() => {
-    props.sendEmail && sendemail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.sendEmail]);
+  useEffect(() => props.sendEmail && sendemail(), [props.sendEmail]);
 
   return (
     <>

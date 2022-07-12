@@ -1,3 +1,6 @@
+# Please run the migrations before using the seeds.
+# Use 'rails db:migrate:reset', then 'rails db:seed'.
+
 puts "Creating default roles..."
 
 UserRole.create(name: "eduapp-student", description: "Basic student permissions for EduApp.")

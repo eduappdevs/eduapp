@@ -1,3 +1,9 @@
+/**
+ * Capitalizes any string given to the function.
+ *
+ * @param {String} namestr
+ * @returns {String} capitalizedName
+ */
 export default function NameCapitalizer(namestr) {
   // Name "structure" - Name (Secondname) Surname Lastname
   let names = namestr.split(" ");

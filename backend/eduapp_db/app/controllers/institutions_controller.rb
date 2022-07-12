@@ -36,7 +36,7 @@ class InstitutionsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /institutions/1
+  # PUT /institutions/1
   def update
     if !check_perms_update!(get_user_roles.perms_institution, false, :null)
       return

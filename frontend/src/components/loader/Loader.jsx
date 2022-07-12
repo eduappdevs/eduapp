@@ -1,6 +1,9 @@
 import React from "react";
 import "./Loader.css";
 
+/**
+ * The app's loader animation.
+ */
 export default function Loader() {
   return (
     <div className="loader__main-container" id="loader_main-container">
@@ -23,6 +26,9 @@ export default function Loader() {
   );
 }
 
+/**
+ * Makes the animation appear.
+ */
 export function runOpenAnimation() {
   const loader = document.getElementById("loader_main-container");
 
@@ -30,6 +36,9 @@ export function runOpenAnimation() {
   loader.style.display = "block";
 }
 
+/**
+ * Makes the animation disappear.
+ */
 export function runCloseAnimation() {
   const loader = document.getElementById("loader_main-container");
 

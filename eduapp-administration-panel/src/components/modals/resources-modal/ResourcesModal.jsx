@@ -4,6 +4,21 @@ import * as RESOURCESERVICE from "../../../services/resource.service";
 import StandardModal from "../standard-modal/StandardModal";
 import "./ResourcesModal.css";
 
+/**
+ * A modal used to upload resources.
+ *
+ * @param {Boolean} show Show the modal.
+ * @param {String} edit If the modal is for editing.
+ * @param {Object} language The language to use.
+ * @param {Function} onCloseModal Executes a function when closing.
+ * @param {Function} onAddModal Executes a function on addition.
+ * @param {String} name The resource's name.
+ * @param {String} description
+ * @param {Object} author The owner's user information.
+ * @param {String} subject The subject's UUID.
+ * @param {Object} info The files to show.
+ * @param {Boolean} create Determines if the modal is for creating.
+ */
 export default function ResourcesModal({
   show,
   edit,

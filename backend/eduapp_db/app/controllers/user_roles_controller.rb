@@ -35,6 +35,7 @@ class UserRolesController < ApplicationController
     render json: @user_roles
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     role_query = {}
     params.each do |param|
@@ -97,7 +98,7 @@ class UserRolesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /user_roles/1
+  # PUT /user_roles/1
   def update
     return if !check_perms_update!(get_user_roles.perms_roles, false, :null)
 
@@ -128,9 +129,8 @@ class UserRolesController < ApplicationController
 
   # DELETE /user_roles/1
   def destroy
-    if !check_perms_delete!(get_user_roles.perms_roles, false, :null)
-      return
-    end
+    return if !check_perms_delete!(get_user_roles.perms_roles, false, :null)
+
     @user_role.destroy
   end
 

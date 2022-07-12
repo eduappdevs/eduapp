@@ -1,5 +1,27 @@
 import "./StandarModal.css";
 
+/**
+ * A custom modal used across the app with many function to provide
+ * the most versatility for any use case possible.
+ *
+ * @param {String} text The text to display in the alert.
+ * @param {String} type The type of icon to display (shown below).
+ * @param {Boolean} show To show the alert or not.
+ * @param {Boolean} iconFill If the icon should be filled.
+ * @param {String} iconColor The color of the icon.
+ * @param {Boolean} isQuestion Displays yes or no instead of okay.
+ * @param {String} customOkay Custom text for Okay.
+ * @param {String} customYes Custom text for Yes.
+ * @param {String} customNo Custom text for No.
+ * @param {Function} onYesAction What to do on Yes.
+ * @param {Function} onNoAction What to do on No.
+ * @param {Function} onCloseAction What to do on Close.
+ * @param {Boolean} hasTransition If the alert has a initial transition.
+ * @param {Boolean} hasIconAnimation If the icon has an appearing animation.
+ * @param {Boolean} showLoader Replaces any buttons for a loader.
+ * @param {HTMLFormElement} form A form element to use forms in the alert.
+ * @param {Boolean} isModalExtraFields Adds custom styling when dealing with extra fields.
+ */
 export default function StandardModal({
   text,
   type,

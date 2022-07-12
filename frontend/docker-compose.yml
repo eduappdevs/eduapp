@@ -1,8 +1,0 @@
-version: '3.1'
-services:
-  web:
-    build: 
-      context: .
-    image: eduapp/web
-    ports:
-      - "8000:80"

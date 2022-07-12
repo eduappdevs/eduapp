@@ -4,6 +4,14 @@ import { GetSubjects } from "../../hooks/GetSubjects";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import "./SubjectDropdown.css";
 
+/**
+ * A subject dropdown that displays a vertical lists of subjects.
+ *
+ * @param {Boolean} dropdown Displays the dropdown.
+ * @param {Function} closeAction Executes the function when closed.
+ * @param {Function} onSubjectClick Executes a function when a subject is clicked.
+ * @param {Object} language THe language to use.
+ */
 export default function SubjectDropdown({
   dropdown,
   closeAction,
@@ -61,7 +69,7 @@ export default function SubjectDropdown({
     >
       {subjects.length > 1 && (
         <>
-          <li className="drpdwn-subtitle">{language.subjects}</li>
+          <li className="drpdwn-subtitle">{language.subject}</li>
           {subjects.map((subject, index) => {
             if (index > 0) {
               return (

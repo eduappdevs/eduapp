@@ -3,6 +3,9 @@ import axios from "axios";
 import { EDUAPP_SESSIONS } from "../../../config";
 import "./SessionModal.css";
 
+/**
+ * @deprecated
+ */
 export default function SessionAdd() {
   const AddNewSession = (e) => {
     e.preventDefault();

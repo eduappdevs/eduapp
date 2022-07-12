@@ -5,6 +5,9 @@ import { getOfflineUser } from "../utils/OfflineManager";
 import * as AUTH_SERVICE from "../services/auth.service";
 import useLanguage from "../hooks/useLanguage";
 
+/**
+ * Handles the change password process of a user.
+ */
 export default function ChangePasswordButton() {
   const language = useLanguage();
   const [showModal, setShowModal] = useState(false);

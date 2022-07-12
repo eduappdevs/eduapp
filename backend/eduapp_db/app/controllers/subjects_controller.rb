@@ -12,6 +12,19 @@ class SubjectsController < ApplicationController
       if !check_perms_query_self!(get_user_roles.perms_subjects, params[:user_id])
         return
       end
+      # TODO: Possible refactorization:
+      # tuitions = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
+      # @Subjects = Subject.where(course_id: tuitions)
+      # @todaySessions = EduappUserSession.where(subject_id: @Subjects).pluck(:session_start_date)
+      # @Sessions = []
+      
+      # for hour in @todaySessions
+      #   if (hour.split("T")[1].split(":")[0] == @TodayHourNow or hour.split("T")[1].split(":")[0] >= @TodayHourNow and hour.split("T")[0] == @Today)
+      #     @Sessions += EduappUserSession.where(subject_id: @Subjects, session_start_date: hour)
+      #   end
+      # end
+      # @subjects = @Sessions
+
       @Subjects = []
       @Sessions = []
       @Today = Time.now.strftime("%F")
@@ -65,6 +78,7 @@ class SubjectsController < ApplicationController
     render json: @subjects
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     subjects_query = {}
     course_query = {}
@@ -156,7 +170,7 @@ class SubjectsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /subjects/1
+  # PUT /subjects/1
   def update
     if !check_perms_update!(get_user_roles.perms_subjects, false, :null)
       return
@@ -178,6 +192,7 @@ class SubjectsController < ApplicationController
 
   private
 
+  # Checks if ```Subject``` is present in the user's ```Course```.
   def subject_in_user_course
     if Tuition.where(user_id: @current_user, course_id: @subject.course_id).count > 0
       return true

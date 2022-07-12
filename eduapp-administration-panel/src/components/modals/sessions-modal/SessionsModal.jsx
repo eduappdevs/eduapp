@@ -4,6 +4,14 @@ import * as SCHEDULESERVICE from "../../../services/schedule.service";
 import StandardModal from "../standard-modal/StandardModal";
 import "./SessionsModal.css";
 
+/**
+ * Modal used to batch load session to the database.
+ *
+ * @param {Boolean} show
+ * @param {Object} language
+ * @param {Object} info Information to display.
+ * @param {Function} onCloseModal Executes a function on modal closed.
+ */
 export default function SessionsModal({ show, language, info, onCloseModal }) {
   const [changeName, setChangeName] = useState([]);
   const [changeStreamingLink, setChangeStreamingLink] = useState([]);
@@ -13,7 +21,7 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [popupIcon, setPopupIcon] = useState("");
-  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+  const [isConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
 
   const alertCreate = async () => {

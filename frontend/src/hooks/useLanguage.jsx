@@ -4,6 +4,11 @@ import es_es from "../lang/es_es.json";
 import en_uk from "../lang/en_uk.json";
 import pt_pt from "../lang/pt_pt.json";
 
+/**
+ * Hook used to dynamically change the app's language.
+ *
+ * @returns {Object} language
+ */
 export default function useLanguage() {
   const [lang, setLang] = useState(en_uk);
 

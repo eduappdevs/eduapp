@@ -23,7 +23,7 @@ class UserInfosController < ApplicationController
     if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
       @user_infos = @user_infos.order(parse_filter_order(params[:order]))
     else
-      @user_infos = @user_infos.order(user_name: :asc)
+      @user_infos = params[:name] ? @user_infos : @user_infos.order(user_name: :asc)
     end
 
     if params[:page]
@@ -37,6 +37,7 @@ class UserInfosController < ApplicationController
     render json: @user_infos
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     infos_query = {}
     user_query = {}
@@ -103,6 +104,7 @@ class UserInfosController < ApplicationController
     render json: { filtration: final_query }
   end
 
+  # Returns a filtered query based on the parameters passed for teachers.
   def teacher_filter
     teacher_query = {}
     params.each do |param|
@@ -176,6 +178,7 @@ class UserInfosController < ApplicationController
     end
   end
 
+  # Adds a ```Subject``` ID to the ```UserInfo``` ```:teaching_list``` array.
   def add_subject
     if !check_perms_write!(get_user_roles.perms_users)
       return
@@ -189,6 +192,7 @@ class UserInfosController < ApplicationController
     render json: @user_info
   end
 
+  # Adds a ```CalendarAnnotation``` ID to the ```UserInfo``` ```:calendar_event``` array.
   def add_events
     if !check_perms_write!(get_user_roles.perms_users)
       return
@@ -198,17 +202,17 @@ class UserInfosController < ApplicationController
 
     @user_info.each do |user_info|
       calendar_annotation.each do |annotation|
-        if user_info.calendar_event.include?(annotation.id.to_s)
-          puts "already added"
-        else
+        if !user_info.calendar_event.include?(annotation.id.to_s)
           user_info.calendar_event << annotation.id
         end
       end
       user_info.save
     end
+
     render json: @user_info
   end
 
+  # Removes a ```CalendarAnnotation``` ID of the ```UserInfo``` ```:calendar_event``` array.
   def remove_event
     if !check_perms_write!(get_user_roles.perms_users)
       return
@@ -219,6 +223,7 @@ class UserInfosController < ApplicationController
     render json: @user_info
   end
 
+  # Removes a ```Subject``` ID of the ```UserInfo``` ```:teaching_list``` array.
   def remove_subject
     if !check_perms_write!(get_user_roles.perms_users)
       return
@@ -229,7 +234,7 @@ class UserInfosController < ApplicationController
     render json: @user_info
   end
 
-  # PATCH/PUT /user_infos/1
+  # PUT /user_infos/1
   def update
     if !can_update_self(@user_info.user_id)
       if !check_perms_update!(get_user_roles.perms_users)
@@ -252,25 +257,25 @@ class UserInfosController < ApplicationController
     @user_info.destroy
   end
 
+  # Completely removes a ```User``` with it's respective
+  # ```Tuition```, ```JtiMatchList``` and ```UserInfo``` linked entries.
   def destroyuser
     if !check_perms_delete!(get_user_roles.perms_users, true, params[:id])
       return
     end
     user = User.find(params[:id])
     user_i = UserInfo.find_by(user_id: params[:id])
-    user_tui = Tuition.where(user_id: params[:id])
-    user_jtis = JtiMatchList.where(user_id: params[:id])
 
+    # Cannot delete a user if he's the last administrator.
     if UserInfo.where(user_role_id: get_admin_role.id).count === 1 && user_i.user_role_id === get_admin_role.id
-      render json: { message: "Cannot delete the last admin." }, status: 403
-      return
+      render json: { message: "Cannot delete the last admin." }, status: 403 and return
     end
 
-    user_jtis.each do |jti|
+    JtiMatchList.where(user_id: params[:id]).each do |jti|
       jti.destroy
     end
 
-    user_tui.each do |tuition|
+    Tuition.where(user_id: params[:id]).each do |tuition|
       tuition.destroy
     end
 
@@ -287,10 +292,9 @@ class UserInfosController < ApplicationController
 
   private
 
+  # Tests if the requester id and the current ```User``` IDs are the same.
   def can_update_self(requester_id)
-    if requester_id === @current_user
-      return true
-    end
+    return true if requester_id === @current_user
     return false
   end
 

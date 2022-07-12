@@ -5,6 +5,12 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import useRole from "../../hooks/useRole";
 import "./BottomButtons.css";
 
+/**
+ * The bottom navbar of the app for mobile.
+ *
+ * @param {Boolean} mobile Tests for mobile or desktop display.
+ * @param {String} badgeCount Count for unread notifications for chats.
+ */
 export default function BottomButtons({ mobile, badgeCount }) {
   const [inHome, setInHome] = useState(false);
   const [inResources, setInResources] = useState(false);

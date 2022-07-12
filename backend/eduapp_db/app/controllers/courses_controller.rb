@@ -38,6 +38,7 @@ class CoursesController < ApplicationController
     render json: @courses
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     course_query = {}
     params.each do |param|
@@ -97,7 +98,7 @@ class CoursesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /courses/1
+  # PUT /courses/1
   def update
     if !check_perms_update!(get_user_roles.perms_course, false, :null)
       return

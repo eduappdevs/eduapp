@@ -34,6 +34,7 @@ class EduappUserSessionsController < ApplicationController
     render json: @eduapp_user_sessions
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     sessions_query = {}
     subject_query = {}
@@ -135,7 +136,7 @@ class EduappUserSessionsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /eduapp_user_sessions/1
+  # PUT /eduapp_user_sessions/1
   def update
     if !check_perms_update!(get_user_roles.perms_sessions, false, :null)
       return
@@ -162,10 +163,14 @@ class EduappUserSessionsController < ApplicationController
     @eduapp_user_session.destroy
   end
 
+  # Destroys a group of ```EduappUserSession``` created by the
+  # batch loader.
   def destroy_batch
     EduappUserSession.where(batch_id: params[:batch_id]).destroy_all
   end
 
+  # Creates a group of ```EduappUserSession``` based on many entries
+  # and generates a new ```EduappUserSession``` entry for each.
   def session_batch_load
     days_added = 0
     weeks_passed = 0
@@ -249,34 +254,27 @@ class EduappUserSessionsController < ApplicationController
     render json: @eduapp_user_session
   end
 
+  # Updates a group of ```EduappUserSession``` based on its batch identifier.
   def update_batch
-    if params[:batch_id].nil?
-      render json: { error: "No id provided" }, status: :unprocessable_entity and return
-    end
+    render json: { error: "No id provided" }, status: :unprocessable_entity and return if params[:batch_id].nil?
 
-    sessionIDUpdate = []
-
-    EduappUserSession.all.each do |session|
-      if session.batch_id === params[:batch_id]
-        sessionIDUpdate.append(session.id)
-      end
-    end
-
-    if EduappUserSession.where(id: sessionIDUpdate).update(
+    sessionsToBeUpdated = EduappUserSession.where(batch_id: params[:batch_id])
+    if sessionsToBeUpdated.update(
       session_name: params[:session_name],
       resources_platform: params[:resources_platform],
       streaming_platform: params[:streaming_platform],
       session_chat_id: params[:session_chat_id],
       subject_id: params[:subject_id],
     )
-      render json: { message: "Successfully updated sessions" }
+      render json: { message: "Successfully updated sessions" } and return
     else
-      render json: { error: "Failed to update sessions" }, status: :unprocessable_entity
+      render json: { error: "Failed to update sessions" }, status: :unprocessable_entity and return
     end
   end
 
   private
 
+  # Checks if ```Subject``` is present in the user's ```Course```.
   def subject_in_user_course(s_id)
     c_id = Subject.find(s_id).course_id
     if Tuition.where(user_id: @current_user, course_id: c_id).count > 0

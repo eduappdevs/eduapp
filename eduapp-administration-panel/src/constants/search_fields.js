@@ -1,3 +1,8 @@
+/*
+ * This module is used as a hub for all field parsers for every table.
+ * These are generally used for the 'useFilter' hook.
+ */
+
 // SCHEDULE
 
 // Sessions

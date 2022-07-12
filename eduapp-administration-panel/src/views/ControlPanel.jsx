@@ -17,6 +17,9 @@ import UserRolesConfig from "../components/UserRolesConfig";
 import "../styles/users.css";
 import "../styles/controlPanel.css";
 
+/**
+ * Used to contain all components inside their respective locations.
+ */
 export default function ControlPanel() {
   const [location, setLocation] = useState(
     localStorage.getItem("eduapp_last_viewed")

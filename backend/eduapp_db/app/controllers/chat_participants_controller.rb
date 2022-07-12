@@ -62,6 +62,7 @@ class ChatParticipantsController < ApplicationController
     render json: @participants
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     parts_query = {}
     params.each do |param|
@@ -116,7 +117,7 @@ class ChatParticipantsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /chat_participants/1
+  # PUT /chat_participants/1
   def update
     if !check_perms_update!(get_user_roles.perms_chat_participants, false, :null)
       return
@@ -136,6 +137,8 @@ class ChatParticipantsController < ApplicationController
     @chat_participant.destroy
   end
 
+  # Removes a user from a chat, and deletes the ```ChatBase``` if
+  # no more ```ChatParticipant``` are linked to it.
   def remove_participant
     @chat_participant = ChatParticipant.where(user_id: params[:user_id], chat_base_id: params[:chat_base_id])
     if @chat_participant.length > 0
@@ -154,6 +157,7 @@ class ChatParticipantsController < ApplicationController
 
   private
 
+  # Checks if a user is in a certain ```ChatBase```.
   def check_user_in_chat(chat_base_id)
     if ChatParticipant.where(user_id: @current_user, chat_base_id: chat_base_id).count > 0 || get_user_roles.name == "eduapp_admin"
       return true

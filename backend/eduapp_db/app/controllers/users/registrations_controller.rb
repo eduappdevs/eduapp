@@ -67,6 +67,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   private
 
+  # Creates a ```UserInfo``` entry for the provided ```User```
   def create_info(createParams, resource)
     if UserRole.where(name: createParams[:user_role]).count > 0
       respective_userinfo = UserInfo.new(

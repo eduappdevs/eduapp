@@ -7,11 +7,19 @@ class CalendarAnnotationsController < ApplicationController
   def index
     wants_event_for_calendar = false
 
+    # Returns events in a way for it to be readable by the App's calendar.
     if params[:user_id]
       wants_event_for_calendar = true
       if !check_perms_query_self!(get_user_roles.perms_events, params[:user_id])
         return
       end
+      # TODO: Possible refactorization:
+      # tuitions = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
+      # @subjects = Subject.where(course_id: tuitions)
+      # @sessions = CalendarAnnotation.where(subject_id: @subjects)
+      # @calendarEvents = @sessions.where(isGlobal: false)
+      # @colorEvents = @subjects.pluck(:id, :color)
+
       @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
       @calendar_isGlobal = CalendarAnnotation.where(isGlobal: true)
       @subjects = []
@@ -45,16 +53,18 @@ class CalendarAnnotationsController < ApplicationController
       end
     end
 
-    if params[:page]
-      @calendar_annotations = query_paginate(@calendar_annotations, params[:page])
-      @calendar_annotations[:current_page] = serialize_each(@calendar_annotations[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [:subject, :user])
+    if !wants_event_for_calendar
+      if params[:page]
+        @calendar_annotations = query_paginate(@calendar_annotations, params[:page])
+        @calendar_annotations[:current_page] = serialize_each(@calendar_annotations[:current_page], [:created_at, :updated_at, :user_id, :subject_id], [:subject, :user])
+      end
     end
 
     render json: @calendar_annotations
   end
 
   def calendar_info
-    if !check_perms_query!(get_user_roles.perms_events)
+    if !check_perms_query_self!(get_user_roles.perms_events, params[:user_id])
       return
     end
     annotation = CalendarAnnotation.where(isGlobal: true, isPop: true).order(:created_at).pluck(:annotation_start_date, :annotation_end_date)
@@ -70,6 +80,7 @@ class CalendarAnnotationsController < ApplicationController
     render json: event
   end
 
+  # Returns a filtered query based on the parameters passed.
   def filter
     events_query = {}
     subject_query = {}
@@ -172,7 +183,7 @@ class CalendarAnnotationsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /calendar_annotations/1
+  # PUT /calendar_annotations/1
   def update
     if !check_perms_update!(get_user_roles.perms_events, false, :null)
       return

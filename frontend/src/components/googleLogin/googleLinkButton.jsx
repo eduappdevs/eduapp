@@ -5,6 +5,11 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import useLanguage from "../../hooks/useLanguage";
 import "./googleLogin.css";
 
+/**
+ * A component used for logining in with google.
+ *
+ * @param {String} useType How the button is going to be used (link, login).
+ */
 export default function GoogleLoginButton(useType) {
   const language = useLanguage();
   let user = getOfflineUser().user;

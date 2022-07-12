@@ -27,7 +27,7 @@ class ChatChannel < ApplicationCable::Channel
         ActionCable.server.broadcast @chat_name, { "command" => "error", "message" => "Error saving message" }
       end
 
-      current_chat = ChatBase.find(params[:chat_room][1..-1]);
+      current_chat = ChatBase.find(params[:chat_room][1..-1])
       ChatParticipant.where(chat_base_id: current_chat.id).each do |participant|
         UserNotifsChannel.broadcast_to(
           participant.user_id,
@@ -36,7 +36,7 @@ class ChatChannel < ApplicationCable::Channel
           author_pic: UserInfo.find_by(user_id: data["author"]).profile_image,
           msg: data["message"],
           key: current_chat.private_key,
-          chat_url: "http://localhost:3001/chat/#{current_chat.isGroup ? "g" : "p"}#{current_chat.id}"
+          chat_url: "#{ENV.fetch("REACT_APP_FRONTEND_ENDPOINT")}/chat/#{current_chat.isGroup ? "g" : "p"}#{current_chat.id}",
         ) if participant.user_id != data["author"]
       end
     else
@@ -45,7 +45,6 @@ class ChatChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    # Any cleanup needed when channel is unsubscribed
   end
 
   protected
@@ -62,6 +61,7 @@ class ChatChannel < ApplicationCable::Channel
     return mainMsg
   end
 
+  # Checks if user belongs to that chat.
   def check_chat_user(chat_base_id, user_id)
     chat_participants = ChatParticipant.where(chat_base_id: chat_base_id)
     chat_participants.each do |participant|

@@ -1,8 +1,7 @@
 import React from "react";
 import "./SelectedModal.css";
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default function ({
+export default function SelectedModal({
   show,
   editGlobal,
   deleteGlobal,

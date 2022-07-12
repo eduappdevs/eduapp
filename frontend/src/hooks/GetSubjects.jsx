@@ -1,7 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import * as SUBJECT_SERVICE from "../services/subject.service";
 import { getOfflineUser } from "../utils/OfflineManager";
 
+/**
+ * Fetches the user's subjects dynamically.
+ *
+ * @param {String} id The user's UUID.
+ * @returns {Object} subjects
+ */
 export const GetSubjects = (id) => {
   const [subject, setSubject] = useState([]);
 

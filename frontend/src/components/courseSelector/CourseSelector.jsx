@@ -3,6 +3,9 @@ import { GetCourses } from "../../hooks/GetCourses";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import "./CourseSelector.css";
 
+/**
+ * Used to change between given courses.
+ */
 export default function CourseSelector(props) {
   let courses = GetCourses(getOfflineUser().user.id);
   const [courseSelected, setCourseSelected] = useState();
