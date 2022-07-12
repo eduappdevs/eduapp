@@ -499,7 +499,6 @@ export default function Scheduleeventslist() {
             <tr>
               <th></th>
               <th>{language.title}</th>
-              <th>{language.author}</th>
               <th>{language.description}</th>
               <th>{language.startDate}</th>
               <th>{language.endDate}</th>

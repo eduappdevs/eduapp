@@ -29,42 +29,42 @@ export default function BasicGoogleLogin({ language }) {
     }
   };
 
-  const userEnroll = async (uId) => {
-    const payload = new FormData();
-    payload.append("course_id", 1);
-    payload.append("user_id", uId);
+  // const userEnroll = async (uId) => {
+  //   const payload = new FormData();
+  //   payload.append("course_id", 1);
+  //   payload.append("user_id", uId);
 
-    await TUITION_SERVICE.createTuition(payload);
-  };
+  //   await TUITION_SERVICE.createTuition(payload);
+  // };
 
-  const registerGoogle = async (response) => {
-    try {
-      const google = await GoogleSettings.chechToken(response.accessToken);
+  // const registerGoogle = async (response) => {
+  //   try {
+  //     const google = await GoogleSettings.chechToken(response.accessToken);
 
-      if (!google.email) {
-        throw new Error("Google account is not verified");
-      } else {
-        const payload = new FormData();
+  //     if (!google.email) {
+  //       throw new Error("Google account is not verified");
+  //     } else {
+  //       const payload = new FormData();
 
-        payload.append("user[email]", google.email);
-        payload.append("user[password]", response.profileObj.googleId);
+  //       payload.append("user[email]", google.email);
+  //       payload.append("user[password]", response.profileObj.googleId);
 
-        asynchronizeRequest(async function () {
-          const newUser = await USER_SERVICE.createUser(payload);
+  //       asynchronizeRequest(async function () {
+  //         const newUser = await USER_SERVICE.createUser(payload);
 
-          const enroll = new FormData();
-          enroll.append("user_id", newUser.data.message.id);
-          enroll.append("user_name", newUser.data.message.email.split("@")[0]);
-          enroll.append("user_role", "eduapp-student");
-          userEnroll(newUser.data.message.id);
+  //         const enroll = new FormData();
+  //         enroll.append("user_id", newUser.data.message.id);
+  //         enroll.append("user_name", newUser.data.message.email.split("@")[0]);
+  //         enroll.append("user_role", "eduapp-student");
+  //         userEnroll(newUser.data.message.id);
 
-          await AUTH_SERVICE.login(payload);
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //         await AUTH_SERVICE.login(payload);
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <div className="googleButton">
@@ -76,13 +76,13 @@ export default function BasicGoogleLogin({ language }) {
         cookiePolicy={"single_host_origin"}
       />
 
-      <GoogleLogin
+      {/* <GoogleLogin
         clientId="34244826007-ute01mc8d42e8hc89bgsiv73njfj9kbe.apps.googleusercontent.com"
         buttonText={"Register with google"}
         onSuccess={registerGoogle}
         onFailure={registerGoogle}
         cookiePolicy={"single_host_origin"}
-      />
+      /> */}
     </div>
   );
 }

@@ -23,7 +23,7 @@ class UserInfosController < ApplicationController
     if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
       @user_infos = @user_infos.order(parse_filter_order(params[:order]))
     else
-      @user_infos = @user_infos.order(user_name: :asc)
+      @user_infos = params[:name] ? @user_infos : @user_infos.order(user_name: :asc)
     end
 
     if params[:page]

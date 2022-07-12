@@ -69,7 +69,7 @@ export default function SubjectDropdown({
     >
       {subjects.length > 1 && (
         <>
-          <li className="drpdwn-subtitle">{language.subjects}</li>
+          <li className="drpdwn-subtitle">{language.subject}</li>
           {subjects.map((subject, index) => {
             if (index > 0) {
               return (
