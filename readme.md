@@ -211,21 +211,62 @@ npm run dev
 <h3>5. Administrators are able to:</h3>
 <p>Have full access to the management of the app. </p>
 
+<h3>Login</h3>
+<p>Main access page to accesss the app.</p>
+<details>
+	<summary>App Images</summary>
+	<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/login.png"m/>
+	</div>
+</details>
+
 <h3>Home Page</h3>
 <p>Displays the main user's welcome page. It contains the current day's sessions, as well as received notifications.</p>
+<details>
+	<summary>App Images</summary>
+	<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/home-page.png"m/>
+	</div>
+</details>
 
 <h3>Calendar Page</h3>
 <p>Shows a calendar with current sessions and events one can keep track.</p>
+<details>
+	<summary>App Images</summary>
+	<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/calendar-page.png"/>
+	</div>
+</details>
 
 <h3>Resources Page</h3>
 <p>At first you will see a 'General' tab or subject. The 'General' tab is used to display public announcements</p>
 <p>You must select the subject to see its resource. You can also filter the resources with the search bar placed at the top of the page.</p>
 <p>If you are a teacher of that subject, you will see a plus icon which will provide you with access to a creation modal.</p>
+<details>
+	<summary>App Images</summary>
+	<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/resources-subjects-page.png" />
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/resources-page.png" />
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/create-resource.png" />
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/example-resource.png" />
+	</div>
+</details>
 
 <h3>Chat Page</h3>
 <p>Displays the main user's welcome page. It contains the current day's sessions, as well as received notifications.</p>
-
 <p>If you are a teacher or superior, you will find a creation button that will allow you to create different types of chats.</p>
+<details>
+	<summary>App Images</summary>
+	<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/chats-page.png" />
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/create-direct-chat.png" />
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/create-group-chat.png" />
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/direct-chat-page.png" />
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/direct-chat-page.png" />
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/group-chat-page.png" />
+		<img width="350" height="750" src="https://raw.githubusercontent.com/eduappdevs/eduapp/features/skinnydevi/Documentation/screenshots/chat-info-page.png" />
+	</div>
+</details>
 
 
 <h1>API Documention
@@ -269,20 +310,20 @@ npm run dev
 <img src="./Documentation/UseCases.jpg" />
 
 <h1>Tech stack and comparison</h1>
-<p>In our case , currently we are developing EduApp as a web app , using a full responsiveness , but we like to make it downloadable , 
-making eduapp as a hybrid app.</p>
+<p>EduApp has been develop to serve as a web app, as well as a downloadable multi-platform PWA.</p>
 <div >        
-     <a href="https://reactjs.org">
-            <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React"/></a>
-   </div>
+  <a href="https://reactjs.org">
+    <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React"/>
+	</a>
+</div>
      
-We are using react js as frontend framework , react provides us many advantages , such an easier learning, reusable components, ReactJS is choosing by most developers, becouse it provide us a very rich JavaScript library
+<p>We are using ReactJS as frontend framework, React provides us many advantages, such an easier learning curve, reusable components, ReactJS is chosed by most developers because it provides us a very rich JavaScript library of utilities.</p>
 <div>
-    <a href="https://rubyonrails.org">
-        <img src="https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white" alt="Rails"/></a>
-   </div>
-At backend we have decide to use Ruby on rails , which provide us a Model View Controller architecture , a fast development when you know the basics of it , 
-a great number of helpful tools and libraries , also it haves many disadvantages , like the price of a mistake , you have to pay attention to all the small details ,otherwise your ruby on rails journey will becomes difficult.
+  <a href="https://rubyonrails.org">
+    <img src="https://img.shields.io/badge/rails-%23CC0000.svg?style=for-the-badge&logo=ruby-on-rails&logoColor=white" alt="Rails"/>
+	</a>
+</div>
+<p>In the backend we are using Ruby On Rails, which provides us a Model-View-Controller architecture, a fast development when you know the basics of it and a great number of helpful tools and libraries. It has many disadvantages, as it has a very steep learning curve, and it takes a while for you to get used</p>
 
 <h1 id="personal-opinion-and-comparison">Personal opinion and conclusions</h1>
-<p>It is a pleasure to us be part of this project , as our first project working in with other people,becoming this project a challenge , we found many difficults in the journey, but we also have learned so much through it,although this it is just the beggining of the project and so much things will happen through the journey.</p>
+<p>It is a pleasure for us be part of this project, as our first project working in with other people, overcoming this project a challenge. We found many difficulties in the journey, but we also have learned so much through it, although this it is just the beggining of the project and so much things will happen through the journey.</p>
