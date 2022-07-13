@@ -1,107 +1,118 @@
-import React from "react";
+import React, { useContext, useState } from "react";
+import Batcher from "./Batcher";
+import SessionCSVModal from "./modals/sessionCSV-batch-modal/SessionCSVModal";
+import FieldSearcher from "./FieldSearcher";
+import { LanguageCtx } from "../hooks/LanguageContext";
 import "../styles/scheduletoolbar.css";
-import LoadUsersCSV from "./loadUsersCSV";
+
 export default function Toolbar(props) {
+  const [language] = useContext(LanguageCtx);
 
-  const usersSearchFilter = (event)=>{
-    let value = event.target.value;
-    props.search(value)
-  }
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const userRoleFilter = (event)=>{
-    let value = event.target.value;
-    props.userRole(value)
-    console.log(value)
-
-  }
   return (
     <div className="scheduletoolbar-container">
       {props.location === "sessions" ? (
         <>
-          <h1>Sessions</h1>
           <ul className="scheduletoolbar-ul sessions-toolbar">
             <li>
-              {" "}
-              <p> Add </p>
+              <div
+                className="check-button-containter"
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+              >
+                <div className="check-button-main">
+                  <p>CSV file upload</p>
+                </div>
+              </div>
             </li>
-            <li>
-              {" "}
-              <p> Load </p>
-            </li>
-            <li>
-              <select name="subject" id="subject_id">
-                <option defaultValue={"--"}>Choose subject</option>
-                {props.subjects.map((subject) => (
-                  <option
-                    key={subject.id}
-                    value={subject.id + "_" + subject.name}
-                  >
-                    {subject.name}
-                  </option>
-                ))}
-              </select>
-            </li>
-            <li>
-              <input type="text" placeholder="Search..." />
-            </li>
+            <FieldSearcher hasExtraFields />
           </ul>
+          {modalOpen === true ? (
+            <SessionCSVModal
+              closed={() => {
+                setModalOpen(false);
+                document.getElementById(
+                  "controlPanelContentContainer"
+                ).style.overflow = "scroll";
+              }}
+              type={() => {
+                document.getElementById(
+                  "controlPanelContentContainer"
+                ).style.overflow = "scroll";
+              }}
+            />
+          ) : null}
         </>
       ) : props.location === "events" ? (
         <>
-          <h1>Events</h1>
           <ul className="scheduletoolbar-ul events-toolbar">
             <li>
-              {" "}
-              <p> Add </p>
+              <Batcher type="events" />
             </li>
-            <li>
-              {" "}
-              <p> Load </p>
-            </li>
+            <FieldSearcher />
           </ul>
         </>
       ) : props.location === "users" ? (
         <>
-          <h1>Users</h1>
           <ul className="scheduletoolbar-ul users-toolbar">
             <li>
-              <LoadUsersCSV buttonText='Load'/>
+              <Batcher type="users" />
             </li>
-            
-            <li>
-              <select onChange={userRoleFilter} name="subjects" id="subjects-select">
-                <option value="ALL">View all roles</option>
-                <option value="ADMIN">Admin</option>
-                <option value="STUDENT">Student</option>
-              </select>
-            </li>
-            <li>
-              <input onChange={usersSearchFilter} type="text" placeholder="Search..." />
-            </li>
+            <FieldSearcher hasExtraFields />
           </ul>
         </>
       ) : props.location === "resources" ? (
         <>
-          <h1>Resource configuration</h1>
+          <ul className="scheduletoolbar-ul resources-toolbar">
+            <FieldSearcher hasExtraFields />
+          </ul>
         </>
       ) : props.location === "institutions" ? (
-        <>
-          <h1>Institution configuration</h1>
-        </>
+        <h1>{language.configuration}</h1>
       ) : props.location === "courses" ? (
         <>
-          <h1>Courses configuration</h1>
+          <ul className="scheduletoolbar-ul courses-toolbar">
+            <FieldSearcher hasExtraFields />
+          </ul>
         </>
       ) : props.location === "subjects" ? (
         <>
-          <h1>Subjects configuration</h1>
+          <ul className="scheduletoolbar-ul subjects-toolbar">
+            <FieldSearcher hasExtraFields />
+          </ul>
         </>
       ) : props.location === "enroll" ? (
         <>
-          <h1>Enroll a user</h1>
+          <ul className="scheduletoolbar-ul enroll-toolbar">
+            <FieldSearcher />
+          </ul>
         </>
+      ) : props.location === "teachers" ? (
+        <>
+          <ul className="scheduletoolbar-ul teachers-toolbar">
+            <FieldSearcher />
+          </ul>
+        </>
+      ) : props.location === "chatConfig" ? (
+        <>
+          <ul className="scheduletoolbar-ul chatConfig-toolbar">
+            <FieldSearcher />
+          </ul>
+        </>
+      ) : props.location === "userRoles" ? (
+        <>
+          <ul className="scheduletoolbar-ul userRoles-toolbar">
+            <FieldSearcher />
+          </ul>
+        </>
+      ) : props.location === "chatParticipant" ? (
+        <ul className="scheduletoolbar-ul chatParticipant-toolbar">
+          <FieldSearcher />
+        </ul>
       ) : (
-        <h1>Communication configuration</h1>
+        <h1>{language.configuration}</h1>
       )}
     </div>
   );

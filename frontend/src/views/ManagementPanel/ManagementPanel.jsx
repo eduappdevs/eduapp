@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from "react";
-import "./ManagementPanel.css";
-import API from "../../API";
+import * as COURSE_SERVICE from "../../services/course.service";
+import * as USER_SERVICE from "../../services/user.service";
+import * as INSTITUTION_SERVICE from "../../services/institution.service";
+import * as SCHEDULE_SERVICE from "../../services/schedule.service";
+import * as ENROLL_SERVICE from "../../services/enrollment.service";
+import * as ROLE_SERVICE from "../../services/role.service";
 import AppHeader from "../../components/appHeader/AppHeader";
+import useLanguage from "../../hooks/useLanguage";
+import "./ManagementPanel.css";
 
-let institutions, courses, users, sessions;
+var institutions, courses, users;
 
 export default function ManagementPanel() {
   const [isMobile, setIsMobile] = useState(false);
   const [institutionsLoading, setInstitutionsLoading] = useState(true);
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(true);
+  const [allowNewInstitution, setAllowInstitution] = useState(true);
+  const [userRoles, setUserRoles] = useState([]);
 
-  const postSession = (e) => {
+  const language = useLanguage();
+
+  const postSession = async (e) => {
     e.preventDefault();
 
     const context = [
@@ -39,30 +49,16 @@ export default function ManagementPanel() {
     for (let i = 0; i <= context.length - 1; i++) {
       SessionJson[context[i]] = json[i];
     }
-    API.createSession(SessionJson);
+    await SCHEDULE_SERVICE.createSession(SessionJson);
     window.location.reload();
   };
 
-  const deleteSession = (id) => {
-    API.deleteSession(id);
-  };
-
-  const fetchSessions = async () => {
+  const fetchInstitutions = () => {
     try {
-      await API.fetchCourses().then((res) => {
-        courses = res.data;
-        setCoursesLoading(false);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchInstitutions = async () => {
-    try {
-      await API.fetchInstitutions().then((res) => {
+      INSTITUTION_SERVICE.fetchInstitutions().then((res) => {
         institutions = res.data;
         setInstitutionsLoading(false);
+        if (res.data.length > 0) setAllowInstitution(false);
       });
     } catch (error) {
       console.log(error);
@@ -72,16 +68,15 @@ export default function ManagementPanel() {
   const getInstitution = (id) => {
     let res;
     institutions.map((i) => {
-      if (i.id === id) {
-        res = i.name;
-      }
+      if (i.id === id) res = i.name;
+      return 0;
     });
     return res;
   };
 
-  const fetchUsers = async () => {
+  const fetchUsers = () => {
     try {
-      await API.fetchUserInfos().then((res) => {
+      USER_SERVICE.fetchUserInfos().then((res) => {
         users = res.data;
         setUsersLoading(false);
       });
@@ -90,9 +85,19 @@ export default function ManagementPanel() {
     }
   };
 
-  const fetchCourses = async () => {
+  const fetchRoles = () => {
     try {
-      await API.fetchCourses().then((res) => {
+      ROLE_SERVICE.fetchRoles().then((res) => {
+        setUserRoles(res);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchCourses = () => {
+    try {
+      COURSE_SERVICE.fetchCourses().then((res) => {
         courses = res.data;
         setCoursesLoading(false);
       });
@@ -105,51 +110,38 @@ export default function ManagementPanel() {
     e.preventDefault();
     const payload = new FormData();
     payload.append("name", e.target.institution_name.value);
-    API.createInstitution(payload);
-    window.location.reload();
+    // API.createInstitution(payload);
+    // window.location.reload();
   };
 
-  const postCourse = (e) => {
+  const postCourse = async (e) => {
     e.preventDefault();
     const payload = new FormData();
     payload.append("name", e.target.name.value);
     payload.append("institution_id", e.target.institution_id.value);
 
-    API.createCourse(payload);
+    await COURSE_SERVICE.createCourse(payload);
     window.location.reload();
   };
 
   const deleteInstitution = (event) => {
     event.preventDefault();
-    API.deleteInstitution(event.target.institutions.value);
-    window.location.reload();
+    // API.deleteInstitution(event.target.institutions.value);
+    // window.location.reload();
   };
 
-  const deleteCourse = (id) => {
-    API.deleteCourse(id);
+  const deleteCourse = async (id) => {
+    await COURSE_SERVICE.deleteCourse(id);
   };
 
-  const createUser = (event) => {
+  const createUser = async (event) => {
     event.preventDefault();
-    let isAdmin = event.target.isAdmin.checked;
-    const payload = new FormData();
-    payload.append("user[email]", event.target.email.value);
-    payload.append("user[password]", event.target.password.value);
-    API.createUser(payload)
-      .then((res) => {
-        const payload = new FormData();
-        API.createInfo(payload);
-        payload.delete("user[email]");
-        payload.delete("user[password]");
-        payload.append("user_id", res.data.message.id);
-        payload.append("user_name", res.data.message.email.split("@")[0]);
-        payload.append("isAdmin", isAdmin);
-
-        API.createInfo(payload).then((res) => {
-          window.location.reload();
-        });
-      })
-      .catch((err) => console.log);
+    const payload = {
+      email: event.target.email.value,
+      password: event.target.password.value,
+      user_role: event.target.new_u_role.value,
+    };
+    await USER_SERVICE.createUser(payload).catch((err) => console.log(err));
   };
 
   const userEnroll = (e) => {
@@ -169,10 +161,9 @@ export default function ManagementPanel() {
       "institution_name",
       getInstitution(e.target.tuition_course.value.split(":")[1].split("/")[1])
     );
-    payload.append("isTeacher", e.target.isTeacher.checked);
 
-    API.enrollUser(payload).then((res) => {
-      console.log("User tuition has been completed successfully!");
+    ENROLL_SERVICE.createTuition(payload).then(() => {
+      window.location.reload();
     });
   };
 
@@ -192,6 +183,7 @@ export default function ManagementPanel() {
     Array.from(document.getElementsByClassName("buttonManagementPanel")).map(
       (button) => {
         button.classList.add("hidden");
+        return true;
       }
     );
     document.getElementsByTagName("header")[0].style.display = "none";
@@ -203,12 +195,14 @@ export default function ManagementPanel() {
     Array.from(document.getElementsByClassName("buttonManagementPanel")).map(
       (button) => {
         button.classList.remove("hidden");
+        return true;
       }
     );
     document.getElementsByTagName("header")[0].style.display = "flex";
   };
 
   useEffect(() => {
+    fetchRoles();
     fetchInstitutions();
     fetchCourses();
     fetchUsers();
@@ -230,22 +224,22 @@ export default function ManagementPanel() {
     users !== undefined ? (
     <div className="managementpanel__main">
       <div className="managementpanel__container">
-        <div
+        {/* <div
           id="buttonManagementPanel__intitutions"
           className="buttonManagementPanel"
           onClick={() => {
             openThisItem("institutions");
           }}
         >
-          <span>Institution</span>
-        </div>
+          <span>{language.institutions}</span>
+        </div> */}
         <div
           className="buttonManagementPanel"
           onClick={() => {
             openThisItem("courses");
           }}
         >
-          <span>Courses</span>
+          <span>{language.courses}</span>
         </div>
         <div
           className="buttonManagementPanel"
@@ -253,7 +247,7 @@ export default function ManagementPanel() {
             openThisItem("users");
           }}
         >
-          <span>Users</span>
+          <span>{language.users}</span>
         </div>
         <div
           className="buttonManagementPanel"
@@ -261,7 +255,7 @@ export default function ManagementPanel() {
             openThisItem("enrollments");
           }}
         >
-          <span>Enrollments</span>
+          <span>{language.enrollments}</span>
         </div>
         <div
           className="buttonManagementPanel"
@@ -269,7 +263,7 @@ export default function ManagementPanel() {
             openThisItem("sessions");
           }}
         >
-          <span>Sessions</span>
+          <span>{language.sessions}</span>
         </div>
         <div
           id="institutions"
@@ -279,7 +273,7 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("institutions");
             }}
-            tabName="Institutions"
+            tabName={language.institutions}
           />
 
           <div className="managementpanel__item__header">
@@ -293,11 +287,21 @@ export default function ManagementPanel() {
                     name="institution_name"
                     required
                   />
-                  <button type="submit">SUBMIT</button>
+                  <p
+                    style={{
+                      color: "red",
+                      display: allowNewInstitution ? "none" : "block",
+                    }}
+                  >
+                    {language.mgmt_institution_cap}
+                  </p>
+                  <button type="submit" disabled={allowNewInstitution}>
+                    {language.submit}
+                  </button>
                 </form>
               </div>
               <div className="institutions__delete management__form-container">
-                <h3>DELETE AN INSTITUTION</h3>
+                <h3>{language.mgmt_delete_institution}</h3>
                 <form action="submit" onSubmit={deleteInstitution}>
                   <select name="institutions" id="institutions_delete">
                     {institutions.map((i) => {
@@ -308,7 +312,7 @@ export default function ManagementPanel() {
                       );
                     })}
                   </select>
-                  <button type="submit">DELETE</button>
+                  <button type="submit">{language.delete}</button>
                 </form>
               </div>
             </div>
@@ -322,7 +326,7 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("courses");
             }}
-            tabName="Courses"
+            tabName={language.courses}
           />
           <div className="managementpanel__item__header">
             <div id="cp-courses" className="courses">
@@ -338,11 +342,11 @@ export default function ManagementPanel() {
                       );
                     })}
                   </select>
-                  <button type="submit">SUBMIT</button>
+                  <button type="submit">{language.submit}</button>
                 </form>
               </div>
               <div className="courses__delete management__form-container">
-                <h3>DELETE A COURSE</h3>
+                <h3>{language.mgmt_delete_course}</h3>
                 <form action="submit" onSubmit={deleteCourse}>
                   <select name="courses" id="courses_delete">
                     {courses.map((i) => {
@@ -353,7 +357,7 @@ export default function ManagementPanel() {
                       );
                     })}
                   </select>
-                  <button type="submit">DELETE</button>
+                  <button type="submit">{language.delete}</button>
                 </form>
               </div>
             </div>
@@ -367,25 +371,29 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("users");
             }}
-            tabName="Users"
+            tabName={language.users}
           />
           <div className="managementpanel__item__header">
             <div id="cp-users" className="users">
               <div className="users__post management__form-container">
                 <form action="submit" onSubmit={createUser}>
-                  <label htmlFor="email">Email </label>
+                  <label htmlFor="email">{language.email}</label>
                   <input autoComplete="off" type="text" name="email" />
-                  <label htmlFor="password">Password</label>
+                  <label htmlFor="password">{language.password}</label>
                   <input autoComplete="off" type="password" name="password" />
-                  <label htmlFor="isAdmin">Admin</label>
-                  <input
-                    autoComplete="off"
-                    type="checkbox"
-                    name="isAdmin"
-                    id="isAdmin"
-                    value="isAdmin"
-                  />
-                  <button type="submit">SIGN UP</button>
+                  <label htmlFor="new_u_role">Admin</label>
+                  <select name="new_u_role" id="new_u_role">
+                    {userRoles !== undefined
+                      ? userRoles.map((r) => {
+                          return (
+                            <option key={r.id} value={r.name}>
+                              {r.name}
+                            </option>
+                          );
+                        })
+                      : null}
+                  </select>
+                  <button type="submit">{language.mgmt_register_user}</button>
                 </form>
               </div>
             </div>
@@ -399,7 +407,7 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("enrollments");
             }}
-            tabName="Enrollments"
+            tabName={language.enrollments}
           />
           <div
             className="managementpanel__item__header"
@@ -407,7 +415,9 @@ export default function ManagementPanel() {
           >
             <div className="user_tuition management__form-container">
               <form action="submit" onSubmit={userEnroll}>
-                <label htmlFor="tuition_course">Course</label>
+                <label htmlFor="tuition_course">
+                  {language.courses.substring(0, language.courses.length - 1)}
+                </label>
                 <select name="tuition_course" id="tuition_course">
                   {courses.map((i) => {
                     return (
@@ -415,30 +425,24 @@ export default function ManagementPanel() {
                         key={i.id}
                         value={i.name + ":" + i.id + "/" + i.institution_id}
                       >
-                        {i.name} of {getInstitution(i.institution_id)}
+                        {i.name} - {getInstitution(i.institution_id)}
                       </option>
                     );
                   })}
                 </select>
-                <label htmlFor="tuition_user">User</label>
-
+                <label htmlFor="tuition_user">
+                  {language.users.substring(0, language.users.length - 1)}
+                </label>
                 <select name="tuition_user" id="tuition_user">
                   {users.map((i) => {
                     return (
                       <option key={i.id} value={i.id}>
-                        {i.user_name},{i.id}
+                        {i.user_name}
                       </option>
                     );
                   })}
                 </select>
-                <label htmlFor="isTeacher">Teacher</label>
-                <input
-                  type="checkbox"
-                  name="isTeacher"
-                  id="isTeacher"
-                  value="isTeacher"
-                />
-                <button type="submit">ENROLL</button>
+                <button type="submit">{language.enroll}</button>
               </form>
             </div>
           </div>
@@ -451,7 +455,7 @@ export default function ManagementPanel() {
             closeHandler={() => {
               closeThisItem("sessions");
             }}
-            tabName="Sessions"
+            tabName={language.sessions}
           />
           <div
             className="managementpanel__item__header"
@@ -460,7 +464,7 @@ export default function ManagementPanel() {
             <div id="cp-sessions" className="sessions">
               <div className="sessions__post management__form-container">
                 <form action="submit" onSubmit={postSession}>
-                  <label htmlFor="institution_name">Subject:</label>
+                  <label htmlFor="institution_name">{language.subject}:</label>
                   <input
                     id="session_name"
                     autoComplete="off"
@@ -468,12 +472,14 @@ export default function ManagementPanel() {
                     name="session_name"
                     required
                   />
-                  <label htmlFor="institution_name">Schedule:</label>
+                  <label htmlFor="institution_name">{language.date}:</label>
                   <div className="timeInputs">
                     <input id="start" name="start" type="time" required></input>
                     <input id="end" name="end" type="time" required></input>
                   </div>
-                  <label htmlFor="institution_name">Streaming Link:</label>
+                  <label htmlFor="institution_name">
+                    {language.mgmt_streaming_link}:
+                  </label>
                   <input
                     id="streaming"
                     autoComplete="off"
@@ -481,16 +487,23 @@ export default function ManagementPanel() {
                     name="streaming"
                     required
                   />
-                  <label htmlFor="session_resources">Resources Link:</label>
+                  <label htmlFor="session_resources">
+                    {language.mgmt_resources_link}:
+                  </label>
                   <input
                     id="resources"
                     name="resources"
                     type="text"
                     required
                   ></input>
-                  <label htmlFor="session_chat">Chat Link:</label>
+                  <label htmlFor="session_chat">
+                    {language.mgmt_chat_link}:
+                  </label>
                   <input id="chat" name="chat" type="text" required></input>
-                  <label htmlFor="course_id">Course:</label>
+                  <label htmlFor="course_id">
+                    {language.courses.substring(0, language.courses.length - 1)}
+                    :
+                  </label>
                   <select name="course_id" id="course_id" required>
                     {courses.map((i) => {
                       return (
@@ -500,7 +513,7 @@ export default function ManagementPanel() {
                       );
                     })}
                   </select>
-                  <button type="submit">SUBMIT</button>
+                  <button type="submit">{language.submit}</button>
                 </form>
               </div>
               {/* <div className="sessions__delete management__form-container">

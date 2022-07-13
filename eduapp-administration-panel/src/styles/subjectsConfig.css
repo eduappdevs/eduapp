@@ -1,0 +1,42 @@
+.subjects-table-info {
+  height: auto;
+  width: 100vw;
+}
+
+.subjects-table-info > table > thead {
+  display: block;
+  flex-direction: row;
+}
+
+.subjects-table-info > table > thead > tr {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #dddddd76;
+  text-align: left;
+}
+
+.subjects-table-info > table > thead > tr > th {
+  flex: 1;
+}
+
+.subjects-table-info > table > tbody {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  max-height: 310px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.subjects-table-info > table > tbody > tr {
+  display: flex;
+  flex-direction: row;
+}
+
+.subjects-table-info > table > tbody > tr > td {
+  flex: 1;
+}
+
+.subjects-table-info > table > tbody > tr:nth-child(even) {
+  background-color: #dddddd;
+}

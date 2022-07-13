@@ -1,19 +1,41 @@
 import { useState, useEffect } from "react";
-import API from "../API";
+import * as USER_SERVICE from "../services/user.service";
+import * as AUTH_SERVICE from "../services/auth.service";
 import { getOfflineUser, saveUserOffline } from "../utils/OfflineManager";
 
+/**
+ * Dynamically fetches the user information when the userId changes.
+ *
+ * @param {String} userId The user's UUID.
+ *
+ * @return {Object} userInfo
+ */
 export const FetchUserInfo = (userId) => {
   const [userInfo, setUserInfo] = useState({});
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      if (navigator.onLine) {
+      if (navigator.onLine || userId < 0) {
         try {
-          const userInfo = await API.fetchInfo(userId);
+          if (userId < 0) return console.warn("No user logged in.");
+          let userInfo = (await USER_SERVICE.findById(userId)).data;
+          userInfo =
+            userInfo.length > 0 ? userInfo[0] : { error: "User not found" };
+          delete userInfo.googleid;
+
           setUserInfo({ ...userInfo });
+
           await saveUserOffline(userInfo);
         } catch (error) {
-          console.log(error);
+          if (error.message.includes("(reading 'protocol')"))
+            console.warn("No user logged in.");
+          else if (
+            error.message.includes("428") ||
+            error.message.includes("406") ||
+            error.message.includes("403")
+          )
+            await AUTH_SERVICE.logout();
+          else console.error(error);
         }
       } else {
         let offlineUser = await getOfflineUser();

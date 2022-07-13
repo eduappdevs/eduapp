@@ -126,3 +126,31 @@
 .bottom-buttons-desktop>ul>a>li>svg {
 	fill: #ffff;
 }
+.badgeNotifyContainer{
+	position: relative;
+}
+.badgeNotify{
+	position: absolute;
+	top: -22px;
+	right: -22px;
+	width: 25px;
+	height: 25px;
+	border-radius: 50%;
+	background-color: var(--orange);
+	box-shadow: 0px 2px 2px rgb(184, 106, 54);
+	color: white;
+	font-size: 10px;
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 20px;
+	font-weight: bold;
+	transition: all 0.2s;
+}
+.badgeNotifyMobile{
+	top: -33px !important;
+    right: -52px !important;
+    width: 20px !important;
+    height: 20px !important;
+}

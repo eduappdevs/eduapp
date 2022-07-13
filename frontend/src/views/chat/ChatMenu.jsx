@@ -1,141 +1,48 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import MainChat from "./mainChat/MainChat";
-import ACManager from "../../utils/websockets/actioncable/ACManager";
+import { useState, useEffect } from "react";
+import ChatsAC from "../../utils/websockets/actioncable/ChatsAC";
 import Loader from "../../components/loader/Loader";
-import { CHAT_MESSAGES, CHAT_PARTICIPANTS } from "../../config";
+import StandardModal from "../../components/modals/standard-modal/StandardModal";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import * as CHAT_SERVICE from "../../services/chat.service";
+import { getOfflineUser } from "../../utils/OfflineManager";
+import RequireAuth from "../../components/auth/RequireAuth";
+import useViewsPermissions from "../../hooks/useViewsPermissions";
+import useRole from "../../hooks/useRole";
+import useLanguage from "../../hooks/useLanguage";
+import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
 import "./ChatMenu.css";
 
-let acManager = new ACManager();
+let acManager = new ChatsAC();
 export default function ChatMenu() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [chatTitle, setChatTitle] = useState(true);
-  const [privateChats, setPrivateChats] = useState([]);
-  const [groupChats, setGroupChats] = useState([]);
-  const [chatMessages, setChatMessages] = useState([]);
+  const [chats, setChats] = useState([]);
 
-  const checkMediaQueries = () => {
-    setInterval(() => {
-      if (window.innerWidth < 1000) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
+  const [showPopup, setShowPopup] = useState(false);
+
+  const language = useLanguage();
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let canCreate = useRole(userInfo, ["eduapp-admin", "eduapp-teacher"]);
+
+  const getChats = async () => {
+    let chats = (
+      await CHAT_SERVICE.fetchPersonalChats(getOfflineUser().user.id)
+    ).data.personal_chats;
+    for (let c of chats) {
+      if (c.chat_info.chat_name.includes("private_chat_")) {
+        c.chat_info.image =
+          c.chat_participant.profile_image !== null
+            ? c.chat_participant.profile_image
+            : undefined;
+        c.chat_info.chat_name = c.chat_participant.user_name;
       }
-    }, 4000);
-  };
-
-  const openChat = (event) => {
-    const chatBox = document.getElementById("chat-box");
-    const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
-    const loader = document.getElementById("chat-loader");
-    const navbar = document.getElementsByTagName("header")[0];
-    const bottombtns = document.getElementById("bottom-navigator");
-
-    chatMenu.style.display = "none";
-    navbar.style.display = "none";
-    bottombtns.style.display = "none";
-    loader.style.display = "block";
-    loader.style.opacity = "1";
-
-    if (event.target.nodeName.toLowerCase() !== "li") {
-      let temp = event.target;
-      while (temp.nodeName.toLowerCase() !== "li") temp = temp.parentElement;
-      event.target = temp;
     }
-
-    setChatTitle(event.target.childNodes[1].childNodes[0].innerHTML);
-    acManager.chatCode = event.target.id;
-    acManager.generateChannelConnection(acManager.chatCode).then(() => {
-      axios
-        .get(
-          CHAT_MESSAGES +
-            "?chat_base_id=" +
-            event.target.id[event.target.id.length - 1]
-        )
-        .then((msgs) => {
-          setChatMessages(msgs.data);
-          setTimeout(() => {
-            setTimeout(() => {
-              let messageBox = document.getElementsByClassName(
-                "main-chat-messages-container"
-              )[0];
-              if (messageBox.childNodes.length !== 0) {
-                messageBox.childNodes[
-                  messageBox.childNodes.length - 1
-                ].scrollIntoView(true);
-              }
-              setTimeout(() => {
-                loader.style.opacity = "0";
-                setTimeout(() => {
-                  chatBox.style.display = "block";
-                  loader.style.display = "none";
-                }, 200);
-              }, 300);
-            }, 200);
-          }, 100);
-        });
-    });
+    setChats(chats);
   };
 
-  const closeChat = () => {
-    acManager.closeConnection();
-    const chatBox = document.getElementById("chat-box");
-    const chatMenu = document.getElementsByClassName("chat-menu-container")[0];
-    const loader = document.getElementById("chat-loader");
-    const navbar = document.getElementsByTagName("header")[0];
-    const bottombtns = document.getElementById("bottom-navigator");
-
-    loader.style.display = "block";
-    loader.style.opacity = "1";
-
-    setTimeout(() => {
-      setTimeout(() => {
-        chatBox.style.display = "none";
-        loader.style.opacity = "0";
-        setTimeout(() => {
-          loader.style.display = "none";
-          navbar.style.display = "block";
-          bottombtns.style.display = "block";
-          chatMenu.style.display = "block";
-        }, 300);
-      }, 200);
-    }, 200);
-  };
-
-  const getUserChats = async () => {
-    let tempPrivate = [];
-    let tempGroups = [];
-    axios
-      .get(CHAT_PARTICIPANTS + "?user_id=" + localStorage.userId)
-      .then((r) => {
-        if (Array.isArray(r.data)) {
-          for (let chat of r.data) {
-            if (chat.chat_base.isGroup) tempGroups.push(chat);
-            else tempPrivate.push(chat);
-          }
-        } else {
-          if (r.data.chat_base.isGroup) tempGroups.push(r.data);
-          else tempPrivate.push(r.data);
-        }
-        setPrivateChats(tempPrivate);
-        setGroupChats(tempGroups);
-      })
-      .catch((err) => {
-        console.error(err.message);
-      });
-  };
-
+  useViewsPermissions(userInfo, "chat");
   useEffect(() => {
     acManager.closeConnection();
-    checkMediaQueries();
-
-    getUserChats();
-
-    if (window.innerWidth < 1000) {
-      setIsMobile(true);
-    } else {
-      setIsMobile(false);
-    }
+    RequireAuth();
+    getChats();
   }, []);
 
   return (
@@ -143,16 +50,26 @@ export default function ChatMenu() {
       <div id="chat-loader">
         <Loader />
       </div>
-      <div id="chat-box">
-        <MainChat
-          chatName={chatTitle}
-          closeHandler={() => {
-            closeChat();
-          }}
-          ActionCableManager={acManager}
-          messages={chatMessages}
-        />
-      </div>
+      <StandardModal
+        show={showPopup}
+        type={"info"}
+        text={language.chat_type_create}
+        isQuestion
+        hasCancel
+        hasTransition
+        hasIconAnimation
+        customYes={language.chat_type_direct}
+        customNo={language.chat_type_group}
+        onYesAction={() => {
+          window.location.href = "/chat/create/direct";
+        }}
+        onNoAction={() => {
+          window.location.href = "/chat/create/group";
+        }}
+        onCancelAction={() => {
+          setShowPopup(false);
+        }}
+      />
       <div className="chat-menu-container">
         <div className="chat-search-container">
           <form action="">
@@ -173,68 +90,54 @@ export default function ChatMenu() {
         </div>
 
         <div className="chats-container">
-          {groupChats.length !== 0 ? (
-            <div className="chat-group-container">
-              <h2>Groups</h2>
-              <ul data-testid="group-chat-list">
-                {groupChats.map((gChats) => {
+          {chats.length !== 0 ? (
+            <>
+              <h2>{language.chats}</h2>
+              <ul>
+                {chats.map((chat) => {
+                  let connectionId =
+                    (chat.chat_info.isGroup ? "g" : "p") + chat.chat_info.id;
                   return (
                     <li
-                      key={gChats.chat_base.id}
-                      onClick={openChat}
-                      id={`group-chat-${gChats.chat_base.id}`}
+                      key={chat.chat_info.id}
+                      onClick={() => {
+                        window.location.href = `/chat/${connectionId}`;
+                      }}
+                      id={connectionId}
                     >
                       <img
                         className="chat-icon"
-                        src="https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                        src={
+                          chat.chat_info.image !== undefined
+                            ? chat.chat_info.image
+                            : chat.chat_info.isGroup
+                            ? IMG_FLBK_GROUP
+                            : IMG_FLBK_USER
+                        }
                         alt="Chat User Icon"
                       />
                       <div className="chat-info chat-idle-state">
                         <h2 className="chat-name">
-                          {gChats.chat_base.chat_name}
+                          {chat.chat_info.chat_name}
                         </h2>
                         {/* <p className="chat-writing">Equisde is writing...</p> */}
                       </div>
-                      {/* <p className="chat-pending-messages">
-                        <span>20</span>
-                      </p> */}
+                      <p className="chat-pending-messages">
+                        <span>{0}</span>
+                      </p>
                     </li>
                   );
                 })}
               </ul>
-            </div>
+            </>
           ) : null}
-          {privateChats.length !== 0 ? (
-            <div className="chat-user-container">
-              <h2>Users</h2>
-              <ul data-testid="private-chat-list">
-                {privateChats.map((pChats) => {
-                  return (
-                    <li
-                      onClick={openChat}
-                      id={`private-chat-${pChats.chat_base.id}`}
-                    >
-                      <img
-                        className="chat-icon"
-                        src="https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
-                        alt="Chat User Icon"
-                      />
-                      <div className="chat-info chat-idle-state">
-                        <h2 className="chat-name">
-                          {pChats.chat_base.chat_name}
-                        </h2>
-                        {/* <p className="chat-writing">Writing...</p> */}
-                      </div>
-                      {/* <p className="chat-pending-messages">
-                        <span>20</span>
-                      </p> */}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ) : null}
-          <div className="chat-add-button">
+          <div
+            className="chat-add-button"
+            style={{ display: canCreate ? "flex" : "none" }}
+            onClick={() => {
+              setShowPopup(true);
+            }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="white"

@@ -1,23 +1,31 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import ResourcesModal from "../../components/modals/ResourcesModal";
-import OpenedResource from "./openedResource/OpenedResource";
-import axios from "axios";
-import { RESOURCES } from "../../config";
 import Loader from "../../components/loader/Loader";
-import SubjectSelector from "../../components/subjectSelector/SubjectSelector";
+import SubjectDropdown from "../../components/subjectSelector/SubjectDropdown";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { GetSubjects } from "../../hooks/GetSubjects";
+import { getOfflineUser } from "../../utils/OfflineManager";
+import * as RESOURCE_SERVICE from "../../services/resource.service";
+import RequireAuth from "../../components/auth/RequireAuth";
+import useViewsPermissions from "../../hooks/useViewsPermissions";
+import useRole from "../../hooks/useRole";
+import useLanguage from "../../hooks/useLanguage";
 import "./Resources.css";
 
 export default function Resources() {
+  const language = useLanguage();
   const [ItsMobileDevice, setItsMobileDevice] = useState(false);
   const [resourcesFilter, setResourcesFilter] = useState("");
   const [resources, setResources] = useState([]);
   const [subjectSelected, setSubjectSelected] = useState("");
+  const [currentSubject, setCurrentSubject] = useState("");
+  const [showResources, setShowResources] = useState(true);
 
-  let userInfo = FetchUserInfo(localStorage.userId);
-  let subjects = GetSubjects(localStorage.userId);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let subjects = GetSubjects(getOfflineUser().user.id);
+  let isTeacher = useRole(userInfo, "eduapp-teacher");
+  let isAdmin = useRole(userInfo, "eduapp-admin");
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -30,44 +38,20 @@ export default function Resources() {
   };
 
   const getResources = async (id) => {
-    const resources__url = RESOURCES + `?subject_id=${id}`;
-    await axios.get(resources__url).then((res) => {
-      res.data.map((x) => {
-        if (x.firstfile != null) {
-          x.firstfile = x.firstfile.url;
-        }
-        if (x.secondfile != null) {
-          x.secondfile = x.secondfile.url;
-        }
-        if (x.thirdfile != null) {
-          x.thirdfile = x.thirdfile.url;
-        }
-        return true;
-      });
-      setResources(res.data);
+    let resources = await RESOURCE_SERVICE.fetchSubjectResources(id);
+    resources.data.map((x) => {
+      if (x.firstfile != null) {
+        x.firstfile = x.firstfile.url;
+      }
+      if (x.secondfile != null) {
+        x.secondfile = x.secondfile.url;
+      }
+      if (x.thirdfile != null) {
+        x.thirdfile = x.thirdfile.url;
+      }
+      return true;
     });
-  };
-
-  const openResource = (e) => {
-    e.preventDefault();
-    document
-      .getElementById(`resource__${e.target.id}__opened`)
-      .classList.remove("openedResource__hidden");
-
-    document.getElementsByClassName(
-      "mobileSection"
-    )[0].childNodes[0].style.zIndex = -999;
-    document.getElementsByClassName(
-      "mobileSection"
-    )[0].childNodes[1].style.zIndex = -999;
-    document.getElementsByClassName(
-      "mobileSection"
-    )[0].childNodes[2].style.zIndex = 999;
-
-    setTimeout(() => {
-      document.getElementsByTagName("header")[0].style.display = "none";
-      document.getElementById("resource-list").classList.add("hide-rest-res");
-    }, 100);
+    setResources(resources.data);
   };
 
   const createResource = () => {
@@ -99,7 +83,9 @@ export default function Resources() {
     getResources(id);
   };
 
+  useViewsPermissions(userInfo, "resources");
   useEffect(() => {
+    RequireAuth();
     checkMediaQueries();
 
     //First check
@@ -112,14 +98,32 @@ export default function Resources() {
 
   return subjects && userInfo ? (
     <>
+      <SubjectDropdown
+        language={language}
+        dropdown={showResources}
+        onSubjectClick={(e) => {
+          handleChangeSelector(e.split("_")[1]);
+          setCurrentSubject(e.split("_")[2]);
+          setShowResources(false);
+        }}
+        closeAction={() => {
+          setShowResources(false);
+        }}
+      />
       <div className="resources-main-container">
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
-          <SubjectSelector
-            handleChangeSubject={handleChangeSelector}
-            data={localStorage.userId}
-          />
+          <div className="reveal-resources">
+            <button
+              onClick={() => {
+                setShowResources(true);
+              }}
+            >
+              {language.resources_all_resources}
+            </button>
+          </div>
+          <h2 className="subject-title">{currentSubject}</h2>
           <div className="resources-toolbar">
             <div className="resourcesSearchBar">
               <form action="">
@@ -139,9 +143,9 @@ export default function Resources() {
               </form>
             </div>
             {subjectSelected &&
-            (subjects.filter((subject) => subject.id === subjectSelected)[0]
-              .isTeacher ||
-              userInfo.isAdmin) ? (
+            (isAdmin ||
+              (isTeacher &&
+                userInfo.teaching_list.includes(subjectSelected))) ? (
               <div
                 className="resources__addNewResource"
                 onClick={createResource}
@@ -171,14 +175,13 @@ export default function Resources() {
                   ) {
                     return (
                       <>
-                        <OpenedResource
-                          data={data}
-                          courseSelected={subjectSelected}
-                        />
                         <li
+                          key={"res" + data.name + subjectSelected}
                           id={"res" + data.name + subjectSelected}
                           className="resources resourceitem"
-                          onClick={openResource}
+                          onClick={() => {
+                            window.location.href = "/resource/" + data.id;
+                          }}
                         >
                           <div
                             id={"res" + data.name + subjectSelected}
@@ -228,7 +231,7 @@ export default function Resources() {
                                 </svg>
                               </div>
                               <div className="resourceInfo__createdBy__content">
-                                {data.createdBy}
+                                {data.user.email}
                               </div>
                             </div>
                           </div>
@@ -240,13 +243,21 @@ export default function Resources() {
                 })}
               </ul>
             ) : (
-              <div id="courseNotSelectedeAdvisor">
-                <h3>You must select a course</h3>
-              </div>
+              ""
             )}
+            <div
+              className="select-subject"
+              style={{ display: subjectSelected !== "" ? "none" : "block" }}
+            >
+              <h3>{language.resources_select_subject}</h3>
+            </div>
           </div>
         </section>
-        <ResourcesModal subject={subjectSelected} />
+        <ResourcesModal
+          subject={subjectSelected}
+          userInfo={userInfo}
+          language={language}
+        />
       </div>
     </>
   ) : (

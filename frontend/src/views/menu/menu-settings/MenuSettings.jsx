@@ -1,25 +1,27 @@
 import React from "react";
 import MenuHeader from "../menuHeader/MenuHeader";
 import DarkModeChanger from "../../../components/DarkModeChanger";
+import LanguageManager from "../../../components/LanguageManager";
+import useLanguage from "../../../hooks/useLanguage";
 import "./MenuSettings.css";
 
 export default function MenuSettings() {
-  const closeMenuSettings = () => {
-    document
-      .getElementsByClassName("MenuSettings__main-container")[0]
-      .classList.add("MenuSettings__hidden");
-  };
+  const language = useLanguage();
 
   return (
-    <div className={"MenuSettings__main-container MenuSettings__hidden"}>
+    <div className={"MenuSettings__main-container"}>
       <MenuHeader
         backTo={() => {
-          closeMenuSettings();
+          window.location.href = "/menu";
         }}
-        location={"SETTINGS"}
+        location={language.menu_settings}
       />
       <ul>
-        <li>LANGUAGE</li>
+        <li className="language-switcher">
+          {language.language}
+          <LanguageManager />
+        </li>
+
         <li>
           <ul id={"darkModes"}>
             <li

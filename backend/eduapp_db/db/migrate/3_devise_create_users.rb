@@ -1,26 +1,30 @@
-# frozen_string_literal: true
-
 class DeviseCreateUsers < ActiveRecord::Migration[6.1]
   def change
-    create_table :users do |t|
+    create_table :users, id: :uuid do |t|
+      t.string :name
+      t.string :surname
       ## Database authenticatable
-      t.string :email,              null: false, default: ""
+      t.string :email, null: false, default: "", index: { unique: true }
+      t.string :username, null:true,index:{unique:true}
       t.string :encrypted_password, null: false, default: ""
-
+      t.string :encrypted_googleid, null:true, index: { unique: true }
 
       ## Recoverable
-      t.string   :reset_password_token
+      t.string :reset_password_token, index: { unique: true }
       t.datetime :reset_password_sent_at
 
       ## Rememberable
       t.datetime :remember_created_at
 
+      t.string :confirmation_code #confirmation code
+      t.datetime :confirmation_code_exp_time #confirmation code expiry time
+
       ## Trackable
-      # t.integer  :sign_in_count, default: 0, null: false
-      # t.datetime :current_sign_in_at
-      # t.datetime :last_sign_in_at
-      # t.string   :current_sign_in_ip
-      # t.string   :last_sign_in_ip
+      t.integer :sign_in_count, default: 0, null: false
+      t.datetime :current_sign_in_at
+      t.datetime :last_sign_in_at
+      t.string :current_sign_in_ip
+      t.string :last_sign_in_ip
 
       ## Confirmable
       # t.string   :confirmation_token
@@ -33,12 +37,15 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.1]
       # t.string   :unlock_token # Only if unlock strategy is :email or :both
       # t.datetime :locked_at
 
+      # JTI Matcher
+      # t.string :jti, null: false
 
       t.timestamps null: false
     end
-
-    add_index :users, :email,                unique: true
-    add_index :users, :reset_password_token, unique: true
+    
+    # add_column :users, :confirmation_code, :string
+    # :users, :confirmation_code_exp_time, :string
+    # add_index :users, :jti, unique: true
     # add_index :users, :confirmation_token,   unique: true
     # add_index :users, :unlock_token,         unique: true
   end

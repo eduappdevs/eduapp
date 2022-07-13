@@ -1,6 +1,6 @@
 .resourceModal-container {
 	font-family: Consolas;
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	height: 100vh;
@@ -62,8 +62,64 @@
 	display: flex;
 	flex-direction: column;
 	width: 50%;
-	margin-top: 15%;
 	transform: scale(1.1);
+}
+
+.resources-modal-show-files {
+	flex: 0.6;
+	height: 100%;
+	width: 100%;
+	color: var(--textColor);
+	display: none;
+}
+
+.resources-modal-show-files>ul {
+	background-color: var(--backgroundColor);
+	border-radius: 10px;
+	border: 1px solid var(--secondaryColor);
+	width: 70vw;
+	position: absolute;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	height: 111%;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.resources-modal-show-files>ul>li {
+	border-bottom: 1px solid var(--secondaryColor);
+	height: auto;
+	width: 100%;
+	display: flex;
+	justify-content: left;
+	align-items: center;
+	flex-direction: row;
+	margin-left: .2em;
+	margin-bottom: 1em;
+}
+
+.resources-modal-show-files>ul>li:last-child {
+	margin-bottom: 0;
+}
+
+
+.resources-modal-show-file>p {
+	justify-content: center;
+}
+
+.modal-button-delete-file {
+	border: none;
+	background-color: var(--blue);
+	color: white;
+	font-weight: 700;
+	font-family: "Consolas";
+	border-radius: 10px;
+	padding: 8%;
+	margin-right: .5em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .resources__createResourceModal>form>input {
@@ -92,7 +148,6 @@
 .fileInputs {
 	display: flex;
 	flex-direction: row;
-	height: 80px;
 	width: 100%;
 }
 
@@ -138,9 +193,14 @@
 }
 
 .submit-action {
+	position: absolute;
+	transform: translate(5px, 11.5em);
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	bottom: 0;
+	right: 0;
+	z-index: 1;
 }
 
 #submit-loader {
@@ -149,28 +209,26 @@
 
 .resources__createResourceModal>form>div>button {
 	background-color: white;
-	height: 35px;
 	border-radius: 5px;
 	border: none;
-	width: 50%;
-	transform: translateX(50%);
 	font-weight: bold;
 	color: var(--blue);
 	cursor: pointer;
 	font-family: Consolas;
 	font-size: 1em;
+	padding: 8px;
+	transform: translateX(4vw);
 }
 
 #resources__closeResourceModal {
 	position: absolute;
-	bottom: 6px;
-	right: 6px;
 	border: none;
 	border-radius: 5px;
 	background-color: rgb(255, 64, 64);
 	color: white;
 	padding: 8px;
 	cursor: pointer;
+	transform: translateX(calc(100% - 77vw));
 }
 
 @media (max-width: 750px) {
@@ -199,7 +257,6 @@
 		display: flex;
 		flex-direction: column;
 		width: 70%;
-		margin-top: 15%;
 		transform: scale(1.1);
 	}
 }

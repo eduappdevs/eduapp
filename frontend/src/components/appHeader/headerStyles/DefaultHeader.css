@@ -37,7 +37,6 @@
 	width: 20vw;
 	text-overflow: ellipsis;
 	color: rgb(255, 255, 255);
-
 	margin-top: 5px;
 }
 
@@ -45,8 +44,11 @@
 	margin-top: 2vh;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	max-width: 200px;
+	max-width: 65vw;
 	line-height: 1;
 	white-space: nowrap;
-	height: 36px;
+	font-size: 1.7em;
+	height: 26px;
+	padding-bottom: 0.5vh;
+	font-family: Consolas;
 }

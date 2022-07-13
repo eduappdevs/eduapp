@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from "react";
 import "./ChatBubble.css";
 
@@ -7,11 +8,7 @@ export default function ChatBubble(props) {
   const [marginType, setMarginType] = useState({});
 
   useEffect(() => {
-    setMsgMargin(
-      (props.isMsgRecent ? window.innerWidth : window.innerWidth / 2) -
-        50 -
-        ref.current.offsetWidth
-    );
+    setMsgMargin(window.innerWidth - 50 - ref.current.offsetWidth);
     setMarginType(
       props.foreign
         ? {
@@ -21,7 +18,7 @@ export default function ChatBubble(props) {
             marginLeft: msgMargin,
           }
     );
-  }, [props.foreign, msgMargin, props.isMsgRecent]);
+  }, [props.foreign, msgMargin, props.isMsgRecent, window.innerWidth]);
 
   return (
     <div className={props.foreign ? "foreign-align" : "self-align"}>

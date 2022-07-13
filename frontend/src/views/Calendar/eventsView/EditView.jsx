@@ -1,12 +1,66 @@
-import axios from "axios";
 import { React, useEffect, useState } from "react";
-import { CALENDAR, EDUAPP_SESSIONS } from "../../../config";
-import "./views.css";
 import { asynchronizeRequest } from "../../../API";
+import * as SCHEDULE_SERVICE from "../../../services/schedule.service";
+import StandardModal from "../../../components/modals/standard-modal/StandardModal";
+import { getOfflineUser } from "../../../utils/OfflineManager";
+import useLanguage from "../../../hooks/useLanguage";
+import "./views.css";
 
 export default function EditView(props) {
+  const language = useLanguage();
+
   const [editStartDate, setEditStart] = useState("");
   const [editEndDate, setEditEnd] = useState("");
+  const [saveText, setSaveText] = useState(language.save);
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState("");
+  const [popupMessage, setPopupMessage] = useState("");
+  const [hasIconFill, setHasIconFill] = useState(false);
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+
+  const confirmDeleteEvent = async () => {
+    setPopupType("warning");
+    setHasIconFill(true);
+    setPopupMessage(language.calendar_delete_confirm);
+    setIsConfirmDelete(true);
+    setShowPopup(true);
+  };
+
+  const showDeleteError = () => {
+    setShowPopup(false);
+    setPopupType("error");
+    setHasIconFill(false);
+    setShowLoader(false);
+    setPopupMessage(language.calendar_delete_unknown);
+    setIsConfirmDelete(false);
+    setShowPopup(true);
+  };
+
+  const showUpdateError = () => {
+    setShowPopup(false);
+    setPopupType("error");
+    setHasIconFill(false);
+    setShowLoader(false);
+    setPopupMessage(language.calendar_update_unknown);
+    setIsConfirmDelete(false);
+    setShowPopup(true);
+  };
+
+  const switchSaveState = (state) => {
+    if (state) {
+      setSaveText("");
+      document
+        .getElementById("commit-loader")
+        .classList.remove("commit-loader-hide");
+    } else {
+      setSaveText(language.save);
+      document
+        .getElementById("commit-loader")
+        .classList.add("commit-loader-hide");
+    }
+  };
 
   const closeButton = async () => {
     const editBox = document.getElementById("edit-box");
@@ -26,6 +80,8 @@ export default function EditView(props) {
 
   const updateEvent = async (e) => {
     e.preventDefault();
+    switchSaveState(true);
+
     var titleValue = document.getElementById("editTitle").value;
     var descriptionValue = document.getElementById("editDescription").value;
     var startValue = document.getElementById("editStartDate").value;
@@ -39,8 +95,7 @@ export default function EditView(props) {
       editEndDate,
       editChat,
       editResources,
-      editStream,
-      editId;
+      editStream;
 
     if (titleValue !== "" && titleValue !== props.data.title) {
       editTitle = titleValue;
@@ -89,21 +144,26 @@ export default function EditView(props) {
 
     if (props.data.description !== undefined) {
       var editEvent = {
-        id: editId,
+        id: props.data.id,
         annotation_start_date: editStartDate,
         annotation_end_date: editEndDate,
         annotation_title: editTitle,
         annotation_description: editDescription,
         isGlobal: props.data.isGlobal,
-        user_id: localStorage.userId,
+        user_id: getOfflineUser().user.id,
       };
-      asynchronizeRequest(function () {
-        axios.put(CALENDAR + "/" + props.data.id, editEvent).then(() => {
-          window.location.reload();
-        });
+      asynchronizeRequest(async function () {
+        await SCHEDULE_SERVICE.editEvent(editEvent);
+        window.location.reload();
+      }).then((error) => {
+        if (error) {
+          showUpdateError();
+          switchSaveState(false);
+        }
       });
     } else {
       var editEventSession = {
+        id: props.data.id,
         session_name: editTitle,
         session_start_date: editStartDate,
         session_end_date: editEndDate,
@@ -111,42 +171,34 @@ export default function EditView(props) {
         resources_platform: editResources,
         session_chat_id: editChat,
       };
-      asynchronizeRequest(function () {
-        axios
-          .put(EDUAPP_SESSIONS + "/" + props.data.id, editEventSession)
-          .then(() => {
-            window.location.reload();
-          });
+      asynchronizeRequest(async function () {
+        await SCHEDULE_SERVICE.editSession(editEventSession);
+        window.location.reload();
+      }).then((error) => {
+        if (error) {
+          showUpdateError();
+          switchSaveState(false);
+        }
       });
     }
-  };
-
-  const confirmDeleteEvent = async () => {
-    document
-      .getElementsByClassName("calendar-view-edit-alert-delete-container")[0]
-      .classList.remove("calendar-view-alert-delete-hidden");
   };
 
   const deleteEvent = async () => {
     if (props.data.description !== undefined) {
-      asynchronizeRequest(function () {
-        axios.delete(CALENDAR + "/" + props.data.id).then(() => {
-          window.location.reload();
-        });
+      asynchronizeRequest(async function () {
+        await SCHEDULE_SERVICE.deleteEvent(props.data.id);
+        window.location.reload();
+      }).then((error) => {
+        if (error) showDeleteError();
       });
     } else {
-      asynchronizeRequest(function () {
-        axios.delete(EDUAPP_SESSIONS + "/" + props.data.id).then(() => {
-          window.location.reload();
-        });
+      asynchronizeRequest(async function () {
+        await SCHEDULE_SERVICE.deleteSession(props.data.id);
+        window.location.reload();
+      }).then((error) => {
+        if (error) showDeleteError();
       });
     }
-  };
-
-  const closeDeleteWindow = async () => {
-    document
-      .getElementsByClassName("calendar-view-edit-alert-delete-container")[0]
-      .classList.add("calendar-view-alert-delete-hidden");
   };
 
   return (
@@ -192,7 +244,7 @@ export default function EditView(props) {
         <div className="calendar-view-edit-contents">
           <form action="submit" onSubmit={updateEvent}>
             <div className="calendar-view-edit-title">
-              <h3>Title</h3>
+              <h3>{language.title}</h3>
               <input
                 id="editTitle"
                 placeholder={props.data.title}
@@ -201,7 +253,7 @@ export default function EditView(props) {
               ></input>
             </div>
             <div className="calendar-view-edit-hour">
-              <h3>Hour</h3>
+              <h3>{language.date}</h3>
               <div className="calendar-view-edit-hour-input">
                 <input
                   id="editStartDate"
@@ -224,7 +276,7 @@ export default function EditView(props) {
               </div>
             </div>
             <div className="calendar-view-edit-description">
-              <h3>Description</h3>
+              <h3>{language.description}</h3>
               <textarea
                 id="editDescription"
                 placeholder={props.data.description}
@@ -234,21 +286,21 @@ export default function EditView(props) {
               />
             </div>
             <div className="calendar-view-edit-session-information">
-              <h3>Resources</h3>
+              <h3>{language.resources}</h3>
               <input
                 placeholder={props.data.resources}
                 id="editResources"
                 name="editResources"
                 type="text"
               />
-              <h3>Platform stream</h3>
+              <h3>{language.streaming_platform}</h3>
               <input
                 id="editStream"
                 placeholder={props.data.stream}
                 name="editStream"
                 type="text"
               />
-              <h3>Session Chat</h3>
+              <h3>{language.session_chat}</h3>
               <input
                 type="text"
                 placeholder={props.data.chat}
@@ -256,20 +308,46 @@ export default function EditView(props) {
                 id="editChat"
               />
             </div>
-            <button type="submit">Save</button>
+            <button type="submit">
+              {saveText}
+              <svg
+                id="commit-loader"
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                className="bi bi-arrow-repeat commit-loader-hide loader-spin"
+                viewBox="0 0 16 16"
+              >
+                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
+                <path
+                  fillRule="evenodd"
+                  d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+                />
+              </svg>
+            </button>
           </form>
         </div>
-        <div className="calendar-view-edit-alert-delete-container calendar-view-alert-delete-hidden">
-          <div className="calendar-view-edit-alert-delete">
-            <h3>Do you want to delete?</h3>
-            <div className="buttonsDeleteCalendar">
-              <div className="buttonDeleteCalendar" onClick={deleteEvent}>
-                Yes
-              </div>
-              <div onClick={closeDeleteWindow}>No</div>
-            </div>
-          </div>
-        </div>
+        <StandardModal
+          show={showPopup}
+          iconFill={hasIconFill}
+          type={popupType}
+          text={popupMessage}
+          isQuestion={isConfirmDelete}
+          onYesAction={() => {
+            setShowLoader(true);
+            deleteEvent();
+          }}
+          onNoAction={() => {
+            setShowPopup(false);
+          }}
+          onCloseAction={() => {
+            setShowPopup(false);
+          }}
+          showLoader={showLoader}
+          hasTransition
+          hasIconAnimation
+        />
       </div>
     </div>
   );

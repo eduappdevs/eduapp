@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Paper from "@material-ui/core/Paper";
@@ -14,13 +13,18 @@ import {
   ViewSwitcher,
   TodayButton,
   AppointmentTooltip,
+  CurrentTimeIndicator,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { ViewState } from "@devexpress/dx-react-scheduler";
-import { CALENDAR_USER_ID, SUBJECT } from "../../config";
 import View from "./eventsView/View";
 import CreateView from "./eventsView/CreateView";
-import "./calendar.css";
 import { asynchronizeRequest } from "../../API";
+import { getOfflineUser } from "../../utils/OfflineManager";
+import * as SCHEDULE_SERVICE from "../../services/schedule.service";
+import * as SUBJECT_SERVICE from "../../services/subject.service";
+import useViewsPermissions from "../../hooks/useViewsPermissions";
+import useRole from "../../hooks/useRole";
+import "./calendar.css";
 
 export default function Calendar() {
   const [annotations, setAnnotations] = useState([]);
@@ -29,11 +33,15 @@ export default function Calendar() {
   const [subject, setSubject] = useState([]);
   const today = new Date();
   const currentDate = today;
-  let userinfo = FetchUserInfo(localStorage.userId);
+
+  let userinfo = FetchUserInfo(getOfflineUser().user.id);
+  let canCreate = useRole(userinfo, ["eduapp-teacher", "eduapp-admin"]);
 
   const getCalendar = async () => {
     let events = [];
-    let annotations = await axios.get(CALENDAR_USER_ID + localStorage.userId);
+    let annotations = await SCHEDULE_SERVICE.fetchUserEvents(
+      getOfflineUser().user.id
+    );
     let data = annotations.data;
 
     for (let globalEvent in data.globalEvents) {
@@ -45,6 +53,8 @@ export default function Calendar() {
         let title = e.annotation_title;
         let description = e.annotation_description;
         let subject = e.subject_id;
+        let author = e.user_id;
+
         let backgroundColor;
 
         for (let i in data.colorEvents) {
@@ -60,6 +70,7 @@ export default function Calendar() {
           description: description,
           subject_id: subject,
           backgroundColor: backgroundColor,
+          user_id: author,
         });
       }
     }
@@ -74,6 +85,7 @@ export default function Calendar() {
         let description = calendarEvents.annotation_description;
         let subject = calendarEvents.subject_id;
         let isGlobal = calendarEvents.isGlobal;
+        let author = calendarEvents.user_id;
         let backgroundColor;
 
         for (let i in data.colorEvents) {
@@ -90,6 +102,7 @@ export default function Calendar() {
           subject_id: subject,
           backgroundColor: backgroundColor,
           isGlobal: isGlobal,
+          user_id: author,
         });
       }
     }
@@ -105,6 +118,7 @@ export default function Calendar() {
         let stream = e.streaming_platform;
         let chat = e.session_chat_id;
         let subject = e.subject_id;
+        let author = e.user_id;
         let backgroundColor;
 
         for (let i in data.colorEvents) {
@@ -122,6 +136,7 @@ export default function Calendar() {
           chat: chat,
           subject_id: subject,
           backgroundColor: backgroundColor,
+          user_id: author,
         });
       }
     }
@@ -129,7 +144,9 @@ export default function Calendar() {
   };
 
   const getSubject = async () => {
-    let request = await axios.get(SUBJECT + "?user=" + localStorage.userId);
+    let request = await SUBJECT_SERVICE.fetchUserVariantSubjects(
+      getOfflineUser().user.id
+    );
     let subject = [];
     request.data.map((e) => {
       let id = e.id;
@@ -223,6 +240,37 @@ export default function Calendar() {
     </StyledDiv>
   );
 
+  const IndicatorDiv = styled("div", {
+    shouldForwardProp: (prop) => prop !== "top",
+  })(({ theme, top }) => ({
+    [`& .styled-line`]: {
+      height: "2px",
+      borderTop: `2px solid #FF8139`,
+      width: "100%",
+      transform: "translate(0, -1px)",
+    },
+    [`& .styled-circle`]: {
+      width: theme.spacing(1.5),
+      height: theme.spacing(1.5),
+      borderRadius: "50%",
+      transform: "translate(-50%, -50%)",
+      background: "#FF8139",
+    },
+    [`& .styled-now`]: {
+      position: "absolute",
+      zIndex: 1,
+      left: 0,
+      top,
+    },
+  }));
+
+  const TimeIndicator = ({ top, ...restProps }) => (
+    <IndicatorDiv top={top} {...restProps}>
+      <div className={"styled-now styled-circle"} />
+      <div className={"styled-now styled-line"} />
+    </IndicatorDiv>
+  );
+
   const checkMediaQueries = () => {
     setInterval(() => {
       if (window.innerWidth < 1100) {
@@ -247,6 +295,8 @@ export default function Calendar() {
     }
   }, []);
 
+  useViewsPermissions(userinfo, "calendar");
+
   return (
     <div className="calendar-main-container">
       <section
@@ -268,11 +318,17 @@ export default function Calendar() {
             <ViewSwitcher />
             <Appointments appointmentComponent={Appointment} />
             <AppointmentTooltip showCloseButton visible={false} />
+            <CurrentTimeIndicator
+              indicatorComponent={TimeIndicator}
+              shadePreviousAppointments
+              shadePreviousCells
+              updateInterval={60}
+            />
           </Scheduler>
         </Paper>
       </section>
       <div
-        className={userinfo.isAdmin ? "button-calendar-option " : "hidden"}
+        className={canCreate ? "button-calendar-option " : "hidden"}
         onClick={openCreate}
       >
         <svg

@@ -1,11 +1,12 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "eduapp-frontend",
+  "version": "0.7.0",
   "private": true,
   "dependencies": {
     "@devexpress/dx-react-core": "^2.7.6",
     "@devexpress/dx-react-scheduler": "^2.7.6",
     "@devexpress/dx-react-scheduler-material-ui": "^2.7.6",
+    "@emailjs/browser": "^3.6.2",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@jsreport/browser-client": "^3.1.0",
@@ -19,13 +20,20 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.24.0",
+    "buffer": "^6.0.3",
     "dompurify": "^2.3.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "firebase": "^9.6.9",
+    "https": "^1.0.0",
+    "hybrid-crypto-js": "^0.2.4",
+    "idb-keyval": "^6.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-google-login": "^5.2.2",
     "react-player": "^2.9.0",
     "react-router-dom": "^6.0.2",
-    "react-scripts": "^5.0.0",
+    "react-scripts": "^5.0.1",
     "react-service-worker": "^0.1.1",
     "serve": "^13.0.2",
     "web-vitals": "^1.0.1",
@@ -49,11 +57,12 @@
     "workbox-streams": "^6.5.1"
   },
   "scripts": {
-    "start-win": "set PORT=3001 && react-scripts start",
-    "start-unix": "PORT=3001 react-scripts start",
+    "devw": "set PORT=3001 && react-scripts start",
+    "dev": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "nodemon server/server.js"
   },
   "eslintConfig": {
     "extends": [

@@ -1,8 +1,0 @@
-version: '3.1'
-services:
-  web:
-    build: 
-      context: .
-    image: eduapp/eduapp_admin
-    ports:
-      - "3002:3002"

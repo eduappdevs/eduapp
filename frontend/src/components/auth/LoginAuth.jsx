@@ -1,73 +1,117 @@
-import React, { Component } from "react";
-import API from "../../API";
+import { useState } from "react";
+import * as AUTH_SERVICE from "../../services/auth.service";
 import BasicGoogleLogin from "../basicGoogleLogin/BasicGoogleLogin";
+import StandardModal from "../modals/standard-modal/StandardModal";
+import { Mailer } from "../Mailer";
+import Notification from "../notifications/notifications";
+import useLanguage from "../../hooks/useLanguage";
 
-export default class LoginAuth extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: "",
-      password: "",
-    };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-  }
+/**
+ * A login form component for login in users.
+ */
+export default function LoginAuth() {
+  const [email, setEmail] = useState("");
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+  const [forgotModalShow, setForgotModalShow] = useState(false);
+  const [sendEmail, setSendEmail] = useState(false);
+  const [emailSentModalShow, setEmailSentModalShow] = useState(false);
 
-  handleSubmit = async (event) => {
+  const language = useLanguage();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const { email, password } = this.state;
       const userData = new FormData();
 
-      userData.append("user[email]", email);
+      userData.append(`user[login]`, login);
       userData.append("user[password]", password);
 
-      API.login(userData).then((res) => {
-        console.log(res);
-        window.location.href = "/";
-      });
+      await AUTH_SERVICE.login(userData);
     } catch (error) {
-      console.log("error");
+      console.log("here", error);
     }
   };
 
-  handleChange = (event) => {
-    this.setState({
-      [event.target.name]: event.target.value,
-    });
+  const showEmailSentModal = () => {
+    setTimeout(() => {
+      new Notification(language.recovery_sent_success);
+    }, 1000);
+    setEmailSentModalShow(true);
   };
 
-  render() {
-    return (
-      <form className="login_form" onSubmit={this.handleSubmit}>
-        <h1>LOG IN</h1>
-        <label htmlFor="email">Email</label>
-        <input
-          data-testid="email"
-          type="email"
-          name="email"
-          onChange={this.handleChange}
-          required
-        />
-        <label htmlFor="password">Password</label>
-        <input
-          data-testid="password"
-          type="password"
-          name="password"
-          onChange={this.handleChange}
-          required
-        />
-        <button data-testid="loginButton" type="submit">
-          Login
-        </button>
-        <span style={{ color: "white" }}>
-          <br />
-          or
-        </span>
-        <BasicGoogleLogin />
-        <img src="\assets\logo.png" alt="" />
-      </form>
-    );
-  }
+  return (
+    <form className="login_form" onSubmit={handleSubmit}>
+      <h1>{language.login_title}</h1>
+      <label htmlFor="login">{language.email}</label>
+      <input
+        data-testid="login"
+        type="text"
+        name="login"
+        onChange={(e) => {
+          setLogin(e.target.value);
+        }}
+      />
+      <label htmlFor="password">{language.password}</label>
+      <input
+        data-testid="password"
+        type="password"
+        name="password"
+        onChange={(e) => {
+          setPassword(e.target.value);
+        }}
+        required
+      />
+      <div
+        onClick={() => {
+          setForgotModalShow(true);
+        }}
+        className="forgottenPassword"
+      >
+        {language.forgot_password}
+      </div>
+      <StandardModal
+        type={"info"}
+        text={language.recovery_askemail}
+        form={
+          <Mailer
+            language={language}
+            showEmailSentModal={showEmailSentModal}
+            sendEmail={sendEmail}
+          />
+        }
+        show={forgotModalShow}
+        onCloseAction={() => {
+          setForgotModalShow(false);
+          setSendEmail(true);
+        }}
+        hasIconAnimation
+        hasTransition
+        hasCancel
+        onCancelAction={() => {
+          window.location.reload();
+        }}
+      />
+      <StandardModal
+        type={"success"}
+        text={language.recovery_sent_success}
+        hasIconAnimation
+        hasTransition
+        show={emailSentModalShow}
+        onCloseAction={() => {
+          setEmailSentModalShow(false);
+        }}
+      />
+      <button data-testid="loginButton" type="submit">
+        {language.login_title}
+      </button>
+      <span style={{ color: "white" }}>
+        <br />
+        {language.login_or}
+      </span>
+      <BasicGoogleLogin language={language} />
+      <img src={process.env.PUBLIC_URL + "/assets/logo.png"} alt="logo" />
+    </form>
+  );
 }

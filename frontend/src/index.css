@@ -13,6 +13,7 @@ body {
 	src: url("fonts/Consolas.ttf") format("ttf");
 	/* Safari */
 	src: url("fonts/Consolas.woff") format("woff");
+
 }
 
 code {
@@ -28,6 +29,168 @@ code {
 .overflow-show {
 	overflow-x: hidden;
 	overflow-y: auto;
+}
+
+.button {
+	border: none;
+	border-radius: 10px;
+	padding: 10px 20px;
+	background-color: var(--orange);
+	color: white;
+	font-size: 14px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	cursor: pointer;
+	font-family: Consolas;
+}
+
+.notifs_container {
+	min-width: 200px;
+	min-height: 70px;
+	padding: 4px 15px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	background-color: var(--blue);
+	border-radius: 20px;
+	box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.208);
+	position: absolute;
+	right: 5px;
+	top: 10px;
+	z-index: 99999999999999999999;
+	border: 1px solid rgba(255, 255, 255, 0.301);
+	animation: slideDown 0.4s;
+}
+
+.notifs_container::before {
+	content: '';
+	width: 88%;
+	height: 3px;
+	background-color: rgba(237, 237, 237, 0.215);
+	position: absolute;
+	bottom: 1px;
+	border-radius: 20px
+}
+
+.notifs_container::after {
+	content: '';
+	width: 0%;
+	height: 3px;
+	background-color: rgb(237, 237, 237);
+	position: absolute;
+	bottom: 1px;
+	border-radius: 20px;
+	left: 14px;
+	animation: barProgress 7990ms
+}
+
+.notifs_left {
+	flex: 0.2;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+}
+
+.notifs_profile_pic {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+}
+
+.notifs_author_name {
+	flex: 0.3;
+	font-size: 14px;
+	font-weight: bolder;
+}
+
+.notifs_right {
+	flex: 0.8;
+	color: var(--backgroundColor);
+	text-align: start;
+	text-indent: 20px;
+	display: flex;
+	flex-direction: column;
+	cursor: pointer;
+}
+
+.notifs_message {
+	text-overflow: ellipsis;
+	max-width: 145px;
+	font-size: 14px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.removeSlideUP {
+	animation: removeSlideUP 0.4s;
+}
+
+.close_notif {
+	width: 14px;
+	height: 14px;
+	display: flex;
+	justify-content: center;
+	font-size: 10px;
+	background-color: rgba(200, 198, 198, 0.203);
+	border-radius: 50%;
+	color: white;
+	z-index: 999999999999999999999;
+	cursor: pointer;
+	position: absolute;
+	right: 10px;
+	top: 40%;
+
+}
+
+@keyframes slideDown {
+	0% {
+		top: -50vh;
+	}
+
+	100% {
+		top: 10px;
+	}
+
+}
+
+@keyframes removeSlideUP {
+	0% {
+		top: 10px;
+	}
+
+	90% {
+		top: -50vh;
+		opacity: 0;
+	}
+
+	100% {
+		top: -50vh;
+		opacity: 0;
+		display: none;
+	}
+}
+
+@keyframes barProgress {
+	0% {
+		width: 0;
+	}
+
+	100% {
+		width: 90%;
+	}
+}
+
+@media (max-width: 400px) {
+	.notifs_container {
+		width: 83%;
+		right: 50%;
+		transform: translateX(50%);
+	}
+
 }
 
 #wip {

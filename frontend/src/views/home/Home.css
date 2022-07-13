@@ -50,7 +50,10 @@
 	justify-content: center;
 	align-items: center;
 	display: flex;
-	font-size: 50%;
+}
+
+.user>.user-container>.information-user>.user-name>h1 {
+	font-size: 1.2rem;
 }
 
 .user>.user-container>.information-user>.user-name>.edit {
@@ -65,12 +68,12 @@
 }
 
 .user>.user-container>.sessions {
-	margin-top: 5%;
 	height: 100%;
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
 	flex-direction: column;
+	font-family: Consolas;
 }
 
 .user>.user-container>.sessions>.sessions-container {
@@ -405,4 +408,12 @@
 #sessions_error {
 	text-align: center;
 	width: 100%;
+}
+
+.select-course {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: gray;
+	flex-direction: column;
 }

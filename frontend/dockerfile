@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:alpine as builder
 
 WORKDIR /frontend
 
@@ -8,20 +8,11 @@ RUN npm install
 
 COPY . .
 
-ENV REACT_APP_BACKEND_ENDPOINT=https://eduapp-online-api.herokuapp.com \
-	REACT_APP_WEBSOCKET_ENDPOINT=ws://eduapp-online-api.herokuapp.com/chat \
-	REACT_APP_PORT=3001 \
-	REACT_APP_DOMAIN=localhost \
-	REACT_APP_SUPPORT_ENDPOINT=http://localhost:3003 \
-	REACT_APP_BACKEND_DOMAIN=eduapp-online-api.herokuapp.com \
-	REACT_APP_FRONTEND_DOMAIN=localhost:3001 \
-	REACT_APP_FB_API_KEY=AIzaSyAfeQYCIWSjxMluOfGWNvLXOYOinUEFMFA \
-	REACT_APP_FB_AUTH_DOMAIN=eduapp-online.firebaseapp.com \
-	REACT_APP_FB_PROJECT_ID=eduapp-online \
-	REACT_APP_FB_STORAGE_BUCKET=eduapp-online.appspot.com \
-	REACT_APP_FB_SENDER_ID=414829647907 \
-	REACT_APP_FB_ID="1:414829647907:web:853b6c6101317d4a5ab996"
+RUN rm .env
+RUN mv docker-example.env .env
 
-EXPOSE 3001
+RUN npm run build
 
-CMD [ "npm", "run", "start-unix" ]
+EXPOSE 4220
+
+CMD [ "node", "server/server.js" ]

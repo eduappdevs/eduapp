@@ -1,98 +1,83 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
 import MediaFix from "../../../utils/MediaFixer";
 import { asynchronizeRequest } from "../../../API";
-import { RESOURCES } from "../../../config";
+import * as RESOURCE_SERVICE from "../../../services/resource.service";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import useRole from "../../../hooks/useRole";
+import { getOfflineUser } from "../../../utils/OfflineManager";
+import useLanguage from "../../../hooks/useLanguage";
 import "./OpenedResource.css";
 
-export default function OpenedResource(props) {
-  const [id, setId] = useState(props.data.id);
-  const [name, setName] = useState(props.data.name);
-  const [description, setDescription] = useState(props.data.description);
-  const files = [];
+export default function OpenedResource() {
+  const language = useLanguage();
+  const [name, setName] = useState("None");
+  const [description, setDescription] = useState("None");
+  const [subjectOrigin, setSubjectOrigin] = useState("None");
+  const [files, setFiles] = useState([]);
 
-  if (props.data.firstfile !== null) {
-    files.push(props.data.firstfile);
-  }
-
-  if (props.data.secondfile !== null) {
-    files.push(props.data.secondfile);
-  }
-
-  if (props.data.thirdfile !== null) {
-    files.push(props.data.thirdfile);
-  }
+  let canAction = useRole(FetchUserInfo(getOfflineUser().user.id), [
+    "eduapp-admin",
+    "eduapp-teacher",
+  ]);
 
   const deleteResource = (id) => {
-    asynchronizeRequest(function () {
-      axios
-        .delete(RESOURCES + `/${id}`)
-        .then((res) => {
-          window.location.reload();
-        })
-        .catch((err) => console.log);
-    });
+    if (canAction) {
+      asynchronizeRequest(async function () {
+        await RESOURCE_SERVICE.deleteResource(id);
+        window.location.reload();
+      });
+    }
   };
 
   const editResource = (id) => {
-    console.log(id);
+    if (canAction) console.log(id);
   };
 
   const closeResource = () => {
-    document
-      .getElementById(
-        "resource__res" + props.data.name + props.courseSelected + "__opened"
-      )
-      .classList.add("openedResource__hidden");
-    document.getElementById("resource-list").classList.remove("hide-rest-res");
+    window.history.back();
+  };
 
-    setTimeout(() => {
-      document.getElementsByTagName("header")[0].style.display = "flex";
-
-      document.getElementsByClassName(
-        "mobileSection"
-      )[0].childNodes[0].style.zIndex = 999;
-      document.getElementsByClassName(
-        "mobileSection"
-      )[0].childNodes[1].style.zIndex = 999;
-      document.getElementsByClassName(
-        "mobileSection"
-      )[0].childNodes[2].style.zIndex = -999;
-    }, 100);
+  const namefixed = (name) => {
+    return decodeURI(name);
   };
 
   const manageMediaType = (media) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
     const videoRegex = new RegExp("^.*(mp4|mov)$");
+    let name = media.split("/")[media.split("/").length - 1];
 
-    media = MediaFix(media);
+    media = process.env.REACT_APP_BACKEND_ENDPOINT.includes("localhost")
+      ? media
+      : MediaFix(media);
 
     if (media != null && (imageRegex.test(media) || videoRegex.test(media))) {
       if (imageRegex.test(media)) {
         return (
           <>
-            <h1 it="fileTitle">
-              {media.split("/")[media.split("/").length - 1]}
-            </h1>
+            <h1 it="fileTitle">{namefixed(name)}</h1>
             <div
               className={"resource__image"}
               style={{
                 backgroundImage: `url(${media}) `,
               }}
             />
-            <a className="fileDownload-button" name="file" href={media}>
-              OPEN
+            <a
+              className="fileDownload-button"
+              name="file"
+              href={media}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {language.open}
             </a>
           </>
         );
       } else {
         return (
           <>
-            <h1 it="fileTitle">
-              {media.split("/")[media.split("/").length - 1]}
-            </h1>
+            <h1 it="fileTitle">{namefixed(name)}</h1>
             <ReactPlayer
               url={media}
               controls={true}
@@ -100,7 +85,7 @@ export default function OpenedResource(props) {
               height={250}
             />
             <a className="fileDownload-button" name="file" href={media}>
-              DOWNLOAD
+              {language.download}
             </a>
           </>
         );
@@ -109,13 +94,9 @@ export default function OpenedResource(props) {
       return (
         <>
           <>
-            <h1 htmlFor="file">
-              {media != null
-                ? media.split("/")[media.split("/").length - 1]
-                : "file"}
-            </h1>
+            <h1 htmlFor="file">{media != null ? namefixed(name) : "file"}</h1>
             <a className="fileDownload-button" name="file" href={media}>
-              DOWNLOAD
+              {language.download}
             </a>
           </>
         </>
@@ -123,56 +104,77 @@ export default function OpenedResource(props) {
     }
   };
 
+  const getResourceId = () => {
+    return window.location.href.split("/")[
+      window.location.href.split("/").length - 1
+    ];
+  };
+
+  useEffect(() => {
+    asynchronizeRequest(async function () {
+      let response = "";
+      try {
+        response = await RESOURCE_SERVICE.findById(getResourceId());
+      } catch (err) {
+        window.location.href = "/resources";
+      }
+
+      setName(response.data.name);
+      setDescription(response.data.description);
+      setFiles(response.data.resource_files);
+      setSubjectOrigin(response.data.subject_id);
+
+      window.dispatchEvent(new Event("canLoadResource"));
+    });
+  }, []);
+
   return (
-    files && (
-      <div
-        id={
-          "resource__res" + props.data.name + props.courseSelected + "__opened"
-        }
-        className={"openedResource__main-container openedResource__hidden"}
-      >
-        <AppHeader
-          type={"resource"}
-          closeHandler={() => {
-            closeResource();
-          }}
-          resourceName={name}
-          editResource={() => {
-            editResource(id);
-          }}
-          deleteResource={() => {
-            deleteResource(id);
-          }}
-        />
-        <div className="resourceOpened__info">
-          <h1>{name}</h1>
-          <p>{description}</p>
-        </div>
-        <div className="resourceOpened__files">
-          <h1>Files</h1>
-          <p id="wip">EduApp W.I.P</p>
-          <ul>
-            {files.length > 0 ? (
-              files.map((file) => {
-                return (
-                  <>
-                    <li className={file != null ? "file-media" : ""}>
-                      {manageMediaType(file)}
-                    </li>
-                  </>
-                );
-              })
-            ) : (
-              <div className="resources__NO_FILES">
-                <h1>No files attached.</h1>
-              </div>
-            )}
-          </ul>
-        </div>
-        {/* <div className="resourceOpened__date">
-          <p>*insert code date*</p>
-        </div> */}
+    <div
+      id={"resource__res" + name + subjectOrigin + "__opened"}
+      className={"openedResource__main-container"}
+    >
+      <AppHeader
+        type={"resource"}
+        closeHandler={() => {
+          closeResource();
+        }}
+        canAction={canAction}
+        resourceName={name}
+        editResource={() => {
+          editResource(getResourceId());
+        }}
+        deleteResource={() => {
+          deleteResource(getResourceId());
+        }}
+      />
+      <div className="resourceOpened__info">
+        <h1>{name}</h1>
+        <p>{description}</p>
       </div>
-    )
+      <div className="resourceOpened__files">
+        <h1>{language.resources_files}</h1>
+        <p id="wip">EduApp W.I.P</p>
+        <ul>
+          {files && files.length > 0 ? (
+            files.map((file) => {
+              return (
+                <>
+                  <li className={file != null ? "file-media" : ""}>
+                    {manageMediaType(file)}
+                  </li>
+                </>
+              );
+            })
+          ) : (
+            <div className="resources__NO_FILES">
+              <h1>{language.resources_no_files_attached}</h1>
+            </div>
+          )}
+        </ul>
+      </div>
+      {/* <div className="resourceOpened__date">
+				<p>*insert code date*</p>
+			</div> */}
+    </div>
   );
 }

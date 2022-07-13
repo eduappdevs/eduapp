@@ -1,13 +1,15 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SessionAdd from "../../components/modals/modals-home/SessionAdd";
 import SessionEdit from "../../components/modals/modals-home/SessionEdit";
-import axios from "axios";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import CourseSelector from "../../components/courseSelector/CourseSelector";
-import { SUBJECT } from "../../config";
+import * as SUBJECT_SERVICE from "../../services/subject.service";
+import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import { asynchronizeRequest } from "../../API";
-import MediaFix from "../../utils/MediaFixer";
+import { getOfflineUser } from "../../utils/OfflineManager";
+import RequireAuth from "../../components/auth/RequireAuth";
+import useLanguage from "../../hooks/useLanguage";
 import "./Home.css";
 
 export default function Home() {
@@ -16,9 +18,15 @@ export default function Home() {
   const [sessions, setSessions] = useState([]);
   const [firstSessionId, setFirstSessionId] = useState("");
   const [sessionLength, setSessionLength] = useState("");
+  const [userImage, setUserImage] = useState(null);
+
   const sessionsPreSorted = [];
-  let userInfo = FetchUserInfo(localStorage.userId);
+  let user = getOfflineUser().user;
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let sessionsSorted;
+
+  const language = useLanguage();
+  const navigate = useNavigate();
 
   const openSessionAdd = () => {
     document
@@ -27,13 +35,12 @@ export default function Home() {
   };
 
   const openEditSession = async (id) => {
-    let e = await axios.get(SUBJECT + "/" + id);
+    let e = await SUBJECT_SERVICE.fetchSubject(id);
 
     let name = e.data.session_name;
     let date = e.data.session_date;
     let date1 = date.split("-")[0];
     let date2 = date.split("-")[1];
-    console.log(date1, date2);
     let streamingPlatform = e.data.streaming_platform;
     let resourcesPlatform = e.data.resources_platform;
     let chat = e.data.session_chat_id;
@@ -64,7 +71,9 @@ export default function Home() {
   };
 
   const getSessions = async () => {
-    let request = await axios.get(`${SUBJECT}?user_id=${localStorage.userId}`);
+    let request = await SUBJECT_SERVICE.fetchUserSubjects(
+      getOfflineUser().user.id
+    );
     request.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
@@ -111,8 +120,9 @@ export default function Home() {
       return 0;
     });
     setSessionLength(sessionsSorted.length);
-    if (sessionsSorted.length > 0) setFirstSessionId(sessionsSorted[0].id);
     setSessions(sessionsSorted);
+
+    if (sessionsSorted.length > 0) setFirstSessionId(sessionsSorted[0].id);
   };
 
   const deleteSess = [];
@@ -132,9 +142,7 @@ export default function Home() {
 
   const deleteSession = () => {
     asynchronizeRequest(async function () {
-      axios.delete(SUBJECT + "/" + deleteSess).then(() => {
-        window.location.reload();
-      });
+      SCHEDULE_SERVICE.deleteSession(deleteSess[0]);
     });
   };
 
@@ -185,30 +193,21 @@ export default function Home() {
     });
   };
 
-  const handleChangeSelector = (id) => {
-    asynchronizeRequest(async function () {
-      getSessions(id);
-    });
-    if (
-      !document
-        .getElementById("courseNotSelectedeAdvisor")
-        .classList.contains("hidden")
-    ) {
-      document
-        .getElementById("courseNotSelectedeAdvisor")
-        .classList.add("hidden");
-    }
-  };
-
   useEffect(() => {
+    RequireAuth();
     checkMediaQueries();
-
+    getSessions();
     if (window.innerWidth < 1100) {
       setIsMobile(true);
     } else {
       setIsMobile(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    setUserImage(getOfflineUser().profile_image);
+  }, [userInfo]);
 
   return (
     <>
@@ -220,15 +219,15 @@ export default function Home() {
                 <div className="profile-picture">
                   <img
                     src={
-                      userInfo.profile_image != null
-                        ? MediaFix(userInfo.profile_image.url)
+                      userImage !== null
+                        ? userImage
                         : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                     }
                     alt={(userInfo.user_name, "image")}
                   />
                 </div>
                 <div className="user-name">
-                  <h1>{userInfo.user_name}</h1>
+                  <h1>{user.username || user.email.split("@")[0]}</h1>
                   <div className="edit" onClick={activeEditMenu}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -258,14 +257,14 @@ export default function Home() {
                   </svg>
                 </div>
               </div>
-              <CourseSelector handleChangeCourse={handleChangeSelector} />
               {sessions.length > 0 ? (
                 <div className="sessions">
-                  <p id="home__nextSession">Next session</p>
+                  <p id="home__nextSession">{language.home_next_session}</p>
                   {sessions.map((data) => {
                     return (
                       <>
                         <div
+                          key={data.id}
                           className={
                             firstSessionId === data.id
                               ? "home__firstSession sessions-container"
@@ -298,8 +297,7 @@ export default function Home() {
                                     className="bi bi-mortarboard"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
-                                      window.location.href =
-                                        data.resources_platform;
+                                      navigate(data.resources_platform);
                                     }}
                                   >
                                     <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5ZM8 8.46 1.758 5.965 8 3.052l6.242 2.913L8 8.46Z" />
@@ -315,8 +313,7 @@ export default function Home() {
                                     className="bi bi-camera-video"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
-                                      window.location.href =
-                                        data.streaming_platform;
+                                      navigate(data.streaming_platform);
                                     }}
                                   >
                                     <path
@@ -334,8 +331,7 @@ export default function Home() {
                                     className="bi bi-chat-dots"
                                     viewBox="0 0 16 16"
                                     onClick={() => {
-                                      window.location.href =
-                                        data.session_chat_id;
+                                      navigate(data.session_chat_id);
                                     }}
                                   >
                                     <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
@@ -363,7 +359,7 @@ export default function Home() {
                             >
                               <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
                               <path
-                                fill-rule="evenodd"
+                                fillRule="evenodd"
                                 d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
                               />
                             </svg>
@@ -408,7 +404,7 @@ export default function Home() {
                         <p
                           className={
                             firstSessionId === data.id && sessionLength > 1
-                              ? console.log()
+                              ? null
                               : "hidden"
                           }
                         >
@@ -419,7 +415,9 @@ export default function Home() {
                   })}
                 </div>
               ) : (
-                <h1 id="courseNotSelectedeAdvisor">You must select a course</h1>
+                <div className="select-subject">
+                  <h3>{language.home_nosessions}</h3>
+                </div>
               )}
             </div>
           </div>

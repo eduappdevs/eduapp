@@ -10,15 +10,13 @@ RUN bundle install
 
 COPY . .
 
-ENV RAILS_SECRET_KEY=53ffc295c966edfd46b47f1264bfae49a7c0707744a4a444a1b166e79a0e41fb0edd30839d92984ce3943e2c7ab59adfb83e67d871b6432d4b160e8cb63a0c5f \
-	DEV_DB_USER=postgres \
-	DEV_DB_PSWD="1234" \
-	DB_PORT=5432 \
-	PORT=3000 \
-	HOST=localhost \
-	REACT_APP_FRONTEND_ENDPOINT=http://localhost:3001 \ 
-	DOMAIN="localhost:3000"
+RUN rm .env
+RUN mv docker-example.env .env
+
+RUN rm -f ./tmp/pids/server.pid
+RUN rm ./log/development.log
+RUN rm ./log/test.log
 
 EXPOSE 3000
 
-CMD [ "rails", "s" , "-b", "0.0.0.0" ]
+CMD [ "rails", "s", "-b", "0.0.0.0" ]

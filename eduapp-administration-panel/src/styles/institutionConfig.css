@@ -1,7 +1,8 @@
 #submit-loader,
-#del-loader {
+#delete-loader {
 	display: none;
 }
+
 
 .institution-entries>td>input:hover {
 	cursor: text;

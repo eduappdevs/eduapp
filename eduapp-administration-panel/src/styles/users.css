@@ -1,4 +1,74 @@
-.users-main-container{
-    display: flex;
-    flex-direction: row;
+.users-main-container {
+	display: flex;
+	flex-direction: row;
+	width: 100vw;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	position: absolute;
+	background-color: rgb(237, 237, 237);
+
+}
+
+.main-section {
+	overflow-x: auto;
+	width: 81%;
+	position: absolute;
+	right: 4px;
+	top: 0;
+}
+
+.notify-users {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.notify-users>button {
+	background-color: var(--blue);
+}
+
+select {
+	-webkit-appearance: button;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	-webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+	-webkit-padding-end: 20px;
+	-webkit-padding-start: 2px;
+	-webkit-user-select: none;
+	user-select: none;
+	background-position: center right;
+	background-repeat: no-repeat;
+	border: 1px solid #AAA;
+	color: #555;
+	font-size: inherit;
+	margin: 0;
+	overflow: hidden;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+select:focus {
+	outline: none;
+}
+
+*::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+	background-color: rgba(0, 98, 255, 0.099);
+	border-radius: 0px 0px 10px 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 98, 255, 0.186);
+	border-radius: 20px;
+	height: 70%;
+}
+
+*::-webkit-scrollbar-button {
+	width: 20px;
 }

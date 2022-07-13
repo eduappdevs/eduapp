@@ -1,32 +1,74 @@
 import React, { useEffect, useState } from "react";
-import API, { asynchronizeRequest } from "../../API";
+import * as RESOURCESERVICE from "../../services/resource.service";
+import { asynchronizeRequest } from "../../API";
+import StandardModal from "./standard-modal/StandardModal";
+import { interceptExpiredToken } from "../../utils/OfflineManager";
 import "./ResourcesModal.css";
+
 let finalData = new FormData();
 
-export default function ResourcesModal(props) {
+/**
+ * A modal used to upload resources.
+ *
+ * @param {Object} userInfo The user's information.
+ * @param {String} subject The subject's ID.
+ * @param {Object} language The language to use.
+ */
+export default function ResourcesModal({ userInfo, subject, language }) {
   const [filesToUpload, setFilesToUpload] = useState([]);
-  const [currentlyUser, setCurrentlyUser] = useState("");
-  const [displayFileWarning, setWarnDisplay] = useState("none");
-  const [fileWarningText, setWarningText] = useState(
-    "Only 3 files are allowed"
-  );
+  const [firstFile] = useState(true);
 
-  const FILE_LIMIT = 3;
+  const [showPopup, setPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
+  const [popupIcon, setPopupIcon] = useState("");
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+  const [popupType, setPopupType] = useState("");
   const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
   const videoRegex = new RegExp("^.*(mp4|mov)$");
 
-  const displayWarning = (text) => {
-    setWarningText(text);
-    setWarnDisplay("block");
-    setTimeout(() => {
-      setWarnDisplay("none");
-    }, 2000);
+  const deletefile = (e) => {
+    let newFile = [];
+    filesToUpload.map((file) => {
+      if (file !== e) {
+        newFile.push(file);
+      }
+      return true;
+    });
+    if (newFile.length === 0) {
+      document.getElementById("resources_modal_show_files").style.display =
+        "none";
+      setFilesToUpload();
+    } else {
+      setFilesToUpload(newFile);
+    }
+  };
+
+  const deleteFirstfile = (e) => {
+    let newFile = [];
+    filesToUpload.map((file) => {
+      if (file !== e) {
+        newFile.push(file);
+      }
+      return true;
+    });
+    if (newFile.length === 0) {
+      document.getElementById("resources_modal_show_files").style.display =
+        "none";
+      setFilesToUpload();
+    } else {
+      setFilesToUpload(newFile);
+    }
   };
 
   const handleFileSelect = (e) => {
     e.preventDefault();
-    if (e.target.files.length > FILE_LIMIT) {
-      displayWarning("Only 3 files are allowed");
+    if (e.target.files.length > 10) {
+      setPopup(true);
+      setPopupText(language.resources_max);
+      setPopupType("info");
+      setFilesToUpload();
+      document.getElementById("resources_modal_show_files").style.display =
+        "none";
       return;
     } else {
       let files = Array.from(e.target.files);
@@ -34,34 +76,53 @@ export default function ResourcesModal(props) {
       for (let f of files) {
         if (videoRegex.test(f.name)) {
           if (f.size / 1000 / 1000 > 15) {
-            displayWarning("Video is larger than 15MB");
-            document.getElementById("submit-loader").style.display = "none";
+            setPopup(true);
+            setPopupText(language.video_too_big);
+            setPopupType("info");
+            setFilesToUpload();
+            document.getElementById(
+              "resources_modal_show_files"
+            ).style.display = "none";
             return;
           }
         } else if (imageRegex.test(f.name)) {
           if (f.size / 1000 / 1000 > 2) {
-            displayWarning("Image is larger than 2MB");
-            document.getElementById("submit-loader").style.display = "none";
+            setPopup(true);
+            setPopupText(language.image_too_big);
+            setPopupType("info");
+            setFilesToUpload();
+            document.getElementById(
+              "resources_modal_show_files"
+            ).style.display = "none";
             return;
           }
         } else {
           if (f.size / 1000 / 1000 > 5) {
-            displayWarning("File is larger than 3MB");
-            document.getElementById("submit-loader").style.display = "none";
+            setPopup(true);
+            setPopupText(language.file_too_big);
+            setPopupType("info");
+            setFilesToUpload();
+            document.getElementById(
+              "resources_modal_show_files"
+            ).style.display = "none";
             return;
           }
         }
       }
-      setFilesToUpload(files);
-    }
-  };
 
-  const getCurrentlyUser = async () => {
-    asynchronizeRequest(async () => {
-      await API.fetchInfo(localStorage.userId).then((res) => {
-        setCurrentlyUser(res.user_name);
-      });
-    });
+      if (files.length <= 10) {
+        setFilesToUpload(files);
+        document.getElementById("resources_modal_show_files").style.display =
+          "block";
+      } else {
+        setPopup(true);
+        setPopupText(language.resources_max);
+        setPopupType("info");
+        setFilesToUpload();
+        document.getElementById("resources_modal_show_files").style.display =
+          "none";
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -70,52 +131,42 @@ export default function ResourcesModal(props) {
 
     let name = null;
     let description = null;
-    let firstfile = null;
-    let secondfile = null;
-    let thirdfile = null;
-
-    if (e.target[0].value != null) {
-      name = e.target[0].value;
-    }
-
     if (e.target[1].value != null) {
-      description = e.target[1].value;
+      name = e.target[1].value;
     }
 
-    if (filesToUpload != null) {
-      firstfile = filesToUpload[0];
-    }
-
-    if (filesToUpload != null) {
-      secondfile = filesToUpload[1];
-    }
-
-    if (filesToUpload != null) {
-      thirdfile = filesToUpload[2];
+    if (e.target[2].value != null) {
+      description = e.target[2].value;
     }
 
     finalData.append("name", name);
     finalData.append("description", description);
-    if (firstfile !== null && firstfile !== undefined) {
-      finalData.append("firstfile", firstfile);
+    if (filesToUpload !== undefined) {
+      for (let i = 0; i < filesToUpload.length; i++)
+        finalData.append("file_" + i, filesToUpload[i]);
     }
+    finalData.append("user_id", userInfo.user.id);
+    finalData.append("subject_id", subject);
 
-    if (secondfile !== null && secondfile !== undefined) {
-      finalData.append("secondfile", secondfile);
-    }
-
-    if (thirdfile !== null && thirdfile !== undefined) {
-      finalData.append("thirdfile", thirdfile);
-    }
-    finalData.append("createdBy", currentlyUser);
-    finalData.append("subject_id", props.subject);
-
-    await API.postResource(finalData);
-    document.getElementsByClassName(
-      "resources__createResourceModal"
-    )[0].style.display = "none";
-    document.getElementById("submit-loader").style.display = "none";
-    window.location.reload();
+    asynchronizeRequest(async function () {
+      RESOURCESERVICE.createResource(finalData).then((e) => {
+        if (e) {
+          document.getElementsByClassName(
+            "resources__createResourceModal"
+          )[0].style.display = "none";
+          document.getElementById("submit-loader").style.display = "none";
+          window.location.reload();
+        }
+      });
+    }).then(async (error) => {
+      await interceptExpiredToken(error);
+      if (error) {
+        setPopup(true);
+        setIsConfirmDelete(false);
+        setPopupText(language.resources_failed_upload);
+        setPopupIcon("error");
+      }
+    });
   };
 
   const closeModal = () => {
@@ -134,8 +185,6 @@ export default function ResourcesModal(props) {
   };
 
   useEffect(() => {
-    getCurrentlyUser();
-
     let nua = navigator.userAgent;
     if (nua.indexOf("Macintosh") === -1)
       document.querySelector(".loader").style.transform =
@@ -148,25 +197,33 @@ export default function ResourcesModal(props) {
   return (
     <div className="resourceModal-container">
       <div className="resources__createResourceModal">
+        <StandardModal
+          show={showPopup}
+          iconFill={popupIcon}
+          type={popupType}
+          text={popupText}
+          isQuestion={isConfirmDelete}
+          onYesAction={() => {}}
+          onNoAction={() => {
+            setPopup(false);
+            document.getElementById(
+              "controlPanelContentContainer"
+            ).style.overflow = "scroll";
+          }}
+          onCloseAction={() => {
+            setPopup(false);
+            document.getElementById(
+              "controlPanelContentContainer"
+            ).style.overflow = "scroll";
+          }}
+          hasIconAnimation
+          hasTransition
+        />
         <div className="resources__logoModal">
           <img src="\assets\logo.png" alt="logo" />
         </div>
-        <h1>NEW RESOURCE</h1>
+        <h1>{language.resources_new_resource.toUpperCase()}</h1>
         <form action="submit" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            placeholder={"Name"}
-            autoComplete="off"
-            required
-          />
-          <input
-            type="text"
-            name="description"
-            placeholder="Description"
-            autoComplete="off"
-            required
-          />
           <div className="fileInputs">
             <div className="firstfile">
               <input
@@ -189,20 +246,102 @@ export default function ResourcesModal(props) {
               </label>
             </div>
           </div>
-          <div className="file-warning" style={{ display: displayFileWarning }}>
-            <p>{fileWarningText}</p>
+          <input
+            type="text"
+            name="name"
+            placeholder={language.title}
+            autoComplete="off"
+            required
+          />
+          <input
+            type="text"
+            name="description"
+            placeholder={language.description}
+            autoComplete="off"
+          />
+          <div
+            id="resources_modal_show_files"
+            className="resources-modal-show-files"
+          >
+            {filesToUpload.length > 0 ? (
+              <ul>
+                {filesToUpload !== undefined &&
+                filesToUpload !== null &&
+                firstFile !== false
+                  ? filesToUpload.map((e, i) => {
+                      return (
+                        <>
+                          <li key={i} className="file-media-resource-modal">
+                            <div
+                              id={e.name}
+                              onClick={() => {
+                                deletefile(e);
+                              }}
+                              className="modal-button-delete-file"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash3"
+                                viewBox="0 0 16 16"
+                                id="ins-delete-icon"
+                              >
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                              </svg>
+                            </div>
+                            <p>{e.name}</p>
+                          </li>
+                        </>
+                      );
+                    })
+                  : filesToUpload !== undefined &&
+                    filesToUpload.length > 0 &&
+                    filesToUpload !==
+                      null(
+                        filesToUpload.map((e, i) => {
+                          return (
+                            <>
+                              <li key={i} className="file-media-resource-modal">
+                                <div
+                                  id={e.name}
+                                  onClick={() => {
+                                    deleteFirstfile(e);
+                                  }}
+                                  className="modal-button-delete-file"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    fill="currentColor"
+                                    className="bi bi-trash3"
+                                    viewBox="0 0 16 16"
+                                    id="ins-delete-icon"
+                                  >
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                                  </svg>
+                                </div>
+                                <p>{e.name}</p>
+                              </li>
+                            </>
+                          );
+                        })
+                      )}
+              </ul>
+            ) : null}
           </div>
           <div className="submit-action">
-            <button type="submit">SUBMIT</button>
+            <button type="submit">{language.submit}</button>
             <div id="submit-loader" className="loader">
-              Loading...
+              {language.saving}
             </div>
+            <button id="resources__closeResourceModal" onClick={closeModal}>
+              {language.modal_cancel}
+            </button>
           </div>
         </form>
-
-        <button id="resources__closeResourceModal" onClick={closeModal}>
-          CANCEL
-        </button>
       </div>
       <div className="resourcesModal-outside" onClick={closeModal}></div>
     </div>

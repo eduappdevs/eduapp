@@ -1,11 +1,25 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import EditView from "./EditView";
-import "./views.css";
+import { asynchronizeRequest } from "../../../API";
+import * as USERSERVICE from "../../../services/user.service";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import { getOfflineUser } from "../../../utils/OfflineManager";
+import useRole from "../../../hooks/useRole";
+import useLanguage from "../../../hooks/useLanguage";
+import "./views.css";
 
 export default function View(props) {
-  let userinfo = FetchUserInfo(localStorage.userId);
+  const language = useLanguage();
+  const navigate = useNavigate();
+
+  const [User, setUser] = useState();
+  const [viewAuthor, setViewAuthor] = useState(false);
+
+  let userinfo = FetchUserInfo(getOfflineUser().user.id);
+  let isTeacher = useRole(userinfo, "eduapp-teacher");
+  let isAdmin = useRole(userinfo, "eduapp-admin");
 
   const [editEvent, setEditEvent] = useState({});
 
@@ -91,6 +105,15 @@ export default function View(props) {
     }
   };
 
+  const fetchUser = () => {
+    asynchronizeRequest(function () {
+      USERSERVICE.findById(props.data.user_id).then((u) => {
+        setUser(u.data);
+        setViewAuthor(true);
+      });
+    });
+  };
+
   useEffect(() => {
     if (props.data.description !== undefined) {
       document
@@ -106,6 +129,8 @@ export default function View(props) {
         document
           .getElementsByClassName("calendar-view-edit-description")[0]
           .classList.add("description-hidden");
+
+        fetchUser();
       } else {
         document
           .getElementsByClassName("calendar-view-description")[0]
@@ -113,6 +138,7 @@ export default function View(props) {
         document
           .getElementsByClassName("calendar-view-edit-description")[0]
           .classList.remove("description-hidden");
+        fetchUser();
       }
     } else {
       document
@@ -140,7 +166,11 @@ export default function View(props) {
         <div className="calendar-view-header">
           <div
             className={
-              userinfo.isAdmin ? "calendar-view-header-edit-button" : "hidden"
+              isAdmin ||
+              (isTeacher &&
+                userinfo.teaching_list.includes(props.data.subject_id))
+                ? "calendar-view-header-edit-button"
+                : "hidden"
             }
             onClick={openEditMenu}
           >
@@ -200,12 +230,18 @@ export default function View(props) {
               <p>{getTime()}</p>
             </div>
             <div className="calendar-view-description">
-              <h3>Description</h3>
+              <h3>{language.description}</h3>
               <p>{props.data.description}</p>
             </div>
+            {viewAuthor === true ? (
+              <div className="calendar-view-author">
+                <h3>{language.author}</h3>
+                {User ? <p>{User[0].user.email}</p> : null}
+              </div>
+            ) : null}
 
             <div className="calendar-view-session-information">
-              <h3>Links</h3>
+              <h3>{language.links}</h3>
               <div className="calendar-view-session-information-icon">
                 <p>
                   <svg
@@ -216,7 +252,7 @@ export default function View(props) {
                     className="bi bi-mortarboard"
                     viewBox="0 0 16 16"
                     onClick={() => {
-                      window.location.href = props.data.resources;
+                      navigate(props.data.resources);
                     }}
                   >
                     <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5ZM8 8.46 1.758 5.965 8 3.052l6.242 2.913L8 8.46Z" />
@@ -232,7 +268,7 @@ export default function View(props) {
                     className="bi bi-camera-video"
                     viewBox="0 0 16 16"
                     onClick={() => {
-                      window.location.href = props.data.stream;
+                      navigate(props.data.stream);
                     }}
                   >
                     <path
@@ -250,7 +286,7 @@ export default function View(props) {
                     className="bi bi-chat-dots"
                     viewBox="0 0 16 16"
                     onClick={() => {
-                      window.location.href = props.data.chat;
+                      navigate(props.data.chat);
                     }}
                   >
                     <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
