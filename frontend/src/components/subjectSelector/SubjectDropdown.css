@@ -8,7 +8,7 @@
 	font-family: Consolas;
 	width: 100%;
 	height: 85%;
-	z-index: 9999;
+	z-index: 349;
 	background-color: var(--orange);
 	position: absolute;
 }

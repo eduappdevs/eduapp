@@ -45,6 +45,9 @@
 	"close": "Close",
 	"open": "Open",
 	"download": "Download",
+	"home": "Home",
+	"calendar": "Calendar",
+	"management": "Management",
 
 	"login_title": "Login",
 	"login_google": "Login with Google",

@@ -7,6 +7,7 @@ import { IMG_FLBK_USER } from "../../config";
 import ProfileSettings from "../../views/menu/profileOptions/ProfileSettings";
 import MenuSettings from "../../views/menu/menu-settings/MenuSettings";
 import "./Navbar.css";
+import useLanguage from "../../hooks/useLanguage";
 
 /**
  * The desktop navbar of the app.
@@ -22,6 +23,7 @@ export default function Navbar({ mobile, badgeCount }) {
   const [inManagement, setInManagement] = useState(false);
   const loc = useLocation();
   const navigate = useNavigate();
+  const language = useLanguage();
 
   const [desktopMenu, setDesktopMenu] = useState(null);
 
@@ -116,7 +118,7 @@ export default function Navbar({ mobile, badgeCount }) {
           <div className={mobile ? "hidden" : "nav-locations"}>
             <ul>
               <li className={inHome ? "activeLocation" : console.log()}>
-                <Link to="/home">Home</Link>
+                <Link to="/home">{language.home}</Link>
               </li>
               <li className={inCalendar ? "activeLocation" : console.log()}>
                 <Link
@@ -134,14 +136,14 @@ export default function Navbar({ mobile, badgeCount }) {
                     navigate("/calendar");
                   }}
                 >
-                  Calendar
+                  {language.calendar}
                 </Link>
               </li>
               <li className={inManagement ? "activeLocation" : console.log()}>
-                <Link to="/management">Management</Link>
+                <Link to="/management">{language.management}</Link>
               </li>
               <li className={inResources ? "activeLocation" : console.log()}>
-                <Link to="/resources">Resources</Link>
+                <Link to="/resources">{language.resources}</Link>
               </li>
               <li className={inChat ? "activeLocation" : console.log()}>
                 {badgeCount > 0 ? (
@@ -151,7 +153,7 @@ export default function Navbar({ mobile, badgeCount }) {
                     </span>
                   </div>
                 ) : null}
-                <Link to="/chat">Chat</Link>
+                <Link to="/chat">{language.chats}</Link>
               </li>
             </ul>
           </div>
