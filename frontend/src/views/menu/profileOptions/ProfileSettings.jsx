@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   uploadBytes,
   deleteObject,
@@ -22,14 +22,15 @@ import ChangePasswordButton from "../../../components/ChangePasswordButton";
 import useRole from "../../../hooks/useRole";
 import useLanguage from "../../../hooks/useLanguage";
 import "./ProfileSettings.css";
-import { useEffect } from "react";
+import useMobile from "../../../hooks/useMobile";
 
-export default function ProfileSettings() {
+export default function ProfileSettings({ desktopBackTo }) {
   const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let isAdmin = useRole(userInfo, "eduapp-admin");
-  let isTeacher = useRole(userInfo, "eduapp-teacher");
+  // let isTeacher = useRole(userInfo, "eduapp-teacher");
   let courses = GetCourses(getOfflineUser().user.id);
+  const mobile = useMobile();
 
   const [userName, setUserName] = useState(null);
   const [changeImage, setChangeImage] = useState(null);
@@ -144,120 +145,135 @@ export default function ProfileSettings() {
   }, [language.save]);
 
   return (
-    <div className="profileSettings_container">
-      <MenuHeader
-        backTo={() => {
-          window.location.href = "/menu";
-        }}
-        location={language.menu_profile}
-      />
-      <div className="profileSettings_wrapper">
-        <StandardModal
-          show={showPopup}
-          iconFill
-          hasTransition
-          hasIconAnimation
-          type={"error"}
-          text={language.menu_profile_error}
-          onCloseAction={() => {
-            setPopup(false);
-          }}
-        />
-        {userInfo && (
-          <div className="userProfileImg">
-            <img
-              src={
-                getOfflineUser().profile_image != null
-                  ? getOfflineUser().profile_image
-                  : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
-              }
-              alt={"user"}
-              className="profileImage_preview"
-              id="profileImage_preview"
-              onClick={() => {
-                document.getElementById("profileImage_upload").click();
-              }}
-            />
-            <input
-              type="file"
-              name="profile_image"
-              id="profileImage_upload"
-              onChange={changeImagePreview}
-            />
-          </div>
-        )}
-        <div
-          className="userName_input"
-          style={{
-            marginBottom: displayImageWarning === "none" ? "30px" : "0",
-          }}
-        >
-          <input
-            type="text"
-            value={
-              userName === null
-                ? NameCapitalizer(
-                    userInfo.user_name === undefined ? "" : userInfo.user_name
-                  )
-                : userName
+    <div className={!mobile ? "profilesettings-desktop" : ""}>
+      <div
+        className={`profileSettings_container ${
+          mobile && "settings-display-mobile"
+        }`}
+      >
+        <MenuHeader
+          backTo={() => {
+            if (mobile) {
+              window.location.href = "/menu";
+              return;
             }
-            onChange={(e) => {
-              setUserName(
-                e.target.value.includes(" ")
-                  ? NameCapitalizer(e.target.value)
-                  : e.target.value
-              );
+
+            desktopBackTo();
+          }}
+          location={language.menu_profile}
+        />
+        <div
+          className={`profileSettings_wrapper ${
+            !mobile && "settings-desktop-wrapper"
+          }`}
+        >
+          <StandardModal
+            show={showPopup}
+            iconFill
+            hasTransition
+            hasIconAnimation
+            type={"error"}
+            text={language.menu_profile_error}
+            onCloseAction={() => {
+              setPopup(false);
             }}
           />
-        </div>
-        <div
-          className="file-size-warning"
-          style={{ display: displayImageWarning }}
-        >
-          <p>{imageWarningText}</p>
-        </div>
-        <div className="commitChanges" onClick={commitChanges}>
-          <span>{saveText}</span>
-          <svg
-            id="commit-loader"
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-arrow-repeat commit-loader-hide loader-spin"
-            viewBox="0 0 16 16"
+          {userInfo && (
+            <div className="userProfileImg">
+              <img
+                src={
+                  getOfflineUser().profile_image != null
+                    ? getOfflineUser().profile_image
+                    : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                }
+                alt={"user"}
+                className="profileImage_preview"
+                id="profileImage_preview"
+                onClick={() => {
+                  document.getElementById("profileImage_upload").click();
+                }}
+              />
+              <input
+                type="file"
+                name="profile_image"
+                id="profileImage_upload"
+                onChange={changeImagePreview}
+              />
+            </div>
+          )}
+          <div
+            className="userName_input"
+            style={{
+              marginBottom: displayImageWarning === "none" ? "30px" : "0",
+            }}
           >
-            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
-            <path
-              fillRule="evenodd"
-              d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+            <input
+              type="text"
+              value={
+                userName === null
+                  ? NameCapitalizer(
+                      userInfo.user_name === undefined ? "" : userInfo.user_name
+                    )
+                  : userName
+              }
+              onChange={(e) => {
+                setUserName(
+                  e.target.value.includes(" ")
+                    ? NameCapitalizer(e.target.value)
+                    : e.target.value
+                );
+              }}
             />
-          </svg>
-        </div>
-        <ChangePasswordButton />
-        <GoogleLoginButton useType={"merge"} />
-        {isAdmin && (
-          <div className="youareadmin">
-            <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
           </div>
-        )}
-        <div className="coursesContainer">
-          <img className="coursesLogo" src="/assets/book.svg" alt="book" />
-          <ul className="coursesList">
-            {courses.map((course) => {
-              return (
-                <li key={course.id} className="courseItem">
-                  <p>{course.name}</p>
-                  <img src="/assets/student.svg" alt="student" />
-                  {/* {course.isTeacher ? (
-                    <img src="/assets/teacher.svg" alt="teacher" />
-                  ) : (
+          <div
+            className="file-size-warning"
+            style={{ display: displayImageWarning }}
+          >
+            <p>{imageWarningText}</p>
+          </div>
+          <div className="commitChanges" onClick={commitChanges}>
+            <span>{saveText}</span>
+            <svg
+              id="commit-loader"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-arrow-repeat commit-loader-hide loader-spin"
+              viewBox="0 0 16 16"
+            >
+              <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
+              <path
+                fillRule="evenodd"
+                d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+              />
+            </svg>
+          </div>
+          <ChangePasswordButton />
+          <GoogleLoginButton useType={"merge"} />
+          {isAdmin && (
+            <div className="youareadmin">
+              <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
+            </div>
+          )}
+          <div className="coursesContainer">
+            <img className="coursesLogo" src="/assets/book.svg" alt="book" />
+            <ul className="coursesList">
+              {courses.map((course) => {
+                return (
+                  <li key={course.id} className="courseItem">
+                    <p>{course.name}</p>
                     <img src="/assets/student.svg" alt="student" />
-                  )} */}
-                </li>
-              );
-            })}
-          </ul>
+                    {/* {course.isTeacher ? (
+									<img src="/assets/teacher.svg" alt="teacher" />
+								) : (
+									<img src="/assets/student.svg" alt="student" />
+								)} */}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       </div>
     </div>

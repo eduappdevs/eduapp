@@ -34,13 +34,13 @@ import Notifications from "./views/Notifications/Notifications";
 import { MainChatInfoCtxProvider } from "./hooks/MainChatInfoContext";
 import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
 import EventPop from "./components/eventPop/EventPop";
+import useMobile from "./hooks/useMobile";
 import IDBManager from "./utils/IDBManager";
 
 const notifs = new NotifsAC();
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
   const [needsLoader, setNeedsLoader] = useState(true);
-  const [ItsMobileDevice, setItsMobileDevice] = useState(null);
   const [showNotification, setShowNotification] = useState(true);
   const [calendarInfo, setCalendarInfo] = useState([]);
 
@@ -48,16 +48,7 @@ export default function App() {
     getOfflineUser().user === null ? -1 : getOfflineUser().user.id
   );
   let isAdmin = useRole(userinfo, "eduapp-admin");
-
-  const checkMediaQueries = () => {
-    setInterval(() => {
-      if (window.innerWidth < 1000) {
-        setItsMobileDevice(true);
-      } else {
-        setItsMobileDevice(false);
-      }
-    }, 500);
-  };
+  const mobile = useMobile();
 
   const activeNotification = async () => {
     let db = new IDBManager();
@@ -158,10 +149,6 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    checkMediaQueries();
-  }, [window.innerWidth]);
-
   return userinfo ? (
     <>
       <BrowserRouter>
@@ -173,7 +160,7 @@ export default function App() {
         </>
         {needsExtras && (
           <>
-            <Navbar badgeCount={badgeCount} mobile={ItsMobileDevice} />
+            <Navbar badgeCount={badgeCount} mobile={mobile} />
           </>
         )}
         {RequireAuth() ? (
@@ -202,9 +189,13 @@ export default function App() {
               />
 
               {/* Menu */}
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/menu/profile" element={<ProfileSettings />} />
-              <Route path="/menu/settings" element={<MenuSettings />} />
+              {mobile && (
+                <>
+                  <Route path="/menu" element={<Menu />} />
+                  <Route path="/menu/profile" element={<ProfileSettings />} />
+                  <Route path="/menu/settings" element={<MenuSettings />} />
+                </>
+              )}
 
               {/*Notifications*/}
               <Route path="/notifications" element={<Notifications />} />
@@ -224,9 +215,9 @@ export default function App() {
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}
-        {needsExtras && ItsMobileDevice && (
+        {needsExtras && mobile && (
           <>
-            <BottomButtons badgeCount={badgeCount} mobile={ItsMobileDevice} />
+            <BottomButtons badgeCount={badgeCount} mobile={mobile} />
           </>
         )}
         <>
