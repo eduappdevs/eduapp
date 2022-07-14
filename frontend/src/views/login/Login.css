@@ -282,7 +282,7 @@
 
 .forgottenPassword {
 	background-color: #74747400 !important;
-	color: rgba(227, 227, 227, 0.738) !important;
+	color: rgba(255, 255, 255, 0.738) !important;
 	cursor: pointer;
 	padding: 15px 20px;
 }
@@ -356,22 +356,16 @@
 		width: 45%;
 	}
 
-	.accessPage_background {
-		width: 50%;
-		height: 50%;
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		border-radius: 20px;
-		background-color: rgba(238, 238, 238, 0.061);
-		z-index: 222;
-		box-shadow: 0 0px 20px rgba(19, 19, 19, 0.247);
-	}
-
 	.accessPage_loginOrSignup {
 		width: 50%;
 		height: 50%;
+	}
+
+	.glass-background {
+		background-color: rgba(255, 255, 255, 0.1);
+		height: 80%;
+		box-shadow: 0 0px 20px rgba(19, 19, 19, 0.247);
+		border-radius: 20px;
 	}
 
 
