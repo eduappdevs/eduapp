@@ -51,27 +51,29 @@ export default function App() {
   const mobile = useMobile();
 
   const activeNotification = async () => {
-    let db = new IDBManager();
-    await db.getStorageInstance("eduapp-calendar-event", "events");
-    SCHEDULE_SERVICE.fetchEventsById(getOfflineUser().user.id).then(
-      async (e) => {
-        if (e) {
-          db.clear();
-          e.data.map(async (data) => {
-            await db.set(data.id, data, "events");
-          });
-          await db.getStorageInstance("eduapp-calendar-last-event", "last");
-          let key = await db.getStoreKeys();
-          if (key[0] !== e.data[e.data.length - 1].id) {
-            setCalendarInfo(e.data[e.data.length - 1]);
-            setShowNotification(true);
-          } else {
-            setShowNotification(false);
-            setCalendarInfo(e.data[e.data.length - 1]);
+    if (getOfflineUser().user !== null) {
+      let db = new IDBManager();
+      await db.getStorageInstance("eduapp-calendar-event", "events");
+      SCHEDULE_SERVICE.fetchEventsById(getOfflineUser().user.id).then(
+        async (e) => {
+          if (e) {
+            db.clear();
+            e.data.map(async (data) => {
+              await db.set(data.id, data, "events");
+            });
+            await db.getStorageInstance("eduapp-calendar-last-event", "last");
+            let key = await db.getStoreKeys();
+            if (key[0] !== e.data[e.data.length - 1].id) {
+              setCalendarInfo(e.data[e.data.length - 1]);
+              setShowNotification(true);
+            } else {
+              setShowNotification(false);
+              setCalendarInfo(e.data[e.data.length - 1]);
+            }
           }
         }
-      }
-    );
+      );
+    }
   };
 
   const closeEventPop = async () => {
