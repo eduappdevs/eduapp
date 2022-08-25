@@ -5,6 +5,7 @@
  * @returns {String} capitalizedName
  */
 export default function NameCapitalizer(namestr) {
+  if (namestr === null || namestr === undefined) return "";
   // Name "structure" - Name (Secondname) Surname Lastname
   let names = namestr.split(" ");
 

@@ -10,6 +10,7 @@ import { asynchronizeRequest } from "../../API";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useLanguage from "../../hooks/useLanguage";
+import NameCapitalizer from "../../utils/NameCapitalizer";
 import "./Home.css";
 
 export default function Home() {
@@ -227,7 +228,7 @@ export default function Home() {
                   />
                 </div>
                 <div className="user-name">
-                  <h1>{user.username || user.email.split("@")[0]}</h1>
+                  <h1>{userInfo.user_name}</h1>
                   <div className="edit" onClick={activeEditMenu}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

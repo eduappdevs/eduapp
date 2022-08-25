@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   uploadBytes,
   deleteObject,
@@ -21,15 +21,15 @@ import ChangePasswordButton from "../../../components/ChangePasswordButton";
 import useRole from "../../../hooks/useRole";
 import useLanguage from "../../../hooks/useLanguage";
 import "./ProfileSettings.css";
-import { useEffect } from "react";
+import useMobile from "../../../hooks/useMobile";
 
-export default function ProfileSettings() {
+export default function ProfileSettings({ desktopBackTo }) {
   const language = useLanguage();
   let user = getOfflineUser().user;
   let userInfo = FetchUserInfo(user.id);
   let isAdmin = useRole(userInfo, "eduapp-admin");
   let isTeacher = useRole(userInfo, "eduapp-teacher");
-  let courses = GetCourses(user.id);
+  let courses = GetCourses(getOfflineUser().user.id);
 
   const [name, setName] = useState(null);
   const [surname, setSurname] = useState(null);
@@ -169,11 +169,6 @@ export default function ProfileSettings() {
             setPopup(false);
           }}
         />
-        {isAdmin && (
-          <div className="youareadmin">
-            <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
-          </div>
-        )}
         {userInfo && (
           <div className="userProfileImg">
             <img
@@ -197,40 +192,27 @@ export default function ProfileSettings() {
             />
           </div>
         )}
-        <div className="name_input profile_info_input">
-          <span>Name</span>
+        <div
+          className="userName_input"
+          style={{
+            marginBottom: displayImageWarning === "none" ? "30px" : "0",
+          }}
+        >
           <input
             type="text"
-            value={name || user.name}
+            value={
+              userName === null
+                ? NameCapitalizer(
+                    userInfo.user_name === undefined ? "" : userInfo.user_name
+                  )
+                : userName
+            }
             onChange={(e) => {
-              setName(e.target.value);
-              setChangesUnsaved(true);
-            }}
-          />
-        </div>
-        <div className="surname_input profile_info_input">
-          <span>Surname</span>
-          <input
-            type="text"
-            value={surname || user.surname}
-            onChange={(e) => {
-              setSurname(e.target.value);
-              setChangesUnsaved(true);
-            }}
-          />
-        </div>
-        <div className="email_input profile_info_input">
-          <span>Email</span>
-          <input type="text" value={user.email} disabled />
-        </div>
-        <div className="username_input profile_info_input">
-          <span>Username</span>
-          <input
-            type="text"
-            value={username || user.username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-              setChangesUnsaved(true);
+              setUserName(
+                e.target.value.includes(" ")
+                  ? NameCapitalizer(e.target.value)
+                  : e.target.value
+              );
             }}
           />
         </div>
@@ -240,11 +222,7 @@ export default function ProfileSettings() {
         >
           <p>{imageWarningText}</p>
         </div>
-        <ChangePasswordButton />
-        <div
-          className={changesUnsaved ? "commitChanges" : "hidden"}
-          onClick={commitChanges}
-        >
+        <div className="commitChanges" onClick={commitChanges}>
           <span>{saveText}</span>
           <svg
             id="commit-loader"
@@ -262,7 +240,13 @@ export default function ProfileSettings() {
             />
           </svg>
         </div>
+        <ChangePasswordButton />
         <GoogleLoginButton useType={"merge"} />
+        {isAdmin && (
+          <div className="youareadmin">
+            <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
+          </div>
+        )}
         <div className="coursesContainer">
           <img className="coursesLogo" src="/assets/book.svg" alt="book" />
           <ul className="coursesList">

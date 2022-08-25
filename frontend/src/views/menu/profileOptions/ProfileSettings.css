@@ -1,14 +1,32 @@
-.profileSettings_container {
+.profilesettings-desktop {
+	position: absolute;
+	right: 0;
+	width: 350px;
+	height: 88.5vh;
+	background-color: var(--backgroundColor);
+	transition: 0.3s all;
+	box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
+	z-index: 350;
+}
+
+.settings-display-mobile {
 	width: 100%;
-	height: 100vh;
+	height: 100vh !important;
 	top: 0;
 	left: 0;
 	position: fixed;
+}
+
+.profileSettings_container {
 	background-color: var(--backgroundColor);
 	transform: translateX(0px);
 	transition: all 0.3s;
 	z-index: 99999999999999;
 	overflow: auto;
+}
+
+.settings-desktop-wrapper {
+	margin-top: 0px !important;
 }
 
 .profileSettings_wrapper {
@@ -203,6 +221,7 @@
 	color: var(--textColor);
 	background-color: rgba(109, 109, 109, 0.193);
 	border-radius: 20px;
+	z-index: -1;
 }
 
 .youareadmin>p {

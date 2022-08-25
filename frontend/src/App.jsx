@@ -34,13 +34,13 @@ import Notifications from "./views/Notifications/Notifications";
 import { MainChatInfoCtxProvider } from "./hooks/MainChatInfoContext";
 import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
 import EventPop from "./components/eventPop/EventPop";
+import useMobile from "./hooks/useMobile";
 import IDBManager from "./utils/IDBManager";
 
 const notifs = new NotifsAC();
 export default function App() {
   const [needsExtras, setNeedsExtras] = useState(false);
   const [needsLoader, setNeedsLoader] = useState(true);
-  const [ItsMobileDevice, setItsMobileDevice] = useState(null);
   const [showNotification, setShowNotification] = useState(true);
   const [calendarInfo, setCalendarInfo] = useState([]);
 
@@ -48,39 +48,32 @@ export default function App() {
     getOfflineUser().user === null ? -1 : getOfflineUser().user.id
   );
   let isAdmin = useRole(userinfo, "eduapp-admin");
-
-  const checkMediaQueries = () => {
-    setInterval(() => {
-      if (window.innerWidth < 1000) {
-        setItsMobileDevice(true);
-      } else {
-        setItsMobileDevice(false);
-      }
-    }, 500);
-  };
+  const mobile = useMobile();
 
   const activeNotification = async () => {
-    let db = new IDBManager();
-    await db.getStorageInstance("eduapp-calendar-event", "events");
-    SCHEDULE_SERVICE.fetchEventsById(getOfflineUser().user.id).then(
-      async (e) => {
-        if (e) {
-          db.clear();
-          e.data.map(async (data) => {
-            await db.set(data.id, data, "events");
-          });
-          await db.getStorageInstance("eduapp-calendar-last-event", "last");
-          let key = await db.getStoreKeys();
-          if (key[0] !== e.data[e.data.length - 1].id) {
-            setCalendarInfo(e.data[e.data.length - 1]);
-            setShowNotification(true);
-          } else {
-            setShowNotification(false);
-            setCalendarInfo(e.data[e.data.length - 1]);
+    if (getOfflineUser().user !== null) {
+      let db = new IDBManager();
+      await db.getStorageInstance("eduapp-calendar-event", "events");
+      SCHEDULE_SERVICE.fetchEventsById(getOfflineUser().user.id).then(
+        async (e) => {
+          if (e) {
+            db.clear();
+            e.data.map(async (data) => {
+              await db.set(data.id, data, "events");
+            });
+            await db.getStorageInstance("eduapp-calendar-last-event", "last");
+            let key = await db.getStoreKeys();
+            if (key[0] !== e.data[e.data.length - 1].id) {
+              setCalendarInfo(e.data[e.data.length - 1]);
+              setShowNotification(true);
+            } else {
+              setShowNotification(false);
+              setCalendarInfo(e.data[e.data.length - 1]);
+            }
           }
         }
-      }
-    );
+      );
+    }
   };
 
   const closeEventPop = async () => {
@@ -157,10 +150,6 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    checkMediaQueries();
-  }, [window.innerWidth]);
-
   return userinfo ? (
     <>
       <BrowserRouter>
@@ -172,7 +161,7 @@ export default function App() {
         </>
         {needsExtras && (
           <>
-            <Navbar badgeCount={badgeCount} mobile={ItsMobileDevice} />
+            <Navbar badgeCount={badgeCount} mobile={mobile} />
           </>
         )}
         {RequireAuth() ? (
@@ -201,9 +190,13 @@ export default function App() {
               />
 
               {/* Menu */}
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/menu/profile" element={<ProfileSettings />} />
-              <Route path="/menu/settings" element={<MenuSettings />} />
+              {mobile && (
+                <>
+                  <Route path="/menu" element={<Menu />} />
+                  <Route path="/menu/profile" element={<ProfileSettings />} />
+                  <Route path="/menu/settings" element={<MenuSettings />} />
+                </>
+              )}
 
               {/*Notifications*/}
               <Route path="/notifications" element={<Notifications />} />
@@ -223,9 +216,9 @@ export default function App() {
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}
-        {needsExtras && ItsMobileDevice && (
+        {needsExtras && mobile && (
           <>
-            <BottomButtons badgeCount={badgeCount} mobile={ItsMobileDevice} />
+            <BottomButtons badgeCount={badgeCount} mobile={mobile} />
           </>
         )}
         <>

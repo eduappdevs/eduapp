@@ -135,17 +135,11 @@ export default function OpenedResource() {
     >
       <AppHeader
         type={"resource"}
-        closeHandler={() => {
-          closeResource();
-        }}
+        closeHandler={() => closeResource()}
         canAction={canAction}
         resourceName={name}
-        editResource={() => {
-          editResource(getResourceId());
-        }}
-        deleteResource={() => {
-          deleteResource(getResourceId());
-        }}
+        editResource={() => editResource(getResourceId())}
+        deleteResource={() => deleteResource(getResourceId())}
       />
       <div className="resourceOpened__info">
         <h1>{name}</h1>
@@ -153,7 +147,6 @@ export default function OpenedResource() {
       </div>
       <div className="resourceOpened__files">
         <h1>{language.resources_files}</h1>
-        <p id="wip">EduApp W.I.P</p>
         <ul>
           {files && files.length > 0 ? (
             files.map((file) => {

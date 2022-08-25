@@ -1,24 +1,28 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
 import MenuHeader from "./menuHeader/MenuHeader";
 import * as AUTH_SERVICE from "../../services/auth.service";
 import useLanguage from "../../hooks/useLanguage";
+import useMobile from "../../hooks/useMobile";
 import "./Menu.css";
 
-export default function Menu() {
+export default function Menu({ desktopProfileClick, desktopSettingsClick, desktopCloseClick }) {
   const language = useLanguage();
+  const mobile = useMobile();
+
   return (
     <div
-      className={
-        window.innerWidth < 1000
-          ? "profile-menu-mobile"
-          : "profile-menu-desktop"
-      }
-      style={{ zIndex: 9999999 }}
+      id="app-menu"
+      className={mobile ? "profile-menu-mobile" : "profile-menu-desktop"}
+      style={{ zIndex: 9999 }}
     >
       <MenuHeader
         backTo={() => {
-          window.location.href = localStorage.previousMenuPage;
+          if (mobile) {
+            window.location.href = localStorage.previousMenuPage;
+            return;
+          }
+
+          desktopCloseClick();
         }}
         location={"MENU"}
       />
@@ -26,7 +30,9 @@ export default function Menu() {
         <li>
           <a
             onClick={() => {
-              window.location.href = "/menu/profile";
+              mobile
+                ? (window.location.href = "/menu/profile")
+                : desktopProfileClick();
             }}
           >
             {language.menu_profile.toUpperCase()}
@@ -35,7 +41,9 @@ export default function Menu() {
         <li>
           <a
             onClick={() => {
-              window.location.href = "/menu/settings";
+              mobile
+                ? (window.location.href = "/menu/settings")
+                : desktopSettingsClick();
             }}
           >
             {language.menu_settings.toUpperCase()}

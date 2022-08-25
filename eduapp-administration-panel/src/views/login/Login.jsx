@@ -16,7 +16,7 @@ export default function Login() {
   return hasInit ? (
     <div className="accessPageSection">
       <div className="loginContainer">
-        <div className="loginDiv">
+        <div className="loginDiv glass-background">
           <LoginAuth />
         </div>
       </div>
@@ -32,7 +32,6 @@ export default function Login() {
         ></path>
       </svg>
       <div className="blue" />
-      <div className="accessPage_background" />
     </div>
   ) : (
     <Initialization />

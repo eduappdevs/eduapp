@@ -72,9 +72,7 @@ export default function BottomButtons({ mobile, badgeCount }) {
     }
   };
 
-  useEffect(() => {
-    changeLocation();
-  });
+  useEffect(() => changeLocation());
 
   return (
     <div
