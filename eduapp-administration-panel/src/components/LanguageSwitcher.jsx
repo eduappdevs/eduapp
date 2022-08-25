@@ -65,7 +65,7 @@ export default function LanguageSwitcher() {
         width="28"
         height="28"
         fill="currentColor"
-        className="bi bi-box-arrow-right logout-icon"
+        className="bi bi-box-arrow-right logout-icon has-pointer-events"
         viewBox="0 0 16 16"
         onClick={async () => await AUTH_SERVICE.logout()}
       >
