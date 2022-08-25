@@ -1,50 +1,50 @@
 {
-  "name": "eduapp-administration-panel",
-  "version": "0.6.0",
-  "private": true,
-  "dependencies": {
-    "@jsreport/browser-client": "^3.1.0",
-    "@testing-library/jest-dom": "^5.16.1",
-    "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0",
-    "axios": "^0.24.0",
-    "buffer": "^6.0.3",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "https": "^1.0.0",
-    "hybrid-crypto-js": "^0.2.4",
-    "react": "^17.0.2",
-    "react-csv-reader": "^3.4.0",
-    "react-dom": "^17.0.2",
-    "react-google-login": "^5.2.2",
-    "react-router-dom": "^6.2.1",
-    "react-scripts": "5.0.0",
-    "web-vitals": "^2.1.2"
-  },
-  "scripts": {
-    "devw": "set PORT=3002 && react-scripts start",
-    "dev": "PORT=3002 react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "server": "nodemon server/server.js"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+	"name": "eduapp-administration-panel",
+	"version": "0.9.5",
+	"private": true,
+	"dependencies": {
+		"@jsreport/browser-client": "^3.1.0",
+		"@testing-library/jest-dom": "^5.16.1",
+		"@testing-library/react": "^12.1.2",
+		"@testing-library/user-event": "^13.5.0",
+		"axios": "^0.24.0",
+		"buffer": "^6.0.3",
+		"dotenv": "^16.0.1",
+		"express": "^4.18.1",
+		"https": "^1.0.0",
+		"hybrid-crypto-js": "^0.2.4",
+		"react": "^17.0.2",
+		"react-csv-reader": "^3.4.0",
+		"react-dom": "^17.0.2",
+		"react-google-login": "^5.2.2",
+		"react-router-dom": "^6.2.1",
+		"react-scripts": "5.0.0",
+		"web-vitals": "^2.1.2"
+	},
+	"scripts": {
+		"devw": "set PORT=3002 && react-scripts start",
+		"dev": "PORT=3002 react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"server": "nodemon server/server.js"
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	}
 }
