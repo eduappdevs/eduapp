@@ -119,6 +119,7 @@
 	align-items: end;
 	flex-grow: 1;
 	width: 80%;
+	max-width: 500px;
 	margin-left: 50%;
 	transform: translate(-50%, -50%);
 	border: 1px solid var(--orange);
