@@ -1,6 +1,6 @@
-FROM node:latest
+FROM node:alpine as builder
 
-WORKDIR /eduapp-administration-panel
+WORKDIR /frontend
 
 COPY package*.json ./
 
@@ -9,10 +9,10 @@ RUN npm install
 COPY . .
 
 RUN rm .env
-RUN mv docker.env .env
+RUN mv docker-example.env .env
 
 RUN npm run build
 
-EXPOSE 4010
+EXPOSE 4220
 
 CMD [ "node", "server/server.js" ]

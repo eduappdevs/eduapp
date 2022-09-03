@@ -22,8 +22,8 @@
 		"web-vitals": "^2.1.2"
 	},
 	"scripts": {
-		"devw": "set PORT=3002 && react-scripts start",
-		"dev": "PORT=3002 react-scripts start",
+		"devw": "set PORT=4010 && react-scripts start",
+		"dev": "PORT=4010 react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",

@@ -8,11 +8,12 @@ const IS_LOCAL = false;
 
 var HTTP = Express();
 
-HTTP.get("*", (req, res) =>
-  res.redirect("https://" + req.headers.host + req.url)
-);
+//https
+// HTTP.get("*", (req, res) =>
+//   res.redirect("https://" + req.headers.host + req.url)
+// );
 
-HTTP.listen(80);
+// HTTP.listen(80);
 
 const APP = Express();
 const APP_PATH = path.join(__dirname, "..", "build");
@@ -21,6 +22,7 @@ APP.use(Express.static(APP_PATH));
 
 APP.get("*", (_, res) => res.sendFile(path.join(APP_PATH, "index.html")));
 
+//https
 const CERTS = () => {
   try {
     return {
@@ -33,6 +35,9 @@ const CERTS = () => {
 };
 const PORT = process.env.EXP_PORT || 443;
 const SERVER = HTTPS.createServer(CERTS(), APP);
+
+//http only
+// const SERVER = null;
 
 (IS_LOCAL ? APP : SERVER).listen(PORT, () =>
   console.log("EduApp Main App is running on port: " + PORT)

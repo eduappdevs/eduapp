@@ -13,8 +13,8 @@ development:
 test:
   <<: *default
   database: eduapp_db_test
-  username: postgres
-  password: "1234"
+  username: <%= ENV.fetch("DEV_DB_USER") { "postgres" } %>
+  password: <%= ENV.fetch("DEV_DB_PSWD") { "1234" } %>
 
 production:
   <<: *default

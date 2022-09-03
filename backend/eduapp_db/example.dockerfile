@@ -11,15 +11,11 @@ RUN bundle install
 COPY . .
 
 RUN rm .env
-RUN mv docker.env .env
+RUN mv docker-example.env .env
 
 RUN rm -f ./tmp/pids/server.pid
 RUN rm ./log/development.log
-# RUN rm ./log/test.log
-
-# RUN rails db:create
-# RUN rails db:migrate:reset
-# RUN rails db:seed
+RUN rm ./log/test.log
 
 EXPOSE 3000
 

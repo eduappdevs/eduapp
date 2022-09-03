@@ -57,8 +57,8 @@
 		"workbox-streams": "^6.5.1"
 	},
 	"scripts": {
-		"devw": "set PORT=3001 && react-scripts start",
-		"dev": "PORT=3001 react-scripts start",
+		"devw": "set PORT=8443 && react-scripts start",
+		"dev": "PORT=8443 react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
