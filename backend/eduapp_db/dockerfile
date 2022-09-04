@@ -10,8 +10,8 @@ RUN bundle install
 
 COPY . .
 
-RUN rm .env
-RUN mv docker.env .env
+# RUN rm .env
+# RUN mv docker.env .env
 
 RUN rm -f ./tmp/pids/server.pid
 RUN rm ./log/development.log

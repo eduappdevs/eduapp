@@ -23,9 +23,9 @@ services:
   api:
     build:
       context: ./backend/eduapp_db
-    image: eduapp/api:latest 
+    image: tcrurav/eduapp_api:latest 
     env_file:
-      - ./backend/eduapp_db/docker.env
+      - ./backend/eduapp_db/.env
     restart: unless-stopped
     depends_on:
       - db
@@ -38,19 +38,19 @@ services:
   app:
     build:
       context: ./frontend
-    image: eduapp/app:latest
+    image: tcrurav/eduapp_app:latest
     env_file:
-      - ./frontend/docker.env
+      - ./frontend/.env
     restart: unless-stopped
     ports:
       - "8443:8443" # Change the first number for different port
   admin:
     build:
       context: ./eduapp-administration-panel
-    image: eduapp/admin:latest
+    image: tcrurav/eduapp_admin:latest
     restart: unless-stopped
     env_file:
-      - ./eduapp-administration-panel/docker.env
+      - ./eduapp-administration-panel/.env
     ports:
       - "4010:4010" # Change the first number for different port
     networks:

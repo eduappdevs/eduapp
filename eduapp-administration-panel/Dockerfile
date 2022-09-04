@@ -8,8 +8,8 @@ RUN npm install
 
 COPY . .
 
-RUN rm .env
-RUN mv docker.env .env
+# RUN rm .env
+# RUN mv docker.env .env
 
 RUN npm run build
 
