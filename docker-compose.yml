@@ -30,7 +30,7 @@ services:
     depends_on:
       - db
     ports:
-      - "3000:3000" # Change the first number for different port
+      - "3010:3010" # Change the first number for different port
     links:
       - "db:db"
     networks:
@@ -98,7 +98,7 @@ services:
   # docker pull tcrurav/bluecity_admin
 
   # docker run --name tcrurav_postgress -e POSTGRES_DB=postgres -e POSTGRES_PASSWORD=sasa -e POSTGRES_USER=eduapp_user -e PGDATA="/var/lib/postgresql/data/pgdata" -p 5432:5432 -v eduapp_db_data:/var/lib/postgresql/data/pgdata -d postgres:14
-  # docker run -p 3000:3000 -e DB_HOST=172.17.0.2 -d tcrurav/eduapp_api
+  # docker run -p 3010:3010 -e DB_HOST=172.17.0.2 -d tcrurav/eduapp_api
   # docker run -p 8443:8443 -d tcrurav/eduapp_app
   # docker run -p 4010:4010 -d tcrurav/eduapp_admin
   

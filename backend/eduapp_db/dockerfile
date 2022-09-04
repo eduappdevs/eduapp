@@ -21,6 +21,6 @@ RUN rm ./log/development.log
 # RUN rails db:migrate:reset
 # RUN rails db:seed
 
-EXPOSE 3000
+EXPOSE 3010
 
-CMD [ "rails", "s", "-b", "0.0.0.0" ]
+CMD [ "rails", "s", "-b", "ssl://0.0.0.0:3010?key=.cert/eduapp.key&cert=.cert/eduapp.crt" ]
