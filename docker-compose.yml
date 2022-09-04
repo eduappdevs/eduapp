@@ -72,9 +72,36 @@ services:
   #   networks:
   #     - common
 
-  # To run this file do the following:
+  # To run this file do the following locally:
   #   1. docker-compose build
   #   2. docker-compose up
   #   3. docker-compose run api rails db:create
   #   4. docker-compose run api rails db:migrate:reset
   #   5. docker-compose run api rails db:seed
+
+  # To run this file MANUALLY do the following to put in production:
+
+  #   In the root of the local file system:
+  # docker-compose down
+  # docker-compose build
+
+  # docker tag xxxxxxx tcrurav/eduapp_admin
+  # docker push tcrurav/eduapp_admin
+  # docker tag xxxxxxx tcrurav/eduapp_app
+  # docker push tcrurav/eduapp_app
+  # docker tag xxxxxxx tcrurav/eduapp_api
+  # docker push tcrurav/eduapp_api
+
+  #   In production hosting:
+  # docker pull tcrurav/bluecity_app
+  # docker pull tcrurav/bluecity_api
+  # docker pull tcrurav/bluecity_admin
+
+  # docker run --name tcrurav_postgress -e POSTGRES_DB=postgres -e POSTGRES_PASSWORD=sasa -e POSTGRES_USER=eduapp_user -e PGDATA="/var/lib/postgresql/data/pgdata" -p 5432:5432 -v eduapp_db_data:/var/lib/postgresql/data/pgdata -d postgres:14
+  # docker run -p 3000:3000 -e DB_HOST=172.17.0.2 -d tcrurav/eduapp_api
+  # docker run -p 8443:8443 -d tcrurav/eduapp_app
+  # docker run -p 4010:4010 -d tcrurav/eduapp_admin
+  
+  # docker exec xxxxx rails db:create
+  # docker exec xxxxx rails db:migrate:reset
+  # docker exec xxxxx rails db:seed
