@@ -35,7 +35,7 @@ class CalendarAnnotationsController < ApplicationController
       end
 
       for subject in @subjects
-        @sessions += CalendarAnnotation.where(subject_id: subject)
+        @sessions += EduappUserSession.where(subject_id: subject)
       end
       @calendar_annotations = { :globalEvents => @calendar_isGlobal, :calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents }
     else

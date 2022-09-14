@@ -73,8 +73,8 @@ export default function UserConfig() {
       document.getElementById("scroll")?.scrollIntoView(true);
       document.getElementById("standard-modal").style.width = "101%";
       document.getElementById("standard-modal").style.height = "101%";
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
+      document.getElementById("controlPanelContentContainer").scrollLeft = 0;
+      document.getElementById("controlPanelContentContainer").style.overflow = "hidden";
     }
   };
 
@@ -152,6 +152,22 @@ export default function UserConfig() {
     finalizedCreate("error", true, language.creationFailed, false);
   };
 
+  const toggleEditRow = (e, disable = false) => {
+    let editableFields = 4;
+    while (editableFields) {
+      e.target.parentNode.parentNode.childNodes[
+        editableFields
+      ].childNodes[0].disabled = disable;
+      editableFields -= 1;
+    }
+    e.target.parentNode.querySelectorAll('button.editing').forEach(element => {
+      element.style.display = (disable ? 'none' : 'block');
+    });
+    e.target.parentNode.querySelectorAll('button:not(.editing)').forEach(element => {
+      element.style.display = (disable ? 'block' : 'none');
+    });
+  }
+
   const editUser = (e, s) => {
     switchEditState(false);
 
@@ -185,20 +201,7 @@ export default function UserConfig() {
         .then((x) => {
           if (x) {
             finalizedEdit("info", true, language.editAlertCompleted, false);
-            let num = 0;
-            while (num < 4) {
-              e.target.parentNode.childNodes[num].style.display === "block"
-                ? (e.target.parentNode.childNodes[num].style.display = "none")
-                : (e.target.parentNode.childNodes[num].style.display = "block");
-              num += 1;
-            }
-            let disable = 1;
-            while (disable < 4) {
-              e.target.parentNode.parentNode.childNodes[
-                disable
-              ].childNodes[0].disabled = true;
-              disable += 1;
-            }
+            toggleEditRow(e, true);
           }
         })
         .catch((e) => {
@@ -214,41 +217,11 @@ export default function UserConfig() {
   };
 
   const closeEditUser = (e, s) => {
-    let disable = 1;
-    while (disable < 4) {
-      e.target.parentNode.parentNode.childNodes[
-        disable
-      ].childNodes[0].disabled = true;
-      disable += 1;
-    }
-    let num = 0;
-    while (num < 4) {
-      e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
-      num += 1;
-    }
+    toggleEditRow(e, true);
   };
 
   const showEditOptionUser = (e) => {
-    let disable = 1;
-    while (disable < 4) {
-      e.target.parentNode.parentNode.childNodes[
-        disable
-      ].childNodes[0].disabled = false;
-      disable += 1;
-    }
-    let num = 0;
-    while (num < 4) {
-      e.target.parentNode.childNodes[num].style.display === ""
-        ? e.target.parentNode.childNodes[num].style.display === "none"
-          ? (e.target.parentNode.childNodes[num].style.display = "block")
-          : (e.target.parentNode.childNodes[num].style.display = "none")
-        : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
-      num += 1;
-    }
+    toggleEditRow(e, false);
   };
 
   const createUser = (e) => {
@@ -681,6 +654,7 @@ export default function UserConfig() {
                               marginRight: "5px",
                               display: "none",
                             }}
+                            className="editing"
                             onClick={(e) => editUser(e, u)}
                           >
                             <svg
@@ -697,6 +671,7 @@ export default function UserConfig() {
                           <button
                             style={{ display: "none" }}
                             onClick={(e) => closeEditUser(e, u)}
+                            className="editing"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

@@ -640,13 +640,7 @@ export default function Schedulesessionslist(props) {
       subject: subject_name,
     };
 
-    if (
-      subject_name !== `${language.chooseSubject}` &&
-      name !== "" &&
-      streaming !== "" &&
-      resource !== "" &&
-      chat !== ""
-    ) {
+    if (subject_name !== `${language.chooseSubject}`) {
       setShowModalSession(true);
       setSessionInfo(info);
     } else {

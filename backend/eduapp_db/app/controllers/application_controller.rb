@@ -287,7 +287,7 @@ class ApplicationController < ActionController::API
   end
 
   # Checks ```UserRole``` permissions for updating.
-  def check_perms_update!(user_roles, needs_owner_check, requested_id)
+  def check_perms_update!(user_roles, needs_owner_check = false, requested_id = nil)
     if user_roles[4]
       return true
     else
