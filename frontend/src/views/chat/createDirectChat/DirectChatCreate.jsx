@@ -9,7 +9,7 @@ import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
 import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
-import useRole from "../../../hooks/useRole";
+import userCan, {CHAT, CREATE}  from "../../../hooks/userCan";
 import useLanguage from "../../../hooks/useLanguage";
 import "./DirectChatCreate.css";
 
@@ -25,10 +25,9 @@ export default function DirectChatCreate() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
 
-  let canCreate = useRole(FetchUserInfo(getOfflineUser().user.id), [
-    "eduapp-admin",
-    "eduapp-teacher",
-  ]);
+  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  
+  let canCreate = userCan(userInfo, CHAT,CREATE);
 
   const matchUsers = (nameInput) => {
     if (nameInput.length > 0) {
@@ -154,7 +153,7 @@ export default function DirectChatCreate() {
                 <h2>{language.chat_preview}</h2>
                 <li
                   onClick={() => {
-                    navigate("/chat");
+                    createChat()
                   }}
                   id={"p"}
                 >

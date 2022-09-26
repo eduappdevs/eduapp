@@ -77,3 +77,8 @@ textarea:focus {
 	--calendarIcon: invert(0);
 	--calendarColorLine: #6d6d6d;
 }
+
+td input {
+	max-width: 100%;
+	box-sizing: border-box;
+}

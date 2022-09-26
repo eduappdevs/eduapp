@@ -125,22 +125,21 @@ class ChatBasesController < ApplicationController
       invertedExists = ChatBase.where(chat_name: inverted_name)
 
       if nameExists.count > 0 || invertedExists.count > 0
-        render json: { error: "Chat already exists" }, status: :unprocessable_entity
-      else
-        @chat_basis = ChatBase.new(
-          chat_name: params[:chat_name],
-          isGroup: params[:isGroup],
-          isReadOnly: params[:isReadOnly].nil? ? false : params[:isReadOnly],
-        )
-        pri_key, pub_key = EduAppUtils::EncryptUtils::gen_key_pair(@chat_basis.id)
-        @chat_basis.private_key = pri_key
-        @chat_basis.public_key = pub_key
+        return render json: { error: "Chat already exists" }, status: :unprocessable_entity
+      end
+      @chat_basis = ChatBase.new(
+        chat_name: params[:chat_name],
+        isGroup: params[:isGroup],
+        isReadOnly: params[:isReadOnly].nil? ? false : params[:isReadOnly],
+      )
+      pri_key, pub_key = EduAppUtils::EncryptUtils::gen_key_pair(@chat_basis.id)
+      @chat_basis.private_key = pri_key
+      @chat_basis.public_key = pub_key
 
-        if @chat_basis.save
-          render json: @chat_basis, status: :created, location: @chat_basis
-        else
-          render json: @chat_basis.errors, status: :unprocessable_entity
-        end
+      if @chat_basis.save
+        render json: @chat_basis, status: :created, location: @chat_basis
+      else
+        render json: @chat_basis.errors, status: :unprocessable_entity
       end
     else
       @chat_basis = ChatBase.new(

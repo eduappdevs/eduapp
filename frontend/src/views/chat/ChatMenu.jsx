@@ -7,7 +7,7 @@ import * as CHAT_SERVICE from "../../services/chat.service";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
-import useRole from "../../hooks/useRole";
+import userCan, {CHAT, CREATE}  from "../../hooks/userCan";
 import useLanguage from "../../hooks/useLanguage";
 import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
 import "./ChatMenu.css";
@@ -20,7 +20,7 @@ export default function ChatMenu() {
 
   const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
-  let canCreate = useRole(userInfo, ["eduapp-admin", "eduapp-teacher"]);
+  let canCreate = userCan(userInfo, CHAT,CREATE);
 
   const getChats = async () => {
     let chats = (
@@ -111,8 +111,8 @@ export default function ChatMenu() {
                           chat.chat_info.image !== undefined
                             ? chat.chat_info.image
                             : chat.chat_info.isGroup
-                            ? IMG_FLBK_GROUP
-                            : IMG_FLBK_USER
+                              ? IMG_FLBK_GROUP
+                              : IMG_FLBK_USER
                         }
                         alt="Chat User Icon"
                       />
