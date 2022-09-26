@@ -1,33 +1,6 @@
 class ApplicationController < ActionController::API
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  protected
-
-  def configure_permitted_parameters
-    added_attrs = [:username, :email, :password, :password_confirmation]
-    devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
-    devise_parameter_sanitizer.permit(:sign_in) do |user_params|
-      user_params.permit(:username, :email)
-    end
-  end
-
-  # Returns the ID's information from the requested table.
-  def return_table(table)
-    case table
-    when "users"
-      return User.find(params[:id])
-    when "courses"
-      return Course.find(params[:id])
-    when "sessions"
-      return EduappUserSession.find(params[:id])
-    when "institutions"
-      return Institution.find(params[:id])
-    when "resources"
-      return Resource.find(params[:id])
-    when "subjects"
-      return Subject.find(params[:id])
-    end
-  end
 
   # Renders the desired table's ```extra_fields```.
   def get_extrafields
@@ -98,6 +71,36 @@ class ApplicationController < ActionController::API
     end
   end
 
+
+  protected
+
+  def configure_permitted_parameters
+    added_attrs = [:username, :email, :password, :password_confirmation]
+    devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
+    devise_parameter_sanitizer.permit(:sign_in) do |user_params|
+      user_params.permit(:username, :email)
+    end
+  end
+
+  # Returns the ID's information from the requested table.
+  def return_table(table)
+    case table
+    when "users"
+      return User.find(params[:id])
+    when "courses"
+      return Course.find(params[:id])
+    when "sessions"
+      return EduappUserSession.find(params[:id])
+    when "institutions"
+      return Institution.find(params[:id])
+    when "resources"
+      return Resource.find(params[:id])
+    when "subjects"
+      return Subject.find(params[:id])
+    end
+  end
+
+
   # Filters the desired table's ```extra_fields``` for further filtration.
   def filter_extrafields(extras, table)
     check_extra_fields(table)
@@ -114,7 +117,7 @@ class ApplicationController < ActionController::API
         extras.each do |extra_field|
           break if ids.include? entry.id
           extra_field = { extra_field[0] => extra_field[1] }
-          field = JSON.parse field
+          field = field.instance_of?(String) ? JSON.parse(field) : field
 
           ids.push(entry.id) if field["value"] =~ /^#{extra_field[field["name"]]}.*$/ && !extra_field[field["name"]].nil?
         end

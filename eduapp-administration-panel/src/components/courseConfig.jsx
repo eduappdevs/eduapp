@@ -483,7 +483,7 @@ export default function CourseConfig() {
                             alignItems: "center",
                           }}
                         >
-                          <ExtraFields table="courses" id={c.id} />
+                          {/* <ExtraFields table="courses" id={c.id} /> */}
                           <button
                             onClick={() => confirmDeleteEvent(c.id)}
                             style={{ marginRight: "5px" }}

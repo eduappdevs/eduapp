@@ -470,7 +470,7 @@ export default function InstitutionConfig() {
                         alignItems: "center",
                       }}
                     >
-                      <ExtraFields table="institutions" id={x.id} />
+                      {/* <ExtraFields table="institutions" id={x.id} /> */}
                       <button onClick={(e) => showEditOptionInstitution(e)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

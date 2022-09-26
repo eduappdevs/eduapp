@@ -569,7 +569,7 @@ export default function SubjectsConfig() {
                             alignItems: "center",
                           }}
                         >
-                          <ExtraFields table="subjects" id={sj.id} />
+                          {/* <ExtraFields table="subjects" id={sj.id} /> */}
                           <button
                             style={{ marginRight: "5px" }}
                             onClick={() => confirmDeleteEvent(sj.id)}
