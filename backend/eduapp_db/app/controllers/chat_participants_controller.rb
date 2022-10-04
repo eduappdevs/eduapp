@@ -18,7 +18,13 @@ class ChatParticipantsController < ApplicationController
 
       final_chats = []
       user_chats.each do |chatp|
-        chat = ChatBase.find(chatp.chat_base_id).serializable_hash(:except => [:private_key, :public_key, :created_at, :updated_at])
+        chatBase = ChatBase.find(chatp.chat_base_id)
+        lastMessage = chatBase.chat_messages.last || ChatMessage.new
+        chatSelfCounterpart = chatBase.chat_participants.where({user_id: params[:chats_for]}).first
+        chat = chatBase.serializable_hash(:except => [:private_key, :public_key, :created_at, :updated_at]).merge({
+          last_message: lastMessage.serializable_hash,
+          self_counterpart: chatSelfCounterpart.serializable_hash
+        })
         if chat["chat_name"].include?("private_chat_")
           chat_counterpart = ChatParticipant.where(chat_base_id: chat["id"]).where.not(user_id: params[:chats_for]).first
 
@@ -34,7 +40,7 @@ class ChatParticipantsController < ApplicationController
 
           final_chats.push({
             chat_info: chat,
-            chat_participant: UserInfo.where(user_id: chat_counterpart.user_id).first.serializable_hash(:except => [:created_at, :updated_at, :user_role_id, :googleid]),
+            chat_participant: UserInfo.where(user_id: chat_counterpart.user_id).first.serializable_hash(:except => [:created_at, :updated_at, :user_role_id, :googleid]), # .merge(chat_counterpart.serializable_hash),
           })
         else
           final_chats.push({ chat_info: chat })

@@ -517,7 +517,7 @@ export default function UserConfig() {
                 onPageChange={async (p) => fetchUserPage(p)}
                 maxPages={maxPages}
               />
-              <button onClick={() => notifyUsers()}>
+              <button onClick={() => setNotifyModal(true)}>
                 Notify Selected Users
               </button>
             </div>

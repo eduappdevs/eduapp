@@ -123,7 +123,7 @@ export default function ChatMenu() {
                         {/* <p className="chat-writing">Equisde is writing...</p> */}
                       </div>
                       <p className="chat-pending-messages">
-                        <span>{0}</span>
+                        <span>{ chat.chat_info?.last_message?.send_date > chat.chat_info?.seft_counterpart?.last_seen ? 'NEW' : '0'}</span>
                       </p>
                     </li>
                   );
