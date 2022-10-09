@@ -94,7 +94,7 @@ export default function ChatMenu() {
             <>
               <h2>{language.chats}</h2>
               <ul>
-                {chats.map((chat) => {
+                {chats.sort((a,b) => a.chat_info?.last_message?.send_date < b.chat_info?.last_message?.send_date).map((chat) => {
                   let connectionId =
                     (chat.chat_info.isGroup ? "g" : "p") + chat.chat_info.id;
                   return (
@@ -120,10 +120,10 @@ export default function ChatMenu() {
                         <h2 className="chat-name">
                           {chat.chat_info.chat_name}
                         </h2>
-                        {/* <p className="chat-writing">Equisde is writing...</p> */}
+                        {/* <p className="chat-writing">{chat.chat_info?.last_message.message}</p> */}
                       </div>
                       <p className="chat-pending-messages">
-                        <span>{ chat.chat_info?.last_message?.send_date > chat.chat_info?.seft_counterpart?.last_seen ? 'NEW' : '0'}</span>
+                        <span>{ (!chat.chat_info?.self_counterpart?.last_seen && chat.chat_info?.last_message?.id) || chat.chat_info?.last_message?.send_date > chat.chat_info?.self_counterpart?.last_seen ? 'NEW' : '0'}</span>
                       </p>
                     </li>
                   );

@@ -19,7 +19,7 @@ class ChatParticipantsController < ApplicationController
       final_chats = []
       user_chats.each do |chatp|
         chatBase = ChatBase.find(chatp.chat_base_id)
-        lastMessage = chatBase.chat_messages.last || ChatMessage.new
+        lastMessage = chatBase.chat_messages.last || ChatMessage.new(send_date: chatBase.created_at)
         chatSelfCounterpart = chatBase.chat_participants.where({user_id: params[:chats_for]}).first
         chat = chatBase.serializable_hash(:except => [:private_key, :public_key, :created_at, :updated_at]).merge({
           last_message: lastMessage.serializable_hash,
