@@ -2,8 +2,8 @@
 </div>
 
 - [About the project](#about-the-project)
-- [Backend](#backend-information)
-- [Frontend](#frontend-information)
+- [Backend](#backend-structure)
+- [Frontend](#frontend-structure)
 - [API Documention](#api-documention)
 - [Use Cases](#use-cases)
 - [Tech stack and comparison](#tech-stack-and-comparison)

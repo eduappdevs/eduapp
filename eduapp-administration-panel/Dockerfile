@@ -13,6 +13,7 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 4010
+# Change to administration-panel port
+EXPOSE 4010 
 
 CMD [ "node", "server/server.js" ]

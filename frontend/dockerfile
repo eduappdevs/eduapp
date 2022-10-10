@@ -13,6 +13,7 @@ COPY . .
 
 RUN npm run build
 
+# Change to frontend port
 EXPOSE 8443
 
 CMD [ "node", "server/server.js" ]

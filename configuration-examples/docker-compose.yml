@@ -2,6 +2,7 @@ version: '3.1'
 
 volumes:
   eduapp_db_data:
+  # nginx_data:
 
 networks:
   common:
@@ -22,7 +23,7 @@ services:
   api:
     build:
       context: ./backend/eduapp_db
-    image: eduapp_api:latest 
+    image: tcrurav/eduapp_api:latest 
     env_file:
       - ./backend/eduapp_db/.env
     restart: unless-stopped
@@ -37,7 +38,7 @@ services:
   app:
     build:
       context: ./frontend
-    image: eduapp_app:latest
+    image: tcrurav/eduapp_app:latest
     env_file:
       - ./frontend/.env
     restart: unless-stopped
@@ -46,7 +47,7 @@ services:
   admin:
     build:
       context: ./eduapp-administration-panel
-    image: eduapp_admin:latest
+    image: tcrurav/eduapp_admin:latest
     restart: unless-stopped
     env_file:
       - ./eduapp-administration-panel/.env
@@ -54,5 +55,21 @@ services:
       - "4010:4010" # Change the first number for different port
     networks:
       - common
+  # nginx:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Ports-Dockerfile
+  #   image: eduapp/nginx:latest
+  #   ports: 
+  #     # - "80:80" # Exposes http so that it redirects to 443 if configured
+  #     - "3010:443" # Change the first number for different port
+  #   depends_on:
+  #     - api
+  #   volumes:
+  #     - nginx_data:/etc/nginx/conf.d
+  #   links:
+  #     - "api:api"
+  #   networks:
+  #     - common
 
   

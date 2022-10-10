@@ -1,4 +1,4 @@
-FROM ruby:2.6.9
+FROM ruby:3.1.2
 
 WORKDIR /backend
 
@@ -21,6 +21,8 @@ RUN rm ./log/development.log
 # RUN rails db:migrate:reset
 # RUN rails db:seed
 
+# Change backend port
 EXPOSE 3010
 
+# Change backend port
 CMD [ "rails", "s", "-b", "ssl://0.0.0.0:3010?key=.cert/eduapp.key&cert=.cert/eduapp.crt" ]
