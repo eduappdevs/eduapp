@@ -7,7 +7,7 @@
 - [API Documention](#api-documention)
 - [Use Cases](#use-cases)
 - [Tech stack and comparison](#tech-stack-and-comparison)
-- [How to mount an EduApp server](https://github.com/eduappdevs/eduapp/tree/develop/server-config)
+- [How to mount an EduApp server](https://github.com/eduapp-project/eduapp/tree/main/server-config)
 - [Personal opinion and comparison](#personal-opinion-and-comparison)
 
 <h1>About the project</h1>
