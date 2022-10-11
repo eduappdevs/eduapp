@@ -9,6 +9,7 @@ development:
   database: eduapp_db_development
   username: <%= ENV.fetch("DEV_DB_USER") { "postgres" } %>
   password: <%= ENV.fetch("DEV_DB_PSWD") { "1234" } %>
+  port: <%= ENV.fetch("DEV_DB_PORT") { 5432 } %>
 
 test:
   <<: *default

@@ -78,6 +78,14 @@ Change the data accordingly to the comments on the file itself. Basically the po
 
 Change the data accordingly to the comments on the file itself. Basically the port.
 
+### frontend/server/server.js
+
+Change the data accordingly to the comments on the file itself.
+
+### eduapp-administration-panel/server/server.js
+
+Change the data accordingly to the comments on the file itself.
+
 ## Deploying your project
 
 Once you have edited all the files above it's time to build the project.

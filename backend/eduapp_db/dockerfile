@@ -14,7 +14,7 @@ COPY . .
 # RUN mv docker.env .env
 
 RUN rm -f ./tmp/pids/server.pid
-RUN rm ./log/development.log
+# RUN rm ./log/development.log
 # RUN rm ./log/test.log
 
 # RUN rails db:create
@@ -24,5 +24,8 @@ RUN rm ./log/development.log
 # Change backend port
 EXPOSE 3010
 
-# Change backend port
-CMD [ "rails", "s", "-b", "ssl://0.0.0.0:3010?key=.cert/eduapp.key&cert=.cert/eduapp.crt" ]
+# PRODUCTION Change backend port
+# CMD [ "rails", "s", "-b", "ssl://0.0.0.0:3010?key=.cert/eduapp.key&cert=.cert/eduapp.crt" ]
+
+# DEVELOPMENT Change backend port
+CMD [ "rails", "s", "-b", "0.0.0.0", "-p", "3010"]
