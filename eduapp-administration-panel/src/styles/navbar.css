@@ -1,13 +1,13 @@
 .navbar-container {
 	top: 0;
 	left: 0px;
-	height: 100vh;
-	min-width: 16%;
+	/* height: 100vh; */
+	min-width: 200px;
 	max-width: 16%;
 	overflow-y: scroll;
 	display: flex;
 	flex-direction: column;
-	position: absolute;
+	/* position: absolute; */
 	overflow-x: hidden;
 	z-index: 2;
 	padding: 0px 10px 0px 10px;

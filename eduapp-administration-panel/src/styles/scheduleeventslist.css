@@ -53,7 +53,7 @@ tr:nth-child(even) {
   justify-content: center;
   align-items: center;
   overflow-y: auto;
-  height: 45vh;
+  /* height: 45vh; */
   overflow-x: hidden;
   flex: 1;
 }

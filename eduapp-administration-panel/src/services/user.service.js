@@ -9,9 +9,31 @@ export const fetchUserInfos = async () => {
   return await axios.get(`${USERS_INFO}`, { headers: requestHeader });
 };
 
-export const pagedUserInfos = async (page, order = null) => {
+export const pagedUserInfos = async (page, order = null, searchParams = null) => {
+  let query='';
+  if(searchParams?.query){
+    query = `&${searchParams.selectedField}=${searchParams.query}`;
+  }
+
+  const extras = {};
+
+  searchParams.extras.forEach(e => {
+    if (!e[0]){
+      return;
+    }
+    extras[e[0]] = e[1];
+  })
+
+  if(Object.keys(extras).length){
+    query += '&extras=' + btoa(JSON.stringify(extras));
+  }
+
+  if (order['field'] === 'email'){
+    order['field'] = 'users.email';
+  }
+
   return await axios.get(
-    `${USERS_INFO}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    `${USERS_INFO}?page=${page}&order=${btoa(JSON.stringify(order))}${query}`,
     {
       headers: requestHeader,
     }

@@ -210,7 +210,7 @@ class ApplicationController < ActionController::API
 
   # Paginates an ```ActiveRecord``` query.
   def query_paginate(query, page, limit = 10)
-    page = Integer(page)
+    page = begin Integer(page) rescue 1 end
     if page - 1 < 0
       return { :error => "Page cannot be less than 1" }
     end

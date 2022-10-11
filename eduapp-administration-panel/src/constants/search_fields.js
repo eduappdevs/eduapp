@@ -57,9 +57,9 @@ export function getUserFields(lang) {
   languageDetect(lang);
   return [
     ["user_name", lang.name],
-    ["user_id", lang.userId],
+    //["user_id", lang.userId],
     ["email", lang.email],
-    ["role", lang.userRole],
+    //["role", lang.userRole],
   ];
 }
 
