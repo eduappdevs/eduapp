@@ -28,7 +28,7 @@ export const pagedUserInfos = async (page, order = null, searchParams = null) =>
     query += '&extras=' + btoa(JSON.stringify(extras));
   }
 
-  if (order['field'] === 'email'){
+  if (order && order['field'] === 'email'){
     order['field'] = 'users.email';
   }
 
