@@ -1,6 +1,6 @@
 .subjects-table-info {
   height: auto;
-  width: 100vw;
+  /* width: 100vw; */
 }
 
 .subjects-table-info > table > thead {

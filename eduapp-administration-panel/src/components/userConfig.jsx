@@ -41,12 +41,6 @@ export default function UserConfig() {
   const [idDelete, setIdDelete] = useState();
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredUsers = useFilter(
-    users,
-    null,
-    USERSERVICE.filterUsers,
-    getUserFields(language)
-  );
 
   const [userPermRoles, setUserPermRoles] = useState([]);
   const [allSelected, setAllSelected] = useState(true);
@@ -113,7 +107,7 @@ export default function UserConfig() {
 
   const fetchUserPage = (page, order = null) => {
     asynchronizeRequest(function () {
-      USERSERVICE.pagedUserInfos(page, order)
+      USERSERVICE.pagedUserInfos(page, order, searchParams)
         .then((us) => {
           setActualPage(us.data.page);
           setMaxPages(us.data.total_pages);
@@ -397,12 +391,12 @@ export default function UserConfig() {
 
   useEffect(() => {
     if (hasDoneInitialFetch) {
-      fetchUserPage(1, {
+      fetchUserPage(actualPage || 1, {
         field: searchParams.selectedField,
         order: searchParams.order,
       });
     }
-  }, [searchParams.order]);
+  }, [searchParams, actualPage]);
 
   return (
     <>
@@ -541,12 +535,6 @@ export default function UserConfig() {
                 <tbody>
                   {users.map((u) => {
                     let user = u.user.last_sign_in_at;
-                    if (filteredUsers !== null)
-                      if (
-                        filteredUsers.find((fu) => fu.user.id === u.user.id) ===
-                        undefined
-                      )
-                        return <Fragment key={u.id} />;
                     return (
                       <tr key={u.id}>
                         <td>
@@ -604,7 +592,7 @@ export default function UserConfig() {
                           <input
                             type="datetime"
                             disabled
-                            value={user.split(".")[0]}
+                            value={user?.split(".")[0]}
                           />
                         </td>
                         <td

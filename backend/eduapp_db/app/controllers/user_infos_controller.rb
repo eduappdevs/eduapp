@@ -5,25 +5,36 @@ class UserInfosController < ApplicationController
 
   # GET /user_infos
   def index
+    @user_infos = UserInfo
     if params[:user_id]
       if !check_perms_query_self!(get_user_roles.perms_users, params[:user_id])
         return
       end
-      @user_infos = UserInfo.where(user_id: params[:user_id])
+      @user_infos = @user_infos.where(user_id: params[:user_id])
     elsif params[:name]
       # TODO: CHECK IF USER CAN SEARCH BY NAME
-      @user_infos = UserInfo.search_name(params[:name]).take(3)
+      @user_infos = @user_infos.search_name(params[:name]).take(3)
+    elsif params[:user_name]
+      # TODO: CHECK IF USER CAN SEARCH BY USER NAME
+      @user_infos = @user_infos.search_name(params[:user_name]) #.take(3)
+    elsif params[:email]
+      # TODO: CHECK IF USER CAN SEARCH BY EMAIL
+      @user_infos = @user_infos.search_email(params[:email]) #.take(3)
     else
       if !check_perms_all!(get_user_roles.perms_users)
         return
       end
-      @user_infos = UserInfo.all
     end
 
     if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
       @user_infos = @user_infos.order(parse_filter_order(params[:order]))
     else
       @user_infos = params[:name] ? @user_infos : @user_infos.order(user_name: :asc)
+    end
+
+    if params[:extras]
+      extras = filter_extrafields(params[:extras], User)
+      @user_infos = @user_infos.where(user_id: extras)
     end
 
     if params[:page]
