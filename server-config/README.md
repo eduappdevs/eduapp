@@ -98,7 +98,7 @@ And now it's time to run it up
 docker-compose up -d
 ````
 
-If everything went well you can now see 3 docker containers running: 
+If everything went well you can now see 4 docker containers running: 
 - ```eduapp_api_1```, container of the Backend.
 - ```eduapp_app_1```, container of the Frontend.
 - ```eduapp_admin_1```, container of the Administration Panel.
