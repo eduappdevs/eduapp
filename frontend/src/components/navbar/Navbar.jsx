@@ -8,6 +8,7 @@ import ProfileSettings from "../../views/menu/profileOptions/ProfileSettings";
 import MenuSettings from "../../views/menu/menu-settings/MenuSettings";
 import "./Navbar.css";
 import useLanguage from "../../hooks/useLanguage";
+import useRole from "../../hooks/useRole";
 
 /**
  * The desktop navbar of the app.
@@ -27,7 +28,8 @@ export default function Navbar({ mobile, badgeCount }) {
 
   const [desktopMenu, setDesktopMenu] = useState(null);
 
-  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  const userInfo = FetchUserInfo(getOfflineUser().user.id);
+  const isAdmin = useRole(userInfo, "eduapp-admin");
   const [userImage, setUserImage] = useState(null);
 
   const MenuManager = () => {
@@ -50,6 +52,9 @@ export default function Navbar({ mobile, badgeCount }) {
   };
 
   const changeLocation = () => {
+    if(!userInfo?.user_role){
+      return null;
+    }
     if (loc.pathname.substring(1) === "login")
       document.getElementsByTagName("header")[0].style.display = "none";
     else document.getElementsByTagName("header")[0].style.display = "block";
@@ -102,6 +107,7 @@ export default function Navbar({ mobile, badgeCount }) {
   useEffect(() => changeLocation());
 
   useEffect(() => setUserImage(getOfflineUser().profile_image), [userInfo]);
+  if(!userInfo?.user_role){return null};
 
   return (
     <>
@@ -120,41 +126,49 @@ export default function Navbar({ mobile, badgeCount }) {
               <li className={inHome ? "activeLocation" : console.log()}>
                 <Link to="/home">{language.home}</Link>
               </li>
-              <li className={inCalendar ? "activeLocation" : console.log()}>
-                <Link
-                  to="/calendar"
-                  onClick={() => {
-                    if (
-                      !(
-                        window.location.href.substring(
-                          getPosition(window.location.href, "/", 3)
-                        ) === "/calendar"
+              {userInfo.user_role.perms_app_views[0] && (
+                <li className={inCalendar ? "activeLocation" : console.log()}>
+                  <Link
+                    to="/calendar"
+                    onClick={() => {
+                      if (
+                        !(
+                          window.location.href.substring(
+                            getPosition(window.location.href, "/", 3)
+                          ) === "/calendar"
+                        )
                       )
-                    )
-                      document.getElementById("sectionCalendar").style.display =
-                        "none";
-                    navigate("/calendar");
-                  }}
-                >
-                  {language.calendar}
-                </Link>
-              </li>
-              <li className={inManagement ? "activeLocation" : console.log()}>
-                <Link to="/management">{language.management}</Link>
-              </li>
-              <li className={inResources ? "activeLocation" : console.log()}>
-                <Link to="/resources">{language.resources}</Link>
-              </li>
-              <li className={inChat ? "activeLocation" : console.log()}>
-                {badgeCount > 0 ? (
-                  <div className="badgeNotifyContainer">
-                    <span className="badgeNotify badgeNotifyMobile">
-                      {badgeCount}
-                    </span>
-                  </div>
-                ) : null}
-                <Link to="/chat">{language.chats}</Link>
-              </li>
+                        document.getElementById("sectionCalendar").style.display =
+                          "none";
+                      navigate("/calendar");
+                    }}
+                  >
+                    {language.calendar}
+                  </Link>
+                </li>
+              )}
+              {isAdmin && navigator.onLine && (
+                <li className={inManagement ? "activeLocation" : console.log()}>
+                  <Link to="/management">{language.management}</Link>
+                </li>
+              )}
+              {userInfo.user_role.perms_app_views[1] && (
+                <li className={inResources ? "activeLocation" : console.log()}>
+                  <Link to="/resources">{language.resources}</Link>
+                </li>
+              )}
+              {userInfo.user_role.perms_app_views[2] && (
+                <li className={inChat ? "activeLocation" : console.log()}>
+                  {badgeCount > 0 ? (
+                    <div className="badgeNotifyContainer">
+                      <span className="badgeNotify badgeNotifyMobile">
+                        {badgeCount}
+                      </span>
+                    </div>
+                  ) : null}
+                  <Link to="/chat">{language.chats}</Link>
+                </li>
+              )}
             </ul>
           </div>
           <div
