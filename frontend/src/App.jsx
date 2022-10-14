@@ -144,9 +144,9 @@ export default function App() {
     }
 
     return () => {
-      document.removeEventListener("visibilitychange", () => {});
-      document.removeEventListener("canLoadResource", () => {});
-      document.removeEventListener("canLoadChat", () => {});
+      document.removeEventListener("visibilitychange", () => { });
+      document.removeEventListener("canLoadResource", () => { });
+      document.removeEventListener("canLoadChat", () => { });
     };
   }, []);
 
