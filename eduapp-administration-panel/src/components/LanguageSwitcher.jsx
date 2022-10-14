@@ -31,6 +31,20 @@ export default function LanguageSwitcher() {
             />
           </span>
         </li>
+        <li onClick={() => setLanguage(LANGUAGES.da_dk)}>
+          <span
+            className={
+              language.lang_identifier === "da_dk" ? "languageSelected" : ""
+            }
+          >
+            <img
+              height={"14px"}
+              width={"18pxs"}
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Flag_of_Denmark_%282000_World_Factbook%29.svg/640px-Flag_of_Denmark_%282000_World_Factbook%29.svg.png"
+              alt="dk"
+            />
+          </span>
+        </li>
         <li onClick={() => setLanguage(LANGUAGES.en_en)}>
           <span
             className={
