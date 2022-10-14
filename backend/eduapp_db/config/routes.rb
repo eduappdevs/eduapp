@@ -10,7 +10,9 @@ Rails.application.routes.draw do
   resources :chat_messages, :path => "#{@api_path}/chat_messages"
   resources :chat_participants, :path => "#{@api_path}/chat_participants"
   resources :chat_base_infos, :path => "#{@api_path}/chat_base_infos"
-  resources :chat_bases, :path => "#{@api_path}/chat_bases"
+  resources :chat_bases, :path => "#{@api_path}/chat_bases" do
+    put :read, on: :member
+  end
   resources :subjects, :path => "#{@api_path}/subjects"
   resources :calendar_annotations, :path => "#{@api_path}/calendar_annotations"
   resources :tuitions, :path => "#{@api_path}/tuitions"

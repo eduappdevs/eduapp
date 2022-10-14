@@ -108,7 +108,7 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
           check_week_days: checkDays,
           diff_days: parseInt(days),
           week_repeat:
-            numberRepeat < 1 ? 0 : numberRepeat < 2 ? 2 : numberRepeat,
+            numberRepeat < 1 ? 1 : numberRepeat,
         };
 
         asynchronizeRequest(function () {
@@ -277,7 +277,7 @@ export default function SessionsModal({ show, language, info, onCloseModal }) {
                 </div>
                 <div className="session-modal-week">
                   <p>{language.repeatedEvery}</p>
-                  <input id="number-repeat" type="number" required min={0} />
+                  <input id="number-repeat" type="number" required min={0} defaultValue={1} />
                   <p>{language.week}</p>
                 </div>
 

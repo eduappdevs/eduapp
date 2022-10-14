@@ -24,6 +24,7 @@ export default function useFilter(
 ) {
   const [filter, setFilter] = useState(null);
   const [searchParams] = useContext(SearchBarCtx);
+  const page =  requestFields.find(f => f?.page)?.page | 1;
 
   const localFilter = () => {
     if (!mainInfo) return;
@@ -57,12 +58,15 @@ export default function useFilter(
       setFilter(
         (
           await filterRequest(
-            genericRequestParser(
-              requestFields,
-              searchParams.query,
-              searchParams.selectedField,
-              extraFieldsParser(searchParams.extras)
-            )
+            {
+              ...genericRequestParser(
+                requestFields,
+                searchParams.query,
+                searchParams.selectedField,
+                extraFieldsParser(searchParams.extras)
+              ),
+              page: page
+            }
           )
         ).data.filtration
       );

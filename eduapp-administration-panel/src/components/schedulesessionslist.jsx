@@ -640,13 +640,7 @@ export default function Schedulesessionslist(props) {
       subject: subject_name,
     };
 
-    if (
-      subject_name !== `${language.chooseSubject}` &&
-      name !== "" &&
-      streaming !== "" &&
-      resource !== "" &&
-      chat !== ""
-    ) {
+    if (subject_name !== `${language.chooseSubject}`) {
       setShowModalSession(true);
       setSessionInfo(info);
     } else {
@@ -939,7 +933,7 @@ export default function Schedulesessionslist(props) {
                             alignItems: "center",
                           }}
                         >
-                          <ExtraFields table="sessions" id={s.id} />
+                          {/* <ExtraFields table="sessions" id={s.id} /> */}
                           <button
                             style={{ marginRight: "5px" }}
                             onClick={() => confirmDeleteEvent(s)}

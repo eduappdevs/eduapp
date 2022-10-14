@@ -34,7 +34,7 @@
 	transform: scale(0.98);
 	padding: 8px;
 	min-height: 500px;
-	height: 76vh;
+	/* height: 76vh; */
 }
 
 button {

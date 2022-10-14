@@ -30,3 +30,11 @@ node_modules
 *.env
 !*docker-example.env
 .DS_Store
+
+config-velorcios
+
+.env-real-production
+
+dockerfile-real-production
+
+dockerfile

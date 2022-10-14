@@ -22,6 +22,7 @@ import useRole from "../../../hooks/useRole";
 import useLanguage from "../../../hooks/useLanguage";
 import "./ProfileSettings.css";
 import useMobile from "../../../hooks/useMobile";
+import NameCapitalizer from "../../../utils/NameCapitalizer";
 
 export default function ProfileSettings({ desktopBackTo }) {
   const language = useLanguage();
@@ -201,14 +202,14 @@ export default function ProfileSettings({ desktopBackTo }) {
           <input
             type="text"
             value={
-              userName === null
+              username === null
                 ? NameCapitalizer(
                     userInfo.user_name === undefined ? "" : userInfo.user_name
                   )
-                : userName
+                : username
             }
             onChange={(e) => {
-              setUserName(
+              setUsername(
                 e.target.value.includes(" ")
                   ? NameCapitalizer(e.target.value)
                   : e.target.value

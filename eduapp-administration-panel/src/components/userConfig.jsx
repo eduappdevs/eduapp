@@ -41,12 +41,6 @@ export default function UserConfig() {
   const [idDelete, setIdDelete] = useState();
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredUsers = useFilter(
-    users,
-    null,
-    USERSERVICE.filterUsers,
-    getUserFields(language)
-  );
 
   const [userPermRoles, setUserPermRoles] = useState([]);
   const [allSelected, setAllSelected] = useState(true);
@@ -73,8 +67,8 @@ export default function UserConfig() {
       document.getElementById("scroll")?.scrollIntoView(true);
       document.getElementById("standard-modal").style.width = "101%";
       document.getElementById("standard-modal").style.height = "101%";
-      document.getElementById("controlPanelContentContainer").style.overflow =
-        "hidden";
+      document.getElementById("controlPanelContentContainer").scrollLeft = 0;
+      document.getElementById("controlPanelContentContainer").style.overflow = "hidden";
     }
   };
 
@@ -113,7 +107,7 @@ export default function UserConfig() {
 
   const fetchUserPage = (page, order = null) => {
     asynchronizeRequest(function () {
-      USERSERVICE.pagedUserInfos(page, order)
+      USERSERVICE.pagedUserInfos(page, order, searchParams)
         .then((us) => {
           setActualPage(us.data.page);
           setMaxPages(us.data.total_pages);
@@ -152,6 +146,22 @@ export default function UserConfig() {
     finalizedCreate("error", true, language.creationFailed, false);
   };
 
+  const toggleEditRow = (e, disable = false) => {
+    let editableFields = 4;
+    while (editableFields) {
+      e.target.parentNode.parentNode.childNodes[
+        editableFields
+      ].childNodes[0].disabled = disable;
+      editableFields -= 1;
+    }
+    e.target.parentNode.querySelectorAll('button.editing').forEach(element => {
+      element.style.display = (disable ? 'none' : 'block');
+    });
+    e.target.parentNode.querySelectorAll('button:not(.editing)').forEach(element => {
+      element.style.display = (disable ? 'block' : 'none');
+    });
+  }
+
   const editUser = (e, s) => {
     switchEditState(false);
 
@@ -185,20 +195,7 @@ export default function UserConfig() {
         .then((x) => {
           if (x) {
             finalizedEdit("info", true, language.editAlertCompleted, false);
-            let num = 0;
-            while (num < 4) {
-              e.target.parentNode.childNodes[num].style.display === "block"
-                ? (e.target.parentNode.childNodes[num].style.display = "none")
-                : (e.target.parentNode.childNodes[num].style.display = "block");
-              num += 1;
-            }
-            let disable = 1;
-            while (disable < 4) {
-              e.target.parentNode.parentNode.childNodes[
-                disable
-              ].childNodes[0].disabled = true;
-              disable += 1;
-            }
+            toggleEditRow(e, true);
           }
         })
         .catch((e) => {
@@ -214,41 +211,11 @@ export default function UserConfig() {
   };
 
   const closeEditUser = (e, s) => {
-    let disable = 1;
-    while (disable < 4) {
-      e.target.parentNode.parentNode.childNodes[
-        disable
-      ].childNodes[0].disabled = true;
-      disable += 1;
-    }
-    let num = 0;
-    while (num < 4) {
-      e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
-      num += 1;
-    }
+    toggleEditRow(e, true);
   };
 
   const showEditOptionUser = (e) => {
-    let disable = 1;
-    while (disable < 4) {
-      e.target.parentNode.parentNode.childNodes[
-        disable
-      ].childNodes[0].disabled = false;
-      disable += 1;
-    }
-    let num = 0;
-    while (num < 4) {
-      e.target.parentNode.childNodes[num].style.display === ""
-        ? e.target.parentNode.childNodes[num].style.display === "none"
-          ? (e.target.parentNode.childNodes[num].style.display = "block")
-          : (e.target.parentNode.childNodes[num].style.display = "none")
-        : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
-      num += 1;
-    }
+    toggleEditRow(e, false);
   };
 
   const createUser = (e) => {
@@ -424,12 +391,12 @@ export default function UserConfig() {
 
   useEffect(() => {
     if (hasDoneInitialFetch) {
-      fetchUserPage(1, {
+      fetchUserPage(actualPage || 1, {
         field: searchParams.selectedField,
         order: searchParams.order,
       });
     }
-  }, [searchParams.order]);
+  }, [searchParams, actualPage]);
 
   return (
     <>
@@ -544,7 +511,7 @@ export default function UserConfig() {
                 onPageChange={async (p) => fetchUserPage(p)}
                 maxPages={maxPages}
               />
-              <button onClick={() => notifyUsers()}>
+              <button onClick={() => setNotifyModal(true)}>
                 Notify Selected Users
               </button>
             </div>
@@ -568,12 +535,6 @@ export default function UserConfig() {
                 <tbody>
                   {users.map((u) => {
                     let user = u.user.last_sign_in_at;
-                    if (filteredUsers !== null)
-                      if (
-                        filteredUsers.find((fu) => fu.user.id === u.user.id) ===
-                        undefined
-                      )
-                        return <Fragment key={u.id} />;
                     return (
                       <tr key={u.id}>
                         <td>
@@ -631,7 +592,7 @@ export default function UserConfig() {
                           <input
                             type="datetime"
                             disabled
-                            value={user.split(".")[0]}
+                            value={user?.split(".")[0]}
                           />
                         </td>
                         <td
@@ -681,6 +642,7 @@ export default function UserConfig() {
                               marginRight: "5px",
                               display: "none",
                             }}
+                            className="editing"
                             onClick={(e) => editUser(e, u)}
                           >
                             <svg
@@ -697,6 +659,7 @@ export default function UserConfig() {
                           <button
                             style={{ display: "none" }}
                             onClick={(e) => closeEditUser(e, u)}
+                            className="editing"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

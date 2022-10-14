@@ -22,7 +22,6 @@ export const FetchUserInfo = (userId) => {
           userInfo =
             userInfo.length > 0 ? userInfo[0] : { error: "User not found" };
           delete userInfo.googleid;
-
           setUserInfo({ ...userInfo });
 
           await saveUserOffline(userInfo);

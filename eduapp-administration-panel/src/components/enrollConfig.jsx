@@ -11,6 +11,7 @@ import { LanguageCtx } from "../hooks/LanguageContext";
 import PageSelect from "./pagination/PageSelect";
 import useFilter from "../hooks/useFilter";
 import { getEnrollmentFields } from "../constants/search_fields";
+import Typeahead from "./Typeahead";
 
 export default function EnrollConfig() {
   const [language] = useContext(LanguageCtx);
@@ -374,18 +375,7 @@ export default function EnrollConfig() {
                 </button>
               </td>
               <td>
-                <select defaultValue={"-"} id="user_select">
-                  <option value="-">{language.chooseUser}</option>
-                  {users
-                    ? users.map((u) => {
-                        return (
-                          <option key={u.id} value={u.user.id}>
-                            {u.user.email}
-                          </option>
-                        );
-                      })
-                    : null}
-                </select>
+                <Typeahead items={users?.map(u => ({id: u.user.id, name: u.user.email}))} fieldId="user_select" />
               </td>
               <td>
                 <select defaultValue={"-"} id="course_select">

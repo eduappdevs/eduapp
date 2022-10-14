@@ -24,11 +24,11 @@
 	color: var(--textColor);
 }
 
-.chats-container>ul {
+.chats-container > ul {
 	list-style: none;
 }
 
-.chats-container>ul>li {
+.chats-container > ul > li {
 	background-color: var(--backgroundColor);
 	width: 80%;
 	height: 10%;
@@ -40,7 +40,7 @@
 	left: 50%;
 	margin-top: 1em;
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
 	align-items: center;
 }
 
@@ -52,15 +52,13 @@
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
-	float: left;
-	flex: 0.1;
 }
 
 .chat-info {
 	display: flex;
 	flex-direction: column;
 	line-height: 0.5px;
-	flex: 0.8;
+	flex-grow: 99;
 	justify-content: center;
 	align-items: left;
 	margin-left: 1em;
@@ -74,8 +72,10 @@
 }
 
 .chat-pending-messages {
-	flex: 0.1;
-	width: 50%;
+	min-width: 30px;
+	min-height: 30px;
+	padding: 3px;
+	align-self: flex-end;
 	justify-content: center;
 	align-items: center;
 	text-align: center;

@@ -20,5 +20,5 @@ export default function useViewsPermissions(userInfo, viewType) {
       }
       throw new Error("Page not found in views of useViewsPermissions");
     }
-  }, [userInfo]);
+  }, [userInfo?.user?.id]);
 }
