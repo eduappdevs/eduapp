@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import es_es from "../lang/es_es.json";
 import en_uk from "../lang/en_uk.json";
 import pt_pt from "../lang/pt_pt.json";
+import da_dk from "../lang/da_dk.json";
 
 /**
  * Hook used to dynamically change the app's language.
@@ -19,6 +20,9 @@ export default function useLanguage() {
         break;
       case "pt_pt":
         setLang(pt_pt);
+        break;
+        case "da_dk":
+        setLang(da_dk);
         break;
       default:
         setLang(en_uk);
@@ -41,4 +45,5 @@ export const availableLanguages = [
   ["en_uk", "English"],
   ["es_es", "Español"],
   ["pt_pt", "Português"],
+  ["da_dk", "Dansk"],
 ];
