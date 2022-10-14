@@ -7,7 +7,11 @@ This guide will show you how to setup an EduApp server including the main applic
 Before starting, you may need to download Docker:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
-To start off, clone this [github repository](https://github.com/eduapp-project/eduapp/)'s main branch. 
+To start off, clone this [github repository](https://github.com/eduapp-project/eduapp/)'s main branch.
+
+````
+git clone https://github.com/eduapp-project/eduapp
+````
 
 For a more fluid and quick setup, it is recommended to have some knowledge on how to work with Docker and it's commands.
 
