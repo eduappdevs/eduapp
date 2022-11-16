@@ -9,6 +9,7 @@ class User < ApplicationRecord
          jwt_revocation_strategy: self
 
   has_one :user_info
+  has_many :tuitions
 
   # Allow user to login either with username and email
 

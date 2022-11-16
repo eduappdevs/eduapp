@@ -223,9 +223,11 @@ class ApplicationController < ActionController::API
   end
 
   # A parser made to correctly return a decoded order filter.
-  def parse_filter_order(order)
-    order = JSON.parse(Base64.decode64(order))
-    return { order["field"] => order["order"] == "asc" ? :asc : :desc }
+  def parse_filter_order(order, relational_order = {'.' => ''})
+    order = order.is_a?(String) ? JSON.parse(Base64.decode64(order)) : order
+    field = relational_order[order["field"]] || order["field"] || nil
+
+    return { field => field == "asc" ? :asc : :desc }
   end
 
   # PERMISSIONS

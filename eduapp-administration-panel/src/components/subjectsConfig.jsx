@@ -40,12 +40,12 @@ export default function SubjectsConfig() {
   const [idDelete, setIdDelete] = useState();
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredSubjects = useFilter(
-    subjects,
-    null,
-    SUBJECTSERVICE.filterCourses,
-    getSubjectFields(language)
-  );
+  // const filteredSubjects = useFilter(
+  //   subjects,
+  //   null,
+  //   SUBJECTSERVICE.filterCourses,
+  //   getSubjectFields(language)
+  // );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -318,9 +318,9 @@ export default function SubjectsConfig() {
     }
   };
 
-  const fetchSubjectPage = async (page, order = null) => {
+  const fetchSubjectPage = async (page, order = null, searchParams) => {
     API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.pagedSubjects(page, order)
+      SUBJECTSERVICE.pagedSubjects(page, order, searchParams)
         .then((us) => {
           setMaxPages(us.data.total_pages);
           setSubjects(us.data.current_page);
@@ -359,7 +359,7 @@ export default function SubjectsConfig() {
   };
 
   useEffect(() => {
-    fetchSubjectPage(1);
+    // fetchSubjectPage(1);
     fetchCourses();
     setInitialFetch(true);
   }, []);
@@ -375,13 +375,13 @@ export default function SubjectsConfig() {
   }, [language]);
 
   useEffect(() => {
-    if (hasDoneInitialFetch) {
-      fetchSubjectPage(1, {
+    if(searchParams.selectedField){
+      fetchSubjectPage(actualPage || 1, {
         field: searchParams.selectedField,
         order: searchParams.order,
-      });
+      }, searchParams);
     }
-  }, [searchParams.order]);
+  }, [searchParams]);
 
   return (
     <>
@@ -503,12 +503,6 @@ export default function SubjectsConfig() {
                 </thead>
                 <tbody>
                   {subjects.map((sj) => {
-                    if (filteredSubjects !== null)
-                      if (
-                        filteredSubjects.find((fsj) => sj.id === fsj.id) ===
-                        undefined
-                      )
-                        return <Fragment key={sj.id} />;
                     return (
                       <tr key={sj.id}>
                         <td>

@@ -43,7 +43,7 @@ export const editCourse = async (body) => {
   });
 };
 
-export const pagedCourses = async (page, order = null, searchParams) => {
+export const pagedCourses = async (page, order = null, searchParams = []) => {
   const value = searchParams['query']
   const attribute = searchParams['selectedField']
   const extras = searchParams['extras']

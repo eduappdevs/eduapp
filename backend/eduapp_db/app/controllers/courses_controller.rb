@@ -14,10 +14,10 @@ class CoursesController < ApplicationController
     elsif params[:name]
       # TODO: HANDLE PERMISSIONS FOR NAME QUERIES
       is_name = true
-      @courses = Course.where('name like ?', "%#{params[:name]}%")
+      @courses = Course.where('name ilike ?', "%#{params[:name]}%")
     elsif params[:id]
       # TODO: HANDLE PERMISSIONS FOR NAME QUERIES
-      @courses = Course.where('id::text like ?', "%#{params[:id]}%")
+      @courses = Course.where('id::text ilike ?', "%#{params[:id]}%")
     else
       if !check_perms_all!(get_user_roles.perms_course)
         return

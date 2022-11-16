@@ -51,10 +51,19 @@ class SubjectsController < ApplicationController
       @subjects = @Sessions
     elsif params[:name]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
-      @subjects = Subject.where(name: params[:name])
+      @subjects = Subject.where('name ilike ?', "%#{params[:name]}%")
+    elsif params[:subject_code]
+      # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
+      @subjects = Subject.where('subject_code ilike ?', "%#{params[:subject_code]}%")
+    elsif params[:id]
+      # TODO: HANDLE PERMISSIONS FOR NAME QUERIES
+      @subjects = Subject.where('id::text ilike ?', "%#{params[:id]}%")
     elsif params[:user]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
       @subjects = Subject.where(course_id: Tuition.where(user_id: params[:user]).pluck(:course_id))
+    elsif params[:course_name]
+      # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
+      @subjects = Subject.joins(:course).where('courses.name ilike ?', "%#{params[:course_name]}%")
     else
       if !check_perms_all!(get_user_roles.perms_subjects)
         return
@@ -63,8 +72,12 @@ class SubjectsController < ApplicationController
     end
 
     if !wants_info_for_calendar
-      if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
-        @subjects = @subjects.order(parse_filter_order(params[:order]))
+      order = !params[:order].nil? && JSON.parse(Base64.decode64(params[:order]))
+      if order && order["field"] != ""
+        if order["field"] == 'course_name'
+          @subjects = @subjects.joins(:course)
+        end
+        @subjects = @subjects.order(parse_filter_order(order,{'course_name' => 'courses.name'}))
       else
         @subjects = @subjects.order(name: :asc)
       end
