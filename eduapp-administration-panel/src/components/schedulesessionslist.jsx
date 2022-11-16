@@ -24,7 +24,7 @@ export default function Schedulesessionslist(props) {
   const [subject, setSubject] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [subjectEdit, setSubjectEdit] = useState([]);
   const [newStartDate] = useState();
@@ -56,12 +56,12 @@ export default function Schedulesessionslist(props) {
   const [idBatch, setIdBatch] = useState();
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredSessions = useFilter(
-    sessions,
-    null,
-    SCHEDULESERVICE.filterSessions,
-    getSessionFields(language)
-  );
+  // const filteredSessions = useFilter(
+  //   sessions,
+  //   null,
+  //   SCHEDULESERVICE.filterSessions,
+  //   getSessionFields(language)
+  // );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -112,9 +112,9 @@ export default function Schedulesessionslist(props) {
     setPopupIcon("error");
   };
 
-  const fetchSessions = async (page, order = null) => {
+  const fetchSessions = async (page, order = null, searchParams = null) => {
     await API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.pagedSessions(page, order)
+      SCHEDULESERVICE.pagedSessions(page, order, searchParams)
         .then((e) => {
           setActualPage(e.data.page);
           setMaxPages(e.data.total_pages);
@@ -653,10 +653,17 @@ export default function Schedulesessionslist(props) {
   };
 
   useEffect(() => {
-    fetchSessions(1);
+    // fetchSessions(1);
     fetchSubjects();
     setInitialFetch(true);
   }, []);
+
+  useEffect(() => {
+    fetchSessions(actualPage,{
+      field: searchParams.selectedField,
+      order: searchParams.order,
+    }, searchParams);
+  }, [searchParams, actualPage]);
 
   useEffect(() => {
     setSearchParams({
@@ -668,14 +675,14 @@ export default function Schedulesessionslist(props) {
     });
   }, [language]);
 
-  useEffect(() => {
-    if (hasDoneInitialFetch) {
-      fetchSessions(1, {
-        field: searchParams.selectedField,
-        order: searchParams.order,
-      });
-    }
-  }, [searchParams.order]);
+  // useEffect(() => {
+  //   if (hasDoneInitialFetch) {
+  //     fetchSessions(1, {
+  //       field: searchParams.selectedField,
+  //       order: searchParams.order,
+  //     });
+  //   }
+  // }, [searchParams.order]);
 
   return (
     <>
@@ -797,7 +804,7 @@ export default function Schedulesessionslist(props) {
           <>
             <div className="notify-users">
               <PageSelect
-                onPageChange={async (p) => fetchSessions(p)}
+                onPageChange={(p) => setActualPage(p)}
                 maxPages={maxPages}
               />
             </div>
@@ -818,12 +825,6 @@ export default function Schedulesessionslist(props) {
                 </thead>
                 <tbody>
                   {sessions.map((s) => {
-                    if (filteredSessions !== null)
-                      if (
-                        filteredSessions.find((fs) => s.id === fs.id) ===
-                        undefined
-                      )
-                        return <Fragment key={s.id} />;
                     return (
                       <tr key={s.id}>
                         <td>{shortUUID(s.id)}</td>

@@ -24,7 +24,7 @@ export default function UserRolesConfig() {
   const [newPermsDesc, setNewPermsDesc] = useState("");
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredRoles = useFilter(

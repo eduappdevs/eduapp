@@ -21,7 +21,7 @@ export default function EnrollConfig() {
   const [courses, setCourses] = useState(null);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [courseEdit, setCourseEdit] = useState([]);
   const [emailEdit, setEmailEdit] = useState([]);

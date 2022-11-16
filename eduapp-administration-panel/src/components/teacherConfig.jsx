@@ -19,7 +19,7 @@ export default function TeacherConfig() {
   const [teachers, setTeachers] = useState(null);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [teacherPages, setTeacherPages] = useState();
 

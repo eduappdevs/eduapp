@@ -21,7 +21,7 @@ export default function SubjectsConfig() {
   const [courses, setCourses] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [changeColor, setChangeColor] = useState(false);
   const [newColor] = useState();

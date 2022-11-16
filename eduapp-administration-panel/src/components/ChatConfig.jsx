@@ -20,7 +20,7 @@ export default function ChatConfig() {
   const [changeName, setChangeName] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredChats = useFilter(

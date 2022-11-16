@@ -20,7 +20,7 @@ export default function ChatParticipantConfig() {
   const [chat, setChat] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [, setSearchParams] = useContext(SearchBarCtx);
   const filteredParticipants = useFilter(

@@ -22,7 +22,7 @@ export default function CourseConfig() {
   const [institutions, setInstitutions] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [changeName, setChangeName] = useState(false);
   const [newName] = useState();

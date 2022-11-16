@@ -46,7 +46,7 @@ export default function UserConfig() {
   const [allSelected, setAllSelected] = useState(true);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [notifyModal, setNotifyModal] = useState(false);
   const [notifyMsg, setNotifyMsg] = useState("");
