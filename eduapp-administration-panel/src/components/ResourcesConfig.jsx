@@ -504,13 +504,7 @@ export default function ResourcesConfig() {
                           ))}
                         </select>
                       </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
+                      <td className="action-column">
                         <ExtraFields table="resources" id={r.id} />
                         <button
                           id="btn-delete-resources"

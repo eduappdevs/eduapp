@@ -31,14 +31,14 @@ tr:nth-child(even) {
 }
 
 .schedule-table-info>table>thead {
-  display: block;
-  flex-direction: row;
+  /* display: block;
+  flex-direction: row; */
 
 }
 
 .schedule-table-info>table>thead>tr {
-  display: flex;
-  flex-direction: row;
+  /* display: flex;
+  flex-direction: row; */
   border: 1px solid #dddddd76;
   text-align: left;
 }
@@ -48,7 +48,7 @@ tr:nth-child(even) {
 }
 
 .schedule-table-info>table>tbody {
-  display: block;
+  /* display: block; */
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -59,8 +59,8 @@ tr:nth-child(even) {
 }
 
 .schedule-table-info>table>tbody>tr {
-  display: flex;
-  flex-direction: row;
+  /* display: flex;
+  flex-direction: row; */
 }
 
 .schedule-table-info>table>tbody>tr>td {

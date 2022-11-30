@@ -209,7 +209,7 @@ export default function Navbar({ locationState }) {
           </div>
           <div className="users-button-container button-container">
             <span>
-              <p>Users</p>
+              <p>{language.users}</p>
             </span>
             <ul className={"suboptions"}>
               <li

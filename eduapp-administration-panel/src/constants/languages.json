@@ -126,7 +126,8 @@
     "appViews": "App visninger",
     "confirmDeleteRole": "Ønsker du at slette denne rolle?",
     "roleDeleted": "Rolle slettet med succes.",
-    "searchBy": "Søg ved brug af  "
+    "searchBy": "Søg ved brug af  ",
+    "csvFileUpload": "CSV file upload"
   },
   "en_en": {
     "lang_identifier": "en_en",
@@ -255,7 +256,8 @@
     "appViews": "App Views",
     "confirmDeleteRole": "Are you sure you want to delete this role?",
     "roleDeleted": "Role deleted successfully.",
-    "searchBy": "Search By "
+    "searchBy": "Search By ",
+    "csvFileUpload": "CSV file upload"
   },
   "es_es": {
     "lang_identifier": "es_es",
@@ -304,7 +306,7 @@
     "edit": "Editar",
     "group": "Grupo",
     "nameGroup": "Nombre de grupo",
-    "add": "Agregar",
+    "add": "Añadir",
     "cancel": "Cancelar",
     "viewAllRoles": "Ver todos los roles",
     "student": "Alumno",
@@ -384,7 +386,8 @@
     "appViews": "Vistas de la aplicación",
     "confirmDeleteRole": "¿Está seguro de eliminar este rol?",
     "roleDeleted": "Rol eliminado.",
-    "searchBy": "Buscar por "
+    "searchBy": "Buscar por ",
+    "csvFileUpload": "Importar CSV"
   },
   "pt_pt": {
     "lang_identifier": "pt_pt",
@@ -513,7 +516,8 @@
     "confirmDeleteRole": "Você tem certeza de que deseja excluir este papel?",
     "roleDeleted": "Papel excluído com sucesso.",
     "connectionError": "Erro de conexão. Tente novamente mais tarde.",
-    "searchBy": "Procurar por "
+    "searchBy": "Procurar por ",
+    "csvFileUpload": "CSV file upload"
   },
   "ro_ro": {
     "lang_identifier": "ro_ro",
@@ -642,6 +646,7 @@
     "appViews": "Vizualizări ale aplicației",
     "confirmDeleteRole": "Sigur doriți să ștergeți acest rol?",
     "roleDeleted": "Rolul a fost șters cu succes.",
-    "searchBy": "Cauta dupa "
+    "searchBy": "Cauta dupa ",
+    "csvFileUpload": "CSV file upload"
   }
 }
