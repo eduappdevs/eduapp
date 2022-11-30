@@ -73,6 +73,20 @@ export default function LanguageSwitcher() {
             />
           </span>
         </li>
+        <li onClick={() => setLanguage(LANGUAGES.ro_ro)}>
+          <span
+            className={
+              language.lang_identifier === "ro_ro" ? "languageSelected" : ""
+            }
+          >
+            <img
+              height={"14px"}
+              width={"18pxs"}
+              src="https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg"
+              alt="ro"
+            />
+          </span>
+        </li>
       </ul>
       <svg
         xmlns="http://www.w3.org/2000/svg"
