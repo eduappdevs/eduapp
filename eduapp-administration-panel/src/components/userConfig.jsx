@@ -427,26 +427,42 @@ export default function UserConfig() {
           setNotifyMsg("");
         }}
       />
-
-      <div className="schedulesesionslist-main-container">
+      <div className="add-form">
         <table id="users_table_header">
           <thead>
             <tr>
-              <th>{language.add}</th>
+              <th></th>
               <th>{language.email}</th>
               <th>{language.password}</th>
               <th>{language.userRole}</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <th>{language.add}:</th>
+              <td>
+                <input id="u_email" type="email" placeholder={language.email} />
+              </td>
+              <td>
+                <input
+                  id="u_pass"
+                  type="password"
+                  placeholder={language.password}
+                />
+              </td>
+              <td style={{ textAlign: "center" }}>
+                <select id="u_role">
+                  {userPermRoles.map((r) => {
+                    return (
+                      <option key={r.id} value={r.name}>
+                        {r.name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </td>
+              <td className="action-column">
                 <button
                   onClick={() => {
                     createUser();
@@ -480,213 +496,186 @@ export default function UserConfig() {
                   </svg>
                 </button>
               </td>
-              <td>
-                <input id="u_email" type="email" placeholder={language.email} />
-              </td>
-              <td>
-                <input
-                  id="u_pass"
-                  type="password"
-                  placeholder={language.password}
-                />
-              </td>
-              <td style={{ textAlign: "center" }}>
-                <select id="u_role">
-                  {userPermRoles.map((r) => {
-                    return (
-                      <option key={r.id} value={r.name}>
-                        {r.name}
-                      </option>
-                    );
-                  })}
-                </select>
-              </td>
             </tr>
           </tbody>
         </table>
+      </div>
+      <div className="notify-users">
+        <PageSelect
+          onPageChange={async (p) => fetchUserPage(p)}
+          maxPages={maxPages}
+        />
+        <button onClick={() => setNotifyModal(true)}>
+          Notify Selected Users
+        </button>
+      </div>
+      <div className="list-main-container">
         {users && users.length !== 0 ? (
-          <>
-            <div className="notify-users">
-              <PageSelect
-                onPageChange={async (p) => fetchUserPage(p)}
-                maxPages={maxPages}
-              />
-              <button onClick={() => setNotifyModal(true)}>
-                Notify Selected Users
-              </button>
-            </div>
-            <div className="schedule-table-info">
-              <table style={{ marginTop: "10px" }}>
-                <thead>
-                  <tr>
-                    <th>
-                      <input type={"checkbox"} onChange={() => selectAll()} />
-                    </th>
-                    <th>{language.userId}</th>
-                    <th>{language.name}</th>
-                    <th>{language.email}</th>
-                    <th>{language.userRole}</th>
-                    <th>{language.googleLinked}</th>
-                    <th>{language.lastConnection}</th>
-                    <th>{language.actions}</th>
-                  </tr>
-                </thead>
+          <div className="table-info">
+            <table style={{ marginTop: "10px" }}>
+              <thead>
+                <tr>
+                  <th>
+                    <input type={"checkbox"} onChange={() => selectAll()} />
+                  </th>
+                  <th>{language.userId}</th>
+                  <th>{language.name}</th>
+                  <th>{language.email}</th>
+                  <th>{language.userRole}</th>
+                  <th>{language.googleLinked}</th>
+                  <th>{language.lastConnection}</th>
+                  <th>{language.actions}</th>
+                </tr>
+              </thead>
 
-                <tbody>
-                  {users.map((u) => {
-                    let user = u.user.last_sign_in_at;
-                    return (
-                      <tr key={u.id}>
-                        <td>
-                          <input
-                            id={`check_${u.user.id}`}
-                            type={"checkbox"}
-                            disabled={u.user.username === system_user_name}
-                            name={
-                              u.user.username === system_user_name
-                                ? null
-                                : "user-check"
-                            }
-                          />
-                        </td>
-                        <td>{shortUUID(u.user.id)}</td>
-                        <td>
-                          <input
-                            id={`inputName_${u.user.id}`}
-                            type="text"
-                            disabled
-                            value={changeName === false ? u.user_name : newName}
-                            onChange={() => {
-                              handleChangeName(u.user.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputEmail_${u.user.id}`}
-                            type="text"
-                            disabled
-                            value={
-                              changeEmail === false ? u.user.email : newEmail
-                            }
-                            onChange={() => {
-                              handleChangeEmail(u.user.id);
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            value={u.user_role.name}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            disabled
-                            placeholder="=> Link in App"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="datetime"
-                            disabled
-                            value={user?.split(".")[0]}
-                          />
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
+              <tbody>
+                {users.map((u) => {
+                  let user = u.user.last_sign_in_at;
+                  return (
+                    <tr key={u.id}>
+                      <td>
+                        <input
+                          id={`check_${u.user.id}`}
+                          type={"checkbox"}
+                          disabled={u.user.username === system_user_name}
+                          name={
+                            u.user.username === system_user_name
+                              ? null
+                              : "user-check"
+                          }
+                        />
+                      </td>
+                      <td>{shortUUID(u.user.id)}</td>
+                      <td>
+                        <input
+                          id={`inputName_${u.user.id}`}
+                          type="text"
+                          disabled
+                          value={changeName === false ? u.user_name : newName}
+                          onChange={() => {
+                            handleChangeName(u.user.id);
                           }}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          id={`inputEmail_${u.user.id}`}
+                          type="text"
+                          disabled
+                          value={
+                            changeEmail === false ? u.user.email : newEmail
+                          }
+                          onChange={() => {
+                            handleChangeEmail(u.user.id);
+                          }}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          disabled
+                          value={u.user_role.name}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          disabled
+                          placeholder="=> Link in App"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="datetime"
+                          disabled
+                          value={user?.split(".")[0]}
+                        />
+                      </td>
+                      <td className="action-column">
+                        <ExtraFields table="users" id={u.user.id} />
+                        <button
+                          style={{ marginRight: "5px" }}
+                          onClick={() => confirmDeleteUser(u.user.id)}
                         >
-                          <ExtraFields table="users" id={u.user.id} />
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={() => confirmDeleteUser(u.user.id)}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-trash3"
+                            viewBox="0 0 16 16"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={(e) => showEditOptionUser(e, u)}
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                          </svg>
+                        </button>
+                        <button
+                          style={{ marginRight: "5px" }}
+                          onClick={(e) => showEditOptionUser(e, u)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-pencil-square"
+                            viewBox="0 0 16 16"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-pencil-square"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            style={{
-                              marginRight: "5px",
-                              display: "none",
-                            }}
-                            className="editing"
-                            onClick={(e) => editUser(e, u)}
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                            <path
+                              fillRule="evenodd"
+                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          style={{
+                            marginRight: "5px",
+                            display: "none",
+                          }}
+                          className="editing"
+                          onClick={(e) => editUser(e, u)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-check2"
+                            viewBox="0 0 16 16"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-check2"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ display: "none" }}
-                            onClick={(e) => closeEditUser(e, u)}
-                            className="editing"
+                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                          </svg>
+                        </button>
+                        <button
+                          style={{ display: "none" }}
+                          onClick={(e) => closeEditUser(e, u)}
+                          className="editing"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-x-lg"
+                            viewBox="0 0 16 16"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-x-lg"
-                              viewBox="0 0 16 16"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                              />
-                              <path
-                                fillRule="evenodd"
-                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                              />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </>
+                            <path
+                              fillRule="evenodd"
+                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                            />
+                            <path
+                              fillRule="evenodd"
+                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                            />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         ) : null}
       </div>
       <StandardModal

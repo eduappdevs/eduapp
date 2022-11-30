@@ -23,7 +23,7 @@ export default function Toolbar(props) {
                 }}
               >
                 <div className="check-button-main">
-                  <p>CSV file upload</p>
+                  <p>{language.csvFileUpload}</p>
                 </div>
               </div>
             </li>

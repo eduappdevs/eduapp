@@ -87,3 +87,18 @@ input[type='email'] {
 	color: rgba(127, 127, 127, 0.584);
 	left: 5px;
 }
+
+.add-form{
+	padding-bottom: 20px;
+	overflow:auto;
+}
+  
+.list-main-container{
+	padding-bottom: 20px;
+	overflow: auto;
+}
+
+.action-column {
+	text-align: center;
+	white-space: nowrap;
+}

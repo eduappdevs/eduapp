@@ -400,13 +400,7 @@ export default function SubjectsConfig() {
 
           <tbody>
             <tr>
-              <td
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <td className="action-column">
                 <button onClick={createSubject}>
                   <svg
                     id="add-svg"

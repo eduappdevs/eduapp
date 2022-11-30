@@ -447,13 +447,7 @@ export default function UserRolesConfig() {
           </thead>
           <tbody>
             <tr>
-              <td
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <td className="action-column">
                 <button onClick={async () => await createRole()}>
                   <svg
                     id="add-svg"
