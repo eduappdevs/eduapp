@@ -8,6 +8,7 @@ export default class LoginAuth extends Component {
     this.state = {
       login: "",
       password: "",
+      error: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -25,12 +26,14 @@ export default class LoginAuth extends Component {
 
       await AUTH_SERVICE.login(userData);
     } catch (error) {
+      this.setState({error: true});
       console.log(error);
     }
   };
 
   handleChange = (event) => {
     this.setState({
+      error: false,
       [event.target.name]: event.target.value,
     });
   };
@@ -55,6 +58,7 @@ export default class LoginAuth extends Component {
           onChange={this.handleChange}
           required
         />
+        {this.state.error ? (<div class="error">User or password is incorrect.</div>): null }
         <button data-testid="loginButton" type="submit">
           Login
         </button>

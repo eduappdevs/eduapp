@@ -25,7 +25,7 @@ export default function Scheduleeventslist() {
   const [isPop, setIsPop] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [newStartDate] = useState();
   const [newEndDate] = useState();

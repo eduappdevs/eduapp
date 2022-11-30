@@ -22,7 +22,7 @@ export default function CourseConfig() {
   const [institutions, setInstitutions] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [changeName, setChangeName] = useState(false);
   const [newName] = useState();
@@ -35,12 +35,12 @@ export default function CourseConfig() {
   const [idDelete, setIdDelete] = useState();
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredCourses = useFilter(
-    courses,
-    null,
-    COURSESERVICE.filterCourses,
-    getCourseFields(language)
-  );
+  // const filteredCourses = useFilter(
+  //   courses,
+  //   null,
+  //   COURSESERVICE.filterCourses,
+  //   getCourseFields(language)
+  // );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -187,9 +187,9 @@ export default function CourseConfig() {
     });
   };
 
-  const fetchCoursePage = async (page, order = null) => {
+  const fetchCoursePage = async (page, order = null, searchParams) => {
     API.asynchronizeRequest(function () {
-      COURSESERVICE.pagedCourses(page, order)
+      COURSESERVICE.pagedCourses(page, order, searchParams)
         .then((i) => {
           setCourses(i.data.current_page);
           setMaxPages(i.data.total_pages);
@@ -334,9 +334,12 @@ export default function CourseConfig() {
   };
 
   useEffect(() => {
-    fetchCoursePage(1);
-    setInitialFetch(true);
-  }, []);
+    fetchCoursePage(actualPage || 1,{
+      field: searchParams.selectedField,
+      order: searchParams.order,
+    }, searchParams);
+    !hasDoneInitialFetch && setInitialFetch(true);
+  }, [searchParams, actualPage]);
 
   useEffect(() => {
     setSearchParams({
@@ -348,14 +351,14 @@ export default function CourseConfig() {
     });
   }, [language]);
 
-  useEffect(() => {
-    if (hasDoneInitialFetch) {
-      fetchCoursePage(1, {
-        field: searchParams.selectedField,
-        order: searchParams.order,
-      });
-    }
-  }, [searchParams.order]);
+  // useEffect(() => {
+  //   if (hasDoneInitialFetch) {
+  //     fetchCoursePage(1, {
+  //       field: searchParams.selectedField,
+  //       order: searchParams.order,
+  //     });
+  //   }
+  // }, [searchParams.order]);
 
   return (
     <>
@@ -432,7 +435,7 @@ export default function CourseConfig() {
           <>
             <div className="notify-users">
               <PageSelect
-                onPageChange={async (p) => fetchCoursePage(p)}
+                onPageChange={(p) => setActualPage(p)}
                 maxPages={maxPages}
               />
             </div>
@@ -449,12 +452,12 @@ export default function CourseConfig() {
                 </thead>
                 <tbody>
                   {courses.map((c) => {
-                    if (filteredCourses !== null)
-                      if (
-                        filteredCourses.find((fc) => c.id === fc.id) ===
-                        undefined
-                      )
-                        return <Fragment key={c.id} />;
+                    // if (filteredCourses !== null)
+                    //   if (
+                    //     filteredCourses.find((fc) => c.id === fc.id) ===
+                    //     undefined
+                    //   )
+                    //     return <Fragment key={c.id} />;
                     return (
                       <tr key={c.id}>
                         <td>
@@ -476,13 +479,7 @@ export default function CourseConfig() {
                             value={c.institution.name}
                           />
                         </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
+                        <td>
                           {/* <ExtraFields table="courses" id={c.id} /> */}
                           <button
                             onClick={() => confirmDeleteEvent(c.id)}
@@ -498,8 +495,7 @@ export default function CourseConfig() {
                             >
                               <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
                             </svg>
-                          </button>
-                          <button
+                          </button>&nbsp;<button
                             style={{ marginRight: "5px" }}
                             onClick={(e) => showEditOptionCourse(e, c.id)}
                           >
@@ -517,8 +513,7 @@ export default function CourseConfig() {
                                 d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
                               />
                             </svg>
-                          </button>
-                          <button
+                          </button>&nbsp;<button
                             style={{
                               marginRight: "5px",
                               display: "none",
@@ -535,8 +530,7 @@ export default function CourseConfig() {
                             >
                               <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
                             </svg>
-                          </button>
-                          <button
+                          </button>&nbsp;<button
                             style={{ display: "none" }}
                             onClick={(e) => closeEditCourse(e, c.id)}
                           >

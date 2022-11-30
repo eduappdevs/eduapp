@@ -7,9 +7,14 @@ export const fetchTuitions = async () => {
   return await axios.get(TUITIONS, { headers: requestHeader });
 };
 
-export const pagedTuitions = async (page) => {
-  return await axios.get(`${TUITIONS}?page=${page}`, {
+export const pagedTuitions = async (page, searchParams = {}) => {
+  const value = searchParams['query']
+  const attribute = searchParams['selectedField']
+  const extras = searchParams['extras']
+  const order = searchParams['order'] || "asc"
+  return await axios.get(`${TUITIONS}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}${order ? ('&order=' + order) : '' }`, {
     headers: requestHeader,
+    data: extras,
   });
 };
 

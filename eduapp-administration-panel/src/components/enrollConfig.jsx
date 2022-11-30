@@ -21,7 +21,7 @@ export default function EnrollConfig() {
   const [courses, setCourses] = useState(null);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [courseEdit, setCourseEdit] = useState([]);
   const [emailEdit, setEmailEdit] = useState([]);
@@ -31,13 +31,13 @@ export default function EnrollConfig() {
   const [changeEmail, setChangeEmail] = useState(false);
   const [changeCourse, setChangeCourse] = useState(false);
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredTuitions = useFilter(
-    tuitions,
-    null,
-    TUITIONSSERVICE.filterTuitions,
-    getEnrollmentFields(language)
-  );
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
+  // const filteredTuitions = useFilter(
+  //   tuitions,
+  //   null,
+  //   TUITIONSSERVICE.filterTuitions,
+  //   getEnrollmentFields(language)
+  // );
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -94,10 +94,10 @@ export default function EnrollConfig() {
 
   const fetchTuitions = (pages) => {
     API.asynchronizeRequest(function () {
-      TUITIONSSERVICE.pagedTuitions(pages)
+      TUITIONSSERVICE.pagedTuitions(pages, searchParams)
         .then((ts) => {
-          setActualPage(ts.data.page);
           setTuitions(ts.data.current_page);
+          setActualPage(ts.data.page);
           setMaxPages(ts.data.total_pages);
         })
         .catch(async (err) => {
@@ -137,7 +137,7 @@ export default function EnrollConfig() {
 
   const fetchAll = () => {
     fetchCourses();
-    fetchTuitions(1);
+    // fetchTuitions(1);
     fetchUsers();
   };
 
@@ -160,6 +160,7 @@ export default function EnrollConfig() {
           .then((e) => {
             if (e) {
               fetchAll();
+              fetchTuitions(actualPage);
               setPopup(true);
               setPopupType("info");
               setPopupText(language.creationCompleted);
@@ -311,6 +312,9 @@ export default function EnrollConfig() {
   useEffect(() => {
     fetchAll();
   }, []);
+  useEffect(() => {
+    fetchTuitions(actualPage, searchParams);
+  }, [actualPage, searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -398,7 +402,7 @@ export default function EnrollConfig() {
           <>
             <div className="notify-users">
               <PageSelect
-                onPageChange={async (p) => fetchTuitions(p)}
+                onPageChange={(page) => setActualPage(page)}
                 maxPages={maxPages}
               />
             </div>
@@ -413,12 +417,12 @@ export default function EnrollConfig() {
                 </thead>
                 <tbody>
                   {tuitions.map((t) => {
-                    if (filteredTuitions !== null)
-                      if (
-                        filteredTuitions.find((ft) => t.id === ft.id) ===
-                        undefined
-                      )
-                        return <Fragment key={t.id} />;
+                    // if (filteredTuitions !== null)
+                    //   if (
+                    //     filteredTuitions.find((ft) => t.id === ft.id) ===
+                    //     undefined
+                    //   )
+                    //     return <Fragment key={t.id} />;
                     return (
                       <tr key={t.id}>
                         <td>
