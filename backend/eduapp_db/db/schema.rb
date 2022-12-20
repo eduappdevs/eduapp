@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 16) do
+ActiveRecord::Schema.define(version: 2022_12_20_133150) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -160,6 +160,15 @@ ActiveRecord::Schema.define(version: 16) do
     t.index ["course_id"], name: "index_subjects_on_course_id"
   end
 
+  create_table "subjects_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "subject_id", null: false
+    t.uuid "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["subject_id"], name: "index_subjects_users_on_subject_id"
+    t.index ["user_id"], name: "index_subjects_users_on_user_id"
+  end
+
   create_table "tuitions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "course_id", null: false
     t.uuid "user_id", null: false
@@ -246,6 +255,8 @@ ActiveRecord::Schema.define(version: 16) do
   add_foreign_key "resources", "subjects"
   add_foreign_key "resources", "users"
   add_foreign_key "subjects", "courses"
+  add_foreign_key "subjects_users", "subjects"
+  add_foreign_key "subjects_users", "users"
   add_foreign_key "tuitions", "courses"
   add_foreign_key "tuitions", "users"
   add_foreign_key "user_infos", "user_roles"

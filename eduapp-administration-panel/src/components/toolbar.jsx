@@ -89,6 +89,12 @@ export default function Toolbar(props) {
             <FieldSearcher />
           </ul>
         </>
+      ) : props.location === "enroll_subjects" ? (
+        <>
+          <ul className="scheduletoolbar-ul enroll_subjects-toolbar">
+            <FieldSearcher />
+          </ul>
+        </>
       ) : props.location === "teachers" ? (
         <>
           <ul className="scheduletoolbar-ul teachers-toolbar">

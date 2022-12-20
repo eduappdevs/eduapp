@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as ENROLLCONFIGSERVICE from "../services/enrollConfig.service";
+import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as USERSERVICE from "../services/user.service";
@@ -196,6 +197,7 @@ export default function BatchPreviewTable(props) {
     let pass = user[1];
     let role = user[2];
     let courseId = user[3];
+    let subjectId = user[4];
 
     if (email && pass) {
       API.asynchronizeRequest(function () {
@@ -215,6 +217,14 @@ export default function BatchPreviewTable(props) {
                   await userEnroll(courseIdArray[i], res.data.user.id);
                 }
               }
+
+              if (subjectId !== '') {
+                let subjectIdArray = String(subjectId).split(";");
+
+                for (let i = 0; i < subjectIdArray.length; i++) {
+                  await userEnrollSubject(subjectIdArray[i], res.data.user.id);
+                }
+              }
             }
           })
           .catch(async (err) => {
@@ -227,6 +237,10 @@ export default function BatchPreviewTable(props) {
 
   const userEnroll = (cId, uId) => {
     ENROLLCONFIGSERVICE.createTuition({ course_id: cId, user_id: uId });
+  };
+
+  const userEnrollSubject = (sId, uId) => {
+    SUBJECTSUSERSSERVICE.createSubjectUser({ subject_id: sId, user_id: uId });
   };
 
   const postEvent = (event) => {
