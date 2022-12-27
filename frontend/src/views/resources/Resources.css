@@ -104,6 +104,13 @@
 	font-weight: bold;
 }
 
+.resources-page-label {
+	font-family: Consolas;
+	color: var(--textColor);
+	text-align: center;
+	font-weight: bold;
+}
+
 .resource-opened>.resource-name-container {
 	flex: 1;
 	width: 100%;
@@ -418,4 +425,20 @@
 
 .mobileSection>.resourcesSearchBar>form {
 	width: 85%;
+}
+
+.ant-select-selector {
+	height: 38px !important;
+}
+
+.ant-select-selection-item {
+	vertical-align: middle;
+}
+
+.subject-ant-select:where(.css-dev-only-do-not-override-9ntgx0).ant-select-single .ant-select-selector {
+	font-size: 20px !important;
+}
+
+.ant-select-selection-search input {
+	font-size: 20px;
 }
