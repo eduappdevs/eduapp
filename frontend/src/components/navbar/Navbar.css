@@ -228,3 +228,19 @@ header>.profile-menu-desktop>ul>li>a {
 	background-color: var(--orange) !important;
 	box-shadow: 0 3px 1px rgb(233, 130, 62) !important;
 }
+
+/* ANT DROPDOWN */
+
+.ant-dropdown ul {
+	background-color: rgb(233, 130, 62) !important;
+}
+
+.ant-dropdown li:hover {
+	background-color: #4B91FF !important;
+}
+
+.dropdown-menu-option {
+	color: white !important;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
