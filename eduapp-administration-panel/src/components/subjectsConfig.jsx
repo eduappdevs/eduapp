@@ -503,7 +503,7 @@ export default function SubjectsConfig() {
                           <input
                             disabled
                             type="text"
-                            value={shortUUID(sj.id)}
+                            value={sj.id}
                           />
                         </td>
                         <td>

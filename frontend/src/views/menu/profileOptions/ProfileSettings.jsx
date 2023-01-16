@@ -154,7 +154,7 @@ export default function ProfileSettings({ desktopBackTo }) {
     <div className="profileSettings_container">
       <MenuHeader
         backTo={() => {
-          window.location.href = "/menu";
+          window.location.href = "/";
         }}
         location={language.menu_profile}
       />

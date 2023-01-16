@@ -448,7 +448,7 @@ export default function CourseConfig() {
                   return (
                     <tr key={c.id}>
                       <td>
-                        <input disabled type="text" value={shortUUID(c.id)} />
+                        <input disabled type="text" value={c.id} />
                       </td>
                       <td>
                         <input
