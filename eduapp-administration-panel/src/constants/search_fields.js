@@ -96,6 +96,26 @@ export function parseEnrollmentFields(er, field) {
   }
 }
 
+// Enrollment Subject
+export function getSubjectEnrollmentFields(lang) {
+  languageDetect(lang);
+  return [
+    ["user_email", lang.email],
+    ["subject_name", lang.subject],
+  ];
+}
+
+export function parseSubjectEnrollmentFields(er, field) {
+  switch (field) {
+    case "user_email":
+      return er.user.email;
+    case "subject_name":
+      return er.subject.name;
+    default:
+      return er[field];
+  }
+}
+
 // Teachers
 export function getTeacherFields(lang) {
   languageDetect(lang);
