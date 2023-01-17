@@ -49,6 +49,8 @@ class SubjectsController < ApplicationController
       end
 
       @subjects = @Sessions
+    elsif params[:subject_id]
+      @subjects = Subject.where(id: params[:subject_id])
     elsif params[:name]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
       @subjects = Subject.where('name ilike ?', "%#{params[:name]}%")
@@ -174,7 +176,9 @@ class SubjectsController < ApplicationController
       render json: @Subject, status: :unprocessable_entity
     else
       puts "Creating subject: "
-      @subject = Subject.new(subject_code: params[:subject_code], name: params[:name], description: params[:description], color: params[:color], course_id: params[:course_id])
+      @subject = Subject.new(subject_code: params[:subject_code], name: params[:name],
+                            description: params[:description], color: params[:color],
+                            course_id: params[:course_id], chat_link: params[:chat_link])
       if @subject.save
         render json: @subject, status: :created, location: @subject
       else
@@ -220,6 +224,6 @@ class SubjectsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def subject_params
-    params.require(:subject).permit(:subject_code, :name, :description, :color, :course_id)
+    params.require(:subject).permit(:subject_code, :name, :description, :color, :course_id, :chat_link)
   end
 end

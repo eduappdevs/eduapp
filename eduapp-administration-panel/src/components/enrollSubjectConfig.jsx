@@ -4,6 +4,7 @@ import * as API from "../API";
 import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
 import * as USERSSERVICE from "../services/user.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
+import * as CHATSERVICE from "../services/chat.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
@@ -134,22 +135,31 @@ export default function EnrollConfig() {
     fetchUsers();
   };
 
-  const createSubjectUser = (e) => {
+  const createSubjectUser = async (e) => {
     e.preventDefault();
     switchEditState(false);
 
     let user = document.getElementById("user_select").value;
+    let userObject = await USERSSERVICE.fetchUserInfoBuUserId(user);
     let subject = document.getElementById("subject_select").value;
+    let subjectObject = await SUBJECTSERVICE.fetchSubject(subject);
+    let chatBase = subjectObject.data[0].chat_link;
+    let isChatAdmin;
+
+    if (userObject.data[0].user_role.name !== ("eduapp_admin" || "eduapp_teacher")) {
+      isChatAdmin = false;
+    }
 
     let valid = true;
     if (user === "-" && subject === "-") valid = false;
 
     if (valid) {
       API.asynchronizeRequest(function () {
-        const payload = new FormData();
-        payload.append("subject_id", subject);
-        payload.append("user_id", user);
-        SUBJECTSUSERSSERVICE.createSubjectUser(payload)
+        const enrollPayload = new FormData();
+        enrollPayload.append("subject_id", subject);
+        enrollPayload.append("user_id", user);
+
+        SUBJECTSUSERSSERVICE.createSubjectUser(enrollPayload)
           .then((e) => {
             if (e) {
               fetchAll();
@@ -167,6 +177,17 @@ export default function EnrollConfig() {
               setPopupText(language.creationAlert);
             }
           });
+
+        if (chatBase) {
+          CHATSERVICE.createParticipant({chat_base_id: chatBase, user_id: user, isChatAdmin}).catch((e) => {
+            if (e) {
+              interceptExpiredToken(e);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(language.creationAlert);
+            }
+          });
+        }
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
@@ -334,7 +355,13 @@ export default function EnrollConfig() {
             <tr>
               <th>{language.add}:</th>
               <td>
-                <Typeahead items={users?.map(u => ({id: u.user.id, name: u.user.email}))} fieldId="user_select" />
+                <Typeahead
+                  items={users?.map((u) => ({
+                    id: u.user.id,
+                    name: u.user.email,
+                  }))}
+                  fieldId="user_select"
+                />
               </td>
               <td>
                 <select defaultValue={"-"} id="subject_select">

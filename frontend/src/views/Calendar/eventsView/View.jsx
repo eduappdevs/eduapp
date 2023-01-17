@@ -288,7 +288,7 @@ export default function View(props) {
                     className="bi bi-chat-dots"
                     viewBox="0 0 16 16"
                     onClick={() => {
-                      navigate(props.data.chat);
+                      navigate(`/chat/g${props.data.chat}`);
                     }}
                   >
                     <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
