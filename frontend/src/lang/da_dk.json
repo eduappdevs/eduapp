@@ -22,6 +22,8 @@
 	"sessions": "Sessions",
 	"submit": "Send",
 	"delete": "Slet",
+	"delete_this": "Slet dette",
+	"delete_confirm": "Er du sikker?",
 	"enroll": "Indskriv",
 	"email": "Email",
 	"author": "Forfatter",

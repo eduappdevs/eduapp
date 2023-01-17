@@ -22,6 +22,8 @@
 	"sessions": "Sesiones",
 	"submit": "Enviar",
 	"delete": "Eliminar",
+	"delete_this": "Eliminar esto",
+	"delete_confirm": "¿Estás seguro?",
 	"enroll": "Inscribir",
 	"email": "Correo eléctronico",
 	"author": "Autor",
