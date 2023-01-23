@@ -506,7 +506,7 @@ export default function UserConfig() {
           maxPages={maxPages}
         />
         <button onClick={() => setNotifyModal(true)}>
-          Notify Selected Users
+          {language.notifySelectedUsers}
         </button>
       </div>
       <div className="list-main-container">

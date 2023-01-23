@@ -130,7 +130,11 @@
     "confirmDeleteRole": "Ønsker du at slette denne rolle?",
     "roleDeleted": "Rolle slettet med succes.",
     "searchBy": "Søg ved brug af  ",
-    "csvFileUpload": "CSV file upload"
+    "csvFileUpload": "CSV file upload",
+    "notifySelectedUsers": "Underrette udvalgte brugere",
+    "chooseChat": "Vælg chat",
+    "linkedChat": "Link til chat",
+    "noChatSelected": "Nie wybrano chat"
   },
   "en_en": {
     "lang_identifier": "en_en",
@@ -263,7 +267,11 @@
     "confirmDeleteRole": "Are you sure you want to delete this role?",
     "roleDeleted": "Role deleted successfully.",
     "searchBy": "Search By ",
-    "csvFileUpload": "CSV file upload"
+    "csvFileUpload": "CSV file upload",
+    "notifySelectedUsers": "Notify selected users",
+    "chooseChat": "Choose chat",
+    "linkedChat": "Linked chat",
+    "noChatSelected": "No chat selected"
   },
   "es_es": {
     "lang_identifier": "es_es",
@@ -396,7 +404,11 @@
     "confirmDeleteRole": "¿Está seguro de eliminar este rol?",
     "roleDeleted": "Rol eliminado.",
     "searchBy": "Buscar por ",
-    "csvFileUpload": "Importar CSV"
+    "csvFileUpload": "Importar CSV",
+    "notifySelectedUsers": "Notificar usuarios seleccionados",
+    "chooseChat": "Seleccione chat",
+    "linkedChat": "Chat vinculado",
+    "noChatSelected": "Ningún chat seleccionado"
   },
   "pt_pt": {
     "lang_identifier": "pt_pt",
@@ -529,7 +541,11 @@
     "roleDeleted": "Papel excluído com sucesso.",
     "connectionError": "Erro de conexão. Tente novamente mais tarde.",
     "searchBy": "Procurar por ",
-    "csvFileUpload": "CSV file upload"
+    "csvFileUpload": "CSV file upload",
+    "notifySelectedUsers": "Notificar usuários selecionados",
+    "chooseChat": "Escolha o chat",
+    "linkedChat": "Chat vinculado",
+    "noChatSelected": "Nenhum chat selecionado"
   },
   "ro_ro": {
     "lang_identifier": "ro_ro",
@@ -576,7 +592,7 @@
     "chooseUser": "Alege utilizatorul",
     "chooseCourse": "Alege cursul",
     "linkedInstitution": "Instituție legată",
-    "delete": "Sterge",
+    "delete": "Șterge",
     "edit": "Editeaza",
     "group": "Grup",
     "nameGroup": "Numele grupului",
@@ -662,6 +678,10 @@
     "confirmDeleteRole": "Sigur doriți să ștergeți acest rol?",
     "roleDeleted": "Rolul a fost șters cu succes.",
     "searchBy": "Cauta dupa ",
-    "csvFileUpload": "CSV file upload"
+    "csvFileUpload": "CSV file upload",
+    "notifySelectedUsers": "Anunță utilizatorii selectați",
+    "chooseChat": "Alege chat",
+    "linkedChat": "Chat legat",
+    "noChatSelected": "Niciun chat selectat"
   }
 }

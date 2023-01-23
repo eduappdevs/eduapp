@@ -9,6 +9,10 @@ export const fetchUserInfos = async () => {
   return await axios.get(`${USERS_INFO}`, { headers: requestHeader });
 };
 
+export const fetchUserInfoBuUserId = async (id) => {
+  return await axios.get(`${USERS_INFO}?user_id=${id}`, { headers: requestHeader });
+};
+
 export const pagedUserInfos = async (page, order = null, searchParams = null) => {
   let query='';
   if(searchParams?.query){
@@ -46,6 +50,10 @@ export const createInfo = async (body) => {
 
 export const fetchUser = async () => {
   return await axios.get(`${USERS}`, { headers: requestHeader });
+};
+
+export const fetchOneUser = async (id) => {
+  return await axios.get(`${USERS}/${id}`, { headers: requestHeader });
 };
 
 export const createUser = async (body) => {
