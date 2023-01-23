@@ -79,6 +79,7 @@ class UserRolesController < ApplicationController
       perms_subjects: params[:user_role][:perms_subjects],
       perms_resources: params[:user_role][:perms_resources],
       perms_sessions: params[:user_role][:perms_sessions],
+      perms_session_chats: params[:user_role][:perms_session_chats],
       perms_events: params[:user_role][:perms_events],
       perms_teachers: params[:user_role][:perms_teachers],
       perms_users: params[:user_role][:perms_users],
@@ -110,6 +111,7 @@ class UserRolesController < ApplicationController
       perms_subjects: params[:user_role][:perms_subjects],
       perms_resources: params[:user_role][:perms_resources],
       perms_sessions: params[:user_role][:perms_sessions],
+      perms_session_chats: params[:user_role][:perms_session_chats],
       perms_events: params[:user_role][:perms_events],
       perms_teachers: params[:user_role][:perms_teachers],
       perms_users: params[:user_role][:perms_users],
@@ -143,6 +145,6 @@ class UserRolesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def user_role_params
-    params.require(:user_role).permit(:name, :description, :perms_institution, :perms_course, :perms_subjects, :perms_resources, :perms_sessions, :perms_events, :perms_teachers, :perms_users, :perms_roles, :perms_tuitions, :perms_jti_matchlist, :perms_chat, :perms_chat_participants, :perms_message, :perms_app_views)
+    params.require(:user_role).permit(:name, :description, :perms_institution, :perms_course, :perms_subjects, :perms_resources, :perms_sessions, :perms_session_chats, :perms_events, :perms_teachers, :perms_users, :perms_roles, :perms_tuitions, :perms_jti_matchlist, :perms_chat, :perms_chat_participants, :perms_message, :perms_app_views)
   end
 end

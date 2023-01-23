@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
@@ -13,6 +14,7 @@ import "../styles/chatConfig.css";
 
 export default function ChatConfig() {
   const [chat, setChat] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [language] = useContext(LanguageCtx);
 
@@ -65,6 +67,11 @@ export default function ChatConfig() {
         connectionAlert();
       }
     });
+  };
+
+  const fetchSubjects = async () => {
+    let subjects = await SUBJECTSERVICE.fetchSubjects();
+    setSubjects(subjects.data);
   };
 
   const connectionAlert = () => {
@@ -251,6 +258,7 @@ export default function ChatConfig() {
 
   useEffect(() => {
     fetchChatPage(1);
+    fetchSubjects();
     setInitialFetch(true);
   }, []);
 

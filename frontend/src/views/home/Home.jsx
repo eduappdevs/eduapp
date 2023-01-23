@@ -1,16 +1,16 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import SessionAdd from "../../components/modals/modals-home/SessionAdd";
-import SessionEdit from "../../components/modals/modals-home/SessionEdit";
-import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import React, { useEffect, useState } from "react";
 import * as SUBJECT_SERVICE from "../../services/subject.service";
 import * as SCHEDULE_SERVICE from "../../services/schedule.service";
+import * as ROLESERVICE from "../../services/role.service";
+import { useNavigate } from "react-router-dom";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { asynchronizeRequest } from "../../API";
 import { getOfflineUser } from "../../utils/OfflineManager";
+import SessionAdd from "../../components/modals/modals-home/SessionAdd";
+import SessionEdit from "../../components/modals/modals-home/SessionEdit";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useLanguage from "../../hooks/useLanguage";
-import NameCapitalizer from "../../utils/NameCapitalizer";
+import useRole from "../../hooks/useRole";
 import "./Home.css";
 
 export default function Home() {
@@ -20,14 +20,22 @@ export default function Home() {
   const [firstSessionId, setFirstSessionId] = useState("");
   const [sessionLength, setSessionLength] = useState("");
   const [userImage, setUserImage] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
   const sessionsPreSorted = [];
   let user = getOfflineUser().user;
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  let isTeacher = useRole(userInfo, "eduapp-teacher");
+  let isAdmin = useRole(userInfo, "eduapp-admin");
   let sessionsSorted;
 
   const language = useLanguage();
   const navigate = useNavigate();
+
+  const fetchUserRole = async () => {
+    let userRole = await ROLESERVICE.fetchRole(user.user_info.user_role_id);
+    setUserRole(userRole);
+  };
 
   const openSessionAdd = () => {
     document
@@ -83,6 +91,7 @@ export default function Home() {
       let streamingPlatform = e.streaming_platform;
       let resourcesPlatform = e.resources_platform;
       let chat = e.session_chat_id;
+      let subject = e.subject;
       let date = startDate.split("T")[1] + " - " + endDate.split("T")[1];
 
       sessionsPreSorted.push({
@@ -93,6 +102,7 @@ export default function Home() {
         streamingPlatform,
         resourcesPlatform,
         chat,
+        subject,
         date,
       });
 
@@ -208,6 +218,7 @@ export default function Home() {
 
   useEffect(() => {
     setUserImage(getOfflineUser().profile_image);
+    fetchUserRole();
   }, [userInfo]);
 
   return (
@@ -298,9 +309,10 @@ export default function Home() {
                                     className="bi bi-mortarboard"
                                     viewBox="0 0 16 16"
                                     onClick={(e) => {
-                                      //navigate(data.resources_platform);
                                       e.stopPropagation();
-                                      data.resourcesPlatform && (window.location = data.resourcesPlatform);
+                                      data.resourcesPlatform &&
+                                        (window.location =
+                                          data.resourcesPlatform);
                                     }}
                                   >
                                     <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5ZM8 8.46 1.758 5.965 8 3.052l6.242 2.913L8 8.46Z" />
@@ -316,9 +328,10 @@ export default function Home() {
                                     className="bi bi-camera-video"
                                     viewBox="0 0 16 16"
                                     onClick={(e) => {
-                                      //navigate(data.streaming_platform);
                                       e.stopPropagation();
-                                      data.streamingPlatform && (window.location = data.streamingPlatform);
+                                      data.streamingPlatform &&
+                                        (window.location =
+                                          data.streamingPlatform);
                                     }}
                                   >
                                     <path
@@ -327,23 +340,48 @@ export default function Home() {
                                     />
                                   </svg>
                                 </p>
-                                <p className="session_chat_id">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="32"
-                                    height="32"
-                                    fill="currentColor"
-                                    className="bi bi-chat-dots"
-                                    viewBox="0 0 16 16"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      data.chat && navigate(data.chat);
-                                    }}
-                                  >
-                                    <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-                                    <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
-                                  </svg>
-                                </p>
+                                {data.subject.chat_link ? (
+                                  <p className="session_chat_id">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="32"
+                                      height="32"
+                                      fill="currentColor"
+                                      className="bi bi-chat-dots"
+                                      viewBox="0 0 16 16"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        data.subject.chat_link &&
+                                          navigate(
+                                            `/chat/g${data.subject.chat_link}`
+                                          );
+                                      }}
+                                    >
+                                      <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                      <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
+                                    </svg>
+                                  </p>
+                                ) : !data.subject.chat_link && (isAdmin || isTeacher) ? (
+                                  <p className="session_chat_id">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="32"
+                                      height="32"
+                                      fill="currentColor"
+                                      className="bi bi-chat-dots"
+                                      viewBox="0 0 16 16"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(
+                                            `/chat/create/group/${data.subject.id}`
+                                          );
+                                      }}
+                                    >
+                                      <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                      <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
+                                    </svg>
+                                  </p>
+                                ) : null}
                               </div>
                             </div>
                           </div>

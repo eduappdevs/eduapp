@@ -127,15 +127,15 @@ export default function Calendar() {
           }
         }
         events.push({
-          id: id,
-          startDate: startDate,
-          endDate: endDate,
-          title: title,
-          stream: stream,
-          resources: resources,
-          chat: chat,
+          id,
+          startDate,
+          endDate,
+          title,
+          stream,
+          resources,
+          chat,
           subject_id: subject,
-          backgroundColor: backgroundColor,
+          backgroundColor,
           user_id: author,
         });
       }

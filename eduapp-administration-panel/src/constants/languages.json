@@ -134,7 +134,8 @@
     "notifySelectedUsers": "Underrette udvalgte brugere",
     "chooseChat": "Vælg chat",
     "linkedChat": "Link til chat",
-    "noChatSelected": "Nie wybrano chat"
+    "noChatSelected": "Nie wybrano chat",
+    "sessionChats": "Session chats"
   },
   "en_en": {
     "lang_identifier": "en_en",
@@ -271,7 +272,8 @@
     "notifySelectedUsers": "Notify selected users",
     "chooseChat": "Choose chat",
     "linkedChat": "Linked chat",
-    "noChatSelected": "No chat selected"
+    "noChatSelected": "No chat selected",
+    "sessionChats": "Session chats"
   },
   "es_es": {
     "lang_identifier": "es_es",
@@ -408,7 +410,8 @@
     "notifySelectedUsers": "Notificar usuarios seleccionados",
     "chooseChat": "Seleccione chat",
     "linkedChat": "Chat vinculado",
-    "noChatSelected": "Ningún chat seleccionado"
+    "noChatSelected": "Ningún chat seleccionado",
+    "sessionChats": "Chats de sesiones"
   },
   "pt_pt": {
     "lang_identifier": "pt_pt",
@@ -545,7 +548,8 @@
     "notifySelectedUsers": "Notificar usuários selecionados",
     "chooseChat": "Escolha o chat",
     "linkedChat": "Chat vinculado",
-    "noChatSelected": "Nenhum chat selecionado"
+    "noChatSelected": "Nenhum chat selecionado",
+    "sessionChats": "Chats de sessão"
   },
   "ro_ro": {
     "lang_identifier": "ro_ro",
@@ -682,6 +686,7 @@
     "notifySelectedUsers": "Anunță utilizatorii selectați",
     "chooseChat": "Alege chat",
     "linkedChat": "Chat legat",
-    "noChatSelected": "Niciun chat selectat"
+    "noChatSelected": "Niciun chat selectat",
+    "sessionChats": "Chat-uri de sesiune"
   }
 }

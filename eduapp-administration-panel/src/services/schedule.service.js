@@ -54,7 +54,7 @@ export const fetchSessions = async () => {
   return await axios.get(SESSIONS, { headers: requestHeader });
 };
 
-export const pagedSessions = async (page, order = null, searchParams = null) => {
+export const pagedSessions = async (page, order = null, searchParams = []) => {
   const value = searchParams['query']
   const attribute = searchParams['selectedField']
   const extras = searchParams['extras']
