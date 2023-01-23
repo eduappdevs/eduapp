@@ -20,18 +20,18 @@ class CalendarAnnotationsController < ApplicationController
       # @calendarEvents = @sessions.where(isGlobal: false)
       # @colorEvents = @subjects.pluck(:id, :color)
 
-      @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
+      @TuitionsUserId = SubjectsUser.where(user_id: params[:user_id]).pluck(:subject_id)
       @calendar_isGlobal = CalendarAnnotation.where(isGlobal: true)
       @subjects = []
       @calendarEvents = []
       @sessions = []
       for course in @TuitionsUserId
-        @subjects += Subject.where(course_id: course).pluck(:id)
+        @subjects += Subject.where(id: course).pluck(:id)
       end
 
       for subject in @subjects
         @calendarEvents += CalendarAnnotation.where(isGlobal: false, subject_id: subject)
-        @colorEvents = Subject.where(course_id: @TuitionsUserId).pluck(:id, :color)
+        @colorEvents = Subject.where(id: @TuitionsUserId).pluck(:id, :color)
       end
 
       for subject in @subjects

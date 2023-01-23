@@ -60,6 +60,7 @@ export default function UserRolesConfig() {
     ["subjects", language.subjects],
     ["resources", language.resources],
     ["sessions", language.sessions],
+    ["session_chats", language.sessionChats],
     ["events", language.events],
     ["teachers", language.teachers],
     ["users", language.users],
