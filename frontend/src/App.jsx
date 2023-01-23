@@ -190,10 +190,10 @@ export default function App() {
               />
 
               {/* Menu */}
+              <Route path="/menu/profile" element={<ProfileSettings />} />
               {mobile && (
                 <>
                   <Route path="/menu" element={<Menu />} />
-                  <Route path="/menu/profile" element={<ProfileSettings />} />
                   <Route path="/menu/settings" element={<MenuSettings />} />
                 </>
               )}
