@@ -183,7 +183,7 @@ export default function App() {
               />
               <Route path="/chat/:chatId" element={<MainChat />} />
               <Route path="/chat/info/:chatId" element={<MainChatInfo />} />
-              <Route path="/chat/create/group" element={<GroupChatCreate />} />
+              <Route path="/chat/create/group/:subject_id" element={<GroupChatCreate />} />
               <Route
                 path="/chat/create/direct"
                 element={<DirectChatCreate />}
