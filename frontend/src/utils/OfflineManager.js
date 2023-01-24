@@ -34,9 +34,10 @@ export const saveUserOffline = async (userInfo) => {
  */
 export const updateUserImageOffline = async (newImgUrl) => {
   let user = getOfflineUser();
-  user.profile_image = newImgUrl;
+  user.profile_image.url = newImgUrl;
+  user.profile_image.thumb.url = newImgUrl;
 
-  await saveUserOffline(user);
+  await localStorage.setItem("offline_user", JSON.stringify(user));
 };
 
 /**

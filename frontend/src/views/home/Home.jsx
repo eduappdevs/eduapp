@@ -207,7 +207,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    setUserImage(getOfflineUser().profile_image);
+    setUserImage(getOfflineUser().profile_image.url);
   }, [userInfo]);
 
   return (
