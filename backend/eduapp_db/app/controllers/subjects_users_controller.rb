@@ -15,18 +15,24 @@ class SubjectsUsersController < ApplicationController
       enroll_query.merge!({ param[0] => param[1] })
     end
 
-    final_query = SubjectsUser
+    @subjects_users = SubjectsUser
+
+    if params[:user_id]
+      @subjects_users = SubjectsUser.where(user_id: params[:user_id])
+    end
 
     if enroll_query["user_email"]
-      final_query = final_query.where(user_id: User.where("email LIKE ?", "%#{enroll_query["user_email"]}%"))
+      @subjects_users = SubjectsUser.where(user_id: User.where("email LIKE ?", "%#{enroll_query["user_email"]}%"))
     end
 
     if enroll_query["subject_name"]
-      final_query = final_query.where(subject_id: Subject.where("name LIKE ?", "%#{enroll_query["subject_name"]}%"))
+      @subjects_users = SubjectsUser.where(subject_id: Subject.where("name LIKE ?", "%#{enroll_query["subject_name"]}%"))
     end
 
-    @subjects_users = query_paginate(final_query, params[:page] || 1)
-    @subjects_users[:current_page] = serialize_each(@subjects_users[:current_page], [:created_at, :updated_at, :subject, :user_id], [:subject, :user])
+    if params[:page]
+      @subjects_users = query_paginate(@subjects_users, params[:page] || 1)
+      @subjects_users[:current_page] = serialize_each(@subjects_users[:current_page], [:created_at, :updated_at, :subject, :user_id], [:subject, :user])
+    end
 
     render json: @subjects_users
   end

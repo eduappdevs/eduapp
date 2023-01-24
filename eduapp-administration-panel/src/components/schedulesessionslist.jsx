@@ -21,7 +21,7 @@ export default function Schedulesessionslist(props) {
 
   const [sessions, setSessions] = useState(null);
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);
-  const [subject, setSubject] = useState([]);
+  const [subject, setSubjects] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
@@ -97,6 +97,7 @@ export default function Schedulesessionslist(props) {
   };
 
   const finalizedDelete = (type, icon, confirmDel, text) => {
+    switchEditState(false);
     setPopupType(type);
     setPopupIcon(icon);
     setPopup(true);
@@ -112,16 +113,16 @@ export default function Schedulesessionslist(props) {
     setPopupIcon("error");
   };
 
-  const fetchSessions = async (page, order = null, searchParams = null) => {
-    await API.asynchronizeRequest(function () {
+  const fetchSessions = async (page, order = null, searchParams) => {
+    API.asynchronizeRequest(function () {
       SCHEDULESERVICE.pagedSessions(page, order, searchParams)
-        .then((e) => {
-          setActualPage(e.data.page);
-          setMaxPages(e.data.total_pages);
-          setSessions(e.data.current_page);
+        .then((us) => {
+          setActualPage(us.data.page);
+          setMaxPages(us.data.total_pages);
+          setSessions(us.data.current_page);
         })
-        .catch(async (e) => {
-          await interceptExpiredToken(e);
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
         });
     }).then(async (e) => {
       if (e) {
@@ -131,16 +132,9 @@ export default function Schedulesessionslist(props) {
     });
   };
 
-  const fetchSubjects = async () => {
-    await API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.fetchSubjects()
-        .then((res) => {
-          res.data.shift();
-          setSubject(res.data);
-        })
-        .catch(async (e) => {
-          await interceptExpiredToken(e);
-        });
+  const fetchSubjects = () => {
+    API.asynchronizeRequest(function () {
+      SUBJECTSERVICE.fetchSubjects().then((cs) => setSubjects(cs.data));
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
@@ -155,8 +149,7 @@ export default function Schedulesessionslist(props) {
     setPopup(true);
   };
 
-  const AddNewSession = (e) => {
-    e.preventDefault();
+  const addNewSession = async (e) => {
     switchEditState(false);
 
     const context = [
@@ -176,17 +169,17 @@ export default function Schedulesessionslist(props) {
     let end_date = document.getElementById("s_end_date").value;
     let resources = document.getElementById("s_resources").value;
     let streaming = document.getElementById("s_streaming").value;
-    let chat = 1;
     let subject = document.getElementById("s_subjectId").value;
     let subject_id = subject.split("_")[1];
     let subject_code = subject.split("_")[0];
+    let chat = await SUBJECTSERVICE.fetchSubject(subject_id);
+
     if (
       (name !== "" &&
         start_date !== "" &&
         end_date !== "" &&
         resources !== "" &&
         streaming !== "" &&
-        chat !== "" &&
         subject_id !== `${language.chooseSubject}` &&
         subject_id !== "",
       subject_code !== `${language.chooseSubject}` && subject_code !== "")
@@ -197,7 +190,7 @@ export default function Schedulesessionslist(props) {
         end_date,
         streaming,
         resources,
-        chat,
+        chat.data[0].chat_link,
         subject_id,
         subject_code
       );
@@ -212,8 +205,8 @@ export default function Schedulesessionslist(props) {
     }
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.createSession(SessionJson)
-        .then((error) => {
-          if (error) {
+        .then((e) => {
+          if (e) {
             finalizedCreate("info", true, language.creationCompleted, false);
           }
         })
@@ -238,7 +231,7 @@ export default function Schedulesessionslist(props) {
     switchEditState(false);
   };
 
-  const deleteSession = async (id, batch_id) => {
+  const deleteSession = (id, batch_id) => {
     switchEditState(false);
     if (batch_id === null) {
       API.asynchronizeRequest(function () {
@@ -694,7 +687,6 @@ export default function Schedulesessionslist(props) {
               <th>{language.name}</th>
               <th>{language.streaming}</th>
               <th>{language.resources}</th>
-              <th>{language.chatLink}</th>
               <th>{language.subjects}</th>
               <th>{language.repeated}</th>
               <th>{language.startDate}</th>
@@ -723,14 +715,6 @@ export default function Schedulesessionslist(props) {
                   id="s_resources"
                   type="text"
                   placeholder={language.resources}
-                  autoComplete="off"
-                />
-              </td>
-              <td>
-                <Input
-                  id="s_chatGroup"
-                  type="text"
-                  placeholder={language.chatLink}
                   autoComplete="off"
                 />
               </td>
@@ -772,7 +756,7 @@ export default function Schedulesessionslist(props) {
                 />
               </td>
               <td className="action-column">
-                <button onClick={AddNewSession}>
+                <button onClick={addNewSession}>
                   <svg
                     id="add-svg"
                     xmlns="http://www.w3.org/2000/svg"
@@ -823,7 +807,6 @@ export default function Schedulesessionslist(props) {
                   <th>{language.endDate}</th>
                   <th>{language.streaming}</th>
                   <th>{language.resources}</th>
-                  <th>{language.chatLink}</th>
                   <th>{language.subjects}</th>
                   <th>{language.actions}</th>
                 </tr>
@@ -898,21 +881,6 @@ export default function Schedulesessionslist(props) {
                               : newResourcesPlatform
                           }
                           onChange={() => handleChangeResourcesPlatform(s.id)}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputSessionChat_${s.id}`}
-                          type="text"
-                          disabled
-                          value={
-                            s.session_chat_id === null
-                              ? ""
-                              : changeChatId === false
-                              ? s.session_chat_id
-                              : newChatId
-                          }
-                          onChange={() => handleChangeSessionChat(s.id)}
                         />
                       </td>
                       <td>

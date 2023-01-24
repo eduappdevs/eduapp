@@ -1,11 +1,11 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import EditView from "./EditView";
-import { asynchronizeRequest } from "../../../API";
+import React, { useEffect, useState } from "react";
 import * as USERSERVICE from "../../../services/user.service";
+import * as SUBJECTSERVICE from "../../../services/subject.service";
+import { useNavigate } from "react-router-dom";
+import { asynchronizeRequest } from "../../../API";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../../utils/OfflineManager";
+import EditView from "./EditView";
 import useRole from "../../../hooks/useRole";
 import useLanguage from "../../../hooks/useLanguage";
 import "./views.css";
@@ -16,12 +16,18 @@ export default function View(props) {
 
   const [User, setUser] = useState();
   const [viewAuthor, setViewAuthor] = useState(false);
+  const [subject, setSubject] = useState(null);
 
   let userinfo = FetchUserInfo(getOfflineUser().user.id);
   let isTeacher = useRole(userinfo, "eduapp-teacher");
   let isAdmin = useRole(userinfo, "eduapp-admin");
 
   const [editEvent, setEditEvent] = useState({});
+
+  const fetchSubject = async () => {
+    let subject = await SUBJECTSERVICE.fetchSubject(props.data.subject_id);
+    setSubject(subject.data);
+  };
 
   const closeButton = async () => {
     const viewBox = document.getElementById("view-box");
@@ -115,6 +121,7 @@ export default function View(props) {
   };
 
   useEffect(() => {
+    fetchSubject();
     if (props.data.description !== undefined) {
       document
         .getElementsByClassName("calendar-view-session-information")[0]
@@ -154,7 +161,7 @@ export default function View(props) {
         .getElementsByClassName("calendar-view-edit-description")[0]
         .classList.add("description-hidden");
     }
-  });
+  }, [props.data]);
 
   return (
     <div
@@ -239,6 +246,15 @@ export default function View(props) {
                 {User ? <p>{User[0].user.email}</p> : null}
               </div>
             ) : null}
+            {(isAdmin || isTeacher) ? (
+              <ul>
+                {subject?.users.map(user => (
+                  <li key={user.id} className="subject-users">
+                    {user.email}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
             <div className="calendar-view-session-information">
               <h3>{language.links}</h3>
@@ -252,8 +268,8 @@ export default function View(props) {
                     className="bi bi-mortarboard"
                     viewBox="0 0 16 16"
                     onClick={() => {
-                      //navigate(props.data.resources);
-                      props.data.resources && (window.location = props.data.resources);
+                      props.data.resources &&
+                        (window.location = props.data.resources);
                     }}
                   >
                     <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5ZM8 8.46 1.758 5.965 8 3.052l6.242 2.913L8 8.46Z" />
@@ -269,8 +285,8 @@ export default function View(props) {
                     className="bi bi-camera-video"
                     viewBox="0 0 16 16"
                     onClick={() => {
-                      //navigate(props.data.stream);
-                      props.data.stream && (window.location = props.data.stream);
+                      props.data.stream &&
+                        (window.location = props.data.stream);
                     }}
                   >
                     <path
@@ -279,22 +295,41 @@ export default function View(props) {
                     />
                   </svg>
                 </p>
-                <p>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="32"
-                    height="32"
-                    fill="currentColor"
-                    className="bi bi-chat-dots"
-                    viewBox="0 0 16 16"
-                    onClick={() => {
-                      navigate(props.data.chat);
-                    }}
-                  >
-                    <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-                    <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
-                  </svg>
-                </p>
+                {subject?.chat_link ? (
+                  <p>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      fill="currentColor"
+                      className="bi bi-chat-dots"
+                      viewBox="0 0 16 16"
+                      onClick={() => {
+                        navigate(`/chat/g${subject?.chat_link}`);
+                      }}
+                    >
+                      <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                      <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
+                    </svg>
+                  </p>
+                ) : !subject?.chat_link && (isAdmin || isTeacher) ? (
+                  <p>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      fill="currentColor"
+                      className="bi bi-chat-dots"
+                      viewBox="0 0 16 16"
+                      onClick={() => {
+                        navigate(`/chat/create/group/${subject?.id}`);
+                      }}
+                    >
+                      <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                      <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
+                    </svg>
+                  </p>
+                ) : null}
               </div>
             </div>
           </div>

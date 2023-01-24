@@ -23,6 +23,7 @@ import useLanguage from "../../../hooks/useLanguage";
 import "./ProfileSettings.css";
 import useMobile from "../../../hooks/useMobile";
 import NameCapitalizer from "../../../utils/NameCapitalizer";
+import * as SUBJECTUSERSERVICE from "../../../services/subject_user.service";
 
 export default function ProfileSettings({ desktopBackTo }) {
   const language = useLanguage();
@@ -30,7 +31,7 @@ export default function ProfileSettings({ desktopBackTo }) {
   let userInfo = FetchUserInfo(user.id);
   let isAdmin = useRole(userInfo, "eduapp-admin");
   let isTeacher = useRole(userInfo, "eduapp-teacher");
-  let courses = GetCourses(getOfflineUser().user.id);
+  let courses = GetCourses(user.id);
 
   const [name, setName] = useState(null);
   const [surname, setSurname] = useState(null);
@@ -42,6 +43,18 @@ export default function ProfileSettings({ desktopBackTo }) {
   const [saveText, setSaveText] = useState(language.save);
   const [showPopup, setPopup] = useState(false);
   const [changesUnsaved, setChangesUnsaved] = useState(false);
+  const [enrollments, setEnrollments] = useState();
+  const [userInfos, setUserInfos] = useState();
+
+  const fetchUserInfo = async () => {
+    let userInfos = await USER_SERVICE.findById(user.id);
+    setUserInfos(userInfos.data[0]);
+  };
+
+  const fetchUserSubjectUsers = async () => {
+    let subjectUser = await SUBJECTUSERSERVICE.fetchUserSubjectUsers(user.id);
+    setEnrollments(subjectUser.data);
+  };
 
   const changeImagePreview = (newPreview) => {
     const imageRegex = new RegExp("^.*(jpg|JPG|gif|GIF|png|PNG|jpeg|jfif)$");
@@ -148,6 +161,8 @@ export default function ProfileSettings({ desktopBackTo }) {
 
   useEffect(() => {
     setSaveText(language.save);
+    fetchUserSubjectUsers();
+    fetchUserInfo();
   }, [language.save]);
 
   return (
@@ -251,16 +266,15 @@ export default function ProfileSettings({ desktopBackTo }) {
         <div className="coursesContainer">
           <img className="coursesLogo" src="/assets/book.svg" alt="book" />
           <ul className="coursesList">
-            {courses.map((course) => {
+            {enrollments?.map((enroll) => {
               return (
-                <li key={course.id} className="courseItem">
-                  <p>{course.name}</p>
-                  <img src="/assets/student.svg" alt="student" />
-                  {/* {course.isTeacher ? (
+                <li key={enroll.id} className="courseItem">
+                  <p>{enroll.subject.name} - {enroll.subject.subject_code}</p>
+                  {userInfos?.user_role.name == ("eduapp-admin" || "eduapp-teacher") ? (
                     <img src="/assets/teacher.svg" alt="teacher" />
                   ) : (
                     <img src="/assets/student.svg" alt="student" />
-                  )} */}
+                  )}
                 </li>
               );
             })}

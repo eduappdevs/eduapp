@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import * as CHAT_SERVICE from "../../services/chat.service";
+import { useParams } from "react-router-dom";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import { getOfflineUser } from "../../utils/OfflineManager";
+import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
+import userCan, {CHAT, CREATE}  from "../../hooks/userCan";
 import ChatsAC from "../../utils/websockets/actioncable/ChatsAC";
 import Loader from "../../components/loader/Loader";
 import StandardModal from "../../components/modals/standard-modal/StandardModal";
-import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import * as CHAT_SERVICE from "../../services/chat.service";
-import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
-import userCan, {CHAT, CREATE}  from "../../hooks/userCan";
 import useLanguage from "../../hooks/useLanguage";
-import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
 import "./ChatMenu.css";
 
 let acManager = new ChatsAC();
@@ -64,7 +65,7 @@ export default function ChatMenu() {
           window.location.href = "/chat/create/direct";
         }}
         onNoAction={() => {
-          window.location.href = "/chat/create/group";
+          window.location.href = "/chat/create/group/no-subject";
         }}
         onCancelAction={() => {
           setShowPopup(false);

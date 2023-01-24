@@ -37,9 +37,7 @@ export default function Navbar({ mobile, badgeCount }) {
   const items = [
     {
       label: <a className="dropdown-menu-option" href="#" onClick={() => {
-        mobile
-          ? (window.location.href = "/menu/profile")
-          : setDesktopMenu("profile");
+        navigate("/menu/profile");
       }}
       >{language.menu_profile.toUpperCase()}</a>,
       key: 0

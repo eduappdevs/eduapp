@@ -11,6 +11,7 @@
 		"buffer": "^6.0.3",
 		"dotenv": "^16.0.1",
 		"express": "^4.18.1",
+		"flag-icons": "^6.6.6",
 		"https": "^1.0.0",
 		"hybrid-crypto-js": "^0.2.4",
 		"react": "^17.0.2",
