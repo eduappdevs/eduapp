@@ -128,35 +128,26 @@ export default function ProfileSettings({ desktopBackTo }) {
       newUserInfo.append("surname", surname);
     }
 
-    let newImg = null;
-    if (changeImage != null) {
-      newImg = FirebaseStorage.getRef(
-        "user_profiles/" + user.id + "/" + changeImage.name
-      );
+    if(changeImage != null){
+      newUserInfo.append("profile_image", changeImage);
     }
 
-    if (newImg) {
-      list(FirebaseStorage.getRef("user_profiles/" + user.id)).then((snap) => {
-        if (snap.items.length !== 0) {
-          deleteObject(snap.items[0]).then(() => {
-            uploadImg(newImg, changeImage, newUserInfo);
-          });
-        } else uploadImg(newImg, changeImage, newUserInfo);
-      });
-    } else {
-      asynchronizeRequest(async function () {
-        try {
-          await USER_SERVICE.editUser(user.id, newUserInfo);
+    asynchronizeRequest(async function () {
+      try {
+        USER_SERVICE.editUserInfo(user.id, newUserInfo).then(({data}) => {
+          updateUserImageOffline(data.profile_image.url).then(() => {
           setChangesUnsaved(true);
+          window.location.reload();
           window.location.href = "/";
-        } catch (error) {
-          if (error) {
-            switchSaveState(false);
-            setPopup(true);
-          }
+          });
+        });
+      } catch (error) {
+        if (error) {
+          switchSaveState(false);
+          setPopup(true);
         }
-      }).catch((error) => {});
-    }
+      }
+    }).catch((error) => {});
   };
 
   useEffect(() => {

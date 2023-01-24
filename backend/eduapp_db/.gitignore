@@ -40,3 +40,6 @@ dockerfile-real-production
 dockerfile-real-development
 
 dockerfile
+
+#Uploads files
+/public/uploads
