@@ -180,8 +180,8 @@ export default function ProfileSettings({ desktopBackTo }) {
           <div className="userProfileImg">
             <img
               src={
-                getOfflineUser().profile_image != null
-                  ? getOfflineUser().profile_image
+                getOfflineUser().profile_image.url != null
+                  ? getOfflineUser().profile_image.url
                   : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               }
               alt={"user"}
