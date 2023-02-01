@@ -687,6 +687,7 @@ export default function Schedulesessionslist(props) {
               <th>{language.name}</th>
               <th>{language.streaming}</th>
               <th>{language.resources}</th>
+              <th>{language.chat}</th>
               <th>{language.subjects}</th>
               <th>{language.repeated}</th>
               <th>{language.startDate}</th>
@@ -715,6 +716,14 @@ export default function Schedulesessionslist(props) {
                   id="s_resources"
                   type="text"
                   placeholder={language.resources}
+                  autoComplete="off"
+                />
+              </td>
+              <td>
+                <Input
+                  id="s_chatGroup"
+                  type="text"
+                  placeholder={language.chat}
                   autoComplete="off"
                 />
               </td>
@@ -757,6 +766,7 @@ export default function Schedulesessionslist(props) {
               </td>
               <td className="action-column">
                 <button onClick={addNewSession}>
+                  {/* add_icon */}
                   <svg
                     id="add-svg"
                     xmlns="http://www.w3.org/2000/svg"
@@ -768,6 +778,7 @@ export default function Schedulesessionslist(props) {
                   >
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                   </svg>
+                  {/* Reload icon */}
                   <svg
                     id="commit-loader-2"
                     xmlns="http://www.w3.org/2000/svg"
@@ -807,6 +818,7 @@ export default function Schedulesessionslist(props) {
                   <th>{language.endDate}</th>
                   <th>{language.streaming}</th>
                   <th>{language.resources}</th>
+                  <th>{language.chat}</th>
                   <th>{language.subjects}</th>
                   <th>{language.actions}</th>
                 </tr>
@@ -884,6 +896,21 @@ export default function Schedulesessionslist(props) {
                         />
                       </td>
                       <td>
+                        <input
+                          id={`inputSessionChat_${s.id}`}
+                          type="text"
+                          disabled
+                          value={
+                            s.chat === null
+                              ? ""
+                              : changeChatId === false
+                              ? s.chat
+                              : newChatId
+                          }
+                          onChange={() => handleChangeSessionChat(s.id)}
+                        />
+                      </td>
+                      <td>
                         <select id={`inputSubjectID_${s.id}`} disabled>
                           <option
                             defaultValue={s.subject.id}
@@ -906,6 +933,7 @@ export default function Schedulesessionslist(props) {
                           style={{ marginRight: "5px" }}
                           onClick={() => confirmDeleteEvent(s)}
                         >
+                          {/* trush_icon */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -921,6 +949,7 @@ export default function Schedulesessionslist(props) {
                           style={{ marginRight: "5px" }}
                           onClick={(e) => showEditOptionSession(e, s)}
                         >
+                          {/* Edit_icon */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -940,6 +969,7 @@ export default function Schedulesessionslist(props) {
                           style={{ marginRight: "5px", display: "none" }}
                           onClick={(e) => editSession(e, s)}
                         >
+                          {/* check_icon */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -955,6 +985,7 @@ export default function Schedulesessionslist(props) {
                           style={{ display: "none" }}
                           onClick={(e) => closeEditSession(e, s)}
                         >
+                          {/* cancel_icon */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
