@@ -20,7 +20,7 @@ export default function Home() {
   const [firstSessionId, setFirstSessionId] = useState("");
   const [sessionLength, setSessionLength] = useState("");
   const [userImage, setUserImage] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+  // const [userRole, setUserRole] = useState(null);
 
   const sessionsPreSorted = [];
   let user = getOfflineUser().user;
@@ -32,10 +32,10 @@ export default function Home() {
   const language = useLanguage();
   const navigate = useNavigate();
 
-  const fetchUserRole = async () => {
-    let userRole = await ROLESERVICE.fetchRole(user.user_info.user_role_id);
-    setUserRole(userRole);
-  };
+  // const fetchUserRole = async () => {
+  //   let userRole = await ROLESERVICE.fetchRole(user.user_info.user_role_id);
+  //   setUserRole(userRole);
+  // };
 
   const openSessionAdd = () => {
     document
@@ -80,10 +80,8 @@ export default function Home() {
   };
 
   const getSessions = async () => {
-    let request = await SUBJECT_SERVICE.fetchUserSubjects(
-      getOfflineUser().user.id
-    );
-    request.data.map((e) => {
+    let sessions = await SUBJECT_SERVICE.fetchUserSessions();
+    sessions.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
       let startDate = e.session_start_date;

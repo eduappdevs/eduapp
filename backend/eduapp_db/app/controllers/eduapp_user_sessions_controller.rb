@@ -141,7 +141,8 @@ class EduappUserSessionsController < ApplicationController
 
   # GET /eduapp_user_sessions/1
   def show
-    if !check_perms_query!(get_user_roles.perms_sessions)
+    if !check_perms_query!(get_user_roles.perms_sessions, false) && !check_perms_query_self!(get_user_roles.perms_subjects, current_user)
+      deny_perms_access!
       return
     end
     render json: @eduapp_user_session

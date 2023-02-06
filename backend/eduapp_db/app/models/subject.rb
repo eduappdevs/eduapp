@@ -1,4 +1,5 @@
 class Subject < ApplicationRecord
     belongs_to :course
-    has_and_belongs_to_many :users
+    has_many :subjects_user
+    has_many :users, through: :subjects_user
 end

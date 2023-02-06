@@ -16,7 +16,7 @@ import "./GroupChatCreate.css";
 import useLanguage from "../../../hooks/useLanguage";
 
 export default function GroupChatCreate() {
-  const { subject_id } = useParams({});
+  const { subject_id } = useParams("");
   const navigate = useNavigate();
   const language = useLanguage();
 
@@ -39,7 +39,7 @@ export default function GroupChatCreate() {
   ]);
 
   const fetchSubject = async () => {
-    let subject = await SUBJECTSERVICE.fetchSubject(subject_id);
+    const subject = await SUBJECTSERVICE.fetchSubject(subject_id);
     setSubject(subject.data);
   };
 

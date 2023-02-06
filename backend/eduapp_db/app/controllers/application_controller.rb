@@ -127,6 +127,19 @@ class ApplicationController < ActionController::API
     return ids.length > 0 ? table.where(id: ids) : nil
   end
 
+  # PERMISSIONS
+
+  # Deny access due to permissions.
+  def deny_perms_access!
+    render json: { error: "You do not have permission to access this endpoint." }, status: :forbidden and return false
+  end
+
+  # Deny action due to permissions.
+  def deny_perms_action!
+    render json: { error: "You do not have permission to perform this action." }, status: 405 and return false
+  end
+
+
   private
 
   # AUTH
@@ -243,11 +256,11 @@ class ApplicationController < ActionController::API
   end
 
   # Checks the owner that executed the desired action.
-  def check_action_owner!(requested_id)
+  def check_action_owner!(requested_id, render_error = true)
     if requested_id === @current_user
       return true
     else
-      return deny_perms_action! unless get_user_roles.name === get_admin_role.name and return true
+      return render_error ? (deny_perms_action! unless get_user_roles.name === get_admin_role.name) : false
     end
   end
 
@@ -261,11 +274,11 @@ class ApplicationController < ActionController::API
   end
 
   # Checks ```UserRole``` permissions for performing specific queries.
-  def check_perms_query!(user_roles)
+  def check_perms_query!(user_roles, render_error= true)
     if user_roles[1]
       return true
     else
-      return deny_perms_access!
+      return render_error ? deny_perms_access! : false
     end
   end
 
@@ -292,14 +305,14 @@ class ApplicationController < ActionController::API
   end
 
   # Checks ```UserRole``` permissions for updating.
-  def check_perms_update!(user_roles, needs_owner_check = false, requested_id = nil)
+  def check_perms_update!(user_roles, needs_owner_check = false, requested_id = nil, render_error = true)
     if user_roles[4]
       return true
     else
       if needs_owner_check
-        return check_action_owner!(requested_id)
+        return check_action_owner!(requested_id, render_error)
       else
-        return deny_perms_action!
+        return render_error ? deny_perms_action! : false
       end
     end
   end
