@@ -33,15 +33,14 @@ export default function Calendar() {
   const [subject, setSubject] = useState([]);
   const today = new Date();
   const currentDate = today;
+  const user = getOfflineUser().user
 
-  let userinfo = FetchUserInfo(getOfflineUser().user.id);
+  let userinfo = FetchUserInfo(user.id);
   let canCreate = useRole(userinfo, ["eduapp-teacher", "eduapp-admin"]);
 
   const getCalendar = async () => {
     let events = [];
-    let annotations = await SCHEDULE_SERVICE.fetchUserEvents(
-      getOfflineUser().user.id
-    );
+    let annotations = await SCHEDULE_SERVICE.fetchUserEvents(user.id);
     let data = annotations.data;
 
     for (let globalEvent in data.globalEvents) {
@@ -144,8 +143,8 @@ export default function Calendar() {
   };
 
   const getSubject = async () => {
-    let request = await SUBJECT_SERVICE.fetchUserVariantSubjects(
-      getOfflineUser().user.id
+    let request = await SUBJECT_SERVICE.fetchUserSubjects(
+      user.id
     );
     let subject = [];
     request.data.map((e) => {
@@ -331,6 +330,7 @@ export default function Calendar() {
         className={canCreate ? "button-calendar-option " : "hidden"}
         onClick={openCreate}
       >
+        {/* add_icon */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="white"

@@ -23,7 +23,8 @@ import useLanguage from "../../../hooks/useLanguage";
 import "./ProfileSettings.css";
 import useMobile from "../../../hooks/useMobile";
 import NameCapitalizer from "../../../utils/NameCapitalizer";
-import * as SUBJECTUSERSERVICE from "../../../services/subject_user.service";
+// import * as SUBJECTUSERSERVICE from "../../../services/subject_user.service";
+import * as SUBJECTS_SERVICE from "../../../services/subject.service";
 
 export default function ProfileSettings({ desktopBackTo }) {
   const language = useLanguage();
@@ -52,8 +53,11 @@ export default function ProfileSettings({ desktopBackTo }) {
   };
 
   const fetchUserSubjectUsers = async () => {
-    let subjectUser = await SUBJECTUSERSERVICE.fetchUserSubjectUsers(user.id);
-    setEnrollments(subjectUser.data);
+    let subjects = await SUBJECTS_SERVICE.fetchUserSubjects(user.id);
+    if (subjects){
+      console.log(subjects)
+    }
+    setEnrollments(subjects.data);
   };
 
   const changeImagePreview = (newPreview) => {
@@ -240,6 +244,7 @@ export default function ProfileSettings({ desktopBackTo }) {
         </div>
         <div className="commitChanges" onClick={commitChanges}>
           <span>{saveText}</span>
+          {/* reload_icon */}
           <svg
             id="commit-loader"
             xmlns="http://www.w3.org/2000/svg"
@@ -263,14 +268,15 @@ export default function ProfileSettings({ desktopBackTo }) {
             <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
           </div>
         )}
+        {/* TODO: crear otro componente */}
         <div className="coursesContainer">
           <img className="coursesLogo" src="/assets/book.svg" alt="book" />
           <ul className="coursesList">
-            {enrollments?.map((enroll) => {
+            {enrollments && enrollments.map((enroll) => {
               return (
                 <li key={enroll.id} className="courseItem">
                   <p>{enroll.subject.name} - {enroll.subject.subject_code}</p>
-                  {userInfos?.user_role.name == ("eduapp-admin" || "eduapp-teacher") ? (
+                  {userInfos?.user_role.name === ("eduapp-admin" || "eduapp-teacher") ? (
                     <img src="/assets/teacher.svg" alt="teacher" />
                   ) : (
                     <img src="/assets/student.svg" alt="student" />

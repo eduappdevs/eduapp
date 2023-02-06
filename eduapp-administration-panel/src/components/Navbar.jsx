@@ -6,10 +6,13 @@ import asynchronizeRequest, { JSREPORT } from "../API";
 import { fetchMessage } from "../services/chat.service";
 import { fetchCourses } from "../services/course.service";
 import { fetchResourcesJson } from "../services/resource.service";
-import LanguageSwitcher from "./LanguageSwitcher";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import * as INSTITUTION_SERVICE from "../services/institution.service";
+// import useLanguage from "../hooks/useLanguage";
+
+import LanguageSwitcher from "./LanguageSwitcher";
+
 import "./componentStyles/languageSwitcher.css";
 import "../styles/navbar.css";
 
@@ -25,6 +28,7 @@ export default function Navbar({ locationState }) {
   const toolbarLocation = (loc) => {
     setLocation(loc);
     localStorage.setItem("eduapp_last_viewed", loc);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // eslint-disable-next-line no-unused-vars

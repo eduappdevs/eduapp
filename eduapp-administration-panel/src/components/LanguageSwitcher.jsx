@@ -3,6 +3,8 @@ import React, { useContext, useEffect } from "react";
 import * as AUTH_SERVICE from "../services/auth.service";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import LANGUAGES from "../constants/languages";
+import { availableLanguages, flagsLanguages } from "../hooks/useLanguage";
+
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 export default function LanguageSwitcher() {
@@ -15,9 +17,50 @@ export default function LanguageSwitcher() {
     }
   }, [language]);
 
+  const selected_language = availableLanguages.find(
+    (language) => {
+      return language[0] === localStorage.eduapp_language
+    }
+  )
+
+  const flag = flagsLanguages.find(
+    (language) => {
+      return language[0] === selected_language[0]
+    }
+  )
+
+  const select_options = availableLanguages.map(([code, name]) => {
+      if(code !== localStorage.eduapp_language){
+        return (
+          <option key={code} value={code}>
+            {name}
+          </option>
+          )
+      }else{
+        return <></>
+      }
+    })
   return (
     <div className="languageSwitcher">
-      <ul>
+      {/* <div> */}
+        <select
+          onChange={(e) => {
+            setLanguage(LANGUAGES[e.target.value])
+          }}
+        >
+          {localStorage.eduapp_language !== undefined && (
+            <>
+              <option value={localStorage.eduapp_language} className={`fi ${flag[1]}`}>
+                {selected_language[1]}
+              </option>
+              {
+                select_options
+              }
+            </>
+          )}
+        </select>
+      {/* </div> */}
+      {/* <ul>
         <li onClick={() => setLanguage(LANGUAGES.es_es)}>
           <span
             className={
@@ -33,7 +76,7 @@ export default function LanguageSwitcher() {
               language.lang_identifier === "da_dk" ? "languageSelected" : ""
             }
           >
-            <span class="fi fi-dk"></span>
+            <span className="fi fi-dk"></span>
           </span>
         </li>
         <li onClick={() => setLanguage(LANGUAGES.en_en)}>
@@ -42,7 +85,7 @@ export default function LanguageSwitcher() {
               language.lang_identifier === "en_en" ? "languageSelected" : ""
             }
           >
-            <span class="fi fi-gb"></span>
+            <span className="fi fi-gb"></span>
           </span>
         </li>
         <li onClick={() => setLanguage(LANGUAGES.pt_pt)}>
@@ -60,10 +103,10 @@ export default function LanguageSwitcher() {
               language.lang_identifier === "ro_ro" ? "languageSelected" : ""
             }
           >
-            <span class="fi fi-ro"></span>
+            <span className="fi fi-ro"></span>
           </span>
         </li>
-      </ul>
+      </ul> */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="28"

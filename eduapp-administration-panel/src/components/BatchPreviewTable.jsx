@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as ENROLLCONFIGSERVICE from "../services/enrollConfig.service";
-import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
+// import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as USERSERVICE from "../services/user.service";
@@ -240,7 +240,7 @@ export default function BatchPreviewTable(props) {
   };
 
   const userEnrollSubject = (sId, uId) => {
-    SUBJECTSUSERSSERVICE.createSubjectUser({ subject_id: sId, user_id: uId });
+    SUBJECTSERVICE.createSubject({ subject_id: sId, user_id: uId });
   };
 
   const postEvent = (event) => {
