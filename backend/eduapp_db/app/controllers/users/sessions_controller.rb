@@ -13,7 +13,7 @@ class Users::SessionsController < Devise::SessionsController
     sign_in(resource_name, resource)
     yield resource if block_given?
 
-    @user_info = UserInfo.where(user_id: resource.id).first.serializable_hash(:include => [:user, :user_role], :except => [:user_role_id, :googleid, :created_at, :updated_at])
+    @user_info = UserInfo.where(user_id: resource.id).first.serializable_hash(:include => [:user, :user_role, :profile_image], :except => [:user_role_id, :googleid, :created_at, :updated_at])
     respond_with @user_info
   end
 
@@ -63,7 +63,7 @@ class Users::SessionsController < Devise::SessionsController
       user.save
       render json: {status: 200, message: "Successfully unlinked"}
       return
-    
+
   end
 
   def glogin_login
@@ -75,14 +75,13 @@ class Users::SessionsController < Devise::SessionsController
 
     @user_info = UserInfo.where(user_id: user.id).first.serializable_hash(:include => [:user, :user_role], :except => [:user_role_id, :googleid, :created_at, :updated_at])
     respond_with @user_info
-    
+
   end
 
   private
 
   def respond_with(resource, _opts = {})
     token = User.generate_token(resource, request.remote_ip)
-
     headers["EduAuth"] = "Bearer #{token}"
     headers["Access-Control-Allow-Origin"] = "*"
     headers["Access-Control-Allow-Methods"] = "POST, PUT, DELETE, GET, OPTIONS"

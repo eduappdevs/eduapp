@@ -34,7 +34,12 @@ node_modules
 config-velorcios
 
 .env-real-production
+.env-real-development
 
 dockerfile-real-production
+dockerfile-real-development
 
 dockerfile
+
+#Uploads files
+/public/uploads

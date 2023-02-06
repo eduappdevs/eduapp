@@ -128,35 +128,26 @@ export default function ProfileSettings({ desktopBackTo }) {
       newUserInfo.append("surname", surname);
     }
 
-    let newImg = null;
-    if (changeImage != null) {
-      newImg = FirebaseStorage.getRef(
-        "user_profiles/" + user.id + "/" + changeImage.name
-      );
+    if(changeImage != null){
+      newUserInfo.append("profile_image", changeImage);
     }
 
-    if (newImg) {
-      list(FirebaseStorage.getRef("user_profiles/" + user.id)).then((snap) => {
-        if (snap.items.length !== 0) {
-          deleteObject(snap.items[0]).then(() => {
-            uploadImg(newImg, changeImage, newUserInfo);
-          });
-        } else uploadImg(newImg, changeImage, newUserInfo);
-      });
-    } else {
-      asynchronizeRequest(async function () {
-        try {
-          await USER_SERVICE.editUser(user.id, newUserInfo);
+    asynchronizeRequest(async function () {
+      try {
+        USER_SERVICE.editUserInfo(user.id, newUserInfo).then(({data}) => {
+          updateUserImageOffline(data.profile_image.url).then(() => {
           setChangesUnsaved(true);
+          window.location.reload();
           window.location.href = "/";
-        } catch (error) {
-          if (error) {
-            switchSaveState(false);
-            setPopup(true);
-          }
+          });
+        });
+      } catch (error) {
+        if (error) {
+          switchSaveState(false);
+          setPopup(true);
         }
-      }).catch((error) => {});
-    }
+      }
+    }).catch((error) => {});
   };
 
   useEffect(() => {
@@ -189,8 +180,8 @@ export default function ProfileSettings({ desktopBackTo }) {
           <div className="userProfileImg">
             <img
               src={
-                getOfflineUser().profile_image != null
-                  ? getOfflineUser().profile_image
+                getOfflineUser().profile_image.url != null
+                  ? getOfflineUser().profile_image.url
                   : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               }
               alt={"user"}
