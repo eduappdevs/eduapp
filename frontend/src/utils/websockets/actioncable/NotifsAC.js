@@ -15,6 +15,7 @@ export default class NotifsAC extends ACManager {
   constructor() {
     super("user notifications.");
     this.chatId = null;
+    this.instanceURC_IDB()
   }
 
   instanceURC_IDB() {

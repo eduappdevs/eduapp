@@ -6,6 +6,7 @@ ruby "3.1.2"
 gem "rails", "~> 6.1.4", ">= 6.1.4.1"
 gem "pg", "~> 1.1"
 gem "puma", "~> 5.0"
+gem 'carrierwave'
 gem "devise"
 gem "devise-jwt"
 gem "jwt"
@@ -14,6 +15,7 @@ gem "useragent"
 gem "dotenv-rails", :group => [:production, :development, :test]
 gem "rack-cors", :require => "rack/cors"
 gem "ransack"
+gem 'rmagick'
 gem "image_processing", "~> 1.2"
 gem "active_model_serializers"
 gem "bootsnap", ">= 1.4.4", require: false

@@ -29,6 +29,8 @@ Rails.application.configure do
 
   config.hosts << ENV.fetch("DOMAIN")
 
+  # config.host_authorization = {"4a0c-2a0c-5a80-1605-7300-4a5e-3126-a6ef-a3eb.ngrok.io"}
+
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
@@ -64,7 +66,8 @@ Rails.application.configure do
 
   # Action Cable Config (FMV)
   # config.action_cable.url = "wss://#{ENV.fetch("DOMAIN")}/chat"
-  config.action_cable.allowed_request_origins = [ENV.fetch("REACT_APP_FRONTEND_ENDPOINT"), ENV.fetch("REACT_APP_ADMIN_ENDPOINT")]
+  # config.action_cable.allowed_request_origins = [ENV.fetch("REACT_APP_FRONTEND_ENDPOINT"), ENV.fetch("REACT_APP_ADMIN_ENDPOINT")]
+  config.action_cable.disable_request_forgery_protection = true
 
   config.action_mailer.delivery_method = :smtp
 

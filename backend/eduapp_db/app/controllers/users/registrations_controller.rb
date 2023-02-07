@@ -57,6 +57,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         user.update_attribute(p[0],p[1])
       end
       user.user_info.update_attribute(:user_name, user.username);
+      user.user_info.update_attribute(:profile_image, user.profile_image);
 
     rescue => error
       render json: { errors: error}, status: :unprocessable_entity

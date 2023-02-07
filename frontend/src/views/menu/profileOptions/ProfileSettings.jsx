@@ -23,7 +23,8 @@ import useLanguage from "../../../hooks/useLanguage";
 import "./ProfileSettings.css";
 import useMobile from "../../../hooks/useMobile";
 import NameCapitalizer from "../../../utils/NameCapitalizer";
-import * as SUBJECTUSERSERVICE from "../../../services/subject_user.service";
+// import * as SUBJECTUSERSERVICE from "../../../services/subject_user.service";
+import * as SUBJECTS_SERVICE from "../../../services/subject.service";
 
 export default function ProfileSettings({ desktopBackTo }) {
   const language = useLanguage();
@@ -52,8 +53,11 @@ export default function ProfileSettings({ desktopBackTo }) {
   };
 
   const fetchUserSubjectUsers = async () => {
-    let subjectUser = await SUBJECTUSERSERVICE.fetchUserSubjectUsers(user.id);
-    setEnrollments(subjectUser.data);
+    let subjects = await SUBJECTS_SERVICE.fetchUserSubjects(user.id);
+    if (subjects){
+      console.log(subjects)
+    }
+    setEnrollments(subjects.data);
   };
 
   const changeImagePreview = (newPreview) => {
@@ -128,35 +132,26 @@ export default function ProfileSettings({ desktopBackTo }) {
       newUserInfo.append("surname", surname);
     }
 
-    let newImg = null;
-    if (changeImage != null) {
-      newImg = FirebaseStorage.getRef(
-        "user_profiles/" + user.id + "/" + changeImage.name
-      );
+    if(changeImage != null){
+      newUserInfo.append("profile_image", changeImage);
     }
 
-    if (newImg) {
-      list(FirebaseStorage.getRef("user_profiles/" + user.id)).then((snap) => {
-        if (snap.items.length !== 0) {
-          deleteObject(snap.items[0]).then(() => {
-            uploadImg(newImg, changeImage, newUserInfo);
-          });
-        } else uploadImg(newImg, changeImage, newUserInfo);
-      });
-    } else {
-      asynchronizeRequest(async function () {
-        try {
-          await USER_SERVICE.editUser(user.id, newUserInfo);
+    asynchronizeRequest(async function () {
+      try {
+        USER_SERVICE.editUserInfo(user.id, newUserInfo).then(({data}) => {
+          updateUserImageOffline(data.profile_image.url).then(() => {
           setChangesUnsaved(true);
+          window.location.reload();
           window.location.href = "/";
-        } catch (error) {
-          if (error) {
-            switchSaveState(false);
-            setPopup(true);
-          }
+          });
+        });
+      } catch (error) {
+        if (error) {
+          switchSaveState(false);
+          setPopup(true);
         }
-      }).catch((error) => {});
-    }
+      }
+    }).catch((error) => {});
   };
 
   useEffect(() => {
@@ -189,8 +184,8 @@ export default function ProfileSettings({ desktopBackTo }) {
           <div className="userProfileImg">
             <img
               src={
-                getOfflineUser().profile_image != null
-                  ? getOfflineUser().profile_image
+                getOfflineUser().profile_image.url != null
+                  ? getOfflineUser().profile_image.url
                   : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
               }
               alt={"user"}
@@ -240,6 +235,7 @@ export default function ProfileSettings({ desktopBackTo }) {
         </div>
         <div className="commitChanges" onClick={commitChanges}>
           <span>{saveText}</span>
+          {/* reload_icon */}
           <svg
             id="commit-loader"
             xmlns="http://www.w3.org/2000/svg"
@@ -263,14 +259,15 @@ export default function ProfileSettings({ desktopBackTo }) {
             <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />
           </div>
         )}
+        {/* TODO: crear otro componente */}
         <div className="coursesContainer">
           <img className="coursesLogo" src="/assets/book.svg" alt="book" />
           <ul className="coursesList">
-            {enrollments?.map((enroll) => {
+            {enrollments && enrollments.map((enroll) => {
               return (
                 <li key={enroll.id} className="courseItem">
                   <p>{enroll.subject.name} - {enroll.subject.subject_code}</p>
-                  {userInfos?.user_role.name == ("eduapp-admin" || "eduapp-teacher") ? (
+                  {userInfos?.user_role.name === ("eduapp-admin" || "eduapp-teacher") ? (
                     <img src="/assets/teacher.svg" alt="teacher" />
                   ) : (
                     <img src="/assets/student.svg" alt="student" />

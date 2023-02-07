@@ -11,6 +11,8 @@ export default function EditView(props) {
 
   const [editStartDate, setEditStart] = useState("");
   const [editEndDate, setEditEnd] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
   const [saveText, setSaveText] = useState(language.save);
 
   const [showPopup, setShowPopup] = useState(false);
@@ -76,6 +78,8 @@ export default function EditView(props) {
   useEffect(() => {
     setEditStart(props.data.startDate);
     setEditEnd(props.data.endDate);
+    setEditTitle(props.data.title);
+    setEditDescription(props.data.description);
   }, [props.data]);
 
   const updateEvent = async (e) => {
@@ -250,6 +254,10 @@ export default function EditView(props) {
                 placeholder={props.data.title}
                 name="editTitle"
                 type="text"
+                value={editTitle}
+                onChange={(e) => {
+                  setEditTitle(e.target.value);
+                }}
               ></input>
             </div>
             <div className="calendar-view-edit-hour">
@@ -283,6 +291,10 @@ export default function EditView(props) {
                 name="editDescription"
                 type="text"
                 maxLength="150"
+                value={editDescription}
+                onChange={(e) => {
+                  setEditDescription(e.target.value);
+                }}
               />
             </div>
             <div className="calendar-view-edit-session-information">

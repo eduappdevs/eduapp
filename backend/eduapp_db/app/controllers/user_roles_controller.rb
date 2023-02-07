@@ -63,7 +63,10 @@ class UserRolesController < ApplicationController
 
   # GET /user_roles/1
   def show
-    return if !check_perms_query!(get_user_roles.perms_roles)
+    if !check_perms_query!(get_user_roles.perms_roles,false) && !check_perms_query_self!(get_user_roles.perms_roles, current_user)
+      deny_perms_access!
+      return
+    end
     render json: @user_role
   end
 
