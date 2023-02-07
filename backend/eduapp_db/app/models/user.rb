@@ -10,6 +10,8 @@ class User < ApplicationRecord
 
   has_one :user_info
   has_many :tuitions
+  has_many :subjects_user
+  has_many :subjects, through: :subjects_user
 
   # Allow user to login either with username and email
 

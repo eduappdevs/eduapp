@@ -97,6 +97,7 @@ export default function Schedulesessionslist(props) {
   };
 
   const finalizedDelete = (type, icon, confirmDel, text) => {
+    switchEditState(false);
     setPopupType(type);
     setPopupIcon(icon);
     setPopup(true);
@@ -112,16 +113,16 @@ export default function Schedulesessionslist(props) {
     setPopupIcon("error");
   };
 
-  const fetchSessions = async (page, order = null, searchParams = null) => {
-    await API.asynchronizeRequest(function () {
+  const fetchSessions = async (page, order = null, searchParams) => {
+    API.asynchronizeRequest(function () {
       SCHEDULESERVICE.pagedSessions(page, order, searchParams)
-        .then((e) => {
-          setActualPage(e.data.page);
-          setMaxPages(e.data.total_pages);
-          setSessions(e.data.current_page);
+        .then((us) => {
+          setActualPage(us.data.page);
+          setMaxPages(us.data.total_pages);
+          setSessions(us.data.current_page);
         })
-        .catch(async (e) => {
-          await interceptExpiredToken(e);
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
         });
     }).then(async (e) => {
       if (e) {
@@ -149,7 +150,6 @@ export default function Schedulesessionslist(props) {
   };
 
   const addNewSession = async (e) => {
-    e.preventDefault();
     switchEditState(false);
 
     const context = [
@@ -205,8 +205,8 @@ export default function Schedulesessionslist(props) {
     }
     API.asynchronizeRequest(function () {
       SCHEDULESERVICE.createSession(SessionJson)
-        .then((error) => {
-          if (error) {
+        .then((e) => {
+          if (e) {
             finalizedCreate("info", true, language.creationCompleted, false);
           }
         })
@@ -231,7 +231,7 @@ export default function Schedulesessionslist(props) {
     switchEditState(false);
   };
 
-  const deleteSession = async (id, batch_id) => {
+  const deleteSession = (id, batch_id) => {
     switchEditState(false);
     if (batch_id === null) {
       API.asynchronizeRequest(function () {
