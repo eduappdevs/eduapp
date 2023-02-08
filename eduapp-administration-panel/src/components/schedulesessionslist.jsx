@@ -623,7 +623,7 @@ export default function Schedulesessionslist(props) {
     let name = document.getElementById("s_name").value;
     let streaming = document.getElementById("s_streaming").value;
     let resource = document.getElementById("s_resources").value;
-    let chat = document.getElementById("s_chatGroup").value;
+    let chat = ''; //document.getElementById("s_chatGroup").value;
 
     let info = {
       name: name,
@@ -688,7 +688,7 @@ export default function Schedulesessionslist(props) {
               <th>{language.streaming}</th>
               <th>{language.resources}</th>
               <th>{language.chat}</th>
-              <th>{language.subjects}</th>
+              {/* <th>{language.subjects}</th> */}
               <th>{language.repeated}</th>
               <th>{language.startDate}</th>
               <th>{language.endDate}</th>
@@ -719,14 +719,14 @@ export default function Schedulesessionslist(props) {
                   autoComplete="off"
                 />
               </td>
-              <td>
+              {/* <td>
                 <Input
                   id="s_chatGroup"
                   type="text"
                   placeholder={language.chat}
                   autoComplete="off"
                 />
-              </td>
+              </td> */}
               <td className="subjecButton">
                 <select id="s_subjectId">
                   <option defaultValue={language.chooseSubject}>

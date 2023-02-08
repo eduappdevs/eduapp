@@ -72,7 +72,7 @@ export default function ControlPanel() {
       <div className="main-section">
         <Toolbar location={location} />
         <div
-          className="controlPanel-content-container"
+          className={`controlPanel-content-container ${location}`}
           id="controlPanelContentContainer"
         >
           <ComponentManager />

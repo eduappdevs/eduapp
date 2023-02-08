@@ -270,6 +270,9 @@ export default function View(props) {
                     className="bi bi-mortarboard"
                     viewBox="0 0 16 16"
                     onClick={() => {
+                      setTimeout(() => {
+                        document.body.style.overflow = "auto";
+                      }, 500);
                       props.data.resources &&
                         (window.location = props.data.resources);
                     }}
@@ -287,6 +290,9 @@ export default function View(props) {
                     className="bi bi-camera-video"
                     viewBox="0 0 16 16"
                     onClick={() => {
+                      setTimeout(() => {
+                        document.body.style.overflow = "auto";
+                      }, 500);
                       props.data.stream &&
                         (window.location = props.data.stream);
                     }}
@@ -308,6 +314,9 @@ export default function View(props) {
                       className="bi bi-chat-dots"
                       viewBox="0 0 16 16"
                       onClick={() => {
+                        setTimeout(() => {
+                          document.body.style.overflow = "auto";
+                        }, 500);
                         navigate(`/chat/g${subject?.chat_link}`);
                       }}
                     >
@@ -325,6 +334,9 @@ export default function View(props) {
                       className="bi bi-chat-dots"
                       viewBox="0 0 16 16"
                       onClick={() => {
+                        setTimeout(() => {
+                          document.body.style.overflow = "auto";
+                        }, 500);
                         navigate(`/chat/create/group/${subject?.id}`);
                       }}
                     >
