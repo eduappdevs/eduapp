@@ -54,6 +54,7 @@ export default function App() {
     if (getOfflineUser().user !== null) {
       let db = new IDBManager();
       await db.getStorageInstance("eduapp-calendar-event", "events");
+      let test = await db.isEmpty()
       SCHEDULE_SERVICE.fetchEventsById(getOfflineUser().user.id).then(
         async (e) => {
           if (e) {

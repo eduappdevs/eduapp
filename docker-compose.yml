@@ -14,8 +14,8 @@ services:
       - ./backend/eduapp_db/postgres.docker.env
     volumes:
       - eduapp_db_data:/var/lib/postgresql/data/pgdata
-    # ports:          # Comment this 2 lines in production
-    #   - "5432:5432" # It's usefull only to access to the database with pgAdmin
+    ports:          # Comment this 2 lines in production
+      - "5432:5432" # It's usefull only to access to the database with pgAdmin
     restart: unless-stopped
     networks:
       - common

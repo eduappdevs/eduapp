@@ -123,6 +123,29 @@ export default class IDBManager {
   }
 
   /**
+   * Get all [keys,values] of the DB.
+   */
+  async getAll() {
+    return await idb.entries(this.store)
+  }
+
+  /**
+   * Get all [values] of the DB.
+   */
+  async getAllValues() {
+    return await idb.values(this.store)
+  }
+
+  /**
+   * Check if the DB is empty.
+   */
+  async isEmpty() {
+    return await idb.entries(this.store).then((entries) => {
+      return entries.length === 0 ? true : false
+    });
+  }
+
+  /**
    * Deletes the instantiated store.
    */
   async clear() {

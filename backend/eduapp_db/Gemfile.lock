@@ -114,6 +114,7 @@ GEM
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.0)
     ffi (1.15.5)
+    ffi (1.15.5-x64-mingw-ucrt)
     ffi (1.15.5-x64-mingw32)
     globalid (1.0.0)
       activesupport (>= 5.0)
@@ -273,6 +274,7 @@ GEM
     zeitwerk (2.6.0)
 
 PLATFORMS
+  x64-mingw-ucrt
   x64-mingw32
   x86_64-darwin-21
   x86_64-linux

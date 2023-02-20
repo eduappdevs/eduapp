@@ -37,7 +37,6 @@ export default class ChatsAC extends ACManager {
   }
 
   async generateChannelConnection(chatIdentifier) {
-    console.log(chatIdentifier, "chatIdentifier");
     this.connection = this.consumer.subscriptions.create({
       channel: "ChatChannel",
       chat_room: chatIdentifier,
@@ -60,7 +59,6 @@ export default class ChatsAC extends ACManager {
       let payload = {
         command: cmd,
       };
-
       if (args.length !== 0) {
         switch (cmd) {
           case "message":
@@ -72,8 +70,7 @@ export default class ChatsAC extends ACManager {
             break;
         }
       }
-
-      this.connection.send(payload);
-    }
+      return this.connection.send(payload);
+    } else return false
   }
 }

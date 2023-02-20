@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
-import userCan, {CHAT, CREATE}  from "../../hooks/userCan";
+import userCan, { CHAT, CREATE } from "../../hooks/userCan";
 import ChatsAC from "../../utils/websockets/actioncable/ChatsAC";
 import Loader from "../../components/loader/Loader";
 import StandardModal from "../../components/modals/standard-modal/StandardModal";
@@ -12,8 +12,10 @@ import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useLanguage from "../../hooks/useLanguage";
 import "./ChatMenu.css";
+import IDBManager from "../../utils/IDBManager";
 
 let acManager = new ChatsAC();
+
 export default function ChatMenu() {
   const [chats, setChats] = useState([]);
 
@@ -21,7 +23,12 @@ export default function ChatMenu() {
 
   const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
-  let canCreate = userCan(userInfo, CHAT,CREATE);
+  let canCreate = userCan(userInfo, CHAT, CREATE);
+
+  const activeMessagesDB = async () => {
+    let db = new IDBManager();
+    await db.getStorageInstance("eduapp-messages-db", "messages");
+  }
 
   const getChats = async () => {
     let chats = (
@@ -44,6 +51,7 @@ export default function ChatMenu() {
     acManager.closeConnection();
     RequireAuth();
     getChats();
+    activeMessagesDB();
   }, []);
 
   return (
@@ -95,7 +103,7 @@ export default function ChatMenu() {
             <>
               <h2>{language.chats}</h2>
               <ul>
-                {chats.sort((a,b) => a.chat_info?.last_message?.send_date < b.chat_info?.last_message?.send_date).map((chat) => {
+                {chats.sort((a, b) => a.chat_info?.last_message?.send_date < b.chat_info?.last_message?.send_date).map((chat) => {
                   let connectionId =
                     (chat.chat_info.isGroup ? "g" : "p") + chat.chat_info.id;
                   return (
@@ -124,7 +132,7 @@ export default function ChatMenu() {
                         {/* <p className="chat-writing">{chat.chat_info?.last_message.message}</p> */}
                       </div>
                       <p className="chat-pending-messages">
-                        <span>{ (!chat.chat_info?.self_counterpart?.last_seen && chat.chat_info?.last_message?.id) || chat.chat_info?.last_message?.send_date > chat.chat_info?.self_counterpart?.last_seen ? 'NEW' : '0'}</span>
+                        <span>{(!chat.chat_info?.self_counterpart?.last_seen && chat.chat_info?.last_message?.id) || chat.chat_info?.last_message?.send_date > chat.chat_info?.self_counterpart?.last_seen ? 'NEW' : '0'}</span>
                       </p>
                     </li>
                   );
