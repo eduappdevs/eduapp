@@ -16,6 +16,7 @@ export default function LoginAuth() {
   const [forgotModalShow, setForgotModalShow] = useState(false);
   const [sendEmail, setSendEmail] = useState(false);
   const [emailSentModalShow, setEmailSentModalShow] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   const language = useLanguage();
 
@@ -30,6 +31,7 @@ export default function LoginAuth() {
 
       await AUTH_SERVICE.login(userData);
     } catch (error) {
+      setLoginError(true);
       console.log("here", error);
     }
   };
@@ -50,6 +52,7 @@ export default function LoginAuth() {
         type="text"
         name="login"
         onChange={(e) => {
+          loginError && setLoginError(false);
           setLogin(e.target.value);
         }}
       />
@@ -59,6 +62,7 @@ export default function LoginAuth() {
         type="password"
         name="password"
         onChange={(e) => {
+          loginError && setLoginError(false);
           setPassword(e.target.value);
         }}
         required
@@ -103,6 +107,7 @@ export default function LoginAuth() {
           setEmailSentModalShow(false);
         }}
       />
+      {loginError ? (<div class="error">User or password is incorrect.</div>): null }
       <button data-testid="loginButton" type="submit">
         {language.login_title}
       </button>

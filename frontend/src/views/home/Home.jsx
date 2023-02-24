@@ -150,7 +150,7 @@ export default function Home() {
   const openSession = (e) => {
     e.preventDefault();
     const after = document.getElementById(
-      "session-after" + e.target.id.substring(3)
+      "session-after" + e.currentTarget.id.substring(3)
     );
     const img = document.getElementById("button" + e.target.id.substring(3));
     setTimeout(() => {
@@ -207,7 +207,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    setUserImage(getOfflineUser().profile_image);
+    setUserImage(getOfflineUser().profile_image.url);
   }, [userInfo]);
 
   return (
@@ -297,8 +297,10 @@ export default function Home() {
                                     height="35"
                                     className="bi bi-mortarboard"
                                     viewBox="0 0 16 16"
-                                    onClick={() => {
-                                      navigate(data.resources_platform);
+                                    onClick={(e) => {
+                                      //navigate(data.resources_platform);
+                                      e.stopPropagation();
+                                      data.resourcesPlatform && (window.location = data.resourcesPlatform);
                                     }}
                                   >
                                     <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917l-7.5-3.5ZM8 8.46 1.758 5.965 8 3.052l6.242 2.913L8 8.46Z" />
@@ -313,8 +315,10 @@ export default function Home() {
                                     fill="currentColor"
                                     className="bi bi-camera-video"
                                     viewBox="0 0 16 16"
-                                    onClick={() => {
-                                      navigate(data.streaming_platform);
+                                    onClick={(e) => {
+                                      //navigate(data.streaming_platform);
+                                      e.stopPropagation();
+                                      data.streamingPlatform && (window.location = data.streamingPlatform);
                                     }}
                                   >
                                     <path
@@ -331,8 +335,9 @@ export default function Home() {
                                     fill="currentColor"
                                     className="bi bi-chat-dots"
                                     viewBox="0 0 16 16"
-                                    onClick={() => {
-                                      navigate(data.session_chat_id);
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      data.chat && navigate(data.chat);
                                     }}
                                   >
                                     <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />

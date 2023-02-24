@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["http://localhost:3001", "http://localhost:4001", "https://eduapp-online.web.app"],
+    "origin": ["http://localhost:8443", "http://localhost:4010", "https://eduapp-online.web.app"],
     "responseHeader": ["Content-Type"],
     "method": ["GET"],
     "maxAgeSeconds": 3600

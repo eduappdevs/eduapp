@@ -209,7 +209,7 @@ export default function Navbar({ locationState }) {
           </div>
           <div className="users-button-container button-container">
             <span>
-              <p>Users</p>
+              <p>{language.users}</p>
             </span>
             <ul className={"suboptions"}>
               <li
@@ -234,7 +234,19 @@ export default function Navbar({ locationState }) {
                     : "button-suboptions"
                 }
               >
-                <p>{language.enrollment}</p>
+                <p>{language.enrollment_courses}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("enroll_subjects");
+                }}
+                className={
+                  activeSection === "enroll_subjects"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.enrollment_subjects}</p>
               </li>
               <li
                 onClick={() => {

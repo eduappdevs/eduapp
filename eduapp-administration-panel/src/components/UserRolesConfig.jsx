@@ -24,7 +24,7 @@ export default function UserRolesConfig() {
   const [newPermsDesc, setNewPermsDesc] = useState("");
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredRoles = useFilter(
@@ -447,13 +447,7 @@ export default function UserRolesConfig() {
           </thead>
           <tbody>
             <tr>
-              <td
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <td className="action-column">
                 <button onClick={async () => await createRole()}>
                   <svg
                     id="add-svg"

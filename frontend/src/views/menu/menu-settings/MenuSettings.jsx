@@ -20,7 +20,7 @@ export default function MenuSettings({ desktopBackTo }) {
         <MenuHeader
           backTo={() => {
             if (mobile) {
-              window.location.href = "/menu";
+              window.location.href = "/home";
               return;
             }
 

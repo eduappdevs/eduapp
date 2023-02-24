@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
+import * as RESOURCE_SERVICE from "../../../services/resource.service";
+import { asynchronizeRequest } from "../../../API";
+import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
+import { getOfflineUser } from "../../../utils/OfflineManager";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import ReactPlayer from "react-player";
 import MediaFix from "../../../utils/MediaFixer";
-import { asynchronizeRequest } from "../../../API";
-import * as RESOURCE_SERVICE from "../../../services/resource.service";
-import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import useRole from "../../../hooks/useRole";
-import { getOfflineUser } from "../../../utils/OfflineManager";
 import useLanguage from "../../../hooks/useLanguage";
 import "./OpenedResource.css";
 
@@ -140,6 +140,7 @@ export default function OpenedResource() {
         resourceName={name}
         editResource={() => editResource(getResourceId())}
         deleteResource={() => deleteResource(getResourceId())}
+        language={language}
       />
       <div className="resourceOpened__info">
         <h1>{name}</h1>
@@ -165,9 +166,6 @@ export default function OpenedResource() {
           )}
         </ul>
       </div>
-      {/* <div className="resourceOpened__date">
-				<p>*insert code date*</p>
-			</div> */}
     </div>
   );
 }

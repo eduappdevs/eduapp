@@ -43,9 +43,12 @@ export const editCourse = async (body) => {
   });
 };
 
-export const pagedCourses = async (page, order = null) => {
+export const pagedCourses = async (page, order = null, searchParams = []) => {
+  const value = searchParams['query']
+  const attribute = searchParams['selectedField']
+  const extras = searchParams['extras']
   return await axios.get(
-    `${COURSES}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    `${COURSES}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}&order=${btoa(JSON.stringify(order))}&extras=${extras}`,
     {
       headers: requestHeader,
     }

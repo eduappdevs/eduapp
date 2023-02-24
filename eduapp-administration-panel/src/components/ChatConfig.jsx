@@ -20,7 +20,7 @@ export default function ChatConfig() {
   const [changeName, setChangeName] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredChats = useFilter(
@@ -344,6 +344,7 @@ export default function ChatConfig() {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
+                    <th>{language.code}</th>
                     <th>{language.name}</th>
                     <th>{language.group}</th>
                     <th>{language.actions}</th>
@@ -358,6 +359,9 @@ export default function ChatConfig() {
                         return <Fragment key={e.id} />;
                     return (
                       <tr key={e.id}>
+                        <td>
+                          <input disabled type="text" value={e.id} />
+                        </td>
                         <td>
                           <input
                             id={"inputName_" + e.id}

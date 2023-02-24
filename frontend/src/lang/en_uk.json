@@ -22,6 +22,8 @@
 	"sessions": "Sessions",
 	"submit": "Submit",
 	"delete": "Delete",
+	"delete_this": "Delete this",
+	"delete_confirm": "Are you sure?",
 	"enroll": "Enroll",
 	"email": "Email",
 	"author": "Author",

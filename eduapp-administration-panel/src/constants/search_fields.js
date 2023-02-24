@@ -57,9 +57,9 @@ export function getUserFields(lang) {
   languageDetect(lang);
   return [
     ["user_name", lang.name],
-    ["user_id", lang.userId],
+    //["user_id", lang.userId],
     ["email", lang.email],
-    ["role", lang.userRole],
+    //["role", lang.userRole],
   ];
 }
 
@@ -91,6 +91,26 @@ export function parseEnrollmentFields(er, field) {
       return er.user.email;
     case "course_name":
       return er.course.name;
+    default:
+      return er[field];
+  }
+}
+
+// Enrollment Subject
+export function getSubjectEnrollmentFields(lang) {
+  languageDetect(lang);
+  return [
+    ["user_email", lang.email],
+    ["subject_name", lang.subject],
+  ];
+}
+
+export function parseSubjectEnrollmentFields(er, field) {
+  switch (field) {
+    case "user_email":
+      return er.user.email;
+    case "subject_name":
+      return er.subject.name;
     default:
       return er[field];
   }

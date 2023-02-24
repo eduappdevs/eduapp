@@ -3,6 +3,7 @@ import { Fragment, useContext, useEffect, useState } from "react";
 import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as COURSESERVICE from "../services/course.service";
+import * as CHATSERVICE from "../services/chat.service";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
@@ -19,9 +20,10 @@ export default function SubjectsConfig() {
   const [subjects, setSubjects] = useState(null);
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [courses, setCourses] = useState([]);
+  const [chats, setChats] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [changeColor, setChangeColor] = useState(false);
   const [newColor] = useState();
@@ -40,12 +42,6 @@ export default function SubjectsConfig() {
   const [idDelete, setIdDelete] = useState();
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredSubjects = useFilter(
-    subjects,
-    null,
-    SUBJECTSERVICE.filterCourses,
-    getSubjectFields(language)
-  );
 
   const shortUUID = (uuid) => uuid.substring(0, 8);
 
@@ -82,6 +78,19 @@ export default function SubjectsConfig() {
     });
   };
 
+  const fetchChats = () => {
+    API.asynchronizeRequest(function () {
+      CHATSERVICE.fetchChat().then((chats) => {
+        setChats(chats.data);
+      });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
+    });
+  };
+
   const alertCreate = async () => {
     switchEditState(false);
     setPopupText(language.creationAlert);
@@ -105,8 +114,9 @@ export default function SubjectsConfig() {
     let desc = document.getElementById("sj_desc").value;
     let color = document.getElementById("sj_color").value;
     let sel_course = document.getElementById("course_chooser").value;
+    let chat_link = document.getElementById("chat_chooser").value;
 
-    let info = [subject_code, name, desc, color, sel_course];
+    let info = [subject_code, name, desc, color, sel_course, chat_link];
 
     let valid = true;
     for (let i of info) {
@@ -124,6 +134,7 @@ export default function SubjectsConfig() {
           description: desc,
           color: color,
           course_id: sel_course,
+          chat_link: chat_link,
         })
           .then((e) => {
             if (e) {
@@ -318,9 +329,9 @@ export default function SubjectsConfig() {
     }
   };
 
-  const fetchSubjectPage = async (page, order = null) => {
+  const fetchSubjectPage = async (page, order = null, searchParams) => {
     API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.pagedSubjects(page, order)
+      SUBJECTSERVICE.pagedSubjects(page, order, searchParams)
         .then((us) => {
           setMaxPages(us.data.total_pages);
           setSubjects(us.data.current_page);
@@ -359,8 +370,9 @@ export default function SubjectsConfig() {
   };
 
   useEffect(() => {
-    fetchSubjectPage(1);
+    // fetchSubjectPage(1);
     fetchCourses();
+    fetchChats();
     setInitialFetch(true);
   }, []);
 
@@ -375,13 +387,17 @@ export default function SubjectsConfig() {
   }, [language]);
 
   useEffect(() => {
-    if (hasDoneInitialFetch) {
-      fetchSubjectPage(1, {
-        field: searchParams.selectedField,
-        order: searchParams.order,
-      });
+    if (searchParams.selectedField) {
+      fetchSubjectPage(
+        actualPage || 1,
+        {
+          field: searchParams.selectedField,
+          order: searchParams.order,
+        },
+        searchParams
+      );
     }
-  }, [searchParams.order]);
+  }, [searchParams]);
 
   return (
     <>
@@ -395,18 +411,13 @@ export default function SubjectsConfig() {
               <th>{language.description}</th>
               <th>{language.color}</th>
               <th>{language.linkedCourse}</th>
+              <th>{language.linkedChat}</th>
             </tr>
           </thead>
 
           <tbody>
             <tr>
-              <td
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <td className="action-column">
                 <button onClick={createSubject}>
                   <svg
                     id="add-svg"
@@ -477,6 +488,22 @@ export default function SubjectsConfig() {
                     : null}
                 </select>
               </td>
+              <td>
+                <select defaultValue={"-"} id="chat_chooser">
+                  <option value="-">{language.chooseChat}</option>
+                  {chats
+                    ? chats.map((ch) => {
+                        if (ch.isGroup) {
+                          return (
+                            <option key={ch.id} value={ch.id}>
+                              {ch.chat_name}
+                            </option>
+                          );
+                        }
+                      })
+                    : null}
+                </select>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -498,25 +525,16 @@ export default function SubjectsConfig() {
                     <th>{language.description}</th>
                     <th>{language.color}</th>
                     <th>{language.linkedCourse}</th>
+                    <th>{language.linkedChat}</th>
                     <th>{language.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {subjects.map((sj) => {
-                    if (filteredSubjects !== null)
-                      if (
-                        filteredSubjects.find((fsj) => sj.id === fsj.id) ===
-                        undefined
-                      )
-                        return <Fragment key={sj.id} />;
                     return (
                       <tr key={sj.id}>
                         <td>
-                          <input
-                            disabled
-                            type="text"
-                            value={shortUUID(sj.id)}
-                          />
+                          <input disabled type="text" value={sj.id} />
                         </td>
                         <td>
                           <input
@@ -562,6 +580,22 @@ export default function SubjectsConfig() {
                         <td>
                           <input disabled type="text" value={sj.course.name} />
                         </td>
+                        <td>
+                          <select disabled defaultValue={sj.chat_link} id="chat_chooser">
+                            <option value="-">{language.noChatSelected}</option>
+                            {chats
+                              ? chats.map((ch) => {
+                                  if (ch.isGroup) {
+                                    return (
+                                      <option key={ch.id} value={ch.id}>
+                                        {ch.chat_name}
+                                      </option>
+                                    );
+                                  }
+                                })
+                              : null}
+                          </select>
+                        </td>
                         <td
                           style={{
                             display: "flex",
@@ -569,7 +603,7 @@ export default function SubjectsConfig() {
                             alignItems: "center",
                           }}
                         >
-                          <ExtraFields table="subjects" id={sj.id} />
+                          {/* <ExtraFields table="subjects" id={sj.id} /> */}
                           <button
                             style={{ marginRight: "5px" }}
                             onClick={() => confirmDeleteEvent(sj.id)}

@@ -41,6 +41,9 @@
 	background-color: rgb(191, 191, 191);
 	border-radius: 10px;
 }
+.scheduletoolbar-ul > li:first-of-type {
+	margin-left: 15px;
+}
 
 .scheduletoolbar-ul::after {
 	content: ".";

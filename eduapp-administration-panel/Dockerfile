@@ -8,11 +8,12 @@ RUN npm install
 
 COPY . .
 
-RUN rm .env
-RUN mv docker-example.env .env
+# RUN rm .env
+# RUN mv docker.env .env
 
 RUN npm run build
 
-EXPOSE 4221
+# Change to administration-panel port
+EXPOSE 4010 
 
 CMD [ "node", "server/server.js" ]

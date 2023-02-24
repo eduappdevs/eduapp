@@ -9,6 +9,7 @@ import CourseConfig from "../components/courseConfig";
 import SubjectsConfig from "../components/subjectsConfig";
 import UserConfig from "../components/userConfig";
 import EnrollConfig from "../components/enrollConfig";
+import EnrollSubjectConfig from "../components/enrollSubjectConfig";
 import ChatConfig from "../components/ChatConfig";
 import ChatParticipantConfig from "../components/ChatParticipantConfig";
 import TeacherConfig from "../components/teacherConfig";
@@ -49,6 +50,8 @@ export default function ControlPanel() {
         return <ResourcesConfig />;
       case "enroll":
         return <EnrollConfig />;
+      case "enroll_subjects":
+        return <EnrollSubjectConfig />;
       case "userRoles":
         return <UserRolesConfig />;
       default:

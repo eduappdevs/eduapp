@@ -54,9 +54,12 @@ export const fetchSessions = async () => {
   return await axios.get(SESSIONS, { headers: requestHeader });
 };
 
-export const pagedSessions = async (page, order = null) => {
+export const pagedSessions = async (page, order = null, searchParams = null) => {
+  const value = searchParams['query']
+  const attribute = searchParams['selectedField']
+  const extras = searchParams['extras']
   return await axios.get(
-    `${SESSIONS}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    `${SESSIONS}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}&order=${btoa(JSON.stringify(order))}${extras ? '&extras=' + extras : ''}`,
     {
       headers: requestHeader,
     }
@@ -74,7 +77,7 @@ export const filterSessions = async ({
   extras = null,
 }) => {
   return await axios.get(
-    `${FILTER_URL}/sessions?id=${id}&session_name=${session_name}&streaming_platform=${streaming_platform}&resources_platform=${resources_platform}&session_chat_id=${session_chat_id}&subject_name=${subject_name}&page=${page}&extras=${extras}`,
+    `${SESSIONS}?id=${id}&session_name=${session_name}&streaming_platform=${streaming_platform}&resources_platform=${resources_platform}&session_chat_id=${session_chat_id}&subject_name=${subject_name}&page=${page}&extras=${extras}`,
     {
       headers: requestHeader,
     }

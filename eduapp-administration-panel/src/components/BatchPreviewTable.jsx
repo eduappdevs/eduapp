@@ -1,10 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import * as ENROLLCONFIGSERVICE from "../services/enrollConfig.service";
+import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
+import * as USERSERVICE from "../services/user.service";
 import * as API from "../API";
-import { interceptExpiredToken } from "../utils/OfflineManager";
+import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 
 /**
  * Preview table used when previewing information to batch load.
@@ -13,7 +16,7 @@ import { interceptExpiredToken } from "../utils/OfflineManager";
  */
 export default function BatchPreviewTable(props) {
   const [data, setData] = useState(null);
-  const [, setSubject] = useState();
+  const [subject, setSubject] = useState();
 
   const confirmAndUpload = () => {
     data.map((x) => {
@@ -77,7 +80,7 @@ export default function BatchPreviewTable(props) {
       let streaming = session[3];
       let resources = session[4];
       let chat = session[5];
-      let subject_code = session[6];
+      let subject_id = session[6];
       let total_weeks = weeks;
       let check_week_days = checkDays;
       let diff_days = parseInt(days);
@@ -99,7 +102,7 @@ export default function BatchPreviewTable(props) {
         resources !== "" &&
         streaming !== "" &&
         chat !== "" &&
-        subject_code !== "" &&
+        subject_id !== "" &&
         total_weeks !== 0 &&
         diff_days !== 0 &&
         check_week_days !== null
@@ -111,7 +114,7 @@ export default function BatchPreviewTable(props) {
           streaming_platform: streaming,
           resources_platform: resources,
           session_chat_id: chat,
-          subject_code: subject_code,
+          subject_id: subject_id,
           total_weeks: total_weeks,
           check_week_days: check_week_days,
           diff_days: diff_days,
@@ -192,34 +195,37 @@ export default function BatchPreviewTable(props) {
   const createUser = (user) => {
     let email = user[0];
     let pass = user[1];
-    let isAdmin = user[2];
+    let role = user[2];
+    let courseId = user[3];
+    let subjectId = user[4];
 
     if (email && pass) {
-      const payload = new FormData();
-      payload.append("user[email]", email);
-      payload.append("user[password]", pass);
-
       API.asynchronizeRequest(function () {
-        API.default
-          .createUser(payload)
-          .then((res) => {
-            const payload = new FormData();
-            API.default.createInfo(payload);
-            payload.delete("user[email]");
-            payload.delete("user[password]");
-            payload.append("user_id", res.data.message.id);
-            payload.append("user_name", res.data.message.email.split("@")[0]);
-            payload.append("isAdmin", isAdmin);
+        USERSERVICE.createUser({
+          requester_id: getOfflineUser().user.id,
+          email: email,
+          password: pass,
+          user_role: role,
+        })
+          .then(async (res) => {
+            if (res) {
+              console.log("RES ", res.headers);
+              if (courseId !== '') {
+                let courseIdArray = String(courseId).split(";");
 
-            API.default
-              .createInfo(payload)
-              .then(() => {
-                userEnroll(res.data.message.id);
-              })
-              .catch(async (err) => {
-                await interceptExpiredToken(err);
-                console.error(err);
-              });
+                for (let i = 0; i < courseIdArray.length; i++) {
+                  await userEnroll(courseIdArray[i], res.data.user.id);
+                }
+              }
+
+              if (subjectId !== '') {
+                let subjectIdArray = String(subjectId).split(";");
+
+                for (let i = 0; i < subjectIdArray.length; i++) {
+                  await userEnrollSubject(subjectIdArray[i], res.data.user.id);
+                }
+              }
+            }
           })
           .catch(async (err) => {
             await interceptExpiredToken(err);
@@ -229,14 +235,12 @@ export default function BatchPreviewTable(props) {
     }
   };
 
-  const userEnroll = (uId) => {
-    const payload = new FormData();
-    payload.append("course_id", 1);
-    payload.append("user_id", uId);
+  const userEnroll = (cId, uId) => {
+    ENROLLCONFIGSERVICE.createTuition({ course_id: cId, user_id: uId });
+  };
 
-    API.default.enrollUser(payload).then(() => {
-      console.log("User tuition has been completed successfully!");
-    });
+  const userEnrollSubject = (sId, uId) => {
+    SUBJECTSUSERSSERVICE.createSubjectUser({ subject_id: sId, user_id: uId });
   };
 
   const postEvent = (event) => {

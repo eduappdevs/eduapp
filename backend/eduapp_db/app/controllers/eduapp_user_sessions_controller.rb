@@ -13,15 +13,39 @@ class EduappUserSessionsController < ApplicationController
         return deny_perms_access!
       end
       @eduapp_user_sessions = EduappUserSession.where(subject_id: params[:subject_id])
+    elsif params[:session_name]
+      # if !subject_in_user_course(params[:subject_id])
+      #   return deny_perms_access!
+      # end
+      @eduapp_user_sessions = EduappUserSession.where('session_name ilike ?', "%#{params[:session_name]}%")
+    elsif params[:id]
+      # TODO: HANDLE PERMISSIONS FOR NAME QUERIES
+      @eduapp_user_sessions = EduappUserSession.where('id::text ilike ?', "%#{params[:id]}%")
+    elsif params[:streaming_platform]
+      # if !subject_in_user_course(params[:subject_id])
+      #   return deny_perms_access!
+      # end
+      @eduapp_user_sessions = EduappUserSession.where('streaming_platform ilike ?', "%#{params[:streaming_platform]}%")
+    elsif params[:session_chat_id]
+      # if !subject_in_user_course(params[:subject_id])
+      #   return deny_perms_access!
+      # end
+      @eduapp_user_sessions = EduappUserSession.where('session_chat_id::text ilike ?', "%#{params[:session_chat_id]}%")
+    elsif params[:course_name]
+      # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
+      @eduapp_user_sessions = EduappUserSession.joins(:subject).where('subjects.name ilike ?', "%#{params[:subject_name]}%")
     else
       if !check_perms_all!(get_user_roles.perms_sessions)
         return
       end
       @eduapp_user_sessions = EduappUserSession.all
     end
-
-    if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
-      @eduapp_user_sessions = @eduapp_user_sessions.order(parse_filter_order(params[:order]))
+    order = !params[:order].nil? && JSON.parse(Base64.decode64(params[:order]))
+    if order && order["field"] != ""
+      if order["field"] == 'subject_name'
+        @eduapp_user_sessions = @eduapp_user_sessions.joins(:subject)
+      end
+      @eduapp_user_sessions = @eduapp_user_sessions.order(parse_filter_order(order, {'subject_name' => 'subjects.name'}))
     else
       @eduapp_user_sessions = @eduapp_user_sessions.order(session_name: :asc)
     end
@@ -290,6 +314,6 @@ class EduappUserSessionsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def eduapp_user_session_params
-    params.require(:eduapp_user_session).permit(:session_name, :session_start_date, :session_end_date, :streaming_platform, :resources_platform, :session_chat_id, :subject_id, :number_repeat, :check_week_days, :diff_days)
+    params.require(:eduapp_user_session).permit(:session_name, :session_start_date, :session_end_date, :streaming_platform, :resources_platform, :session_chat_id, :subject_id, :number_repeat, :check_week_days, :week_repeat, :diff_days)
   end
 end
