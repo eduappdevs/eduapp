@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_many :tuitions
   has_many :subjects_user
   has_many :subjects, through: :subjects_user
+  has_many :push_notifications
 
   # Allow user to login either with username and email
 

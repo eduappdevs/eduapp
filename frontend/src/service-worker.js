@@ -6,6 +6,7 @@ import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
 
+import EncryptionUtils from "../src/utils/EncryptionUtils";
 // SW SETUP
 
 clientsClaim();
@@ -62,4 +63,23 @@ self.addEventListener("message", (event) => {
         break;
     }
   }
+});
+
+
+self.addEventListener('push', e => {
+
+  const data = JSON.parse( e.data.text() );
+   const title = data.title;
+  // const body = EncryptionUtils.decrypt(data.body, atob(data.privKey))
+  // console.log(body)
+  const options = {
+      openUrl: '/',
+      data: {
+          url: '/',
+          id: data.user
+      }
+  };
+
+  e.waitUntil( self.registration.showNotification( title, options) );
+
 });

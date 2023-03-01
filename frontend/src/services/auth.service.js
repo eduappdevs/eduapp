@@ -2,9 +2,10 @@ import axios from "axios";
 import { API_URL, TOKEN } from "../API";
 import prefixUrl from "../utils/UrlPrefixer";
 import { GLOGIN } from "../config";
+import * as NOTIFICATION_SERVICE from "./notification.service";
+
 export const USERS = `${API_URL}/users`;
 export const saveInLocalStorage = (userDetails) => {
-  console.log(userDetails)
   if (userDetails.data.message.id == null) {
     throw new Error("error");
   }
@@ -17,9 +18,40 @@ export const saveInLocalStorage = (userDetails) => {
   window.location.reload();
 };
 
+function getPublicKey(){
+  return NOTIFICATION_SERVICE.fetchPublicKey()
+  .then(res => new Uint8Array(res.data.public_key))
+}
+
+const saveNotificationSubcription = (user) => {
+
+  return getPublicKey()
+  .then( key => {
+    return navigator.serviceWorker.getRegistration('/').then((registration) => {
+      return registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: key
+      })
+      .then( res => res.toJSON() )
+      .then( subscription => {
+       const push_subcription = {
+          user_id: user.data.message.user_id,
+          endpoint: subscription.endpoint,
+          p256dh: subscription.keys.p256dh,
+          auth: subscription.keys.auth
+       }
+        NOTIFICATION_SERVICE.setNotificationSubscription(push_subcription)
+        .then( console.log )
+        .catch( console.error );
+      });
+    })
+  })
+}
+
 export const login = async (body) => {
   return await axios.post(`${USERS}/sign_in`, body).then((res) => {
-    saveInLocalStorage(res);
+   saveNotificationSubcription(res)
+   .then(() => saveInLocalStorage(res))
   });
 };
 export const link_with_google =  async (data) => {
@@ -54,6 +86,5 @@ export const logout = async () => {
 
       window.location.href = prefixUrl("/login");
     });
-    
-};
 
+};
