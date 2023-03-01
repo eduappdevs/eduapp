@@ -88,13 +88,22 @@ export default function App() {
     setShowNotification(false);
   };
 
+  const notification = () => {
+    if(!window.Notification){
+      console.log('Este navegador no soporta notificaciones')
+    }
+    if(Notification.permission !== 'granted') {
+      window.Notification.requestPermission()
+    }
+  }
+
   useEffect(() => {
     if (localStorage.eduapp_language === undefined) {
       localStorage.setItem("eduapp_language", "en_uk");
     }
 
     instanceBadge();
-
+    notification()
     setNeedsExtras(
       !new RegExp(
         "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*)|password/.*)$"

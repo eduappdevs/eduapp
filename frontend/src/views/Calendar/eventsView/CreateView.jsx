@@ -113,6 +113,9 @@ export default function CreateView(props) {
     } else {
       alertCreate();
       switchSaveState(false);
+      setTimeout(() => {
+        document.body.style.overflow = "auto";
+      }, 500);
     }
   };
 

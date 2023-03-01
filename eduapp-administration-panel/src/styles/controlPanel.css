@@ -90,8 +90,13 @@ input[type='email'] {
 
 .add-form{
 	padding-bottom: 20px;
-	overflow:auto;
+	overflow: auto;
 }
+
+.controlPanel-content-container.enroll .add-form, .controlPanel-content-container.enroll_subjects .add-form{
+	overflow: visible;
+}
+
   
 .list-main-container{
 	padding-bottom: 20px;
