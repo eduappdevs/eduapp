@@ -182,7 +182,8 @@ class SubjectsController < ApplicationController
       @subject.save
     else
       @subject = Subject.new(subject_code: params[:subject_code], name: params[:name],
-                            description: params[:description], color: params[:color], chat_link: params[:chat_link])
+                            description: params[:description], color: params[:color],
+                            course_id: params[:course_id], chat_link: params[:chat_link])
       if @subject.save
         render json: @subject, status: :created, location: @subject
       else
