@@ -29,15 +29,40 @@ class ChatChannel < ApplicationCable::Channel
 
       current_chat = ChatBase.find(params[:chat_room][1..-1])
       ChatParticipant.where(chat_base_id: current_chat.id).each do |participant|
-        UserNotifsChannel.broadcast_to(
-          participant.user_id,
-          command: "new_msg",
-          author_name: UserInfo.find_by(user_id: data["author"]).user_name,
-          author_pic: UserInfo.find_by(user_id: data["author"]).profile_image,
-          msg: data["message"],
-          key: current_chat.private_key,
-          chat_url: "#{ENV.fetch("REACT_APP_FRONTEND_ENDPOINT")}/chat/#{current_chat.isGroup ? "g" : "p"}#{current_chat.id}",
-        ) if participant.user_id != data["author"]
+        if participant.user_id != data["author"]
+          UserNotifsChannel.broadcast_to(
+            participant.user_id,
+            command: "new_msg",
+            author_name: UserInfo.find_by(user_id: data["author"]).user_name,
+            author_pic: UserInfo.find_by(user_id: data["author"]).profile_image,
+            msg: data["message"],
+            key: current_chat.private_key,
+            chat_url: "#{ENV.fetch("REACT_APP_FRONTEND_ENDPOINT")}/chat/#{current_chat.isGroup ? "g" : "p"}#{current_chat.id}",
+          )
+
+          subcriptions = PushNotification.where(user_id: participant.user_id)
+          user = UserInfo.find_by(user_id: data["author"])
+          message = {
+            title: "Nuevo mensaje",
+            body: data["message"],
+            user: user.user_name,
+            icon: user.profile_image,
+            privKey: current_chat.private_key
+          }
+          subcriptions.each do |subcription|
+            Webpush.payload_send(
+              endpoint: subcription.endpoint,
+              message: JSON.generate(message),
+              p256dh: subcription.p256dh,
+              auth: subcription.auth,
+              vapid: {
+                subject: "mailto:email@example.com",
+                public_key: ENV.fetch('VAPID_PUBLIC_KEY'),
+                private_key: ENV.fetch('VAPID_PRIVATE_KEY')
+              }
+            )
+          end
+        end
       end
     else
       puts "DEFAULT"

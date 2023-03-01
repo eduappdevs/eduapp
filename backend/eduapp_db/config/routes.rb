@@ -112,4 +112,8 @@ Rails.application.routes.draw do
   get "#{@api_path}/ping", to: "static#ping"
   get "#{@api_path}/ping/admin", to: "static#admin"
   get "#{@api_path}/ping/created", to: "static#created"
+
+  # Push notification
+  get "#{@api_path}/notification/key", to: "push_notifications#key"
+  post "#{@api_path}/notification/subscribe", to: "push_notifications#subscribe"
 end

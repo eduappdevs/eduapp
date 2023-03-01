@@ -36,9 +36,6 @@ export default class NotifsAC extends ACManager {
 
         if (document.hasFocus()) {
           NOTIFSMODAL.instanceModal(data);
-        } else {
-          NOTIFSMODAL.instanceModal(data);
-          pushNotify(data.msg.message, data.profile_pic, data.author_name);
         }
         if (this.idbm.keyExists(data.author_name)) {
           console.log(await this.idbm.get(data.author_name));
