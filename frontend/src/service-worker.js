@@ -6,7 +6,7 @@ import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
 
-import EncryptionUtils from "../src/utils/EncryptionUtils";
+// import EncryptionUtils from "../src/utils/EncryptionUtils";
 // SW SETUP
 
 clientsClaim();
@@ -69,7 +69,7 @@ self.addEventListener("message", (event) => {
 self.addEventListener('push', e => {
 
   const data = JSON.parse( e.data.text() );
-   const title = data.title;
+  const title = data.title;
   // const body = EncryptionUtils.decrypt(data.body, atob(data.privKey))
   // console.log(body)
   const options = {
@@ -82,4 +82,28 @@ self.addEventListener('push', e => {
 
   e.waitUntil( self.registration.showNotification( title, options) );
 
+});
+
+
+self.addEventListener('notificationclick', event => {
+
+  const notificacion = event.notification;
+
+  const response = self.clients.matchAll()
+  .then( all_clients => {
+
+      let client = all_clients.find( c => {
+          return c.visibilityState === 'visible';
+      });
+
+      if ( client !== undefined ) {
+          client.navigate( notificacion.data.url );
+          client.focus();
+      } else {
+          self.clients.openWindow( notificacion.data.url );
+      }
+      return notificacion.close();
+  });
+
+  event.waitUntil( response );
 });
