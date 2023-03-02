@@ -189,6 +189,12 @@ class ChatBasesController < ApplicationController
     if !check_perms_delete!(get_user_roles.perms_chat, false, :null)
       return
     end
+    @subject = Subject.find_by(chat_link: @chat_basis.id)
+    if @subject.present?
+      @subject.update(chat_link: nil)
+      @subject.save
+    end
+
     @chat_basis.destroy
   end
 
