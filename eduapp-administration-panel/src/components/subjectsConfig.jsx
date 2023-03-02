@@ -488,7 +488,7 @@ export default function SubjectsConfig() {
                     : null}
                 </select>
               </td>
-              {/* <td>
+              <td>
                 <select defaultValue={"-"} id="chat_chooser">
                   <option value="-">{language.chooseChat}</option>
                   {chats
@@ -503,7 +503,7 @@ export default function SubjectsConfig() {
                       })
                     : null}
                 </select>
-              </td> */}
+              </td>
             </tr>
           </tbody>
         </table>
