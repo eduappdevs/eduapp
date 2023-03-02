@@ -104,7 +104,7 @@ export default function GroupChatCreate() {
       return;
     }
 
-    if (!subject.users && participants.length < 2) {
+    if (!subject?.users && participants.length < 2) {
       setPopupText(language.chat_group_min_2);
       setShowPopup(true);
       return;
