@@ -212,6 +212,15 @@ class SubjectsController < ApplicationController
     @subject.destroy
   end
 
+  # DELETE /subjects/1/users/1
+  def destroy_user
+    if !check_perms_delete!(get_user_roles.perms_subjects, false, :null)
+      return
+    end
+    @subject = Subject.find(params[:subject_id])
+    @subject.users.destroy(params[:user_id])
+  end
+
   private
 
   # Checks if ```Subject``` is present in the user's ```Course```.

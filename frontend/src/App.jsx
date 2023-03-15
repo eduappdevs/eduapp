@@ -89,12 +89,25 @@ export default function App() {
   };
 
   const notification = () => {
+
     if(!window.Notification){
       console.log('Este navegador no soporta notificaciones')
+      return
     }
+
     if(Notification.permission !== 'granted') {
-      window.Notification.requestPermission()
+      Notification.requestPermission()
     }
+    // navigator.permissions
+    // .query({ name: "notifications" })
+    // .then((permissionStatus) => {
+    //   console.log(`notification permission state is ${permissionStatus.state}`);
+    //   permissionStatus.onchange = () => {
+    //     console.log(
+    //       `notification permission state has changed to ${permissionStatus.state}`
+    //     );
+    //   };
+    // });
   }
 
   useEffect(() => {

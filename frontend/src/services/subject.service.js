@@ -28,7 +28,7 @@ export const fetchUserSessions = async () => {
 };
 
 export const fetchUserVariantSubjects = async (uId) => {
-  return await axios.get(`${SUBJECTS}?user=${uId}`, {
+  return await axios.get(`${SUBJECTS}?user_id=${uId}`, {
     headers: requestHeader,
   });
 };

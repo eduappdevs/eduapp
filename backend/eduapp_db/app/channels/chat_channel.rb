@@ -50,17 +50,23 @@ class ChatChannel < ApplicationCable::Channel
             privKey: current_chat.private_key
           }
           subcriptions.each do |subcription|
-            Webpush.payload_send(
-              endpoint: subcription.endpoint,
-              message: JSON.generate(message),
-              p256dh: subcription.p256dh,
-              auth: subcription.auth,
-              vapid: {
-                subject: "mailto:email@example.com",
-                public_key: ENV.fetch('VAPID_PUBLIC_KEY'),
-                private_key: ENV.fetch('VAPID_PRIVATE_KEY')
-              }
-            )
+            begin
+              Webpush.payload_send(
+                endpoint: subcription.endpoint,
+                message: JSON.generate(message),
+                p256dh: subcription.p256dh,
+                auth: subcription.auth,
+                vapid: {
+                  subject: "mailto:email@example.com",
+                  public_key: ENV.fetch('VAPID_PUBLIC_KEY'),
+                  private_key: ENV.fetch('VAPID_PRIVATE_KEY')
+                }
+              )
+            rescue Webpush::ExpiredSubscription => e
+              subcription.destroy
+            rescue Exception => e
+              e
+            end
           end
         end
       end

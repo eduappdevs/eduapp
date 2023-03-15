@@ -134,7 +134,7 @@ export default function SubjectsConfig() {
           description: desc,
           color: color,
           course_id: sel_course,
-          chat_link: chat_link,
+          chat_link: chat_link === "-" ? null : chat_link,
         })
           .then((e) => {
             if (e) {
@@ -488,7 +488,7 @@ export default function SubjectsConfig() {
                     : null}
                 </select>
               </td>
-              {/* <td>
+              <td>
                 <select defaultValue={"-"} id="chat_chooser">
                   <option value="-">{language.chooseChat}</option>
                   {chats
@@ -503,7 +503,7 @@ export default function SubjectsConfig() {
                       })
                     : null}
                 </select>
-              </td> */}
+              </td>
             </tr>
           </tbody>
         </table>

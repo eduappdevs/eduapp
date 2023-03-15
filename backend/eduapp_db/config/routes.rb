@@ -40,6 +40,9 @@ Rails.application.routes.draw do
   # Remove participant from a chat.
   delete "#{@api_path}/chat_participants/remove/:user_id/:chat_base_id", to: "chat_participants#remove_participant"
 
+  # Remove user from subject
+  delete "#{@api_path}/subjects/:subject_id/users/:user_id", to: "subjects#destroy_user"
+
   # Batch loading routes for sessions.
   post "#{@api_path}/eduapp_user_sessions/batch_load", to: "eduapp_user_sessions#session_batch_load"
   delete "#{@api_path}/eduapp_user_sessions/batch_delete/:batch_id", to: "eduapp_user_sessions#destroy_batch"

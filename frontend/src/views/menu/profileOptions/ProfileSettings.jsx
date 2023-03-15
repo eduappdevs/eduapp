@@ -266,7 +266,7 @@ export default function ProfileSettings({ desktopBackTo }) {
             {enrollments && enrollments.map((enroll) => {
               return (
                 <li key={enroll.id} className="courseItem">
-                  <p>{enroll.subject.name} - {enroll.subject.subject_code}</p>
+                  <p>{enroll.name} - {enroll.subject_code}</p>
                   {userInfos?.user_role.name === ("eduapp-admin" || "eduapp-teacher") ? (
                     <img src="/assets/teacher.svg" alt="teacher" />
                   ) : (
