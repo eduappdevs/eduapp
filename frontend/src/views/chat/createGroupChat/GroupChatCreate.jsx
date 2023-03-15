@@ -104,7 +104,7 @@ export default function GroupChatCreate() {
       return;
     }
 
-    if (!subject.users && participants.length < 2) {
+    if (!subject?.users && participants.length < 2) {
       setPopupText(language.chat_group_min_2);
       setShowPopup(true);
       return;
@@ -116,7 +116,11 @@ export default function GroupChatCreate() {
       if (subject_id === "no-subject") {
         for (let p of participants) finalParticipants.push(p.user.id);
       } else {
-        for (let user of subject.users) finalParticipants.push(user.id);
+        for (let user of subject.users) {
+          if (getOfflineUser().user.id != user.id) {
+            finalParticipants.push(user.id);
+          }
+        };
       }
 
       asynchronizeRequest(async () => {

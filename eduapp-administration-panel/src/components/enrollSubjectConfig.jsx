@@ -178,7 +178,7 @@ export default function EnrollSubjectConfig() {
           });
 
         if (chatBase) {
-          CHATSERVICE.createParticipant({chat_base_id: chatBase, user_id: user, isChatAdmin}).catch((e) => {
+          CHATSERVICE.createParticipant({chat_base_id: chatBase, user_id: user.user.id, isChatAdmin}).catch((e) => {
             if (e) {
               interceptExpiredToken(e);
               setPopup(true);
@@ -207,7 +207,10 @@ export default function EnrollSubjectConfig() {
   const deleteSubjectUser = (id) => {
     switchEditState(false);
     API.asynchronizeRequest(function () {
-      SUBJECTSERVICE.deleteSubject(id)
+      SUBJECTSERVICE.deleteSubjectEnrollment({
+        id: id[0].id,
+        user_id: id[1]
+      })
         .then((e) => {
           if (e) {
             finalizedDelete("info", true, false, language.deleteAlertCompleted);
@@ -219,6 +222,16 @@ export default function EnrollSubjectConfig() {
             await interceptExpiredToken(e);
           }
         });
+        if (id[0].chat_link) {
+          CHATSERVICE.deleteParticipantUserId({ chat_base_id: id[0].chat_link, user_id: id[1] }).catch((e) => {
+            if (e) {
+              interceptExpiredToken(e);
+              setPopup(true);
+              setPopupType("info");
+              setPopupText(language.creationAlert);
+            }
+          });
+        }
     }).then(async (e) => {
       if (e) {
         connectionAlert();
@@ -227,10 +240,10 @@ export default function EnrollSubjectConfig() {
     });
   };
 
-  const confirmDeleteEvent = async (id) => {
+  const confirmDeleteEvent = async (subjectId, userId) => {
     switchEditState(false);
     finalizedDelete("warning", true, true, language.deleteAlert);
-    setIdDelete(id);
+    setIdDelete([subjectId, userId]);
   };
 
   const showEditOptionSession = (e) => {
@@ -466,7 +479,7 @@ export default function EnrollSubjectConfig() {
                             <button
                               style={{ marginRight: "5px" }}
                               onClick={() => {
-                                confirmDeleteEvent(subject.id);
+                                confirmDeleteEvent(subject, user.id);
                               }}
                             >
                               <svg
