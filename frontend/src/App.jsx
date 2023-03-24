@@ -89,13 +89,35 @@ export default function App() {
     setShowNotification(false);
   };
 
+  const notification = () => {
+
+    if(!window.Notification){
+      console.log('Este navegador no soporta notificaciones')
+      return
+    }
+
+    if(Notification.permission !== 'granted') {
+      Notification.requestPermission()
+    }
+    // navigator.permissions
+    // .query({ name: "notifications" })
+    // .then((permissionStatus) => {
+    //   console.log(`notification permission state is ${permissionStatus.state}`);
+    //   permissionStatus.onchange = () => {
+    //     console.log(
+    //       `notification permission state has changed to ${permissionStatus.state}`
+    //     );
+    //   };
+    // });
+  }
+
   useEffect(() => {
     if (localStorage.eduapp_language === undefined) {
       localStorage.setItem("eduapp_language", "en_uk");
     }
 
     instanceBadge();
-
+    notification()
     setNeedsExtras(
       !new RegExp(
         "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*)|password/.*)$"

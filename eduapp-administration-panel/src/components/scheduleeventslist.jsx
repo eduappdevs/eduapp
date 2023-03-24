@@ -489,7 +489,7 @@ export default function Scheduleeventslist() {
         order: searchParams.order,
       });
     }
-  }, [searchParams.order]);
+  }, [searchParams]);
 
   return (
     <>
