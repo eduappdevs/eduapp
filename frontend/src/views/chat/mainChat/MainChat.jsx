@@ -48,14 +48,15 @@ export default function MainChat() {
   const [isPopupQuestion, setIsPopupQuestion] = useState(false);
 
   const sendMessage = async () => {
-    let inputMsg = document.getElementById("message-area");
+    let inputMsgEl = document.getElementById("message-area");
+    let inputMsg = inputMsgEl.value.trim();
     if (
-      inputMsg.value !== "" &&
-      inputMsg.value !== " " &&
-      inputMsg.value.length > 0
+      inputMsg !== "" &&
+      inputMsg !== " " &&
+      inputMsg.length > 0
     ) {
       let userId = getOfflineUser().user.id;
-      let msgEncrypted = EncryptionUtils.encrypt(inputMsg.value, pubKey);
+      let msgEncrypted = EncryptionUtils.encrypt(inputMsg, pubKey);
       let msgToSave = {
         id: "newMessage" + new Date().toJSON(),
         chat_base: { id: chatId.substring(1) },
@@ -64,11 +65,10 @@ export default function MainChat() {
         send_date: new Date().toJSON()
       }
       if (acInstance.sendChannelCmd()) {
-        console.log(acInstance.sendChannelCmd())
         await db.set(msgToSave.id, msgToSave)
         acInstance.sendChannelCmd(
           "message",
-          EncryptionUtils.encrypt(inputMsg.value, pubKey),
+          EncryptionUtils.encrypt(inputMsg, pubKey),
           getOfflineUser().user.id,
           new Date().toISOString()
         );
@@ -81,13 +81,13 @@ export default function MainChat() {
       } else {
         console.log("Error sending message")
       }
-      inputMsg.value = "";
+      inputMsgEl.value = "";
 
       // To test notifications focus...
       // setTimeout(() => {
       //   acInstance.sendChannelCmd(
       //     "message",
-      //     EncryptionUtils.encrypt(inputMsg.value, pubKey),
+      //     EncryptionUtils.encrypt(inputMsg, pubKey),
       //     getOfflineUser().user.id,
       //     new Date().toISOString()
       //   );
@@ -97,7 +97,7 @@ export default function MainChat() {
       //       userId,
       //     },
       //   });
-      //   inputMsg.value = "";
+      //   inputMsg = "";
       // },10000);
     }
   };
@@ -246,12 +246,12 @@ export default function MainChat() {
     });
 
     let inputArea = document.getElementById("message-area");
-    inputArea.addEventListener("keydown", (event) => {
+    inputArea.onkeydown = (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
         if (inputArea.value.length !== 0) sendMessage();
       }
-    });
+    };
   }, [newMessages, acInstance]);
 
   useEffect(() => {
