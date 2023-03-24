@@ -1,0 +1,108 @@
+.profile-menu-mobile {
+	display: flex;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0%;
+	left: 0;
+	background-color: var(--backgroundColor);
+	transition: 0.3s all;
+	z-index: 9999999999999;
+	box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
+}
+
+.profile-menu-mobile>ul {
+	margin-top: 5.5em;
+	flex: 8;
+	display: flex;
+	position: absolute;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+	width: 100%;
+	height: 90%;
+	list-style: none;
+	z-index: 9999999999;
+	pointer-events: none;
+}
+
+.profile-menu-mobile>ul>li {
+	text-transform: uppercase;
+	font-family: Consolas;
+	font-weight: bold;
+	border-radius: 30px;
+	background-color: var(--orange);
+	margin-bottom: 15%;
+	padding: 10px;
+	box-shadow: 0 2px 5px var(--shadowColor);
+	border: 2px solid var(--shadowColor);
+	text-align: center;
+	pointer-events: all;
+	width: 65%;
+}
+
+.profile-menu-mobile>ul>li:first-child {
+	margin-top: 15%;
+}
+
+.profile-menu-mobile>ul>li>a {
+	text-decoration: none;
+	color: #ffff;
+	font-weight: bold;
+	text-indent: 0;
+	width: 100%;
+	height: 100%;
+	font-size: 200%;
+	cursor: pointer;
+	margin: 20px;
+}
+
+.profile-menu-desktop {
+	position: absolute;
+	right: 0;
+	width: 350px;
+	height: 88.5vh;
+	background-color: var(--backgroundColor);
+	transition: 0.3s all;
+	box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
+}
+
+.profile-menu-desktop>ul {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 90%;
+}
+
+.profile-menu-desktop>ul>li {
+	text-transform: uppercase;
+	font-family: Consolas;
+	font-weight: bold;
+	border-radius: 30px;
+	background-color: var(--orange);
+	margin-bottom: 15%;
+	padding: 10px;
+	box-shadow: 0 2px 5px var(--shadowColor);
+	border: 2px solid var(--shadowColor);
+	text-align: center;
+	pointer-events: all;
+	width: 65%;
+}
+
+.profile-menu-desktop>ul>li>a {
+	text-decoration: none;
+	color: #ffff;
+	font-weight: bold;
+	text-indent: 0;
+	width: 100%;
+	height: 100%;
+	font-size: 140%;
+	cursor: pointer;
+	margin: 20px;
+}
+
+.profile-menu-desktop>ul>li:hover {
+	cursor: pointer;
+}

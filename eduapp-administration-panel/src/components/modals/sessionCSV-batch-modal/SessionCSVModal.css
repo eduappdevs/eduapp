@@ -1,0 +1,128 @@
+.selected-session-option {
+    width: 100vw !important;
+    height: 100vh;
+    font-size: 18px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.modal-button {
+    margin-left: 10em;
+    background-color: rgb(51, 122, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    border-radius: 10px;
+    font-family: sans-serif;
+}
+
+.modal-body {
+    margin-left: 1em;
+    margin-right: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.option-button>input {
+    cursor: pointer;
+}
+
+.option-button {
+    margin-bottom: 2em;
+}
+
+.closed-button {
+    margin-top: 1em;
+    margin-left: 13em;
+    position: relative;
+    cursor: pointer;
+}
+
+.session-button {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1em;
+}
+
+.csvTemplate {
+    background-color: var(--orange);
+    border-radius: 0 10px 10px 0;
+    padding: .3em !important;
+}
+
+
+.csvLoaderBatch {
+    padding: 5px;
+    background-color: var(--orange);
+    border-radius: 10px 0 0 10px;
+    cursor: pointer;
+}
+
+.csvLoaderBatch>input {
+    border: none;
+    background: none !important;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+
+.csvLoaderBatch>#react-csv-reader-input::-webkit-file-upload-button {
+    visibility: hidden;
+    width: 15px;
+}
+
+
+.csvLoaderBatch>#react-csv-reader-input::before {
+    content: 'Batch';
+    display: inline-block;
+    border: none;
+    border-radius: 10px;
+    padding: 5px 8px;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 10pt;
+}
+
+.csvLoaderSingle {
+    background-color: var(--orange);
+    border-radius: 10px 0 0 10px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.csvLoaderSingle>input {
+    background: none !important;
+    cursor: pointer;
+
+}
+
+.csvLoaderSingle>#react-csv-reader-input::-webkit-file-upload-button {
+    visibility: hidden;
+    width: 15px;
+}
+
+
+.csvLoaderSingle>#react-csv-reader-input::before {
+    content: 'Single';
+    display: inline-block;
+    border: none;
+    border-radius: 10px;
+    padding: 5px 8px;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 10pt;
+}

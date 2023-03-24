@@ -1,0 +1,109 @@
+.cp-container {
+	width: 100vw;
+	height: 100vh;
+	position: absolute;
+	left: 0;
+	z-index: 1;
+}
+
+.cp-container>div {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+
+}
+
+.cp-container>div>div>form {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+.controlPanel-content-container {
+	background-color: rgb(255, 255, 255);
+	box-shadow: 0px 0px 10px rgba(117, 117, 117, 0.329);
+	border: 1px solid rgba(117, 117, 117, 0.199);
+	border-radius: 10px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	margin-top: 20vh;
+	transform: scale(0.98);
+	padding: 8px;
+	min-height: 500px;
+	/* height: 76vh; */
+}
+
+button {
+	border: none;
+	background-color: orange;
+	color: white;
+	padding: 10px 20px;
+	font-weight: 700;
+	font-family: "Consolas";
+	margin-top: 10px;
+	border-radius: 10px;
+}
+
+button:hover {
+	cursor: pointer;
+}
+
+input {
+	border: none;
+	background: rgba(208, 206, 206, 0.355) !important;
+	border-radius: 5px;
+
+}
+
+input:focus {
+	outline: none;
+}
+
+input[type="file"] {
+	border: none !important;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='email'] {
+	padding: 8px;
+}
+
+.hidden {
+	display: none !important;
+}
+
+#liveClock {
+	font-size: 16px;
+	font-weight: 700;
+	font-family: "Consolas";
+	text-shadow: 0px 0px 10px rgba(117, 117, 117, 0.329);
+	position: absolute;
+	top: 5px;
+	color: rgba(127, 127, 127, 0.584);
+	left: 5px;
+}
+
+.add-form{
+	padding-bottom: 20px;
+	overflow: auto;
+}
+
+.controlPanel-content-container.enroll .add-form, .controlPanel-content-container.enroll_subjects .add-form{
+	overflow: visible;
+}
+
+  
+.list-main-container{
+	padding-bottom: 20px;
+	overflow: auto;
+}
+
+.action-column {
+	text-align: center;
+	white-space: nowrap;
+}

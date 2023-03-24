@@ -1,0 +1,78 @@
+.self-message,
+.foreign-message {
+	position: relative;
+	max-width: 13.5em;
+
+	background-color: var(--blue);
+	font-size: 1.25em;
+	border-radius: 1rem;
+	box-shadow: 0 0.125rem 0.5rem rgba(140, 140, 140, 0.3), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.3);
+}
+
+.self-message {
+	background-color: white;
+}
+
+/* Message Triangle Tail Edit */
+/* .self-message::before,
+.foreign-message::before {
+	content: '';
+	position: absolute;
+	width: 0;
+	height: 0;
+	transform: rotate(180deg);
+	border: 1rem solid transparent;
+	border-top: none;
+
+	border-bottom-color: var(--blue);
+	filter: drop-shadow(0 -0.0625rem 0.0625rem rgba(0, 0, 0, .1));
+} */
+
+.self-message::before {
+	right: 1.5em;
+	top: 2em;
+}
+
+.foreign-message::before {
+	top: 3.2em;
+	left: 1.5em;
+}
+
+.self-message>p,
+.foreign-message>p {
+	color: white;
+	padding: 10px 1.25em 10px 1.25em;
+	margin: 10px 0 10px 0;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	hyphens: auto;
+}
+
+.self-message>p {
+	color: var(--blue);
+}
+
+.self-align {
+	float: right;
+	margin-right: 10px;
+}
+
+.foreign-align {
+	float: left;
+	margin-left: 10px;
+}
+
+.show-author {
+	font-weight: bolder;
+	font-size: 0.85em;
+	margin-bottom: 0 !important;
+	margin-left: 4px !important;
+	max-width: 80%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.has-author {
+	margin: -15px 0 10px 0 !important;
+	padding-bottom: 0;
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+    </head>
+    <style type="text/css">
+        body {
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+        h1 {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+        p {
+            margin: 0;
+        }
+        p,
+        h1,
+        h2,
+        a,
+        button {
+            color: #fff
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            color: #fff !important;
+
+        }
+        .footer {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+            color: #24292e;
+            font-size: 12px;
+        }
+        .header {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            display: flex;
+            color: #24292e;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row
+        }
+        .profile-image {
+            margin-top: 20px;
+        }
+        .container {
+            width: 100%;
+            background-color: #f6f6f6;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            color: #24292e;
+
+        }
+        a {
+            color: #fff !important;
+            text-decoration: none !important;
+            background-color: #FF8139 !important;
+            padding: 12px 18px !important;
+            border-radius: 3px !important;
+            transition: all 0.2s ease !important;
+            font-size: 14px !important;
+            margin-top: 10px !important;
+            margin-bottom: 10px !important;
+        }
+        .background-container {}
+        @media only screen and(max-device-width: 480px) {
+            .main-content {
+                width: 100%;
+            }
+        }
+    </style>
+    <body>
+        <div class="container" align="center">
+            <div class='header' align="center">
+                <img style='width:30px;height:30px;margin-right:20px' src='http://eduapp-project.eu/wp-content/uploads/2021/03/Logo-EduApp-1-150x150.png' alt='EduApp'/>
+                <h1 style='color:rgba(16, 16, 16, 0.93)'>Eduapp confirmation code</h1>
+            </div>
+            <div class='background-container' align="center" style='box-shadow:0px 0px 7px 3px rgba(4, 4, 4, 0.07);margin:10px;border-radius:5px;background-color: #4b90ff84;width:90%; padding: 20px;'>
+                <div class='main-content' color="#fff" align="center">
+                    <h1 style='color:#fff'>Hello,
+                        <span style='font-style:italic;color:#FF8139'><%= UserInfo.where(user_id: @user.id).first.user_name %></span>
+                    </h1>
+                    <div align="center" class='profile-image'>
+                        <img style='border-radius:50%;height:70px; width:70px; color:#fff' src=<%= UserInfo.where(user_id: @user.id).first.profile_image %>/>
+                    </div>
+                    <h2 style='margin-top: 50px; color: #fff'>Here is your confirmation code.</h2>
+                    <h1 style='color:#fff'><%= @confirmation_code %></h1>
+                    <p style='color:#fff'>Please use this code to confirm your account.</p>
+                    <p style='color:#fff'>This code will expire at <%= @expireCodeDate %>.</p>
+                    <p style='color:#fff'>Thanks,</p>
+                    <p style='color:#fff'>Eduapp team</p>
+                </div>
+            </div>
+            <div class='footer'>
+                <p style='color:rgba(16, 16, 16, 0.93)'>Copyright © 2022 Eduapp. All Rights Reserved.</p>
+            </div>
+        </div>
+    </body>
+</html>

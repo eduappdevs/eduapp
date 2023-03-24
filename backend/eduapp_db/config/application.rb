@@ -21,6 +21,9 @@ Bundler.require(*Rails.groups)
 
 module EduappDb
   class Application < Rails::Application
+
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.1
 
@@ -38,9 +41,10 @@ module EduappDb
     config.api_only = true
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins '*'
+        origins ENV.fetch("REACT_APP_FRONTEND_ENDPOINT")
         resource '*', headers: :any, methods: [:get, :post, :options]
       end
     end
+    
   end
 end

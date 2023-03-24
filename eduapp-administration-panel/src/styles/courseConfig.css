@@ -1,0 +1,33 @@
+.courses-table-info {
+  height: auto;
+}
+
+.courses-table-info > table > thead {
+}
+
+.courses-table-info > table > thead > tr {
+  border: 1px solid #dddddd76;
+  text-align: left;
+}
+
+.courses-table-info > table > thead > tr > th {
+}
+
+.courses-table-info > table > tbody {
+  overflow-y: auto;
+}
+
+.courses-table-info > table > tbody > tr {
+}
+
+.courses-table-info > table > tbody > tr > td {
+  flex: 1;
+}
+
+.courses-table-info > table > tbody > tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.bi {
+  pointer-events: none;
+}

@@ -1,0 +1,336 @@
+.create-box-closed,
+.edit-box-closed {
+	transition: all 0.3s;
+	transform: translatex(-100vw);
+}
+
+.view-box-opened {
+	transition: all 0.5s;
+	transform: scale(1) !important;
+}
+
+.view-box-closed {
+	transition: all 0.3s;
+	transform: scale(0);
+}
+
+.create-box-opened,
+.edit-box-opened {
+	transition: all 0.5s;
+	transform: translateX(0vw);
+}
+
+.background-shadow {
+	background-color: rgba(0, 0, 0, 0.5) !important;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	display: none;
+	top: 0;
+	right: 0;
+}
+
+.background-shadow-animation {
+	animation: open 0.5s;
+}
+
+@keyframes open {
+	0% {
+		opacity: .0;
+	}
+
+	15% {
+		opacity: .15;
+	}
+
+	25% {
+		opacity: .25;
+	}
+
+	45% {
+		opacity: .45;
+	}
+
+	55% {
+		opacity: .55;
+	}
+
+	75% {
+		opacity: .75;
+	}
+
+	85% {
+		opacity: .85;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+.desktopSection {
+	width: 70%;
+	height: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+
+.calendar-main-container {
+	margin-bottom: 4.5em;
+	overflow-y: hidden;
+	overflow-x: hidden !important;
+
+}
+
+#sectionCalendar {
+	width: 100% !important;
+	overflow-y: hidden;
+	overflow-x: hidden;
+}
+
+
+@media screen and (min-width:1000px) {
+	.calendar {
+		margin-top: 5em;
+	}
+}
+
+.button-calendar-option {
+	position: fixed;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	bottom: 15vh;
+	right: 0;
+	margin-right: 5%;
+	border-radius: 80%;
+	background-color: var(--orange);
+	margin-top: -5%;
+}
+
+@media screen and (max-height: 700px) {
+	.button-calendar-option {
+		bottom: 20vh;
+	}
+}
+
+.button-calendar-option-hidden {
+	display: none;
+}
+
+.button-calendar-option>svg {
+	width: 60px;
+	height: 60px;
+
+}
+
+.hidden {
+	display: none !important;
+	opacity: 0;
+}
+
+/* api calendar css */
+.MuiPaper-root {
+	top: 13vh !important;
+}
+
+.MuiPaper-root,
+.DayScaleEmptyCell-emptyCell-34,
+.MuiTableCell-root {
+	background-color: var(--backgroundColor) !important;
+}
+
+.Cell-dayView-42,
+.Cell-dayOfWeek-39,
+.Cell-dayOfMonth-40 {
+	color: var(--textColor) !important;
+}
+
+.Cell-highlightedText-41 {
+	color: var(--orange) !important;
+	font-weight: bold !important;
+}
+
+.Label-text-51,
+.Label-text-52 {
+	color: var(--textColor) !important;
+}
+
+.MuiButton-label {
+	color: var(--textColor) !important;
+}
+
+.MuiButton-outlined {
+	border: 1px solid var(--textColor) !important;
+}
+
+.MuiInputBase-root {
+	color: var(--textColor) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+	border-color: var(--textColor) !important;
+}
+
+.MuiList-root,
+.MuiMenu-list,
+.MuiList-padding {
+	color: var(--textColor) !important;
+}
+
+.MuiTypography-root,
+.Text-text-623,
+.MuiTypography-h6 {
+	color: var(--textColor) !important;
+}
+
+.MuiTableCell-root,
+.MuiTableCell-head,
+.HeaderCell-cell-321 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-timeScaleContainer-44 {
+	border: none !important;
+	width: 4.9em !important;
+}
+
+.TicksLayout-table-54 {
+	display: none !important;
+}
+
+.makeStyles-lens-612 {
+	color: rgb(100, 181, 246) !important;
+}
+
+.makeStyles-title-600,
+.makeStyles-dateAndTitle-605 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-title-600,
+.makeStyles-dateAndTitle-605 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-text-599,
+.makeStyles-dateAndTitle-605 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-text-599 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-icon-601 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-content-598 {
+	background-color: var(--backgroundColor) !important;
+}
+
+
+
+.makeStyles-text-683 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-title-684,
+.makeStyles-dateAndTitle-689 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-title-684,
+.makeStyles-dateAndTitle-689 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-content-682 {
+	background-color: var(--backgroundColor) !important;
+}
+
+.makeStyles-icon-685 {
+	color: var(--textColor) !important;
+}
+
+.MuiIconButton-label {
+	color: var(--textColor) !important;
+}
+
+.MuiSelect-icon {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-content-690 {
+	background-color: var(--backgroundColor) !important;
+}
+
+
+/* events css */
+.VerticalAppointment-container-587 {
+	color: White !important;
+}
+
+/* Selected day */
+.makeStyles-content-762,
+.makeStyles-content-606 {
+	padding: 12px 8px;
+	font-size: 0.875rem;
+	box-sizing: border-box;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 400;
+	line-height: 1.43;
+	padding-top: 8px;
+	letter-spacing: 0.01071em;
+	background-color: var(--backgroundColor) !important;
+}
+
+.makeStyles-icon-765,
+.makeStyles-dateAndTitle-769,
+.makeStyles-text-763,
+.makeStyles-dateAndTitle-613,
+.makeStyles-icon-609 {
+	color: var(--textColor) !important;
+}
+
+.makeStyles-text-607 {
+	display: inline-block;
+	color: var(--textColor) !important;
+}
+
+.VerticalAppointment-textContainer {
+	display: none !important;
+}
+
+p.jss37.jss39 {
+	color: var(--orange) !important;
+	font-weight: bold !important;
+}
+
+div.jss38.jss39 {
+	color: var(--orange) !important;
+}
+
+.jss33 {
+	background-color: var(--backgroundColor) !important;
+}
+
+.jss49 {
+	color: var(--textColor) !important;
+}
+
+p.jss37 {
+	color: var(--textColor) !important;
+	margin: 0;
+	font-size: 0.75rem;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 400;
+	line-height: 1.17;
+	letter-spacing: 0.03333em;
+}
+
+div.jss38 {
+	color: var(--textColor) !important;
+}
