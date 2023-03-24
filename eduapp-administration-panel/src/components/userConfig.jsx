@@ -107,6 +107,10 @@ export default function UserConfig() {
 
   const fetchUserPage = (page, order = null) => {
     asynchronizeRequest(function () {
+      // order = {
+      //   field: 'name',
+      //   order: 'asc'
+      // }
       USERSERVICE.pagedUserInfos(page, order, searchParams)
         .then((us) => {
           setActualPage(us.data.page);

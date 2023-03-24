@@ -240,7 +240,7 @@ class ApplicationController < ActionController::API
     order = order.is_a?(String) ? JSON.parse(Base64.decode64(order)) : order
     field = relational_order[order["field"]] || order["field"] || nil
 
-    return { field => field == "asc" ? :asc : :desc }
+    return { field => order['order'] == "asc" ? :asc : :desc, id: :asc }
   end
 
   # PERMISSIONS
