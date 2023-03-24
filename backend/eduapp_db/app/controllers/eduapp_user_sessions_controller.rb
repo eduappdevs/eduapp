@@ -31,7 +31,7 @@ class EduappUserSessionsController < ApplicationController
       #   return deny_perms_access!
       # end
       @eduapp_user_sessions = EduappUserSession.where('session_chat_id::text ilike ?', "%#{params[:session_chat_id]}%")
-    elsif params[:course_name]
+    elsif params[:subject_name]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
       @eduapp_user_sessions = EduappUserSession.joins(:subject).where('subjects.name ilike ?', "%#{params[:subject_name]}%")
     else
@@ -40,12 +40,14 @@ class EduappUserSessionsController < ApplicationController
       end
       @eduapp_user_sessions = EduappUserSession.all
     end
+    
     order = !params[:order].nil? && JSON.parse(Base64.decode64(params[:order]))
     if order && order["field"] != ""
       if order["field"] == 'subject_name'
         @eduapp_user_sessions = @eduapp_user_sessions.joins(:subject)
       end
       @eduapp_user_sessions = @eduapp_user_sessions.order(parse_filter_order(order, {'subject_name' => 'subjects.name'}))
+
     else
       @eduapp_user_sessions = @eduapp_user_sessions.order(session_name: :asc)
     end

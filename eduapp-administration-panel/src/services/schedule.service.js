@@ -58,6 +58,7 @@ export const pagedSessions = async (page, order = null, searchParams = []) => {
   const value = searchParams['query']
   const attribute = searchParams['selectedField']
   const extras = searchParams['extras']
+
   return await axios.get(
     `${SESSIONS}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}&order=${btoa(JSON.stringify(order))}${extras ? '&extras=' + extras : ''}`,
     {

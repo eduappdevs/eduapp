@@ -114,7 +114,7 @@ export default function Schedulesessionslist(props) {
   };
 
   const fetchSessions = async (page, order = null, searchParams) => {
-    API.asynchronizeRequest(function () {
+    API.asynchronizeRequest(() => {
       SCHEDULESERVICE.pagedSessions(page, order, searchParams)
         .then((us) => {
           setActualPage(us.data.page);
@@ -182,7 +182,7 @@ export default function Schedulesessionslist(props) {
         streaming !== "" &&
         subject_id !== `${language.chooseSubject}` &&
         subject_id !== "",
-      subject_code !== `${language.chooseSubject}` && subject_code !== "")
+        subject_code !== `${language.chooseSubject}` && subject_code !== "")
     ) {
       json.push(
         name,
@@ -414,7 +414,7 @@ export default function Schedulesessionslist(props) {
                 e.target.parentNode.childNodes[num].style.display === "block"
                   ? (e.target.parentNode.childNodes[num].style.display = "none")
                   : (e.target.parentNode.childNodes[num].style.display =
-                      "block");
+                    "block");
                 num += 1;
               }
               let disable = 1;
@@ -534,8 +534,8 @@ export default function Schedulesessionslist(props) {
           ? (e.target.parentNode.childNodes[num].style.display = "block")
           : (e.target.parentNode.childNodes[num].style.display = "none")
         : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
+          ? (e.target.parentNode.childNodes[num].style.display = "none")
+          : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
     let disable = 1;
@@ -652,7 +652,7 @@ export default function Schedulesessionslist(props) {
   }, []);
 
   useEffect(() => {
-    fetchSessions(actualPage,{
+    fetchSessions(actualPage, {
       field: searchParams.selectedField,
       order: searchParams.order,
     }, searchParams);
@@ -687,8 +687,8 @@ export default function Schedulesessionslist(props) {
               <th>{language.name}</th>
               <th>{language.streaming}</th>
               <th>{language.resources}</th>
-              <th>{language.chat}</th>
-              {/* <th>{language.subjects}</th> */}
+              {/* <th>{language.chat}</th> */}
+              <th>{language.subjects}</th>
               <th>{language.repeated}</th>
               <th>{language.startDate}</th>
               <th>{language.endDate}</th>
@@ -874,8 +874,8 @@ export default function Schedulesessionslist(props) {
                             s.streaming_platform === null
                               ? ""
                               : changeStreamPlatform === false
-                              ? s.streaming_platform
-                              : newStreamPlatform
+                                ? s.streaming_platform
+                                : newStreamPlatform
                           }
                           onChange={() => handleChangeStreamPlatform(s.id)}
                         />
@@ -889,8 +889,8 @@ export default function Schedulesessionslist(props) {
                             s.resources_platform === null
                               ? ""
                               : changeResourcesPlatform === false
-                              ? s.resources_platform
-                              : newResourcesPlatform
+                                ? s.resources_platform
+                                : newResourcesPlatform
                           }
                           onChange={() => handleChangeResourcesPlatform(s.id)}
                         />
@@ -904,8 +904,8 @@ export default function Schedulesessionslist(props) {
                             s.chat === null
                               ? ""
                               : changeChatId === false
-                              ? s.chat
-                              : newChatId
+                                ? s.chat
+                                : newChatId
                           }
                           onChange={() => handleChangeSessionChat(s.id)}
                         />
