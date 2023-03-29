@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useCallback, useContext, useEffect, useState, useMemo } from "react";
 import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as COURSESERVICE from "../services/course.service";
@@ -13,8 +13,10 @@ import { getSubjectFields } from "../constants/search_fields";
 import ExtraFields from "./ExtraFields";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import "../styles/subjectsConfig.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function SubjectsConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [subjects, setSubjects] = useState(null);
@@ -43,9 +45,9 @@ export default function SubjectsConfig() {
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
 
-  const shortUUID = (uuid) => uuid.substring(0, 8);
+  const shortUUID = useCallback((uuid) => uuid.substring(0, 8), []);
 
-  const switchEditState = (state) => {
+  const switchEditState = useCallback((state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
@@ -56,16 +58,16 @@ export default function SubjectsConfig() {
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
-  };
+  }, []);
 
-  const connectionAlert = () => {
+  const connectionAlert = useCallback(() => {
     switchEditState(false);
     setPopup(true);
     setPopupText(language.connectionAlert);
     setPopupIcon("error");
-  };
+  }, []);
 
-  const fetchCourses = () => {
+  const fetchCourses = useCallback(() => {
     API.asynchronizeRequest(function () {
       COURSESERVICE.fetchCourses().then((cs) => {
         setCourses(cs.data);
@@ -76,9 +78,9 @@ export default function SubjectsConfig() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const fetchChats = () => {
+  const fetchChats = useCallback(() => {
     API.asynchronizeRequest(function () {
       CHATSERVICE.fetchChat().then((chats) => {
         setChats(chats.data);
@@ -89,25 +91,25 @@ export default function SubjectsConfig() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const alertCreate = async () => {
+  const alertCreate = useCallback(async () => {
     switchEditState(false);
     setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
-  };
+  }, []);
 
-  const finalizedCreate = (type, icon, txt, confirmDel) => {
+  const finalizedCreate = useCallback((type, icon, txt, confirmDel) => {
     fetchSubjectPage(actualPage);
     setIsConfirmDelete(confirmDel);
     setPopup(true);
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(txt);
-  };
+  }, []);
 
-  const createSubject = () => {
+  const createSubject = useCallback(() => {
     switchEditState(false);
     let subject_code = document.getElementById("sj_subjectCode").value;
     let name = document.getElementById("sj_name").value;
@@ -156,15 +158,15 @@ export default function SubjectsConfig() {
     } else {
       alertCreate();
     }
-  };
+  }, []);
 
-  const confirmDeleteEvent = async (id) => {
+  const confirmDeleteEvent = useCallback(async (id) => {
     finalizedDelete("warning", true, true, language.deleteAlert);
     switchEditState(false);
     setIdDelete(id);
-  };
+  }, []);
 
-  const finalizedDelete = (type, icon, confirmDel, text) => {
+  const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
     switchEditState(false);
     setPopupType(type);
     setPopupIcon(icon);
@@ -172,9 +174,9 @@ export default function SubjectsConfig() {
     setPopupText(text);
     setIsConfirmDelete(confirmDel);
     fetchSubjectPage(actualPage);
-  };
+  }, []);
 
-  const deleteSubject = (id) => {
+  const deleteSubject = useCallback((id) => {
     switchEditState(false);
     //eliminar sessiones + modal de aviso y mostrar las sessiones que se eliminarán
     API.asynchronizeRequest(function () {
@@ -196,9 +198,9 @@ export default function SubjectsConfig() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const showEditOptionSubject = (e) => {
+  const showEditOptionSubject = useCallback((e) => {
     let disable = 1;
     while (disable < 5) {
       e.target.parentNode.parentNode.childNodes[
@@ -213,22 +215,22 @@ export default function SubjectsConfig() {
           ? (e.target.parentNode.childNodes[num].style.display = "block")
           : (e.target.parentNode.childNodes[num].style.display = "none")
         : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
+          ? (e.target.parentNode.childNodes[num].style.display = "none")
+          : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
-  };
+  }, []);
 
-  const finalizedEdit = (type, icon, pop, text, confirmDel) => {
+  const finalizedEdit = useCallback((type, icon, pop, text, confirmDel) => {
     fetchSubjectPage(actualPage);
     setIsConfirmDelete(confirmDel);
     setPopup(pop);
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(text);
-  };
+  }, []);
 
-  const editSubject = (e, s) => {
+  const editSubject = useCallback((e, s) => {
     switchEditState(false);
     let inputCode = document.getElementById("inputSubjectCode_" + s.id).value;
     let inputName = document.getElementById("inputName_" + s.id).value;
@@ -309,9 +311,9 @@ export default function SubjectsConfig() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const closeEditSubject = (e) => {
+  const closeEditSubject = useCallback((e) => {
     e.preventDefault();
     let disable = 1;
     while (disable < 5) {
@@ -327,19 +329,22 @@ export default function SubjectsConfig() {
         : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
-  };
+  }, []);
 
-  const fetchSubjectPage = async (page, order = null, searchParams) => {
+  const fetchSubjectPage = useCallback(async (page, order = null, searchParams) => {
     API.asynchronizeRequest(function () {
+      setLoadingParams({ loading: true });
       SUBJECTSERVICE.pagedSubjects(page, order, searchParams)
         .then((us) => {
           setMaxPages(us.data.total_pages);
           setSubjects(us.data.current_page);
           setActualPage(us.data.page);
           fetchCourses();
+          setLoadingParams({ loading: false });
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
+          setLoadingParams({ loading: false });
         });
     }).then(async (e) => {
       if (e) {
@@ -347,27 +352,183 @@ export default function SubjectsConfig() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const handleChangeColor = (id) => {
+  const handleChangeColor = useCallback((id) => {
     setChangeColor(true);
     return document.getElementById("inputColor_" + id).value;
-  };
+  }, []);
 
-  const handleChangeName = (id) => {
+  const handleChangeName = useCallback((id) => {
     setChangeName(true);
     return document.getElementById("inputName_" + id).value;
-  };
+  }, []);
 
-  const handleChangeDescription = (id) => {
+  const handleChangeDescription = useCallback((id) => {
     setChangeDescription(true);
     return document.getElementById("inputDescription_" + id).value;
-  };
+  }, []);
 
-  const handleChangeCode = (id) => {
+  const handleChangeCode = useCallback((id) => {
     setChangeCode(true);
     return document.getElementById("inputSubjectCode_" + id).value;
-  };
+  }, []);
+
+  const memoizedSubjects = useMemo(() => {
+    return (
+      <>
+        {subjects && subjects.map((sj) => {
+          return (
+            <tr key={sj.id}>
+              <td>
+                <input disabled type="text" value={sj.id} />
+              </td>
+              <td>
+                <input
+                  id={`inputSubjectCode_${sj.id}`}
+                  disabled
+                  type="text"
+                  value={changeCode ? newCode : sj.subject_code}
+                  onChange={() => handleChangeCode(sj.id)}
+                />
+              </td>
+
+              <td>
+                <input
+                  id={`inputName_${sj.id}`}
+                  disabled
+                  type="text"
+                  value={changeName ? newName : sj.name}
+                  onChange={() => handleChangeName(sj.id)}
+                />
+              </td>
+              <td>
+                <input
+                  id={`inputDescription_${sj.id}`}
+                  disabled
+                  type="text"
+                  value={
+                    changeDescription
+                      ? newDescription
+                      : sj.description
+                  }
+                  onChange={() => handleChangeDescription(sj.id)}
+                />
+              </td>
+              <td>
+                <input
+                  id={`inputColor_${sj.id}`}
+                  disabled
+                  type="color"
+                  value={changeColor ? newColor : sj.color}
+                  onChange={(e) => handleChangeColor(e, sj.id)}
+                />
+              </td>
+              <td>
+                <input disabled type="text" value={sj.course.name} />
+              </td>
+              <td>
+                <select disabled defaultValue={sj.chat_link} id="chat_chooser">
+                  <option value="-">{language.noChatSelected}</option>
+                  {chats
+                    ? chats.map((ch) => {
+                      if (ch.isGroup) {
+                        return (
+                          <option key={ch.id} value={ch.id}>
+                            {ch.chat_name}
+                          </option>
+                        );
+                      }
+                    })
+                    : null}
+                </select>
+              </td>
+              <td
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {/* <ExtraFields table="subjects" id={sj.id} /> */}
+                <button
+                  style={{ marginRight: "5px" }}
+                  onClick={() => confirmDeleteEvent(sj.id)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-trash3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                  </svg>
+                </button>
+                <button
+                  style={{ marginRight: "5px" }}
+                  onClick={(e) => showEditOptionSubject(e, sj)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-pencil-square"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  style={{ marginRight: "5px", display: "none" }}
+                  onClick={(e) => editSubject(e, sj)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-check2"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                  </svg>
+                </button>
+                <button
+                  style={{ display: "none" }}
+                  onClick={(e) => closeEditSubject(e, sj)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-x-lg"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          );
+        })}
+      </>
+    )
+  }, [subjects]);
 
   useEffect(() => {
     // fetchSubjectPage(1);
@@ -412,11 +573,69 @@ export default function SubjectsConfig() {
               <th>{language.color}</th>
               <th>{language.linkedCourse}</th>
               {/* <th>{language.linkedChat}</th> */}
+              <th></th>
             </tr>
           </thead>
 
           <tbody>
             <tr>
+              <td>
+                {language.add}:
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="sj_subjectCode"
+                  placeholder={language.subjectCode}
+                />
+              </td>
+              <td>
+                <input id="sj_name" type="text" placeholder={language.name} />
+              </td>
+              <td>
+                <input
+                  id="sj_desc"
+                  type="text"
+                  placeholder={language.description}
+                />
+              </td>
+              <td>
+                <input
+                  id="sj_color"
+                  type="color"
+                  placeholder={language.description}
+                />
+              </td>
+              <td>
+                <select defaultValue={"-"} id="course_chooser">
+                  <option value="-">{language.chooseCourse}</option>
+                  {courses
+                    ? courses.map((c) => {
+                      return (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      );
+                    })
+                    : null}
+                </select>
+              </td>
+              <td>
+                <select defaultValue={"-"} id="chat_chooser">
+                  <option value="-">{language.chooseChat}</option>
+                  {chats
+                    ? chats.map((ch) => {
+                      if (ch.isGroup) {
+                        return (
+                          <option key={ch.id} value={ch.id}>
+                            {ch.chat_name}
+                          </option>
+                        );
+                      }
+                    })
+                    : null}
+                </select>
+              </td>
               <td className="action-column">
                 <button onClick={createSubject}>
                   <svg
@@ -450,60 +669,6 @@ export default function SubjectsConfig() {
                   </div>
                 </button>
               </td>
-              <td>
-                <input
-                  type="text"
-                  id="sj_subjectCode"
-                  placeholder={language.subjectCode}
-                />
-              </td>
-              <td>
-                <input id="sj_name" type="text" placeholder={language.name} />
-              </td>
-              <td>
-                <input
-                  id="sj_desc"
-                  type="text"
-                  placeholder={language.description}
-                />
-              </td>
-              <td>
-                <input
-                  id="sj_color"
-                  type="color"
-                  placeholder={language.description}
-                />
-              </td>
-              <td>
-                <select defaultValue={"-"} id="course_chooser">
-                  <option value="-">{language.chooseCourse}</option>
-                  {courses
-                    ? courses.map((c) => {
-                        return (
-                          <option key={c.id} value={c.id}>
-                            {c.name}
-                          </option>
-                        );
-                      })
-                    : null}
-                </select>
-              </td>
-              <td>
-                <select defaultValue={"-"} id="chat_chooser">
-                  <option value="-">{language.chooseChat}</option>
-                  {chats
-                    ? chats.map((ch) => {
-                        if (ch.isGroup) {
-                          return (
-                            <option key={ch.id} value={ch.id}>
-                              {ch.chat_name}
-                            </option>
-                          );
-                        }
-                      })
-                    : null}
-                </select>
-              </td>
             </tr>
           </tbody>
         </table>
@@ -511,7 +676,7 @@ export default function SubjectsConfig() {
           <>
             <div className="notify-users">
               <PageSelect
-                onPageChange={async (p) => fetchSubjectPage(p)}
+                onPageChange={async (p) => setActualPage(p)}
                 maxPages={maxPages}
               />
             </div>
@@ -530,155 +695,7 @@ export default function SubjectsConfig() {
                   </tr>
                 </thead>
                 <tbody>
-                  {subjects.map((sj) => {
-                    return (
-                      <tr key={sj.id}>
-                        <td>
-                          <input disabled type="text" value={sj.id} />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputSubjectCode_${sj.id}`}
-                            disabled
-                            type="text"
-                            value={changeCode ? newCode : sj.subject_code}
-                            onChange={() => handleChangeCode(sj.id)}
-                          />
-                        </td>
-
-                        <td>
-                          <input
-                            id={`inputName_${sj.id}`}
-                            disabled
-                            type="text"
-                            value={changeName ? newName : sj.name}
-                            onChange={() => handleChangeName(sj.id)}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputDescription_${sj.id}`}
-                            disabled
-                            type="text"
-                            value={
-                              changeDescription
-                                ? newDescription
-                                : sj.description
-                            }
-                            onChange={() => handleChangeDescription(sj.id)}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            id={`inputColor_${sj.id}`}
-                            disabled
-                            type="color"
-                            value={changeColor ? newColor : sj.color}
-                            onChange={(e) => handleChangeColor(e, sj.id)}
-                          />
-                        </td>
-                        <td>
-                          <input disabled type="text" value={sj.course.name} />
-                        </td>
-                        <td>
-                          <select disabled defaultValue={sj.chat_link} id="chat_chooser">
-                            <option value="-">{language.noChatSelected}</option>
-                            {chats
-                              ? chats.map((ch) => {
-                                  if (ch.isGroup) {
-                                    return (
-                                      <option key={ch.id} value={ch.id}>
-                                        {ch.chat_name}
-                                      </option>
-                                    );
-                                  }
-                                })
-                              : null}
-                          </select>
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          {/* <ExtraFields table="subjects" id={sj.id} /> */}
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={() => confirmDeleteEvent(sj.id)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={(e) => showEditOptionSubject(e, sj)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-pencil-square"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px", display: "none" }}
-                            onClick={(e) => editSubject(e, sj)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-check2"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ display: "none" }}
-                            onClick={(e) => closeEditSubject(e, sj)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-x-lg"
-                              viewBox="0 0 16 16"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                              />
-                              <path
-                                fillRule="evenodd"
-                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                              />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {memoizedSubjects}
                 </tbody>
               </table>
             </div>

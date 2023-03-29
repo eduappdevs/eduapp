@@ -11,8 +11,10 @@ import { LanguageCtx } from "../hooks/LanguageContext";
 import useFilter from "../hooks/useFilter";
 import { getChatFields } from "../constants/search_fields";
 import "../styles/chatConfig.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function ChatConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [chat, setChat] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);

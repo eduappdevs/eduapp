@@ -10,8 +10,10 @@ import { LanguageCtx } from "../hooks/LanguageContext";
 import useFilter from "../hooks/useFilter";
 import { getRoleFields } from "../constants/search_fields";
 import "../styles/userRoles.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function UserRolesConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [showPerms, setShowPerms] = useState(false);
