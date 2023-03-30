@@ -13,8 +13,10 @@ import { getCourseFields } from "../constants/search_fields";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import ExtraFields from "./ExtraFields";
 import "../styles/courseConfig.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function CourseConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [courses, setCourses] = useState(null);

@@ -146,7 +146,7 @@ export default function Navbar({ locationState }) {
   const displayClock = () => {
     const display = new Date().toLocaleTimeString();
     document.getElementById("liveClock").innerHTML = display;
-    setTimeout(displayClock, 1000);
+    return setTimeout(displayClock, 1000);
   };
 
   useEffect(() => {
@@ -154,7 +154,7 @@ export default function Navbar({ locationState }) {
   }, [location]);
 
   useEffect(() => {
-    displayClock();
+    const timeout = displayClock();
 
     INSTITUTION_SERVICE.institutionCreated().then((created) =>
       setInstitutionCreated(created)
@@ -165,6 +165,7 @@ export default function Navbar({ locationState }) {
     );
 
     return () => {
+      clearTimeout(timeout);
       window.removeEventListener("institution_created", () => {});
     };
   }, []);

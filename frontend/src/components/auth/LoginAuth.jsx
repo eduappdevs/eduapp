@@ -1,6 +1,6 @@
 import { useState } from "react";
 import * as AUTH_SERVICE from "../../services/auth.service";
-import BasicGoogleLogin from "../basicGoogleLogin/BasicGoogleLogin";
+// import BasicGoogleLogin from "../basicGoogleLogin/BasicGoogleLogin";
 import StandardModal from "../modals/standard-modal/StandardModal";
 import { Mailer } from "../Mailer";
 import Notification from "../notifications/notifications";
@@ -111,12 +111,16 @@ export default function LoginAuth() {
       <button data-testid="loginButton" type="submit">
         {language.login_title}
       </button>
+
+      {/* 
+      UNCOMMENT to use Google Login
       <span style={{ color: "white" }}>
         <br />
         {language.login_or}
       </span>
-      <BasicGoogleLogin language={language} />
-      <img src={process.env.PUBLIC_URL + "/assets/logo.png"} alt="logo" />
+      <BasicGoogleLogin language={language} />*/}
+      <img src={process.env.PUBLIC_URL + "/assets/logo.png"} alt="logo" /> 
+
     </form>
   );
 }

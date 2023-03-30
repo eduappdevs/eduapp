@@ -13,8 +13,10 @@ import PageSelect from "./pagination/PageSelect";
 import useFilter from "../hooks/useFilter";
 import { getSubjectEnrollmentFields } from "../constants/search_fields";
 import Typeahead from "./Typeahead";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function EnrollSubjectConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [subjectsUsers, setSubjectsUsers] = useState(null);
