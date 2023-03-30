@@ -253,7 +253,10 @@ export default function ProfileSettings({ desktopBackTo }) {
           </svg>
         </div>
         <ChangePasswordButton />
-        <GoogleLoginButton useType={"merge"} />
+
+        {/* UNCOMMENT to use Google Login
+        <GoogleLoginButton useType={"merge"} /> */}
+
         {isAdmin && (
           <div className="youareadmin">
             <p>ADMIN</p> <img src="/assets/admin.svg" alt="teacher" />

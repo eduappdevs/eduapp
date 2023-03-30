@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useCallback, useContext, useEffect, useState, useMemo } from "react";
 import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
@@ -13,8 +13,10 @@ import PageSelect from "./pagination/PageSelect";
 import useFilter from "../hooks/useFilter";
 import { getEventFields } from "../constants/search_fields";
 import "../styles/scheduleeventslist.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function Scheduleeventslist() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [subject, setSubject] = useState([]);
@@ -48,6 +50,7 @@ export default function Scheduleeventslist() {
   const [idDelete, setIdDelete] = useState();
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
+
   const filteredEvents = useFilter(
     events,
     null,
@@ -55,9 +58,9 @@ export default function Scheduleeventslist() {
     getEventFields(language)
   );
 
-  const shortUUID = (uuid) => uuid.substring(0, 8);
+  const shortUUID = useCallback((uuid) => uuid.substring(0, 8), []);
 
-  const switchEditState = (state) => {
+  const switchEditState = useCallback((state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
@@ -68,50 +71,53 @@ export default function Scheduleeventslist() {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "hidden";
     }
-  };
+  }, []);
 
-  const connectionAlert = () => {
+  const connectionAlert = useCallback(() => {
     switchEditState(false);
     setPopup(true);
     setPopupText(language.connectionAlert);
     setPopupIcon("error");
-  };
+  }, []);
 
-  const finalizedEdit = (type, icon, text, confirmDel) => {
+  const finalizedEdit = useCallback((type, icon, text, confirmDel) => {
     fetchEvents(actualPage);
     setIsConfirmDelete(confirmDel);
     setPopup(true);
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(text);
-  };
+  }, []);
 
-  const finalizedCreate = (type, icon, txt, confirmDel) => {
+  const finalizedCreate = useCallback((type, icon, txt, confirmDel) => {
     fetchEvents(actualPage);
     setIsConfirmDelete(confirmDel);
     setPopup(true);
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(txt);
-  };
+  }, []);
 
-  const finalizedDelete = (type, icon, confirmDel, text) => {
+  const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
     setPopupType(type);
     setPopupIcon(icon);
     setPopup(true);
     setPopupText(text);
     setIsConfirmDelete(confirmDel);
     fetchEvents(actualPage);
-  };
+  }, []);
 
-  const fetchSubjects = () => {
+  const fetchSubjects = useCallback(() => {
     API.asynchronizeRequest(function () {
+      // setLoadingParams({ loading: true });
       SUBJECTSERVICE.fetchSubjects()
         .then((res) => {
           setSubject(res.data);
+          // setLoadingParams({ loading: false });
         })
         .catch(async (e) => {
           await interceptExpiredToken(e);
+          // setLoadingParams({ loading: false });
         });
     }).then(async (e) => {
       if (e) {
@@ -119,12 +125,16 @@ export default function Scheduleeventslist() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const fetchUsers = () => {
+  const fetchUsers = useCallback(() => {
     API.asynchronizeRequest(function () {
+      // setLoadingParams({ loading: true });
       USER_SERVICE.fetchUserInfos().then((res) => {
         setUsers(res.data);
+        // setLoadingParams({ loading: false });
+      }).catch(() => {
+        // setLoadingParams({ loading: false });
       });
     }).then(async (e) => {
       if (e) {
@@ -132,26 +142,30 @@ export default function Scheduleeventslist() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const fetchEvents = async (page, order = null) => {
+  const fetchEvents = useCallback(async (page, order = null) => {
     API.asynchronizeRequest(function () {
+      setLoadingParams({ loading: true });
       SCHEDULESERVICE.pagedEvents(page, order).then((event) => {
         setMaxPages(event.data.total_pages);
         setActualPage(event.data.page);
         setEvents(event.data.current_page);
         fetchSubjects();
         fetchUsers();
+        setLoadingParams({ loading: false });
+      }).catch(() => {
+        setLoadingParams({ loading: false });
       });
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
         connectionAlert();
       }
-    });
-  };
+    })
+  }, []);
 
-  const listSubject = (sub) => {
+  const listSubject = useCallback((sub) => {
     let list_subject = [];
     subject.map((s) => {
       if (s.id !== sub.split("_")[0]) {
@@ -160,9 +174,9 @@ export default function Scheduleeventslist() {
       return true;
     });
     setSubjectEdit(list_subject);
-  };
+  }, []);
 
-  const AddNewEvent = async (e) => {
+  const AddNewEvent = useCallback(async (e) => {
     e.preventDefault();
     switchEditState(false);
 
@@ -213,17 +227,20 @@ export default function Scheduleeventslist() {
     }
 
     API.asynchronizeRequest(function () {
+      setLoadingParams({ loading: true });
       SCHEDULESERVICE.createEvent(eventJson)
         .then((e) => {
           if (e) {
             finalizedCreate("info", true, language.creationCompleted, false);
           }
+          setLoadingParams({ loading: false });
         })
         .catch(async (e) => {
           if (e) {
             finalizedCreate("error", true, language.creationFailed, false);
             await interceptExpiredToken(e);
           }
+          setLoadingParams({ loading: false });
         });
     }).then(async (e) => {
       if (e) {
@@ -231,36 +248,39 @@ export default function Scheduleeventslist() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const isGlobalEvent = () => {
+  const isGlobalEvent = useCallback(() => {
     setIsGlobal(document.getElementById("e_isGlobal").checked);
-  };
+  }, []);
 
-  const isPopEvent = () => {
+  const isPopEvent = useCallback(() => {
     setIsPop(document.getElementById("e_isPop").checked);
-  };
+  }, []);
 
-  const confirmDeleteEvent = async (e) => {
+  const confirmDeleteEvent = useCallback(async (e) => {
     switchEditState(false);
     finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(e);
-  };
+  }, []);
 
-  const deleteEvent = async (e) => {
+  const deleteEvent = useCallback(async (e) => {
     switchEditState(false);
     API.asynchronizeRequest(function () {
+      setLoadingParams({ loading: true });
       SCHEDULESERVICE.deleteEvent(e.id)
         .then((x) => {
           if (x) {
             finalizedDelete("info", true, false, language.deleteAlertCompleted);
           }
+          setLoadingParams({ loading: false });
         })
         .catch(async (error) => {
           if (error) {
             finalizedDelete("error", true, false, language.deleteAlertFailed);
             await interceptExpiredToken(error);
           }
+          setLoadingParams({ loading: false });
         });
     }).then(async (error) => {
       if (error) {
@@ -268,8 +288,9 @@ export default function Scheduleeventslist() {
         await interceptExpiredToken(error);
       }
     });
-  };
-  const editEvent = (e, s) => {
+  }, []);
+
+  const editEvent = useCallback((e, s) => {
     switchEditState(false);
     let inputName = document.getElementById("inputName_" + s.id).value;
     let inputStartDate = document.getElementById(
@@ -334,7 +355,9 @@ export default function Scheduleeventslist() {
         editIsPop = inputPop;
       }
     }
+
     API.asynchronizeRequest(function () {
+      setLoadingParams({ loading: true });
       SCHEDULESERVICE.editEvent({
         id: s.id,
         annotation_start_date: editStartDate,
@@ -366,12 +389,14 @@ export default function Scheduleeventslist() {
               disable += 1;
             }
           }
+          setLoadingParams({ loading: false });
         })
         .catch(async (error) => {
           if (error) {
             finalizedEdit("error", true, language.editAlertFailed, false);
             await interceptExpiredToken(error);
           }
+          setLoadingParams({ loading: false });
         });
     }).catch(async (error) => {
       if (error) {
@@ -379,9 +404,9 @@ export default function Scheduleeventslist() {
         await interceptExpiredToken(e);
       }
     });
-  };
+  }, []);
 
-  const closeEditEvent = (e, s) => {
+  const closeEditEvent = useCallback((e, s) => {
     let disable = 1;
     while (disable < 9) {
       if (disable !== 3 && disable !== 6) {
@@ -398,9 +423,9 @@ export default function Scheduleeventslist() {
         : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
-  };
+  }, []);
 
-  const showEditOptionEvent = (e) => {
+  const showEditOptionEvent = useCallback((e) => {
     let disable = 1;
     while (disable < 9) {
       if (disable !== 3 && disable !== 6) {
@@ -434,36 +459,36 @@ export default function Scheduleeventslist() {
           ? (e.target.parentNode.childNodes[num].style.display = "block")
           : (e.target.parentNode.childNodes[num].style.display = "none")
         : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
+          ? (e.target.parentNode.childNodes[num].style.display = "none")
+          : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
-  };
+  }, []);
 
-  const handleChangeName = (id) => {
+  const handleChangeName = useCallback((id) => {
     setChangeName(true);
     return document.getElementById(`inputName_${id}`).value;
-  };
+  }, []);
 
-  const handleChangeEndDate = (id) => {
+  const handleChangeEndDate = useCallback((id) => {
     setChangeEndDate(true);
     return document.getElementById("inputEndDate_" + id).value;
-  };
+  }, []);
 
-  const handleChangeStartDate = (id) => {
+  const handleChangeStartDate = useCallback((id) => {
     setChangeStartDate(true);
     return document.getElementById("inputStartDate_" + id).value;
-  };
+  }, []);
 
-  const handleChangeDescription = (id) => {
+  const handleChangeDescription = useCallback((id) => {
     setChangeDescription(true);
     return document.getElementById(`inputDescription_${id}`);
-  };
+  }, []);
 
-  const handleChangeIsPop = (id, value) => {
+  const handleChangeIsPop = useCallback((id, value) => {
     setChangeIsPop(true);
     return (document.getElementById(`inputIsPop_${id}`).checked = value);
-  };
+  }, []);
 
   useEffect(() => {
     fetchSubjects();
@@ -490,6 +515,203 @@ export default function Scheduleeventslist() {
       });
     }
   }, [searchParams]);
+
+  const memoizedEvents = useMemo(() => {
+    return (
+      <>
+        {events && events.map((e) => {
+          if (filteredEvents !== null)
+            if (filteredEvents.find((fe) => e.id === fe.id) === undefined) return <Fragment key={e.id} />;
+          return (
+            <tr key={e.id}>
+              <td>{shortUUID(e.id)}</td>
+              <td>
+                <input
+                  type="text"
+                  id={`inputName_${e.id}`}
+                  disabled
+                  value={
+                    changeName === false ? e.annotation_title : newName
+                  }
+                  onChange={() => {
+                    handleChangeName(e.id);
+                  }}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  value={
+                    changeDescription === false
+                      ? e.annotation_description
+                      : newDescription
+                  }
+                  disabled
+                  id={`inputDescription_${e.id}`}
+                  onChange={() => {
+                    handleChangeDescription();
+                  }}
+                />
+              </td>
+              <td>
+                <input type="text" value={e.user.email} disabled />
+              </td>
+              <td>
+                <input
+                  id={`inputStartDate_${e.id}`}
+                  type="datetime-local"
+                  value={
+                    changeStartDate === false
+                      ? e.annotation_start_date
+                      : newStartDate
+                  }
+                  disabled
+                  onChange={() => {
+                    handleChangeStartDate(e.id);
+                  }}
+                />
+              </td>
+              <td>
+                <input
+                  id={`inputEndDate_${e.id}`}
+                  type="datetime-local"
+                  value={
+                    changeEndDate === false
+                      ? e.annotation_end_date
+                      : newEndDate
+                  }
+                  disabled
+                  onChange={() => {
+                    handleChangeEndDate(e.id);
+                  }}
+                />
+              </td>
+              <td style={{ textAlign: "center" }}>
+                {e.isGlobal ? (
+                  <input type="checkbox" disabled checked />
+                ) : (
+                  <input type="checkbox" disabled />
+                )}
+              </td>
+              <td>
+                <select id={`inputSubjectID_${e.id}`} disabled>
+                  <option
+                    defaultValue={e.subject.id}
+                    value={e.subject.id + "_" + e.subject.subject_code}
+                  >
+                    {e.subject.name}
+                  </option>
+                  {subjectEdit.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              <td style={{ textAlign: "center" }}>
+                <input
+                  id={`inputIsPop_${e.id}`}
+                  type="checkbox"
+                  disabled
+                  checked={changeIsPop === false ? e.isPop : newIsPop}
+                  onChange={(ev) => {
+                    handleChangeIsPop(e.id, ev.target.checked);
+                  }}
+                />
+              </td>
+              <td
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <button
+                  style={{ marginRight: "5px" }}
+                  onClick={() => {
+                    confirmDeleteEvent(e);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-trash3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                  </svg>
+                </button>
+                <button
+                  style={{ marginRight: "5px" }}
+                  onClick={(event) => {
+                    showEditOptionEvent(event, e);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-pencil-square"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  style={{ marginRight: "5px", display: "none" }}
+                  onClick={(event) => {
+                    editEvent(event, e);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-check2"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                  </svg>
+                </button>
+                <button
+                  style={{ display: "none" }}
+                  onClick={(ev) => {
+                    closeEditEvent(ev, e);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-x-lg"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          );
+        })}
+      </>
+    );
+  }, [events]);
 
   return (
     <>
@@ -632,199 +854,7 @@ export default function Scheduleeventslist() {
                 </tr>
               </thead>
               <tbody>
-                {events.map((e) => {
-                  if (filteredEvents !== null)
-                    if (
-                      filteredEvents.find((fe) => e.id === fe.id) === undefined
-                    )
-                      return <Fragment key={e.id} />;
-                  return (
-                    <tr key={e.id}>
-                      <td>{shortUUID(e.id)}</td>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputName_${e.id}`}
-                          disabled
-                          value={
-                            changeName === false ? e.annotation_title : newName
-                          }
-                          onChange={() => {
-                            handleChangeName(e.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          value={
-                            changeDescription === false
-                              ? e.annotation_description
-                              : newDescription
-                          }
-                          disabled
-                          id={`inputDescription_${e.id}`}
-                          onChange={() => {
-                            handleChangeDescription();
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input type="text" value={e.user.email} disabled />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputStartDate_${e.id}`}
-                          type="datetime-local"
-                          value={
-                            changeStartDate === false
-                              ? e.annotation_start_date
-                              : newStartDate
-                          }
-                          disabled
-                          onChange={() => {
-                            handleChangeStartDate(e.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          id={`inputEndDate_${e.id}`}
-                          type="datetime-local"
-                          value={
-                            changeEndDate === false
-                              ? e.annotation_end_date
-                              : newEndDate
-                          }
-                          disabled
-                          onChange={() => {
-                            handleChangeEndDate(e.id);
-                          }}
-                        />
-                      </td>
-                      <td style={{ textAlign: "center" }}>
-                        {e.isGlobal ? (
-                          <input type="checkbox" disabled checked />
-                        ) : (
-                          <input type="checkbox" disabled />
-                        )}
-                      </td>
-                      <td>
-                        <select id={`inputSubjectID_${e.id}`} disabled>
-                          <option
-                            defaultValue={e.subject.id}
-                            value={e.subject.id + "_" + e.subject.subject_code}
-                          >
-                            {e.subject.name}
-                          </option>
-                          {subjectEdit.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td style={{ textAlign: "center" }}>
-                        <input
-                          id={`inputIsPop_${e.id}`}
-                          type="checkbox"
-                          disabled
-                          checked={changeIsPop === false ? e.isPop : newIsPop}
-                          onChange={(ev) => {
-                            handleChangeIsPop(e.id, ev.target.checked);
-                          }}
-                        />
-                      </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={() => {
-                            confirmDeleteEvent(e);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px" }}
-                          onClick={(event) => {
-                            showEditOptionEvent(event, e);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ marginRight: "5px", display: "none" }}
-                          onClick={(event) => {
-                            editEvent(event, e);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-check2"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                          </svg>
-                        </button>
-                        <button
-                          style={{ display: "none" }}
-                          onClick={(ev) => {
-                            closeEditEvent(ev, e);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-x-lg"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                            />
-                            <path
-                              fillRule="evenodd"
-                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                            />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {memoizedEvents}
               </tbody>
             </table>
           </div>
