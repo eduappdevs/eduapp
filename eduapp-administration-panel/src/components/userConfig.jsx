@@ -448,13 +448,15 @@ export default function UserConfig() {
                     value={u.user_role.name}
                   />
                 </td>
+                {/* 
+                Uncomment for Google Auth
                 <td>
                   <input
                     type="text"
                     disabled
                     placeholder="=> Link in App"
                   />
-                </td>
+                </td> */}
                 <td>
                   <input
                     type="datetime"
@@ -698,7 +700,8 @@ export default function UserConfig() {
                   <th>{language.name}</th>
                   <th>{language.email}</th>
                   <th>{language.userRole}</th>
-                  <th>{language.googleLinked}</th>
+                  {/* Uncomment for Google Auth
+                  <th>{language.googleLinked}</th> */}
                   <th>{language.lastConnection}</th>
                   <th>{language.actions}</th>
                 </tr>

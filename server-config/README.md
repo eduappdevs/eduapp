@@ -56,9 +56,9 @@ If you want to use the project without certificate in a local environment then r
 
 Otherwise to use the project in a production environment with SSL certificate, rename the file ```backend/eduapp-db/dockerfile-example-production``` to ```backend/eduapp-db/dockerfile``` and change the data accordingly to the comments in the file itself.
 
-### backend/eduapp-db/postgress.docker-example.env
+### backend/eduapp-db/postgres.docker-example.env
 
-Rename the file ```backend/eduapp-db/postgress.docker-example.env``` to ```backend/eduapp-db/postgress.docker.env``` and change the data accordingly to the comments in the file itself.
+Rename the file ```backend/eduapp-db/postgres.docker-example.env``` to ```backend/eduapp-db/postgres.docker.env``` and change the data accordingly to the comments in the file itself.
 
 ### eduapp-administration-panel/.env-example-production or eduapp-administration-panel/.env-example-development
 
@@ -106,7 +106,7 @@ If everything went well you can now see 4 docker containers running:
 - ```eduapp_api_1```, container of the Backend.
 - ```eduapp_app_1```, container of the Frontend.
 - ```eduapp_admin_1```, container of the Administration Panel.
-- ```eduapp_db_1```, container of the postgress datatabase.
+- ```eduapp_db_1```, container of the postgres datatabase.
 
 Check it out with the following command:
 
