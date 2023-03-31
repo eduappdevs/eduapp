@@ -427,6 +427,7 @@ export default function SubjectsConfig() {
               <td>
                 <input disabled type="text" value={sj.course.name} />
               </td>
+
               <td>
                 <select disabled defaultValue={sj.chat_link} id="chat_chooser">
                   <option value="-">{language.noChatSelected}</option>
@@ -572,7 +573,7 @@ export default function SubjectsConfig() {
               <th>{language.description}</th>
               <th>{language.color}</th>
               <th>{language.linkedCourse}</th>
-              {/* <th>{language.linkedChat}</th> */}
+              <th>{language.linkedChat}</th>
               <th></th>
             </tr>
           </thead>
