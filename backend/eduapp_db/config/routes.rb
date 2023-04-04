@@ -19,7 +19,15 @@ Rails.application.routes.draw do
   resources :courses, :path => "#{@api_path}/courses"
   resources :institutions, :path => "#{@api_path}/institutions"
   resources :resources, :path => "#{@api_path}/resources"
-  resources :eduapp_user_sessions, :path => "#{@api_path}/eduapp_user_sessions"
+  resources :eduapp_user_sessions, :path => "#{@api_path}/eduapp_user_sessions" do
+    collection do
+      post :upload_single_sessions
+      post :upload_batch_sessions
+      post :batch_load, to: "eduapp_user_sessions#session_batch_load"
+      delete "batch_delete/:batch_id", to: "eduapp_user_sessions#destroy_batch"
+      put "batch_update/:batch_id", to: "eduapp_user_sessions#update_batch"
+    end
+  end
   resources :user_infos, :path => "#{@api_path}/user_infos"
   resources :subjects_users, :path => "#{@api_path}/subjects_users"
 
@@ -43,10 +51,6 @@ Rails.application.routes.draw do
   # Remove user from subject
   delete "#{@api_path}/subjects/:subject_id/users/:user_id", to: "subjects#destroy_user"
 
-  # Batch loading routes for sessions.
-  post "#{@api_path}/eduapp_user_sessions/batch_load", to: "eduapp_user_sessions#session_batch_load"
-  delete "#{@api_path}/eduapp_user_sessions/batch_delete/:batch_id", to: "eduapp_user_sessions#destroy_batch"
-  put "#{@api_path}/eduapp_user_sessions/batch_update/:batch_id", to: "eduapp_user_sessions#update_batch"
 
   # Checks if a user has system notifications.
   get "#{@api_path}/system/chat/notifications", to: "chat_bases#has_system_notifs"
