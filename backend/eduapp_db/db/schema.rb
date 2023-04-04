@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 16) do
+ActiveRecord::Schema.define(version: 2023_04_03_073827) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -133,6 +133,16 @@ ActiveRecord::Schema.define(version: 16) do
     t.index ["user_id"], name: "index_jti_match_lists_on_user_id"
   end
 
+  create_table "push_notifications", force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.text "endpoint"
+    t.text "p256dh"
+    t.text "auth"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_push_notifications_on_user_id"
+  end
+
   create_table "resources", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "description"
@@ -157,7 +167,18 @@ ActiveRecord::Schema.define(version: 16) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "extra_fields", default: [], array: true
+    t.string "chat_link"
+    t.uuid "external_id"
     t.index ["course_id"], name: "index_subjects_on_course_id"
+  end
+
+  create_table "subjects_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "subject_id", null: false
+    t.uuid "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["subject_id"], name: "index_subjects_users_on_subject_id"
+    t.index ["user_id"], name: "index_subjects_users_on_user_id"
   end
 
   create_table "tuitions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -204,6 +225,7 @@ ActiveRecord::Schema.define(version: 16) do
     t.boolean "perms_app_views", default: [true, true, true], array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "perms_session_chats", default: [false, false, true, false, false, false], array: true
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -243,9 +265,12 @@ ActiveRecord::Schema.define(version: 16) do
   add_foreign_key "courses", "institutions"
   add_foreign_key "eduapp_user_sessions", "subjects"
   add_foreign_key "jti_match_lists", "users"
+  add_foreign_key "push_notifications", "users"
   add_foreign_key "resources", "subjects"
   add_foreign_key "resources", "users"
   add_foreign_key "subjects", "courses"
+  add_foreign_key "subjects_users", "subjects"
+  add_foreign_key "subjects_users", "users"
   add_foreign_key "tuitions", "courses"
   add_foreign_key "tuitions", "users"
   add_foreign_key "user_infos", "user_roles"

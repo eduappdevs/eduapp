@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import * as CHATSERVICE from "../services/chat.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import { interceptExpiredToken } from "../utils/OfflineManager";
@@ -10,9 +11,12 @@ import { LanguageCtx } from "../hooks/LanguageContext";
 import useFilter from "../hooks/useFilter";
 import { getChatFields } from "../constants/search_fields";
 import "../styles/chatConfig.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function ChatConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [chat, setChat] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [language] = useContext(LanguageCtx);
 
@@ -20,7 +24,7 @@ export default function ChatConfig() {
   const [changeName, setChangeName] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredChats = useFilter(
@@ -65,6 +69,11 @@ export default function ChatConfig() {
         connectionAlert();
       }
     });
+  };
+
+  const fetchSubjects = async () => {
+    let subjects = await SUBJECTSERVICE.fetchSubjects();
+    setSubjects(subjects.data);
   };
 
   const connectionAlert = () => {
@@ -251,6 +260,7 @@ export default function ChatConfig() {
 
   useEffect(() => {
     fetchChatPage(1);
+    fetchSubjects();
     setInitialFetch(true);
   }, []);
 
@@ -344,6 +354,7 @@ export default function ChatConfig() {
               <table className="eventList" style={{ marginTop: "15px" }}>
                 <thead>
                   <tr>
+                    <th>{language.code}</th>
                     <th>{language.name}</th>
                     <th>{language.group}</th>
                     <th>{language.actions}</th>
@@ -358,6 +369,9 @@ export default function ChatConfig() {
                         return <Fragment key={e.id} />;
                     return (
                       <tr key={e.id}>
+                        <td>
+                          <input disabled type="text" value={e.id} />
+                        </td>
                         <td>
                           <input
                             id={"inputName_" + e.id}

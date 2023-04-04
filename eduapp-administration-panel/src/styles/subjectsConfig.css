@@ -1,15 +1,15 @@
 .subjects-table-info {
   height: auto;
-  width: 100vw;
+  /* width: 100vw; */
 }
 
 .subjects-table-info > table > thead {
-  display: block;
+  /* display: block; */
   flex-direction: row;
 }
 
 .subjects-table-info > table > thead > tr {
-  display: flex;
+  /* display: flex; */
   flex-direction: row;
   border: 1px solid #dddddd76;
   text-align: left;
@@ -20,7 +20,7 @@
 }
 
 .subjects-table-info > table > tbody {
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   justify-content: left;
   max-height: 310px;
@@ -29,7 +29,7 @@
 }
 
 .subjects-table-info > table > tbody > tr {
-  display: flex;
+  /* display: flex; */
   flex-direction: row;
 }
 

@@ -21,8 +21,14 @@ export const fetchUserSubjects = async (uId) => {
   });
 };
 
+export const fetchUserSessions = async () => {
+  return await axios.get(`${SUBJECTS}?all_sessions=true`, {
+    headers: requestHeader,
+  });
+};
+
 export const fetchUserVariantSubjects = async (uId) => {
-  return await axios.get(`${SUBJECTS}?user=${uId}`, {
+  return await axios.get(`${SUBJECTS}?user_id=${uId}`, {
     headers: requestHeader,
   });
 };

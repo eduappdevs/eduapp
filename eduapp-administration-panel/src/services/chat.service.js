@@ -86,6 +86,12 @@ export const deleteParticipant = async (id) => {
   });
 };
 
+export const deleteParticipantUserId = async (body) => {
+  return await axios.delete(`${CHAT_PARTICIPANT}/remove/${body.user_id}/${body.chat_base_id}`, {
+    headers: requestHeader,
+  });
+}
+
 export const createParticipant = async (data) => {
   return await axios.post(`${CHAT_PARTICIPANT}`, data, {
     headers: requestHeader,

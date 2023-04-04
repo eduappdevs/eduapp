@@ -324,7 +324,7 @@ export default function MainChat() {
             <textarea
               id="message-area"
               disabled={readOnly}
-              placeholder={readOnly && "This chat was created by the system."}
+              placeholder={ readOnly ? "This chat was created by the system." : undefined }
             />
           </div>
           <div className="main-chat-send-button">

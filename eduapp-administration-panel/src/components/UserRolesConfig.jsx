@@ -10,8 +10,10 @@ import { LanguageCtx } from "../hooks/LanguageContext";
 import useFilter from "../hooks/useFilter";
 import { getRoleFields } from "../constants/search_fields";
 import "../styles/userRoles.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function UserRolesConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [showPerms, setShowPerms] = useState(false);
@@ -24,7 +26,7 @@ export default function UserRolesConfig() {
   const [newPermsDesc, setNewPermsDesc] = useState("");
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredRoles = useFilter(
@@ -60,6 +62,7 @@ export default function UserRolesConfig() {
     ["subjects", language.subjects],
     ["resources", language.resources],
     ["sessions", language.sessions],
+    ["session_chats", language.sessionChats],
     ["events", language.events],
     ["teachers", language.teachers],
     ["users", language.users],
@@ -447,13 +450,7 @@ export default function UserRolesConfig() {
           </thead>
           <tbody>
             <tr>
-              <td
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <td className="action-column">
                 <button onClick={async () => await createRole()}>
                   <svg
                     id="add-svg"

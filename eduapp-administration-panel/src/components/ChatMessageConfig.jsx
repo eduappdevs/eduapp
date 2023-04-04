@@ -221,13 +221,7 @@ export default function ChatMessageConfig() {
                       <td>{e.user.email}</td>
                       <td>{e.message}</td>
                       <td>{e.send_date}</td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
+                      <td className="action-column">
                         <button
                           onClick={() => {
                             deleteMessage(e.id);

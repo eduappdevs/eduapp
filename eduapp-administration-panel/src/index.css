@@ -77,3 +77,29 @@ textarea:focus {
 	--calendarIcon: invert(0);
 	--calendarColorLine: #6d6d6d;
 }
+
+td input {
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+
+.typeahead-container {
+	position: relative;
+}
+.typeahead-list {
+	position: absolute;
+	background-color: var(--backgroundColor);
+	border: 1px solid var(--shadowColor);
+	max-width: 100%;
+	min-width: 183px;
+	border-radius: 0.25em;
+}
+.typeahead-list-item {
+	padding: 10px;
+	cursor: pointer;
+}
+.typeahead-list-item:hover {
+	padding: 10px;
+	background-color: var(--secondaryColor);
+}

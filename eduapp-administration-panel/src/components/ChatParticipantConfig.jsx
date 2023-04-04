@@ -11,8 +11,10 @@ import { LanguageCtx } from "../hooks/LanguageContext";
 import useFilter from "../hooks/useFilter";
 import { getParticipantFields } from "../constants/search_fields";
 import "../styles/chatParticipant.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function ChatParticipantConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [participant, setParticipant] = useState([]);
@@ -20,7 +22,7 @@ export default function ChatParticipantConfig() {
   const [chat, setChat] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [, setSearchParams] = useContext(SearchBarCtx);
   const filteredParticipants = useFilter(

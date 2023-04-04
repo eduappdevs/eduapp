@@ -11,7 +11,7 @@ header>nav {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-	z-index: 10001;
+	z-index: 99;
 	background-color: var(--backgroundColor);
 	/* box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219); */
 	border-bottom: 3px solid rgba(189, 189, 189, 0.671);
@@ -151,7 +151,7 @@ header>.profile-menu-desktop {
 	background-color: var(--backgroundColor);
 	transform: translateY(-1000vh);
 	transition: 0.3s all;
-	z-index: 99999999999999999999999999;
+	z-index: 99;
 	border-radius: 0 0 0 20px;
 	box-shadow: 0 3px 6px var(--secondaryColor);
 	overflow: hidden;
@@ -227,4 +227,20 @@ header>.profile-menu-desktop>ul>li>a {
 .activeLocation {
 	background-color: var(--orange) !important;
 	box-shadow: 0 3px 1px rgb(233, 130, 62) !important;
+}
+
+/* ANT DROPDOWN */
+
+.ant-dropdown ul {
+	background-color: rgb(233, 130, 62) !important;
+}
+
+.ant-dropdown li:hover {
+	background-color: #4B91FF !important;
+}
+
+.dropdown-menu-option {
+	color: white !important;
+	font-weight: bold;
+	margin-bottom: 20px;
 }

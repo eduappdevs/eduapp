@@ -5,7 +5,7 @@ class SubjectsController < ApplicationController
 
   # GET /subjects
   def index
-    wants_info_for_calendar = false
+    wants_info_for_calendar = false || params[:wants_info_for_calendar]
 
     if params[:user_id]
       wants_info_for_calendar = true
@@ -17,7 +17,7 @@ class SubjectsController < ApplicationController
       # @Subjects = Subject.where(course_id: tuitions)
       # @todaySessions = EduappUserSession.where(subject_id: @Subjects).pluck(:session_start_date)
       # @Sessions = []
-      
+
       # for hour in @todaySessions
       #   if (hour.split("T")[1].split(":")[0] == @TodayHourNow or hour.split("T")[1].split(":")[0] >= @TodayHourNow and hour.split("T")[0] == @Today)
       #     @Sessions += EduappUserSession.where(subject_id: @Subjects, session_start_date: hour)
@@ -25,36 +25,47 @@ class SubjectsController < ApplicationController
       # end
       # @subjects = @Sessions
 
-      @Subjects = []
-      @Sessions = []
-      @Today = Time.now.strftime("%F")
-      @TodayHourNow = Time.now.strftime("%H")
-      @todaySessions = []
-
-      @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
-
-      for course in @TuitionsUserId
-        @Subjects += Subject.where(course_id: course)
+      @subjects = User.find(params[:user_id]).subjects
+    elsif params[:all_sessions]
+      #TODO: cambiar esta lógica pasarla a eventos, calendario(analizar)
+      # Tiene que devolver todos los evenos que hay hoy, sin tener que preguntar por la hora
+      @sessions = []
+      @today = Time.now.strftime("%F")
+      @todayHourNow = Time.now.strftime("%H")
+      user = User.find(current_user)
+      if user.user_info.user_role.name == 'eduapp-teacher'
+        @user_subjects = user.user_info.teaching_list
+      else
+        @user_subjects = user.subjects.pluck(:id)
       end
-
-      for subject in @Subjects
+      @todaySessions = []
+      for subject in @user_subjects
         @todaySessions += EduappUserSession.where(subject_id: subject).pluck(:session_start_date)
       end
 
       for hour in @todaySessions
-        if (hour.split("T")[1].split(":")[0] == @TodayHourNow or hour.split("T")[1].split(":")[0] >= @TodayHourNow and hour.split("T")[0] == @Today)
-          @Sessions += EduappUserSession.where(subject_id: @Subjects, session_start_date: hour)
-        else
+        if (hour.split("T")[1].split(":")[0] == @todayHourNow or hour.split("T")[1].split(":")[0] >= @todayHourNow and hour.split("T")[0] == @today)
+          @sessions += EduappUserSession.where(subject_id: @user_subjects, session_start_date: hour)
         end
       end
-
-      @subjects = @Sessions
+    @subjects = @sessions
+    elsif params[:subject_id]
+      @subjects = Subject.where(id: params[:subject_id])
     elsif params[:name]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
-      @subjects = Subject.where(name: params[:name])
+      @subjects = Subject.where('name ilike ?', "%#{params[:name]}%")
+    elsif params[:subject_code]
+      # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
+      @subjects = Subject.where('subject_code ilike ?', "%#{params[:subject_code]}%")
+    elsif params[:id]
+      # TODO: HANDLE PERMISSIONS FOR NAME QUERIES
+      @subjects = Subject.where('id::text ilike ?', "%#{params[:id]}%")
     elsif params[:user]
       # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
       @subjects = Subject.where(course_id: Tuition.where(user_id: params[:user]).pluck(:course_id))
+    elsif params[:course_name]
+      # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
+      @subjects = Subject.joins(:course).where('courses.name ilike ?', "%#{params[:course_name]}%")
     else
       if !check_perms_all!(get_user_roles.perms_subjects)
         return
@@ -62,9 +73,13 @@ class SubjectsController < ApplicationController
       @subjects = Subject.all
     end
 
-    if !wants_info_for_calendar
-      if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
-        @subjects = @subjects.order(parse_filter_order(params[:order]))
+    if wants_info_for_calendar
+      order = !params[:order].nil? && JSON.parse(Base64.decode64(params[:order]))
+      if order && order["field"] != ""
+        if order["field"] == 'course_name'
+          @subjects = @subjects.joins(:course)
+        end
+        @subjects = @subjects.order(parse_filter_order(order,{'course_name' => 'courses.name'}))
       else
         @subjects = @subjects.order(name: :asc)
       end
@@ -72,7 +87,7 @@ class SubjectsController < ApplicationController
 
     if params[:page]
       @subjects = query_paginate(@subjects, params[:page])
-      @subjects[:current_page] = serialize_each(@subjects[:current_page], [:created_at, :updated_at, :course], [:course])
+      @subjects[:current_page] = serialize_each(@subjects[:current_page], [:created_at, :updated_at], [:course, :users])
     end
 
     render json: @subjects
@@ -144,8 +159,10 @@ class SubjectsController < ApplicationController
   end
 
   # GET /subjects/1
+  #TODO: probar pasar un parametro render(boolean) para controlar los render anidados
   def show
-    if !check_perms_query!(get_user_roles.perms_subjects) && !subject_in_user_course
+    if !check_perms_query!(get_user_roles.perms_subjects, false) && !check_perms_query_self!(get_user_roles.perms_subjects, current_user)
+      deny_perms_access!
       return
     end
     render json: @subject
@@ -159,9 +176,14 @@ class SubjectsController < ApplicationController
 
     if Subject.where(subject_code: params[:subject_code]).count > 0
       render json: @Subject, status: :unprocessable_entity
+    elsif params[:enrollment] # TODO: refactor crear una acción
+      @subject = Subject.find(params[:subject_id])
+      @subject.users << User.find(params[:user_id])
+      @subject.save
     else
-      puts "Creating subject: "
-      @subject = Subject.new(subject_code: params[:subject_code], name: params[:name], description: params[:description], color: params[:color], course_id: params[:course_id])
+      @subject = Subject.new(subject_code: params[:subject_code], name: params[:name],
+                            description: params[:description], color: params[:color],
+                            course_id: params[:course_id], chat_link: params[:chat_link])
       if @subject.save
         render json: @subject, status: :created, location: @subject
       else
@@ -172,7 +194,7 @@ class SubjectsController < ApplicationController
 
   # PUT /subjects/1
   def update
-    if !check_perms_update!(get_user_roles.perms_subjects, false, :null)
+    if !check_perms_update!(get_user_roles.perms_subjects, true, current_user, false)
       return
     end
     if @subject.update(subject_params)
@@ -188,6 +210,15 @@ class SubjectsController < ApplicationController
       return
     end
     @subject.destroy
+  end
+
+  # DELETE /subjects/1/users/1
+  def destroy_user
+    if !check_perms_delete!(get_user_roles.perms_subjects, false, :null)
+      return
+    end
+    @subject = Subject.find(params[:subject_id])
+    @subject.users.destroy(params[:user_id])
   end
 
   private
@@ -207,6 +238,16 @@ class SubjectsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def subject_params
-    params.require(:subject).permit(:subject_code, :name, :description, :color, :course_id)
+    params.require(:subject)
+          .permit(
+            :id,
+            :subject_code,
+            :external_id,
+            :name,
+            :description,
+            :color,
+            :chat_link,
+            :course_id
+          )
   end
 end

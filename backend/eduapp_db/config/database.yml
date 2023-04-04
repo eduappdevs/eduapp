@@ -2,19 +2,20 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: <%= ENV.fetch("HOST") { localhost } %>
+  host: <%= ENV.fetch("DB_HOST") { localhost } %>
 
 development:
   <<: *default
   database: eduapp_db_development
   username: <%= ENV.fetch("DEV_DB_USER") { "postgres" } %>
   password: <%= ENV.fetch("DEV_DB_PSWD") { "1234" } %>
+  port: <%= ENV.fetch("DEV_DB_PORT") { 5432 } %>
 
 test:
   <<: *default
   database: eduapp_db_test
-  username: postgres
-  password: "1234"
+  username: <%= ENV.fetch("DEV_DB_USER") { "postgres" } %>
+  password: <%= ENV.fetch("DEV_DB_PSWD") { "1234" } %>
 
 production:
   <<: *default

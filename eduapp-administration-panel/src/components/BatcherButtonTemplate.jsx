@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import usersTemplate from "../assets/usersTemplate.png";
+import usersImportExample from "../assets/usersImportExample.png";
 import sessionsTemplate from "../assets/sessionsTemplate.png";
 import eventsTemplate from "../assets/eventsTemplate.png";
 import CSVReader from "react-csv-reader";
@@ -40,7 +40,7 @@ export default function BatcherButtonTemplate({ type }) {
       <ImageModal
         imageRoute={
           type === "users"
-            ? usersTemplate
+            ? usersImportExample
             : type === "sessions"
             ? sessionsTemplate
             : eventsTemplate

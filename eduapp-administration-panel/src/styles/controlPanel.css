@@ -34,7 +34,7 @@
 	transform: scale(0.98);
 	padding: 8px;
 	min-height: 500px;
-	height: 76vh;
+	/* height: 76vh; */
 }
 
 button {
@@ -86,4 +86,24 @@ input[type='email'] {
 	top: 5px;
 	color: rgba(127, 127, 127, 0.584);
 	left: 5px;
+}
+
+.add-form{
+	padding-bottom: 20px;
+	overflow: auto;
+}
+
+.controlPanel-content-container.enroll .add-form, .controlPanel-content-container.enroll_subjects .add-form{
+	overflow: visible;
+}
+
+  
+.list-main-container{
+	padding-bottom: 20px;
+	overflow: auto;
+}
+
+.action-column {
+	text-align: center;
+	white-space: nowrap;
 }

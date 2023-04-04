@@ -1,12 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { interceptExpiredToken } from "../../../utils/OfflineManager";
 import AppHeader from "../../../components/appHeader/AppHeader";
 import { asynchronizeRequest } from "../../../API.js";
 import StandardModal from "../../../components/modals/standard-modal/StandardModal";
 import { getOfflineUser } from "../../../utils/OfflineManager";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
+import * as SUBJECTSERVICE from "../../../services/subject.service";
 import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import useRole from "../../../hooks/useRole";
@@ -14,6 +16,7 @@ import "./GroupChatCreate.css";
 import useLanguage from "../../../hooks/useLanguage";
 
 export default function GroupChatCreate() {
+  const { subject_id } = useParams("");
   const navigate = useNavigate();
   const language = useLanguage();
 
@@ -24,6 +27,7 @@ export default function GroupChatCreate() {
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [userQuery, setUserQuery] = useState("");
   const [participants, setParticipants] = useState([]);
+  const [subject, setSubject] = useState(null);
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -33,6 +37,11 @@ export default function GroupChatCreate() {
     "eduapp-admin",
     "eduapp-teacher",
   ]);
+
+  const fetchSubject = async () => {
+    const subject = await SUBJECTSERVICE.fetchSubject(subject_id);
+    setSubject(subject.data);
+  };
 
   const displayWarning = (text) => {
     setWarningText(text);
@@ -88,14 +97,14 @@ export default function GroupChatCreate() {
     }
   };
 
-  const createChat = () => {
+  const createChat = async (e) => {
     if (groupName.length < 1) {
       setPopupText(language.chat_no_groupname);
       setShowPopup(true);
       return;
     }
 
-    if (participants.length < 2) {
+    if (!subject?.users && participants.length < 2) {
       setPopupText(language.chat_group_min_2);
       setShowPopup(true);
       return;
@@ -104,8 +113,16 @@ export default function GroupChatCreate() {
     if (createButton === language.create) {
       setCreateButton(language.creating);
       let finalParticipants = [];
-      console.log(participants);
-      for (let p of participants) finalParticipants.push(p.user.id);
+      if (subject_id === "no-subject") {
+        for (let p of participants) finalParticipants.push(p.user.id);
+      } else {
+        for (let user of subject.users) {
+          if (getOfflineUser().user.id != user.id) {
+            finalParticipants.push(user.id);
+          }
+        };
+      }
+
       asynchronizeRequest(async () => {
         let chat_id = await CHAT_SERVICE.createCompleteChat({
           base: {
@@ -116,6 +133,16 @@ export default function GroupChatCreate() {
             user_ids: [getOfflineUser().user.id, ...finalParticipants],
           },
         });
+        if (subject_id !== "no-subject") {
+          SUBJECTSERVICE.editSubject({
+            id: subject_id,
+            chat_link: chat_id,
+          }).catch(async (error) => {
+            if (error) {
+              await interceptExpiredToken(e);
+            }
+          });
+        }
         navigate("/chat/g" + chat_id);
         setCreateButton(language.create);
       }).then((err) => {
@@ -135,6 +162,9 @@ export default function GroupChatCreate() {
     if (canCreate !== null) {
       if (!canCreate) window.location.href = "/chat";
       setCreateButton(language.create);
+    }
+    if (subject_id !== "no-subject") {
+      fetchSubject();
     }
   }, [canCreate]);
 
@@ -206,32 +236,39 @@ export default function GroupChatCreate() {
         <div className="group-participants">
           <div className="user-search-bar">
             <h2>{language.chat_participants}</h2>
-            <input
-              type="text"
-              className="user-search"
-              value={userQuery}
-              onChange={(e) => {
-                setUserQuery(e.target.value);
-              }}
-              placeholder={language.chat_search_names}
-            />
-            {suggestedUsers.length > 0 && (
-              <ul className="suggested-users">
-                {suggestedUsers.map((u) => {
-                  return (
-                    <li
-                      key={u.id}
-                      onClick={() => {
-                        setParticipants([...participants, u]);
-                        if (suggestedUsers.indexOf(u) > -1)
-                          suggestedUsers.splice(suggestedUsers.indexOf(u), 1);
-                      }}
-                    >
-                      {u.user_name}
-                    </li>
-                  );
-                })}
-              </ul>
+            {!subject?.users && (
+              <>
+                <input
+                  type="text"
+                  className="user-search"
+                  value={userQuery}
+                  onChange={(e) => {
+                    setUserQuery(e.target.value);
+                  }}
+                  placeholder={language.chat_search_names}
+                />
+                {suggestedUsers.length > 0 && (
+                  <ul className="suggested-users">
+                    {suggestedUsers.map((u) => {
+                      return (
+                        <li
+                          key={u.id}
+                          onClick={() => {
+                            setParticipants([...participants, u]);
+                            if (suggestedUsers.indexOf(u) > -1)
+                              suggestedUsers.splice(
+                                suggestedUsers.indexOf(u),
+                                1
+                              );
+                          }}
+                        >
+                          {u.user_name}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </>
             )}
           </div>
           <div className="participant-table">
@@ -276,6 +313,22 @@ export default function GroupChatCreate() {
                       </tr>
                     );
                   })
+                ) : subject?.users ? (
+                  <>
+                    {subject?.users.map((user) => (
+                      <tr key={user.id}>
+                        <td>
+                          <img
+                            src={
+                              "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                            }
+                            alt={"participant profile"}
+                          />
+                        </td>
+                        <td>{user.email}</td>
+                      </tr>
+                    ))}
+                  </>
                 ) : (
                   <tr>
                     <td>
@@ -296,8 +349,8 @@ export default function GroupChatCreate() {
         <button
           type="button"
           className="chat-create"
-          onClick={() => {
-            createChat();
+          onClick={(e) => {
+            createChat(e);
           }}
         >
           {createButton}

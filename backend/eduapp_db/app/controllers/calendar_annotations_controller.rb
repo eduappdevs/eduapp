@@ -20,22 +20,22 @@ class CalendarAnnotationsController < ApplicationController
       # @calendarEvents = @sessions.where(isGlobal: false)
       # @colorEvents = @subjects.pluck(:id, :color)
 
-      @TuitionsUserId = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
+      # @TuitionsUserId = SubjectsUser.where(user_id: params[:user_id]).pluck(:subject_id)
       @calendar_isGlobal = CalendarAnnotation.where(isGlobal: true)
-      @subjects = []
       @calendarEvents = []
       @sessions = []
-      for course in @TuitionsUserId
-        @subjects += Subject.where(course_id: course).pluck(:id)
+      @colorEvents = []
+      user = User.find(params[:user_id])
+      if user.user_info.user_role.name == 'eduapp-teacher'
+        @subjects = user.user_info.teaching_list
+      else
+        @subjects = user.subjects.pluck(:id)
       end
-
       for subject in @subjects
+        subj = Subject.find(subject)
         @calendarEvents += CalendarAnnotation.where(isGlobal: false, subject_id: subject)
-        @colorEvents = Subject.where(course_id: @TuitionsUserId).pluck(:id, :color)
-      end
-
-      for subject in @subjects
-        @sessions += CalendarAnnotation.where(subject_id: subject)
+        @colorEvents << [ subj.id, subj.color]
+        @sessions += EduappUserSession.where(subject_id: subject)
       end
       @calendar_annotations = { :globalEvents => @calendar_isGlobal, :calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents }
     else
@@ -63,6 +63,7 @@ class CalendarAnnotationsController < ApplicationController
     render json: @calendar_annotations
   end
 
+  # TODO: revisar
   def calendar_info
     if !check_perms_query_self!(get_user_roles.perms_events, params[:user_id])
       return

@@ -7,3 +7,7 @@ const requestHeader = { eduauth: TOKEN };
 export const fetchRoles = async () => {
   return (await axios.get(ROLES, { headers: requestHeader })).data;
 };
+
+export const fetchRole = async (id) => {
+  return (await axios.get(`${ROLES}/${id}`, { headers: requestHeader })).data;
+};

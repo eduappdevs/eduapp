@@ -1,33 +1,6 @@
 class ApplicationController < ActionController::API
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  protected
-
-  def configure_permitted_parameters
-    added_attrs = [:username, :email, :password, :password_confirmation]
-    devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
-    devise_parameter_sanitizer.permit(:sign_in) do |user_params|
-      user_params.permit(:username, :email)
-    end
-  end
-
-  # Returns the ID's information from the requested table.
-  def return_table(table)
-    case table
-    when "users"
-      return User.find(params[:id])
-    when "courses"
-      return Course.find(params[:id])
-    when "sessions"
-      return EduappUserSession.find(params[:id])
-    when "institutions"
-      return Institution.find(params[:id])
-    when "resources"
-      return Resource.find(params[:id])
-    when "subjects"
-      return Subject.find(params[:id])
-    end
-  end
 
   # Renders the desired table's ```extra_fields```.
   def get_extrafields
@@ -98,6 +71,36 @@ class ApplicationController < ActionController::API
     end
   end
 
+
+  protected
+
+  def configure_permitted_parameters
+    added_attrs = [:username, :email, :password, :password_confirmation]
+    devise_parameter_sanitizer.permit :sign_up, keys: added_attrs
+    devise_parameter_sanitizer.permit(:sign_in) do |user_params|
+      user_params.permit(:username, :email)
+    end
+  end
+
+  # Returns the ID's information from the requested table.
+  def return_table(table)
+    case table
+    when "users"
+      return User.find(params[:id])
+    when "courses"
+      return Course.find(params[:id])
+    when "sessions"
+      return EduappUserSession.find(params[:id])
+    when "institutions"
+      return Institution.find(params[:id])
+    when "resources"
+      return Resource.find(params[:id])
+    when "subjects"
+      return Subject.find(params[:id])
+    end
+  end
+
+
   # Filters the desired table's ```extra_fields``` for further filtration.
   def filter_extrafields(extras, table)
     check_extra_fields(table)
@@ -114,7 +117,7 @@ class ApplicationController < ActionController::API
         extras.each do |extra_field|
           break if ids.include? entry.id
           extra_field = { extra_field[0] => extra_field[1] }
-          field = JSON.parse field
+          field = field.instance_of?(String) ? JSON.parse(field) : field
 
           ids.push(entry.id) if field["value"] =~ /^#{extra_field[field["name"]]}.*$/ && !extra_field[field["name"]].nil?
         end
@@ -123,6 +126,19 @@ class ApplicationController < ActionController::API
 
     return ids.length > 0 ? table.where(id: ids) : nil
   end
+
+  # PERMISSIONS
+
+  # Deny access due to permissions.
+  def deny_perms_access!
+    render json: { error: "You do not have permission to access this endpoint." }, status: :forbidden and return false
+  end
+
+  # Deny action due to permissions.
+  def deny_perms_action!
+    render json: { error: "You do not have permission to perform this action." }, status: 405 and return false
+  end
+
 
   private
 
@@ -207,7 +223,7 @@ class ApplicationController < ActionController::API
 
   # Paginates an ```ActiveRecord``` query.
   def query_paginate(query, page, limit = 10)
-    page = Integer(page)
+    page = begin Integer(page) rescue 1 end
     if page - 1 < 0
       return { :error => "Page cannot be less than 1" }
     end
@@ -220,9 +236,11 @@ class ApplicationController < ActionController::API
   end
 
   # A parser made to correctly return a decoded order filter.
-  def parse_filter_order(order)
-    order = JSON.parse(Base64.decode64(order))
-    return { order["field"] => order["order"] == "asc" ? :asc : :desc }
+  def parse_filter_order(order, relational_order = {'.' => ''})
+    order = order.is_a?(String) ? JSON.parse(Base64.decode64(order)) : order
+    field = relational_order[order["field"]] || order["field"] || nil
+
+    return { field => order['order'] == "asc" ? :asc : :desc, id: :asc }
   end
 
   # PERMISSIONS
@@ -238,11 +256,11 @@ class ApplicationController < ActionController::API
   end
 
   # Checks the owner that executed the desired action.
-  def check_action_owner!(requested_id)
+  def check_action_owner!(requested_id, render_error = true)
     if requested_id === @current_user
       return true
     else
-      return deny_perms_action! unless get_user_roles.name === get_admin_role.name and return true
+      return render_error ? (deny_perms_action! unless get_user_roles.name === get_admin_role.name) : false
     end
   end
 
@@ -256,11 +274,11 @@ class ApplicationController < ActionController::API
   end
 
   # Checks ```UserRole``` permissions for performing specific queries.
-  def check_perms_query!(user_roles)
+  def check_perms_query!(user_roles, render_error= true)
     if user_roles[1]
       return true
     else
-      return deny_perms_access!
+      return render_error ? deny_perms_access! : false
     end
   end
 
@@ -287,14 +305,14 @@ class ApplicationController < ActionController::API
   end
 
   # Checks ```UserRole``` permissions for updating.
-  def check_perms_update!(user_roles, needs_owner_check, requested_id)
+  def check_perms_update!(user_roles, needs_owner_check = false, requested_id = nil, render_error = true)
     if user_roles[4]
       return true
     else
       if needs_owner_check
-        return check_action_owner!(requested_id)
+        return check_action_owner!(requested_id, render_error)
       else
-        return deny_perms_action!
+        return render_error ? deny_perms_action! : false
       end
     end
   end

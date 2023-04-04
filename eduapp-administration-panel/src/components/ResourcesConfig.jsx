@@ -14,8 +14,10 @@ import { getResourceFields } from "../constants/search_fields";
 import ExtraFields from "./ExtraFields";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import "../styles/resourcesConfig.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function ResourcesConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [, setUsers] = useState([]);
@@ -24,7 +26,7 @@ export default function ResourcesConfig() {
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredResources = useFilter(
@@ -366,7 +368,6 @@ export default function ResourcesConfig() {
             <tr>
               <th>{language.name}</th>
               <th>{language.description}</th>
-              <th>{language.author}</th>
               <th>{language.subjects}</th>
               <th>{language.files}</th>
             </tr>
@@ -505,13 +506,7 @@ export default function ResourcesConfig() {
                           ))}
                         </select>
                       </td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
+                      <td className="action-column">
                         <ExtraFields table="resources" id={r.id} />
                         <button
                           id="btn-delete-resources"

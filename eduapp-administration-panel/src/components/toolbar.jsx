@@ -1,6 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import Batcher from "./Batcher";
 import SessionCSVModal from "./modals/sessionCSV-batch-modal/SessionCSVModal";
+import StandardModal from "./modals/standard-modal/StandardModal";
+
 import FieldSearcher from "./FieldSearcher";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import "../styles/scheduletoolbar.css";
@@ -9,6 +11,18 @@ export default function Toolbar(props) {
   const [language] = useContext(LanguageCtx);
 
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [popupType, setPopupType] = useState("");
+  const [showPopup, setPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
+  const [popupIcon, setPopupIcon] = useState("");
+
+  const messageError = useCallback((type, icon, pop, text) => {
+    setPopup(pop);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
+  }, []);
 
   return (
     <div className="scheduletoolbar-container">
@@ -23,7 +37,7 @@ export default function Toolbar(props) {
                 }}
               >
                 <div className="check-button-main">
-                  <p>CSV file upload</p>
+                  <p>{language.csvFileUpload}</p>
                 </div>
               </div>
             </li>
@@ -42,6 +56,7 @@ export default function Toolbar(props) {
                   "controlPanelContentContainer"
                 ).style.overflow = "scroll";
               }}
+              messageError={messageError}
             />
           ) : null}
         </>
@@ -89,6 +104,12 @@ export default function Toolbar(props) {
             <FieldSearcher />
           </ul>
         </>
+      ) : props.location === "enroll_subjects" ? (
+        <>
+          <ul className="scheduletoolbar-ul enroll_subjects-toolbar">
+            <FieldSearcher />
+          </ul>
+        </>
       ) : props.location === "teachers" ? (
         <>
           <ul className="scheduletoolbar-ul teachers-toolbar">
@@ -114,6 +135,23 @@ export default function Toolbar(props) {
       ) : (
         <h1>{language.configuration}</h1>
       )}
+      <StandardModal
+        show={showPopup}
+        iconFill={popupIcon}
+        type={popupType}
+        text={popupText}
+        onYesAction={() => {
+          setPopup(false);
+        }}
+        onNoAction={() => {
+          setPopup(false)
+        }}
+        onCloseAction={() => {
+          setPopup(false);
+        }}
+        hasIconAnimation
+        hasTransit
+      />
     </div>
   );
 }

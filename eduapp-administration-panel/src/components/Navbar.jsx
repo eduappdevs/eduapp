@@ -6,10 +6,13 @@ import asynchronizeRequest, { JSREPORT } from "../API";
 import { fetchMessage } from "../services/chat.service";
 import { fetchCourses } from "../services/course.service";
 import { fetchResourcesJson } from "../services/resource.service";
-import LanguageSwitcher from "./LanguageSwitcher";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import * as INSTITUTION_SERVICE from "../services/institution.service";
+// import useLanguage from "../hooks/useLanguage";
+
+import LanguageSwitcher from "./LanguageSwitcher";
+
 import "./componentStyles/languageSwitcher.css";
 import "../styles/navbar.css";
 
@@ -25,6 +28,7 @@ export default function Navbar({ locationState }) {
   const toolbarLocation = (loc) => {
     setLocation(loc);
     localStorage.setItem("eduapp_last_viewed", loc);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // eslint-disable-next-line no-unused-vars
@@ -142,7 +146,7 @@ export default function Navbar({ locationState }) {
   const displayClock = () => {
     const display = new Date().toLocaleTimeString();
     document.getElementById("liveClock").innerHTML = display;
-    setTimeout(displayClock, 1000);
+    return setTimeout(displayClock, 1000);
   };
 
   useEffect(() => {
@@ -150,7 +154,7 @@ export default function Navbar({ locationState }) {
   }, [location]);
 
   useEffect(() => {
-    displayClock();
+    const timeout = displayClock();
 
     INSTITUTION_SERVICE.institutionCreated().then((created) =>
       setInstitutionCreated(created)
@@ -161,6 +165,7 @@ export default function Navbar({ locationState }) {
     );
 
     return () => {
+      clearTimeout(timeout);
       window.removeEventListener("institution_created", () => {});
     };
   }, []);
@@ -209,7 +214,7 @@ export default function Navbar({ locationState }) {
           </div>
           <div className="users-button-container button-container">
             <span>
-              <p>Users</p>
+              <p>{language.users}</p>
             </span>
             <ul className={"suboptions"}>
               <li
@@ -234,7 +239,19 @@ export default function Navbar({ locationState }) {
                     : "button-suboptions"
                 }
               >
-                <p>{language.enrollment}</p>
+                <p>{language.enrollment_courses}</p>
+              </li>
+              <li
+                onClick={() => {
+                  toolbarLocation("enroll_subjects");
+                }}
+                className={
+                  activeSection === "enroll_subjects"
+                    ? "active button-suboption"
+                    : "button-suboptions"
+                }
+              >
+                <p>{language.enrollment_subjects}</p>
               </li>
               <li
                 onClick={() => {
