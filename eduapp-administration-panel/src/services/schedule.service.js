@@ -89,8 +89,18 @@ export const createSession = async (body) => {
   return await axios.post(SESSIONS, body, { headers: requestHeader });
 };
 
+export const uploadSigleSession = async (body) => {
+  return await axios.post(`${SESSIONS}/upload_single_sessions`, body, { headers: requestHeader });
+};
+
 export const createSessionBatch = async (body) => {
   return await axios.post(`${SESSIONS}/batch_load`, body, {
+    headers: requestHeader,
+  });
+};
+
+export const uploadBatchSessions = async (body) => {
+  return await axios.post(`${SESSIONS}/upload_batch_sessions`, body, {
     headers: requestHeader,
   });
 };

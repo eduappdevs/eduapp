@@ -19,22 +19,13 @@ export default function SubjectsConfig() {
   const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
-  const [subjects, setSubjects] = useState(null);
+  const [subjects, setSubjects] = useState([]);
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [courses, setCourses] = useState([]);
   const [chats, setChats] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
-
-  const [changeColor, setChangeColor] = useState(false);
-  const [newColor] = useState();
-  const [newCode] = useState();
-  const [changeCode, setChangeCode] = useState(false);
-  const [newName] = useState();
-  const [changeName, setChangeName] = useState(false);
-  const [newDescription] = useState();
-  const [changeDescription, setChangeDescription] = useState(false);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -202,7 +193,7 @@ export default function SubjectsConfig() {
 
   const showEditOptionSubject = useCallback((e) => {
     let disable = 1;
-    while (disable < 5) {
+    while (disable < 8) {
       e.target.parentNode.parentNode.childNodes[
         disable
       ].childNodes[0].disabled = false;
@@ -230,49 +221,16 @@ export default function SubjectsConfig() {
     setPopupText(text);
   }, []);
 
-  const editSubject = useCallback((e, s) => {
-    switchEditState(false);
-    let inputCode = document.getElementById("inputSubjectCode_" + s.id).value;
-    let inputName = document.getElementById("inputName_" + s.id).value;
-    let inputDescription = document.getElementById(
-      "inputDescription_" + s.id
-    ).value;
-    let inputColor = document.getElementById("inputColor_" + s.id).value;
-
-    let editCode, editTitle, editColor, editDescription;
-
-    if (inputCode !== "" && inputCode !== s.subject_code) {
-      editCode = inputCode;
-    } else {
-      editCode = s.subject_code;
-    }
-
-    if (inputName !== "" && inputName !== s.name) {
-      editTitle = inputName;
-    } else {
-      editTitle = s.name;
-    }
-
-    if (inputDescription !== "" && inputDescription !== s.session_start_date) {
-      editDescription = inputDescription;
-    } else {
-      editDescription = s.description;
-    }
-
-    if (inputColor !== "" && inputColor !== s.session_end_date) {
-      editColor = inputColor;
-    } else {
-      editColor = s.session_end_date;
-    }
-
+  const editSubject = useCallback((e, subject) => {
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.editSubject({
-        id: s.id,
-        subject_code: editCode,
-        name: editTitle,
-        description: editDescription,
-        color: editColor,
-        course_id: s.course_id,
+        id: subject.id,
+        subject_code: subject.subject_code,
+        external_id: subject.external_id,
+        name: subject.name,
+        description: subject.description,
+        color: subject.color,
+        course_id: subject.course_id,
       })
         .then((error) => {
           if (error) {
@@ -354,81 +312,79 @@ export default function SubjectsConfig() {
     });
   }, []);
 
-  const handleChangeColor = useCallback((id) => {
-    setChangeColor(true);
-    return document.getElementById("inputColor_" + id).value;
-  }, []);
-
-  const handleChangeName = useCallback((id) => {
-    setChangeName(true);
-    return document.getElementById("inputName_" + id).value;
-  }, []);
-
-  const handleChangeDescription = useCallback((id) => {
-    setChangeDescription(true);
-    return document.getElementById("inputDescription_" + id).value;
-  }, []);
-
-  const handleChangeCode = useCallback((id) => {
-    setChangeCode(true);
-    return document.getElementById("inputSubjectCode_" + id).value;
-  }, []);
+  const handleChange = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    const newSubjects = [...subjects];
+    newSubjects[index][inputName] = newValue;
+    setSubjects(newSubjects);
+  }
 
   const memoizedSubjects = useMemo(() => {
     return (
       <>
-        {subjects && subjects.map((sj) => {
+        {subjects && subjects.map((subject, index) => {
           return (
-            <tr key={sj.id}>
+            <tr key={subject.id}>
               <td>
-                <input disabled type="text" value={sj.id} />
+                <input disabled type="text" value={subject.id} />
               </td>
               <td>
                 <input
-                  id={`inputSubjectCode_${sj.id}`}
+                  id={`inputSubjectCode_${subject.id}`}
+                  name="subject_code"
                   disabled
                   type="text"
-                  value={changeCode ? newCode : sj.subject_code}
-                  onChange={() => handleChangeCode(sj.id)}
+                  value={subject.subject_code}
+                  onChange={(event) => handleChange(index, event)}
+                />
+              </td>
+              <td>
+                <input
+                  id={`inputExternaId_${subject.id}`}
+                  name="external_id"
+                  disabled
+                  type="text"
+                  value={subject.external_id}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
 
               <td>
                 <input
-                  id={`inputName_${sj.id}`}
+                  id={`inputName_${subject.id}`}
+                  name="name"
                   disabled
                   type="text"
-                  value={changeName ? newName : sj.name}
-                  onChange={() => handleChangeName(sj.id)}
+                  value={subject.name}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
               <td>
                 <input
-                  id={`inputDescription_${sj.id}`}
+                  id={`inputDescription_${subject.id}`}
+                  name="description"
                   disabled
                   type="text"
-                  value={
-                    changeDescription
-                      ? newDescription
-                      : sj.description
-                  }
-                  onChange={() => handleChangeDescription(sj.id)}
+                  value={subject.description}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
               <td>
                 <input
-                  id={`inputColor_${sj.id}`}
+                  id={`inputColor_${subject.id}`}
+                  name="color"
                   disabled
                   type="color"
-                  value={changeColor ? newColor : sj.color}
-                  onChange={(e) => handleChangeColor(e, sj.id)}
+                  value={subject.color}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
               <td>
-                <input disabled type="text" value={sj.course.name} />
+                <input disabled type="text" value={subject.course.name} />
               </td>
               <td>
-                <select disabled defaultValue={sj.chat_link} id="chat_chooser">
+                <select disabled defaultValue={subject.chat_link} id="chat_chooser">
                   <option value="-">{language.noChatSelected}</option>
                   {chats
                     ? chats.map((ch) => {
@@ -450,10 +406,10 @@ export default function SubjectsConfig() {
                   alignItems: "center",
                 }}
               >
-                {/* <ExtraFields table="subjects" id={sj.id} /> */}
+                {/* <ExtraFields table="subjects" id={subject.id} /> */}
                 <button
                   style={{ marginRight: "5px" }}
-                  onClick={() => confirmDeleteEvent(sj.id)}
+                  onClick={() => confirmDeleteEvent(subject.id)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -468,7 +424,7 @@ export default function SubjectsConfig() {
                 </button>
                 <button
                   style={{ marginRight: "5px" }}
-                  onClick={(e) => showEditOptionSubject(e, sj)}
+                  onClick={(e) => showEditOptionSubject(e)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -487,7 +443,7 @@ export default function SubjectsConfig() {
                 </button>
                 <button
                   style={{ marginRight: "5px", display: "none" }}
-                  onClick={(e) => editSubject(e, sj)}
+                  onClick={(e) => editSubject(e, subject)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -502,7 +458,7 @@ export default function SubjectsConfig() {
                 </button>
                 <button
                   style={{ display: "none" }}
-                  onClick={(e) => closeEditSubject(e, sj)}
+                  onClick={(e) => closeEditSubject(e, subject)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -568,6 +524,7 @@ export default function SubjectsConfig() {
             <tr>
               <th></th>
               <th>{language.subjectCode}</th>
+              <th>{language.externalId}</th>
               <th>{language.name}</th>
               <th>{language.description}</th>
               <th>{language.color}</th>
@@ -587,6 +544,13 @@ export default function SubjectsConfig() {
                   type="text"
                   id="sj_subjectCode"
                   placeholder={language.subjectCode}
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="sj_externalId"
+                  placeholder={language.externalId}
                 />
               </td>
               <td>
@@ -686,6 +650,7 @@ export default function SubjectsConfig() {
                   <tr>
                     <th>{language.code}</th>
                     <th>{language.subjectCode}</th>
+                    <th>{language.externalId}</th>
                     <th>{language.name}</th>
                     <th>{language.description}</th>
                     <th>{language.color}</th>
