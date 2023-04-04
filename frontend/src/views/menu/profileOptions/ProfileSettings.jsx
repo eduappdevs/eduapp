@@ -141,8 +141,8 @@ export default function ProfileSettings({ desktopBackTo }) {
         USER_SERVICE.editUserInfo(user.id, newUserInfo).then(({ data }) => {
           updateUserImageOffline(data.profile_image.url).then(() => {
             setChangesUnsaved(true);
-            window.location.reload();
-            window.location.href = "/";
+            //window.location.reload();
+            //window.location.href = "/";
           });
         });
       } catch (error) {

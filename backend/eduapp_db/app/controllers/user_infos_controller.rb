@@ -254,6 +254,7 @@ class UserInfosController < ApplicationController
     end
 
     if @user_info.update(user_info_params)
+      @user_info.profile_image.recreate_versions!
       render json: @user_info
     else
       render json: @user_info.errors, status: :unprocessable_entity
