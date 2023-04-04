@@ -85,7 +85,6 @@ export default function BatchPreviewTable(props) {
       let check_week_days = checkDays;
       let diff_days = parseInt(days);
       let week_repeat = parseInt(session[7]);
-
       SUBJECTSERVICE.fetchSubject()
         .then((res) => {
           res.data.shift();
@@ -122,14 +121,15 @@ export default function BatchPreviewTable(props) {
         };
         console.log(sessionJson);
         API.asynchronizeRequest(function () {
-          SCHEDULESERVICE.createSessionBatch(sessionJson)
+          SCHEDULESERVICE.uploadBatchSessions(sessionJson)
             .then((e) => {
               if (e) {
                 props.close();
               }
             })
             .catch((e) => {
-              console.log(e);
+              props.close()
+              props.messageError("info", true, true, e.response.data.errors)
             });
         });
       } else {
@@ -185,9 +185,10 @@ export default function BatchPreviewTable(props) {
       SessionJson[context[i]] = json[i];
     }
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.createSession(SessionJson).catch(async (err) => {
+      SCHEDULESERVICE.uploadSigleSession(SessionJson).catch(async (err) => {
         await interceptExpiredToken(err);
-        console.error(err);
+        props.close()
+        props.messageError("info", true, true, err.response.data.errors)
       });
     });
   };

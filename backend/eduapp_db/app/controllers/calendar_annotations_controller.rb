@@ -24,16 +24,17 @@ class CalendarAnnotationsController < ApplicationController
       @calendar_isGlobal = CalendarAnnotation.where(isGlobal: true)
       @calendarEvents = []
       @sessions = []
+      @colorEvents = []
       user = User.find(params[:user_id])
       if user.user_info.user_role.name == 'eduapp-teacher'
         @subjects = user.user_info.teaching_list
       else
         @subjects = user.subjects.pluck(:id)
       end
-
       for subject in @subjects
+        subj = Subject.find(subject)
         @calendarEvents += CalendarAnnotation.where(isGlobal: false, subject_id: subject)
-        @colorEvents = Subject.where(id: @TuitionsUserId).pluck(:id, :color)
+        @colorEvents << [ subj.id, subj.color]
         @sessions += EduappUserSession.where(subject_id: subject)
       end
       @calendar_annotations = { :globalEvents => @calendar_isGlobal, :calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents }

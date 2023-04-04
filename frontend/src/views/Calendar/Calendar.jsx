@@ -73,7 +73,6 @@ export default function Calendar() {
         });
       }
     }
-
     for (let calendarEvent in data.calendarEvents) {
       if (data.calendarEvents !== null) {
         let calendarEvents = data.calendarEvents[calendarEvent];
@@ -105,7 +104,6 @@ export default function Calendar() {
         });
       }
     }
-
     for (let session in data.sessions) {
       if (data.sessions !== null) {
         let e = data.sessions[session];
@@ -119,7 +117,6 @@ export default function Calendar() {
         let subject = e.subject_id;
         let author = e.user_id;
         let backgroundColor;
-
         for (let i in data.colorEvents) {
           if (data.colorEvents[i][0] === subject) {
             backgroundColor = data.colorEvents[i][1];
@@ -219,7 +216,8 @@ export default function Calendar() {
   };
 
   const StyledDiv = styled("div")(({ theme }) => ({}));
-  const Appointment = ({ data, children, style, ...restProps }) => (
+  const Appointment = ({ data, children, style, ...restProps }) => {
+    return(
     <StyledDiv
       id={`event_${data.id}`}
       onClick={(e) => {
@@ -237,7 +235,7 @@ export default function Calendar() {
         {children}
       </Appointments.Appointment>
     </StyledDiv>
-  );
+  )};
 
   const IndicatorDiv = styled("div", {
     shouldForwardProp: (prop) => prop !== "top",

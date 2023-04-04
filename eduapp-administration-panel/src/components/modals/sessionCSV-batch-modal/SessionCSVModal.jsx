@@ -11,7 +11,7 @@ import "./SessionCSVModal.css";
  *
  * @param {Function} closed Executes a function on modal closed.
  */
-export default function SessionCSVModal({ closed }) {
+export default function SessionCSVModal({ closed,messageError }) {
   const [template, setTemplate] = useState("");
   const [modalActive, setModalActive] = useState(false);
   const [csvTemplateActive, setCsvTemplateActive] = useState(false);
@@ -32,7 +32,6 @@ export default function SessionCSVModal({ closed }) {
   };
   const closeModal = () => {
     setModalActive(false);
-    window.location.reload();
   };
   return (
     <>
@@ -131,6 +130,7 @@ export default function SessionCSVModal({ closed }) {
         data={csvData}
         show={modalActive}
         close={closeModal}
+        messageError={messageError}
       />
     </>
   );
