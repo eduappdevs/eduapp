@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useCallback, useContext, useEffect, useState, useMemo } from "react";
+import { Fragment, useCallback, useContext, useEffect, useState, useMemo, useRef } from "react";
 import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as COURSESERVICE from "../services/course.service";
@@ -33,6 +33,8 @@ export default function SubjectsConfig() {
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
+
+  const subjectBeforeEditing = useRef(null);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
 
@@ -103,13 +105,14 @@ export default function SubjectsConfig() {
   const createSubject = useCallback(() => {
     switchEditState(false);
     let subject_code = document.getElementById("sj_subjectCode").value;
+    let external_id = document.getElementById("sj_externalId").value;
     let name = document.getElementById("sj_name").value;
     let desc = document.getElementById("sj_desc").value;
     let color = document.getElementById("sj_color").value;
     let sel_course = document.getElementById("course_chooser").value;
     let chat_link = document.getElementById("chat_chooser").value;
 
-    let info = [subject_code, name, desc, color, sel_course, chat_link];
+    let info = [subject_code, external_id, name, desc, color, sel_course, chat_link];
 
     let valid = true;
     for (let i of info) {
@@ -123,6 +126,7 @@ export default function SubjectsConfig() {
       API.asynchronizeRequest(function () {
         SUBJECTSERVICE.createSubject({
           subject_code: subject_code,
+          external_id: external_id,
           name: name,
           description: desc,
           color: color,
@@ -191,14 +195,14 @@ export default function SubjectsConfig() {
     });
   }, []);
 
-  const showEditOptionSubject = useCallback((e) => {
+  const showEditOptionSubject = (e, index) => {
     let disable = 1;
     while (disable < 8) {
-      e.target.parentNode.parentNode.childNodes[
-        disable
-      ].childNodes[0].disabled = false;
+      e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = false;
       disable += 1;
     }
+    subjectBeforeEditing.current = {...subjects[index]};
+
     let num = 0;
     while (num < 4) {
       e.target.parentNode.childNodes[num].style.display === ""
@@ -210,7 +214,7 @@ export default function SubjectsConfig() {
           : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
-  }, []);
+  };
 
   const finalizedEdit = useCallback((type, icon, pop, text, confirmDel) => {
     fetchSubjectPage(actualPage);
@@ -242,7 +246,7 @@ export default function SubjectsConfig() {
               num += 1;
             }
             let disable = 1;
-            while (disable < 5) {
+            while (disable < 8) {
               e.target.parentNode.parentNode.childNodes[
                 disable
               ].childNodes[0].disabled = true;
@@ -271,15 +275,17 @@ export default function SubjectsConfig() {
     });
   }, []);
 
-  const closeEditSubject = useCallback((e) => {
-    e.preventDefault();
+  const closeEditSubject = (e, index) => {
     let disable = 1;
-    while (disable < 5) {
-      e.target.parentNode.parentNode.childNodes[
-        disable
-      ].childNodes[0].disabled = true;
+    while (disable < 8) {
+      e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = true;
       disable += 1;
     }
+    
+    let auxSubjects = [...subjects];
+    auxSubjects[index] = {...subjectBeforeEditing.current};
+    setSubjects(auxSubjects);
+
     let num = 0;
     while (num < 4) {
       e.target.parentNode.childNodes[num].style.display === "block"
@@ -287,7 +293,7 @@ export default function SubjectsConfig() {
         : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
-  }, []);
+  };
 
   const fetchSubjectPage = useCallback(async (page, order = null, searchParams) => {
     API.asynchronizeRequest(function () {
@@ -349,7 +355,6 @@ export default function SubjectsConfig() {
                   onChange={(event) => handleChange(index, event)}
                 />
               </td>
-
               <td>
                 <input
                   id={`inputName_${subject.id}`}
@@ -383,6 +388,7 @@ export default function SubjectsConfig() {
               <td>
                 <input disabled type="text" value={subject.course.name} />
               </td>
+
               <td>
                 <select disabled defaultValue={subject.chat_link} id="chat_chooser">
                   <option value="-">{language.noChatSelected}</option>
@@ -424,7 +430,7 @@ export default function SubjectsConfig() {
                 </button>
                 <button
                   style={{ marginRight: "5px" }}
-                  onClick={(e) => showEditOptionSubject(e)}
+                  onClick={(e) => showEditOptionSubject(e, index)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -457,8 +463,8 @@ export default function SubjectsConfig() {
                   </svg>
                 </button>
                 <button
-                  style={{ display: "none" }}
-                  onClick={(e) => closeEditSubject(e, subject)}
+                  style={{ display: "none", backgroundColor: "green" }}
+                  onClick={(e) => closeEditSubject(e, index)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -529,7 +535,7 @@ export default function SubjectsConfig() {
               <th>{language.description}</th>
               <th>{language.color}</th>
               <th>{language.linkedCourse}</th>
-              {/* <th>{language.linkedChat}</th> */}
+              <th>{language.linkedChat}</th>
               <th></th>
             </tr>
           </thead>

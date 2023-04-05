@@ -130,7 +130,8 @@ export default function Navbar({ mobile, badgeCount }) {
 
   useEffect(() => changeLocation());
 
-  useEffect(() => setUserImage(getOfflineUser().profile_image.thumb.url), [userInfo]);
+  // useEffect(() => setUserImage(getOfflineUser().profile_image.thumb.url), [userInfo]);
+  useEffect(() => setUserImage(getOfflineUser().profile_image.url), [userInfo]);
   if(!userInfo?.user_role){return null};
 
   return (

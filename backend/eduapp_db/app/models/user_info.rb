@@ -8,7 +8,7 @@ class UserInfo < ApplicationRecord
     if pattern.blank?
       self
     else
-      order(user_name: :asc).where("user_name LIKE ?", "%#{pattern}%")
+      order(user_name: :asc).where("user_name ILIKE :q", q: "%#{pattern}%")
     end
   end
   def self.search_email(pattern)
