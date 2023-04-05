@@ -23,12 +23,10 @@ export default function Schedulesessionslist(props) {
 
   const [sessions, setSessions] = useState(null);
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);
-  const [subject, setSubjects] = useState([]);
+  const [subjects, setSubjects] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
-
-  const [subjectEdit, setSubjectEdit] = useState([]);
 
   const [showModalSession, setShowModalSession] = useState(false);
   const [sessionInfo, setSessionInfo] = useState();
@@ -539,7 +537,7 @@ export default function Schedulesessionslist(props) {
     }
 
     let auxSessions = [...sessions];
-    auxSessions[index] = {...sessionBeforeEditing.current};
+    auxSessions[index] = { ...sessionBeforeEditing.current };
     setSessions(auxSessions);
 
     let num = 0;
@@ -555,13 +553,12 @@ export default function Schedulesessionslist(props) {
     let disable = 1;
     while (disable < 8) {
       e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = false;
-      if (disable === 7) {
-        listSubject(e.target.parentNode.parentNode.childNodes[disable].childNodes[0].value);
-        e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = false;
-      }
+      // if (disable === 7) {
+      //   listSubject(e.target.parentNode.parentNode.childNodes[disable].childNodes[0].value);
+      // }
       disable += 1;
     }
-    sessionBeforeEditing.current = {...sessions[index]};
+    sessionBeforeEditing.current = { ...sessions[index] };
 
     let num = 0;
     while (num < 4) {
@@ -600,17 +597,6 @@ export default function Schedulesessionslist(props) {
     });
   }, []);
 
-  const listSubject = useCallback((sub) => {
-    let list_subject = [];
-    subject.map((s) => {
-      if (s.id !== parseInt(sub)) {
-        list_subject.push(s);
-      }
-      return true;
-    });
-    setSubjectEdit(list_subject);
-  }, []);
-
   const showModal = useCallback(async () => {
     switchEditState(false);
     let subject_name = document.getElementById("s_subjectId").value;
@@ -647,23 +633,28 @@ export default function Schedulesessionslist(props) {
     setSessions(newSessions);
   }
 
-  const memoizedSubject = useMemo(() => {
-    return subject.map((s) => (
+  const handleChangeSubject = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    subjects.map(s => {
+      if(s.id == newValue){
+        const newSessions = [...sessions];
+        newSessions[index][inputName] = s;
+        setSessions(newSessions);
+        return
+      }
+    })
+  }
+
+  const memoizedSubjects = useMemo(() => {
+    return subjects.map((s) => (
       <option key={s.id} value={`${s.subject_code}_${s.id}`}>
         {s.name}
       </option>
     ))
-  }, [subject]);
+  }, [subjects]);
 
-  const memoizedSubjectEdit = useMemo(() => {
-    return subjectEdit.map((s) => (
-      <option key={s.id} value={s.id}>
-        {s.name}
-      </option>
-    ))
-  }, [subjectEdit]);
-
-  const memoizedSessions = useMemo(() => {
+  const memoizedSessions = () => {
     return (
       <>
         {sessions && sessions.map((s, index) => {
@@ -731,16 +722,22 @@ export default function Schedulesessionslist(props) {
                 />
               </td>
               <td>
-                <select id={`inputSubjectID_${s.id}`} disabled>
-                  <option
-                    defaultValue={s.subject.id}
-                    value={
-                      s.subject.id + "_" + s.subject.subject_code
+                <select id={`inputSubjectID_${s.id}`} disabled
+                  name="subject"
+                  onChange={(event) => handleChangeSubject(index, event)}>
+                  {subjects.map((thisSubject) => {
+                    if (s.subject.id == thisSubject.id) {
+                      return (
+                        <option key={thisSubject.id} value={thisSubject.id} selected>
+                          {thisSubject.name}
+                        </option>
+                      )
                     }
-                  >
-                    {s.subject.name}
-                  </option>
-                  {memoizedSubjectEdit}
+                    return (<option key={thisSubject.id} value={thisSubject.id}>
+                      {thisSubject.name}
+                    </option>
+                    )
+                  })}
                 </select>
               </td>
               <td style={{
@@ -831,7 +828,7 @@ export default function Schedulesessionslist(props) {
         })}
       </>
     );
-  }, [sessions])
+  };
 
   useEffect(() => {
     // fetchSessions(1);
@@ -908,19 +905,19 @@ export default function Schedulesessionslist(props) {
                 />
               </td>
               <td>
-              <Input
-                id="s_chatGroup"
-                type="text"
-                placeholder={language.chat}
-                autoComplete="off"
-              />
-            </td>
+                <Input
+                  id="s_chatGroup"
+                  type="text"
+                  placeholder={language.chat}
+                  autoComplete="off"
+                />
+              </td>
               <td className="subjecButton">
                 <select id="s_subjectId">
                   <option defaultValue={language.chooseSubject}>
                     {language.chooseSubject}
                   </option>
-                  {memoizedSubject}
+                  {memoizedSubjects}
                 </select>
               </td>
               <td>
@@ -1008,7 +1005,7 @@ export default function Schedulesessionslist(props) {
                 </tr>
               </thead>
               <tbody>
-                {memoizedSessions}
+                {memoizedSessions()}
               </tbody>
             </table>
           </div>

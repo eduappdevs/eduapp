@@ -469,8 +469,9 @@ export default function EnrollSubjectConfig() {
               </thead>
               <tbody>
                 {
+                  // CUIDADO - CAMBIAR ESTO
                   subjectsUsers.filter(subject => subject.users).map((subject) => {
-                    return subject.users.map((user) => {
+                    return subject.users.map((user, index) => {
                       return (
                         <tr key={user.id}>
                           <td>
