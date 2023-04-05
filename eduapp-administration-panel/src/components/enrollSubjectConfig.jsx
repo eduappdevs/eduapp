@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState, useRef } from "react";
 import * as API from "../API";
 // import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
 import * as USERSSERVICE from "../services/user.service";
@@ -27,12 +27,6 @@ export default function EnrollSubjectConfig() {
   const [actualPage, setActualPage] = useState(1);
 
   const [subjectEdit, setSubjectEdit] = useState([]);
-  const [emailEdit, setEmailEdit] = useState([]);
-
-  const [newEmail] = useState();
-  const [newSubject] = useState();
-  const [changeEmail, setChangeEmail] = useState(false);
-  const [changeSubject, setChangeSubject] = useState(false);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
 
@@ -42,6 +36,8 @@ export default function EnrollSubjectConfig() {
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
+
+  const subjectsUsersBeforeEditing = useRef(null);
 
   const switchEditState = (state) => {
     if (state) {
@@ -180,7 +176,7 @@ export default function EnrollSubjectConfig() {
           });
 
         if (chatBase) {
-          CHATSERVICE.createParticipant({chat_base_id: chatBase, user_id: user.user.id, isChatAdmin}).catch((e) => {
+          CHATSERVICE.createParticipant({ chat_base_id: chatBase, user_id: user.user.id, isChatAdmin }).catch((e) => {
             if (e) {
               interceptExpiredToken(e);
               setPopup(true);
@@ -224,16 +220,16 @@ export default function EnrollSubjectConfig() {
             await interceptExpiredToken(e);
           }
         });
-        if (id[0].chat_link) {
-          CHATSERVICE.deleteParticipantUserId({ chat_base_id: id[0].chat_link, user_id: id[1] }).catch((e) => {
-            if (e) {
-              interceptExpiredToken(e);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(language.creationAlert);
-            }
-          });
-        }
+      if (id[0].chat_link) {
+        CHATSERVICE.deleteParticipantUserId({ chat_base_id: id[0].chat_link, user_id: id[1] }).catch((e) => {
+          if (e) {
+            interceptExpiredToken(e);
+            setPopup(true);
+            setPopupType("info");
+            setPopupText(language.creationAlert);
+          }
+        });
+      }
     }).then(async (e) => {
       if (e) {
         connectionAlert();
@@ -248,11 +244,19 @@ export default function EnrollSubjectConfig() {
     setIdDelete([subjectId, userId]);
   };
 
-  const showEditOptionSession = (e) => {
-    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = false;
-    listSubject(
-      e.target.parentNode.parentNode.childNodes[1].childNodes[0].value
-    );
+  const showEditSubjectsUsers = (e, index) => {
+    let disable = 0;
+    while (disable < 2) {
+      e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = false;
+      disable += 1;
+    }
+    subjectsUsersBeforeEditing.current = { ...subjectsUsers[index] };
+
+    // e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = false;
+    // listSubject(
+    //   e.target.parentNode.parentNode.childNodes[1].childNodes[0].value
+    // );
+
     let num = 0;
     while (num < 4) {
       e.target.parentNode.childNodes[num].style.display === ""
@@ -260,8 +264,8 @@ export default function EnrollSubjectConfig() {
           ? (e.target.parentNode.childNodes[num].style.display = "block")
           : (e.target.parentNode.childNodes[num].style.display = "none")
         : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
+          ? (e.target.parentNode.childNodes[num].style.display = "none")
+          : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
   };
@@ -313,8 +317,16 @@ export default function EnrollSubjectConfig() {
     });
   };
 
-  const closeEditSession = (e, s) => {
-    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = true;
+  const closeEditSubjectsUsers = (e, index) => {
+    let disable = 0;
+    while (disable < 2) {
+      e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = true;
+      disable += 1;
+    }
+
+    let auxSubjectsUsers = [...subjectsUsers];
+    auxSubjectsUsers[index] = { ...subjectsUsersBeforeEditing.current };
+    setSubjectsUsers(auxSubjectsUsers);
 
     let num = 0;
     while (num < 4) {
@@ -335,6 +347,14 @@ export default function EnrollSubjectConfig() {
     });
     setSubjectEdit(list);
   };
+
+  const handleChange = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    const newSubjectsUsers = [...subjectsUsers];
+    newSubjectsUsers[index][inputName] = newValue;
+    setSubjectsUsers(newSubjectsUsers);
+  }
 
   useEffect(() => {
     fetchAll();
@@ -383,13 +403,13 @@ export default function EnrollSubjectConfig() {
                   <option value="-">{language.chooseSubject}</option>
                   {
                     subjects ? subjects.map((subject) => {
-                        return (
-                          <option key={subject.id} value={subject.id}>
-                            {subject.name}
-                          </option>
-                        );
-                      })
-                    : null
+                      return (
+                        <option key={subject.id} value={subject.id}>
+                          {subject.name}
+                        </option>
+                      );
+                    })
+                      : null
                   }
                 </select>
               </td>
@@ -454,14 +474,14 @@ export default function EnrollSubjectConfig() {
                       return (
                         <tr key={user.id}>
                           <td>
-                            <select id={`inputEmail_${user.id}`} disabled>
+                            <select id={`inputEmail_${user.id}`} disabled onChange={handleChange}>
                               <option value={user.id} defaultValue={user.id}>
                                 {user.email}
                               </option>
                             </select>
                           </td>
                           <td>
-                            <select id={`inputSubject_${subject.id}`} disabled>
+                            <select id={`inputSubject_${subject.id}`} disabled onChange={handleChange}>
                               <option
                                 defaultValue={subject.id}
                                 value={subject.id}
@@ -477,12 +497,15 @@ export default function EnrollSubjectConfig() {
                               })}
                             </select>
                           </td>
-                          <td className="action-column">
+                          <td style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          >
                             <button
                               style={{ marginRight: "5px" }}
-                              onClick={() => {
-                                confirmDeleteEvent(subject, user.id);
-                              }}
+                              onClick={() => confirmDeleteEvent(subject, user.id)}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -497,9 +520,7 @@ export default function EnrollSubjectConfig() {
                             </button>
                             <button
                               style={{ marginRight: "5px" }}
-                              onClick={(e) => {
-                                showEditOptionSession(e, subject);
-                              }}
+                              onClick={(e) => showEditSubjectsUsers(e, index)}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -517,10 +538,11 @@ export default function EnrollSubjectConfig() {
                               </svg>
                             </button>
                             <button
-                              style={{ marginRight: "5px", display: "none" }}
-                              onClick={(e) => {
-                                editEnroll(e, subject);
+                              style={{
+                                marginRight: "5px",
+                                display: "none"
                               }}
+                              onClick={(e) => editEnroll(e, subject)}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -535,9 +557,7 @@ export default function EnrollSubjectConfig() {
                             </button>
                             <button
                               style={{ display: "none" }}
-                              onClick={(e) => {
-                                closeEditSession(e, subject);
-                              }}
+                              onClick={(e) => closeEditSubjectsUsers(e, index)}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"

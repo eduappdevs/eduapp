@@ -181,7 +181,8 @@ class SubjectsController < ApplicationController
       @subject.users << User.find(params[:user_id])
       @subject.save
     else
-      @subject = Subject.new(subject_code: params[:subject_code], name: params[:name],
+      @subject = Subject.new(subject_code: params[:subject_code], 
+                            external_id: params[:external_id], name: params[:name],
                             description: params[:description], color: params[:color],
                             course_id: params[:course_id], chat_link: params[:chat_link])
       if @subject.save
