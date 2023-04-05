@@ -54,7 +54,7 @@ export default function ProfileSettings({ desktopBackTo }) {
 
   const fetchUserSubjectUsers = async () => {
     let subjects = await SUBJECTS_SERVICE.fetchUserSubjects(user.id);
-    if (subjects){
+    if (subjects) {
       console.log(subjects)
     }
     setEnrollments(subjects.data);
@@ -132,17 +132,17 @@ export default function ProfileSettings({ desktopBackTo }) {
       newUserInfo.append("surname", surname);
     }
 
-    if(changeImage != null){
+    if (changeImage != null) {
       newUserInfo.append("profile_image", changeImage);
     }
 
     asynchronizeRequest(async function () {
       try {
-        USER_SERVICE.editUserInfo(user.id, newUserInfo).then(({data}) => {
+        USER_SERVICE.editUserInfo(user.id, newUserInfo).then(({ data }) => {
           updateUserImageOffline(data.profile_image.url).then(() => {
-          setChangesUnsaved(true);
-          window.location.reload();
-          window.location.href = "/";
+            setChangesUnsaved(true);
+            //window.location.reload();
+            //window.location.href = "/";
           });
         });
       } catch (error) {
@@ -151,7 +151,7 @@ export default function ProfileSettings({ desktopBackTo }) {
           setPopup(true);
         }
       }
-    }).catch((error) => {});
+    }).catch((error) => { });
   };
 
   useEffect(() => {
@@ -214,8 +214,8 @@ export default function ProfileSettings({ desktopBackTo }) {
             value={
               username === null
                 ? NameCapitalizer(
-                    userInfo.user_name === undefined ? "" : userInfo.user_name
-                  )
+                  userInfo.user_name === undefined ? "" : userInfo.user_name
+                )
                 : username
             }
             onChange={(e) => {

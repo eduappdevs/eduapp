@@ -120,8 +120,8 @@ export default function ChatConfig() {
           ? (e.target.parentNode.childNodes[num].style.display = "block")
           : (e.target.parentNode.childNodes[num].style.display = "none")
         : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
+          ? (e.target.parentNode.childNodes[num].style.display = "none")
+          : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
   };
@@ -289,13 +289,28 @@ export default function ChatConfig() {
         <table className="createTable">
           <thead>
             <tr>
-              <th>{language.add}</th>
+              <th></th>
               <th>{language.name}</th>
               <th>{language.group}</th>
+              <th>{language.add}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
+              <td>
+                {language.add}:
+              </td>
+              <td>
+                <input
+                  type="text"
+                  name="chat_name"
+                  id="ch_chat_name"
+                  placeholder={language.name}
+                />
+              </td>
+              <td>
+                <input type="checkbox" id="ch_isGroup" />
+              </td>
               <td>
                 <button onClick={addChat}>
                   <svg
@@ -325,17 +340,6 @@ export default function ChatConfig() {
                     />
                   </svg>
                 </button>
-              </td>
-              <td>
-                <input
-                  type="text"
-                  name="chat_name"
-                  id="ch_chat_name"
-                  placeholder={language.name}
-                />
-              </td>
-              <td>
-                <input type="checkbox" id="ch_isGroup" />
               </td>
             </tr>
           </tbody>

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState, Fragment, useCallback, useMemo } from "react";
+import { useContext, useEffect, useState, Fragment, useCallback, useMemo, useRef } from "react";
 import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
@@ -23,25 +23,10 @@ export default function Schedulesessionslist(props) {
 
   const [sessions, setSessions] = useState(null);
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);
-  const [subject, setSubjects] = useState([]);
+  const [subjects, setSubjects] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
-
-  const [subjectEdit, setSubjectEdit] = useState([]);
-  const [newStartDate] = useState();
-  const [newEndDate] = useState();
-  const [newName] = useState();
-  const [newStreamPlatform] = useState();
-  const [newResourcesPlatform] = useState();
-  const [newChatId] = useState();
-
-  const [changeEndDate, setChangeEndDate] = useState(false);
-  const [changeStartDate, setChangeStartDate] = useState(false);
-  const [changeName, setChangeName] = useState(false);
-  const [changeResourcesPlatform, setChangeResourcesPlatform] = useState(false);
-  const [changeChatId, setChangeChatId] = useState(false);
-  const [changeStreamPlatform, setChangeStreamPlatform] = useState(false);
 
   const [showModalSession, setShowModalSession] = useState(false);
   const [sessionInfo, setSessionInfo] = useState();
@@ -56,6 +41,8 @@ export default function Schedulesessionslist(props) {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
   const [idBatch, setIdBatch] = useState();
+
+  const sessionBeforeEditing = useRef(null);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   // const filteredSessions = useFilter(
@@ -542,7 +529,17 @@ export default function Schedulesessionslist(props) {
     });
   }, []);
 
-  const closeEditSession = useCallback((e, s) => {
+  const closeEditSession = (e, index) => {
+    let disable = 1;
+    while (disable < 8) {
+      e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = true;
+      disable += 1;
+    }
+
+    let auxSessions = [...sessions];
+    auxSessions[index] = { ...sessionBeforeEditing.current };
+    setSessions(auxSessions);
+
     let num = 0;
     while (num < 4) {
       e.target.parentNode.childNodes[num].style.display === "block"
@@ -550,16 +547,19 @@ export default function Schedulesessionslist(props) {
         : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
+  };
+
+  const showEditOptionSession = (e, index) => {
     let disable = 1;
     while (disable < 8) {
-      e.target.parentNode.parentNode.childNodes[
-        disable
-      ].childNodes[0].disabled = true;
+      e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = false;
+      // if (disable === 7) {
+      //   listSubject(e.target.parentNode.parentNode.childNodes[disable].childNodes[0].value);
+      // }
       disable += 1;
     }
-  }, []);
+    sessionBeforeEditing.current = { ...sessions[index] };
 
-  const showEditOptionSession = useCallback((e, S) => {
     let num = 0;
     while (num < 4) {
       e.target.parentNode.childNodes[num].style.display === ""
@@ -571,22 +571,7 @@ export default function Schedulesessionslist(props) {
           : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
-    let disable = 1;
-    while (disable < 8) {
-      e.target.parentNode.parentNode.childNodes[
-        disable
-      ].childNodes[0].disabled = false;
-      if (disable === 7) {
-        listSubject(
-          e.target.parentNode.parentNode.childNodes[disable].childNodes[0].value
-        );
-        e.target.parentNode.parentNode.childNodes[
-          disable
-        ].childNodes[0].disabled = false;
-      }
-      disable += 1;
-    }
-  }, []);
+  };
 
   const deleteGlobalSession = useCallback(async () => {
     switchEditState(false);
@@ -612,54 +597,13 @@ export default function Schedulesessionslist(props) {
     });
   }, []);
 
-  const listSubject = useCallback((sub) => {
-    let list_subject = [];
-    subject.map((s) => {
-      if (s.id !== parseInt(sub)) {
-        list_subject.push(s);
-      }
-      return true;
-    });
-    setSubjectEdit(list_subject);
-  }, []);
-
-  const handleChangeEndDate = useCallback((id) => {
-    setChangeEndDate(true);
-    return document.getElementById("inputEndDate_" + id).value;
-  }, []);
-
-  const handleChangeStartDate = useCallback((e, id) => {
-    setChangeStartDate(true);
-    return e.target.value;
-  }, []);
-
-  const handleChangeName = useCallback((id) => {
-    setChangeName(true);
-    return document.getElementById(`inputName_${id}`).value;
-  }, []);
-
-  const handleChangeStreamPlatform = useCallback((id) => {
-    setChangeStreamPlatform(true);
-    return document.getElementById(`inputStreamPlatform_${id}`).value;
-  }, []);
-
-  const handleChangeResourcesPlatform = useCallback((id) => {
-    setChangeResourcesPlatform(true);
-    return document.getElementById(`inputResourcePlatform_${id}`).value;
-  }, []);
-
-  const handleChangeSessionChat = useCallback((id) => {
-    setChangeChatId(true);
-    return document.getElementById(`inputSessionChat_${id}`).value;
-  }, []);
-
   const showModal = useCallback(async () => {
     switchEditState(false);
     let subject_name = document.getElementById("s_subjectId").value;
     let name = document.getElementById("s_name").value;
     let streaming = document.getElementById("s_streaming").value;
     let resource = document.getElementById("s_resources").value;
-    let chat = ''; //document.getElementById("s_chatGroup").value;
+    let chat = document.getElementById("s_chatGroup").value;
 
     let info = {
       name: name,
@@ -681,125 +625,127 @@ export default function Schedulesessionslist(props) {
     }
   }, []);
 
-  const memoizedSubject = useMemo(() => {
-    return subject.map((s) => (
+  const handleChange = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    const newSessions = [...sessions];
+    newSessions[index][inputName] = newValue;
+    setSessions(newSessions);
+  }
+
+  const handleChangeSubject = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    subjects.map(s => {
+      if(s.id == newValue){
+        const newSessions = [...sessions];
+        newSessions[index][inputName] = s;
+        setSessions(newSessions);
+        return
+      }
+    })
+  }
+
+  const memoizedSubjects = useMemo(() => {
+    return subjects.map((s) => (
       <option key={s.id} value={`${s.subject_code}_${s.id}`}>
         {s.name}
       </option>
     ))
-  }, [subject]);
+  }, [subjects]);
 
-  const memoizedSubjectEdit = useMemo(() => {
-    return subjectEdit.map((s) => (
-      <option key={s.id} value={s.id}>
-        {s.name}
-      </option>
-    ))
-  }, [subjectEdit]);
-
-  const memoizedSessions = useMemo(() => {
+  const memoizedSessions = () => {
     return (
       <>
-        {sessions && sessions.map((s) => {
+        {sessions && sessions.map((s, index) => {
           return (
             <tr key={s.id}>
               <td>{shortUUID(s.id)}</td>
               <td>
                 <input
                   id={`inputName_${s.id}`}
-                  type="text"
+                  name="session_name"
                   disabled
-                  value={
-                    changeName === false ? s.session_name : newName
-                  }
-                  onChange={() => handleChangeName(s.id)}
+                  type="text"
+                  value={s.session_name}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
               <td>
                 <input
                   id={`inputStartDate_${s.id}`}
-                  type="datetime-local"
-                  value={
-                    changeStartDate === false
-                      ? s.session_start_date
-                      : newStartDate
-                  }
+                  name="session_start_date"
                   disabled
-                  onChange={(e) => handleChangeStartDate(e, s.id)}
+                  type="datetime-local"
+                  value={s.session_start_date}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
               <td>
                 <input
                   id={`inputEndDate_${s.id}`}
-                  type="datetime-local"
-                  value={
-                    changeEndDate === false
-                      ? s.session_end_date
-                      : newEndDate
-                  }
+                  name="session_end_date"
                   disabled
-                  onChange={(e) => handleChangeEndDate(e, s.id)}
+                  type="datetime-local"
+                  value={s.session_end_date}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
               <td>
                 <input
                   id={`inputStreamPlatform_${s.id}`}
-                  type="text"
+                  name="streaming_platform"
                   disabled
-                  value={
-                    s.streaming_platform === null
-                      ? ""
-                      : changeStreamPlatform === false
-                        ? s.streaming_platform
-                        : newStreamPlatform
-                  }
-                  onChange={() => handleChangeStreamPlatform(s.id)}
+                  type="text"
+                  value={s.streaming_platform}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
               <td>
                 <input
                   id={`inputResourcePlatform_${s.id}`}
-                  type="text"
+                  name="resources_platform"
                   disabled
-                  value={
-                    s.resources_platform === null
-                      ? ""
-                      : changeResourcesPlatform === false
-                        ? s.resources_platform
-                        : newResourcesPlatform
-                  }
-                  onChange={() => handleChangeResourcesPlatform(s.id)}
+                  type="text"
+                  value={s.resources_platform}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
               <td>
                 <input
                   id={`inputSessionChat_${s.id}`}
-                  type="text"
+                  name="chat"
                   disabled
-                  value={
-                    s.chat === null
-                      ? ""
-                      : changeChatId === false
-                        ? s.chat
-                        : newChatId
-                  }
-                  onChange={() => handleChangeSessionChat(s.id)}
+                  type="text"
+                  value={s.chat}
+                  onChange={(event) => handleChange(index, event)}
                 />
               </td>
               <td>
-                <select id={`inputSubjectID_${s.id}`} disabled>
-                  <option
-                    defaultValue={s.subject.id}
-                    value={
-                      s.subject.id + "_" + s.subject.subject_code
+                <select id={`inputSubjectID_${s.id}`} disabled
+                  name="subject"
+                  onChange={(event) => handleChangeSubject(index, event)}>
+                  {subjects.map((thisSubject) => {
+                    if (s.subject.id == thisSubject.id) {
+                      return (
+                        <option key={thisSubject.id} value={thisSubject.id} selected>
+                          {thisSubject.name}
+                        </option>
+                      )
                     }
-                  >
-                    {s.subject.name}
-                  </option>
-                  {memoizedSubjectEdit}
+                    return (<option key={thisSubject.id} value={thisSubject.id}>
+                      {thisSubject.name}
+                    </option>
+                    )
+                  })}
                 </select>
               </td>
-              <td className="action-column">
+              <td style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              >
                 {/* <ExtraFields table="sessions" id={s.id} /> */}
                 <button
                   style={{ marginRight: "5px" }}
@@ -819,7 +765,7 @@ export default function Schedulesessionslist(props) {
                 </button>
                 <button
                   style={{ marginRight: "5px" }}
-                  onClick={(e) => showEditOptionSession(e, s)}
+                  onClick={(e) => showEditOptionSession(e, index)}
                 >
                   {/* Edit_icon */}
                   <svg
@@ -855,7 +801,7 @@ export default function Schedulesessionslist(props) {
                 </button>
                 <button
                   style={{ display: "none" }}
-                  onClick={(e) => closeEditSession(e, s)}
+                  onClick={(e) => closeEditSession(e, index)}
                 >
                   {/* cancel_icon */}
                   <svg
@@ -879,11 +825,10 @@ export default function Schedulesessionslist(props) {
               </td>
             </tr>
           );
-        })
-        }
+        })}
       </>
     );
-  }, [sessions])
+  };
 
   useEffect(() => {
     // fetchSessions(1);
@@ -927,7 +872,7 @@ export default function Schedulesessionslist(props) {
               <th>{language.name}</th>
               <th>{language.streaming}</th>
               <th>{language.resources}</th>
-              {/* <th>{language.chat}</th> */}
+              <th>{language.chat}</th>
               <th>{language.subjects}</th>
               <th>{language.repeated}</th>
               <th>{language.startDate}</th>
@@ -959,20 +904,20 @@ export default function Schedulesessionslist(props) {
                   autoComplete="off"
                 />
               </td>
-              {/* <td>
-              <Input
-                id="s_chatGroup"
-                type="text"
-                placeholder={language.chat}
-                autoComplete="off"
-              />
-            </td> */}
+              <td>
+                <Input
+                  id="s_chatGroup"
+                  type="text"
+                  placeholder={language.chat}
+                  autoComplete="off"
+                />
+              </td>
               <td className="subjecButton">
                 <select id="s_subjectId">
                   <option defaultValue={language.chooseSubject}>
                     {language.chooseSubject}
                   </option>
-                  {memoizedSubject}
+                  {memoizedSubjects}
                 </select>
               </td>
               <td>
@@ -1060,7 +1005,7 @@ export default function Schedulesessionslist(props) {
                 </tr>
               </thead>
               <tbody>
-                {memoizedSessions}
+                {memoizedSessions()}
               </tbody>
             </table>
           </div>

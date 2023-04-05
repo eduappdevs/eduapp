@@ -26,10 +26,22 @@ export const saveUserOffline = async (userInfo) => {
  */
 export const updateUserImageOffline = async (newImgUrl) => {
   let user = getOfflineUser();
-  user.profile_image.url = newImgUrl;
-  user.profile_image.thumb.url = newImgUrl;
-
+  const server_url = `${process.env.REACT_APP_BACKEND}${newImgUrl}`;
+  if (user.profile_image) {
+    user.profile_image.url = server_url;
+    if (user.profile_image.thumb) {
+      user.profile_image.thumb.url = server_url;
+    } else {
+      user.profile_image.thumb = { url: server_url }
+    };
+  } else {
+    user.profile_image = { url: server_url, thumb: { url: server_url } };
+  }
+  console.log("antes");
+  console.log(user);
   await localStorage.setItem("offline_user", JSON.stringify(user));
+  console.log("después");
+  console.log(user);
 };
 
 /**
