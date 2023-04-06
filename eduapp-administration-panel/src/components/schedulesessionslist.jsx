@@ -431,9 +431,7 @@ export default function Schedulesessionslist(props) {
               }
               let disable = 1;
               while (disable < 8) {
-                e.target.parentNode.parentNode.childNodes[
-                  disable
-                ].childNodes[0].disabled = true;
+                e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = true;
                 disable += 1;
               }
               finalizedEdit("info", true, language.editAlertCompleted, false);
@@ -553,9 +551,6 @@ export default function Schedulesessionslist(props) {
     let disable = 1;
     while (disable < 8) {
       e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = false;
-      // if (disable === 7) {
-      //   listSubject(e.target.parentNode.parentNode.childNodes[disable].childNodes[0].value);
-      // }
       disable += 1;
     }
     sessionBeforeEditing.current = { ...sessions[index] };
@@ -882,9 +877,7 @@ export default function Schedulesessionslist(props) {
           </thead>
           <tbody>
             <tr>
-              <td>
-                {language.add}:
-              </td>
+              <td>{language.add}:</td>
               <td>
                 <Input
                   id="s_name"

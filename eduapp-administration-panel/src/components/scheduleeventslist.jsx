@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useCallback, useContext, useEffect, useState, useMemo } from "react";
+import { Fragment, useCallback, useContext, useEffect, useState, useMemo, useRef } from "react";
 import * as API from "../API";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import * as SCHEDULESERVICE from "../services/schedule.service";
@@ -19,7 +19,7 @@ export default function Scheduleeventslist() {
   const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
-  const [subject, setSubject] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [events, setEvents] = useState([]);
   const [, setUsers] = useState([]);
@@ -29,18 +29,9 @@ export default function Scheduleeventslist() {
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
 
-  const [newStartDate] = useState();
-  const [newEndDate] = useState();
-  const [newName] = useState();
-  const [newDescription] = useState();
   const [newIsPop] = useState();
 
-  const [changeEndDate, setChangeEndDate] = useState(false);
-  const [changeStartDate, setChangeStartDate] = useState(false);
-  const [changeName, setChangeName] = useState(false);
-  const [changeDescription, setChangeDescription] = useState(false);
   const [changeIsPop, setChangeIsPop] = useState(false);
-  const [subjectEdit, setSubjectEdit] = useState([]);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -48,6 +39,8 @@ export default function Scheduleeventslist() {
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
+
+  const eventBeforeEditing = useRef(null);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
 
@@ -112,7 +105,7 @@ export default function Scheduleeventslist() {
       // setLoadingParams({ loading: true });
       SUBJECTSERVICE.fetchSubjects()
         .then((res) => {
-          setSubject(res.data);
+          setSubjects(res.data);
           // setLoadingParams({ loading: false });
         })
         .catch(async (e) => {
@@ -165,17 +158,6 @@ export default function Scheduleeventslist() {
     })
   }, []);
 
-  const listSubject = useCallback((sub) => {
-    let list_subject = [];
-    subject.map((s) => {
-      if (s.id !== sub.split("_")[0]) {
-        list_subject.push(s);
-      }
-      return true;
-    });
-    setSubjectEdit(list_subject);
-  }, []);
-
   const AddNewEvent = useCallback(async (e) => {
     e.preventDefault();
     switchEditState(false);
@@ -222,7 +204,7 @@ export default function Scheduleeventslist() {
     }
 
     let eventJson = {};
-    for (let i = 0; i <= context.length - 1; i++) {
+    for (let i = 0; i < context.length; i++) {
       eventJson[context[i]] = json[i];
     }
 
@@ -336,7 +318,7 @@ export default function Scheduleeventslist() {
       editDescription = s.annotation_description;
     }
 
-    if (subject !== undefined && subject !== null) {
+    if (subjects !== undefined && subjects !== null) {
       let inputSubject = document.getElementById(
         "inputSubjectID_" + s.id
       ).value;
@@ -382,9 +364,7 @@ export default function Scheduleeventslist() {
             let disable = 1;
             while (disable < 9) {
               if (disable !== 3 && disable !== 6) {
-                e.target.parentNode.parentNode.childNodes[
-                  disable
-                ].childNodes[0].disabled = true;
+                e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = true;
               }
               disable += 1;
             }
@@ -406,16 +386,20 @@ export default function Scheduleeventslist() {
     });
   }, []);
 
-  const closeEditEvent = useCallback((e, s) => {
+  const closeEditEvent = (e, index) => {
     let disable = 1;
     while (disable < 9) {
+      // Not editing IsGlobal and IsEventNotification
       if (disable !== 3 && disable !== 6) {
-        e.target.parentNode.parentNode.childNodes[
-          disable
-        ].childNodes[0].disabled = true;
+        e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = true;
       }
       disable += 1;
     }
+
+    let auxEvents = [...events];
+    auxEvents[index] = { ...eventBeforeEditing.current };
+    setEvents(auxEvents);
+
     let num = 0;
     while (num < 4) {
       e.target.parentNode.childNodes[num].style.display === "block"
@@ -423,35 +407,18 @@ export default function Scheduleeventslist() {
         : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
-  }, []);
+  };
 
-  const showEditOptionEvent = useCallback((e) => {
+  const showEditOptionEvent = (e, index) => {
     let disable = 1;
     while (disable < 9) {
       if (disable !== 3 && disable !== 6) {
-        if (disable === 8) {
-          listSubject(
-            e.target.parentNode.parentNode.childNodes[disable - 1].childNodes[0]
-              .value
-          );
-          if (
-            e.target.parentNode.parentNode.childNodes[
-              disable - 1
-            ].childNodes[0].value.split("_")[1] === "GEN"
-          ) {
-            e.target.parentNode.parentNode.childNodes[
-              disable
-            ].childNodes[0].disabled = false;
-          }
-        } else {
-          e.target.parentNode.parentNode.childNodes[
-            disable
-          ].childNodes[0].disabled = false;
-        }
+        e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = false;
       }
-
       disable += 1;
     }
+    eventBeforeEditing.current = { ...events[index] };
+
     let num = 0;
     while (num < 4) {
       e.target.parentNode.childNodes[num].style.display === ""
@@ -463,27 +430,7 @@ export default function Scheduleeventslist() {
           : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
-  }, []);
-
-  const handleChangeName = useCallback((id) => {
-    setChangeName(true);
-    return document.getElementById(`inputName_${id}`).value;
-  }, []);
-
-  const handleChangeEndDate = useCallback((id) => {
-    setChangeEndDate(true);
-    return document.getElementById("inputEndDate_" + id).value;
-  }, []);
-
-  const handleChangeStartDate = useCallback((id) => {
-    setChangeStartDate(true);
-    return document.getElementById("inputStartDate_" + id).value;
-  }, []);
-
-  const handleChangeDescription = useCallback((id) => {
-    setChangeDescription(true);
-    return document.getElementById(`inputDescription_${id}`);
-  }, []);
+  };
 
   const handleChangeIsPop = useCallback((id, value) => {
     setChangeIsPop(true);
@@ -516,10 +463,31 @@ export default function Scheduleeventslist() {
     }
   }, [searchParams]);
 
-  const memoizedEvents = useMemo(() => {
+  const handleChange = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    const newEvents = [...events];
+    newEvents[index][inputName] = newValue;
+    setEvents(newEvents);
+  }
+
+  const handleChangeSubject = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    subjects.map(s => {
+      if (s.id == newValue) {
+        const newEvents = [...events];
+        newEvents[index][inputName] = s;
+        setEvents(newEvents);
+        return
+      }
+    })
+  }
+
+  const memoizedEvents = () => {
     return (
       <>
-        {events && events.map((e) => {
+        {events && events.map((e, index) => {
           if (filteredEvents !== null)
             if (filteredEvents.find((fe) => e.id === fe.id) === undefined) return <Fragment key={e.id} />;
           return (
@@ -527,30 +495,22 @@ export default function Scheduleeventslist() {
               <td>{shortUUID(e.id)}</td>
               <td>
                 <input
-                  type="text"
                   id={`inputName_${e.id}`}
+                  name="annotation_title"
                   disabled
-                  value={
-                    changeName === false ? e.annotation_title : newName
-                  }
-                  onChange={() => {
-                    handleChangeName(e.id);
-                  }}
+                  type="text"
+                  value={e.annotation_title}
+                  onChange={(ev) => handleChange(index, ev)}
                 />
               </td>
               <td>
                 <input
-                  type="text"
-                  value={
-                    changeDescription === false
-                      ? e.annotation_description
-                      : newDescription
-                  }
-                  disabled
                   id={`inputDescription_${e.id}`}
-                  onChange={() => {
-                    handleChangeDescription();
-                  }}
+                  name="annotation_description"
+                  disabled
+                  type="text"
+                  value={e.annotation_description}
+                  onChange={(ev) => handleChange(index, ev)}
                 />
               </td>
               <td>
@@ -559,31 +519,21 @@ export default function Scheduleeventslist() {
               <td>
                 <input
                   id={`inputStartDate_${e.id}`}
-                  type="datetime-local"
-                  value={
-                    changeStartDate === false
-                      ? e.annotation_start_date
-                      : newStartDate
-                  }
+                  name="annotation_start_date"
                   disabled
-                  onChange={() => {
-                    handleChangeStartDate(e.id);
-                  }}
+                  type="datetime-local"
+                  value={e.annotation_start_date}
+                  onChange={(ev) => handleChange(index, ev)}
                 />
               </td>
               <td>
                 <input
                   id={`inputEndDate_${e.id}`}
-                  type="datetime-local"
-                  value={
-                    changeEndDate === false
-                      ? e.annotation_end_date
-                      : newEndDate
-                  }
+                  name="annotation_end_date"
                   disabled
-                  onChange={() => {
-                    handleChangeEndDate(e.id);
-                  }}
+                  type="datetime-local"
+                  value={e.annotation_end_date}
+                  onChange={(ev) => handleChange(index, ev)}
                 />
               </td>
               <td style={{ textAlign: "center" }}>
@@ -594,18 +544,22 @@ export default function Scheduleeventslist() {
                 )}
               </td>
               <td>
-                <select id={`inputSubjectID_${e.id}`} disabled>
-                  <option
-                    defaultValue={e.subject.id}
-                    value={e.subject.id + "_" + e.subject.subject_code}
-                  >
-                    {e.subject.name}
-                  </option>
-                  {subjectEdit.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
+                <select id={`inputSubjectID_${e.id}`} disabled
+                  name="subject"
+                  onChange={(ev) => handleChangeSubject(index, ev)}>
+                  {subjects.map((thisSubject) => {
+                    if (e.subject.id == thisSubject.id) {
+                      return (
+                        <option key={thisSubject.id} value={thisSubject.id} selected>
+                          {thisSubject.name}
+                        </option>
+                      )
+                    }
+                    return (<option key={thisSubject.id} value={thisSubject.id}>
+                      {thisSubject.name}
                     </option>
-                  ))}
+                    )
+                  })}
                 </select>
               </td>
               <td style={{ textAlign: "center" }}>
@@ -645,9 +599,7 @@ export default function Scheduleeventslist() {
                 </button>
                 <button
                   style={{ marginRight: "5px" }}
-                  onClick={(event) => {
-                    showEditOptionEvent(event, e);
-                  }}
+                  onClick={(e) => showEditOptionEvent(e, index)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -666,8 +618,8 @@ export default function Scheduleeventslist() {
                 </button>
                 <button
                   style={{ marginRight: "5px", display: "none" }}
-                  onClick={(event) => {
-                    editEvent(event, e);
+                  onClick={(ev) => {
+                    editEvent(ev, e);
                   }}
                 >
                   <svg
@@ -683,9 +635,7 @@ export default function Scheduleeventslist() {
                 </button>
                 <button
                   style={{ display: "none" }}
-                  onClick={(ev) => {
-                    closeEditEvent(ev, e);
-                  }}
+                  onClick={(e) => closeEditEvent(e, index)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -706,12 +656,12 @@ export default function Scheduleeventslist() {
                   </svg>
                 </button>
               </td>
-            </tr>
+            </tr >
           );
         })}
       </>
     );
-  }, [events]);
+  };
 
   return (
     <>
@@ -778,7 +728,7 @@ export default function Scheduleeventslist() {
                     <option defaultValue="Choose subject">
                       {language.chooseSubject}
                     </option>
-                    {subject.map((s) => {
+                    {subjects.map((s) => {
                       if (s.name !== "General") {
                         return (
                           <option key={s.id} value={s.id}>
@@ -854,7 +804,7 @@ export default function Scheduleeventslist() {
                 </tr>
               </thead>
               <tbody>
-                {memoizedEvents}
+                {memoizedEvents()}
               </tbody>
             </table>
           </div>

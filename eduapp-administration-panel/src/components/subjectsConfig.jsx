@@ -53,11 +53,62 @@ export default function SubjectsConfig() {
     }
   }, []);
 
-  const connectionAlert = useCallback(() => {
+  const finalizedEdit = useCallback((type, icon, pop, text, confirmDel) => {
+    fetchSubjectPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(pop);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(text);
+  }, []);
+
+  const finalizedCreate = useCallback((type, icon, txt, confirmDel) => {
+    fetchSubjectPage(actualPage);
+    setIsConfirmDelete(confirmDel);
+    setPopup(true);
+    setPopupIcon(icon);
+    setPopupType(type);
+    setPopupText(txt);
+  }, []);
+
+  const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
+    switchEditState(false);
+    setPopupType(type);
+    setPopupIcon(icon);
+    setPopup(true);
+    setPopupText(text);
+    setIsConfirmDelete(confirmDel);
+    fetchSubjectPage(actualPage);
+  }, []);
+
+  const connectionAlert = useCallback(async () => {
     switchEditState(false);
     setPopup(true);
     setPopupText(language.connectionAlert);
     setPopupIcon("error");
+  }, []);
+
+  const fetchSubjectPage = useCallback(async (page, order = null, searchParams) => {
+    API.asynchronizeRequest(function () {
+      setLoadingParams({ loading: true });
+      SUBJECTSERVICE.pagedSubjects(page, order, searchParams)
+        .then((us) => {
+          setActualPage(us.data.page);
+          setMaxPages(us.data.total_pages);
+          setSubjects(us.data.current_page);
+          fetchCourses();
+          setLoadingParams({ loading: false });
+        })
+        .catch(async (err) => {
+          await interceptExpiredToken(err);
+          setLoadingParams({ loading: false });
+        });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
+    });
   }, []);
 
   const fetchCourses = useCallback(() => {
@@ -91,15 +142,6 @@ export default function SubjectsConfig() {
     setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
-  }, []);
-
-  const finalizedCreate = useCallback((type, icon, txt, confirmDel) => {
-    fetchSubjectPage(actualPage);
-    setIsConfirmDelete(confirmDel);
-    setPopup(true);
-    setPopupIcon(icon);
-    setPopupType(type);
-    setPopupText(txt);
   }, []);
 
   const createSubject = useCallback(() => {
@@ -157,18 +199,8 @@ export default function SubjectsConfig() {
 
   const confirmDeleteEvent = useCallback(async (id) => {
     finalizedDelete("warning", true, true, language.deleteAlert);
-    switchEditState(false);
     setIdDelete(id);
-  }, []);
-
-  const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
     switchEditState(false);
-    setPopupType(type);
-    setPopupIcon(icon);
-    setPopup(true);
-    setPopupText(text);
-    setIsConfirmDelete(confirmDel);
-    fetchSubjectPage(actualPage);
   }, []);
 
   const deleteSubject = useCallback((id) => {
@@ -215,15 +247,6 @@ export default function SubjectsConfig() {
       num += 1;
     }
   };
-
-  const finalizedEdit = useCallback((type, icon, pop, text, confirmDel) => {
-    fetchSubjectPage(actualPage);
-    setIsConfirmDelete(confirmDel);
-    setPopup(pop);
-    setPopupIcon(icon);
-    setPopupType(type);
-    setPopupText(text);
-  }, []);
 
   const editSubject = useCallback((e, subject) => {
     API.asynchronizeRequest(function () {
@@ -294,29 +317,6 @@ export default function SubjectsConfig() {
       num += 1;
     }
   };
-
-  const fetchSubjectPage = useCallback(async (page, order = null, searchParams) => {
-    API.asynchronizeRequest(function () {
-      setLoadingParams({ loading: true });
-      SUBJECTSERVICE.pagedSubjects(page, order, searchParams)
-        .then((us) => {
-          setMaxPages(us.data.total_pages);
-          setSubjects(us.data.current_page);
-          setActualPage(us.data.page);
-          fetchCourses();
-          setLoadingParams({ loading: false });
-        })
-        .catch(async (err) => {
-          await interceptExpiredToken(err);
-          setLoadingParams({ loading: false });
-        });
-    }).then(async (e) => {
-      if (e) {
-        await interceptExpiredToken(e);
-        connectionAlert();
-      }
-    });
-  }, []);
 
   const handleChange = (index, value) => {
     const inputName = value.target.name
@@ -463,7 +463,7 @@ export default function SubjectsConfig() {
                   </svg>
                 </button>
                 <button
-                  style={{ display: "none", backgroundColor: "green" }}
+                  style={{ display: "none" }}
                   onClick={(e) => closeEditSubject(e, index)}
                 >
                   <svg
@@ -500,6 +500,15 @@ export default function SubjectsConfig() {
   }, []);
 
   useEffect(() => {
+    if (searchParams.selectedField) {
+      fetchSubjectPage(actualPage || 1, {
+          field: searchParams.selectedField,
+          order: searchParams.order,
+        }, searchParams);
+    }
+  }, [searchParams, actualPage]);
+
+  useEffect(() => {
     setSearchParams({
       query: "",
       fields: getSubjectFields(language),
@@ -508,19 +517,6 @@ export default function SubjectsConfig() {
       order: "asc",
     });
   }, [language]);
-
-  useEffect(() => {
-    if (searchParams.selectedField) {
-      fetchSubjectPage(
-        actualPage || 1,
-        {
-          field: searchParams.selectedField,
-          order: searchParams.order,
-        },
-        searchParams
-      );
-    }
-  }, [searchParams]);
 
   return (
     <>
@@ -646,7 +642,7 @@ export default function SubjectsConfig() {
           <>
             <div className="notify-users">
               <PageSelect
-                onPageChange={async (p) => setActualPage(p)}
+                onPageChange={(p) => setActualPage(p)}
                 maxPages={maxPages}
               />
             </div>
