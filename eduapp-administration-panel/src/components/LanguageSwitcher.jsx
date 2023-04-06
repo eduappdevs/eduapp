@@ -37,7 +37,7 @@ export default function LanguageSwitcher() {
           </option>
           )
       }else{
-        return <></>
+        return null
       }
     })
   return (

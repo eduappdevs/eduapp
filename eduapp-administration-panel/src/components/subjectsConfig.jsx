@@ -33,6 +33,7 @@ export default function SubjectsConfig() {
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
+  const [editing, setEditing] = useState([]);
 
   const subjectBeforeEditing = useRef(null);
 
@@ -246,9 +247,10 @@ export default function SubjectsConfig() {
           : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
+    setEditing([...editing, index]);
   };
 
-  const editSubject = useCallback((e, subject) => {
+  const editSubject = useCallback((e, subject, index = null) => {
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.editSubject({
         id: subject.id,
@@ -296,6 +298,7 @@ export default function SubjectsConfig() {
         connectionAlert();
       }
     });
+    setEditing(editing.filter(idx => idx !== index));
   }, []);
 
   const closeEditSubject = (e, index) => {
@@ -316,6 +319,7 @@ export default function SubjectsConfig() {
         : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
+    setEditing(editing.filter(idx => idx !== index));
   };
 
   const handleChange = (index, value) => {
@@ -351,7 +355,7 @@ export default function SubjectsConfig() {
                   name="external_id"
                   disabled
                   type="text"
-                  value={subject.external_id}
+                  value={subject.external_id || ''}
                   onChange={(event) => handleChange(index, event)}
                 />
               </td>
@@ -386,9 +390,21 @@ export default function SubjectsConfig() {
                 />
               </td>
               <td>
-                <input disabled type="text" value={subject.course.name} />
+                { editing.some(idx => idx === index)? (
+                  <select
+                    defaultValue={subject.course_id}
+                    id={`course_chooser_${index}`}
+                    name="course_id"
+                    onChange={(event) => handleChange(index, event)}
+                  >
+                    {courses && courses.map(course => (
+                      <option key={course.id} value={course.id}>{course.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input disabled type="text" value={subject.course.name || ''} />
+                ) }
               </td>
-
               <td>
                 <select disabled defaultValue={subject.chat_link} id="chat_chooser">
                   <option value="-">{language.noChatSelected}</option>
@@ -449,7 +465,7 @@ export default function SubjectsConfig() {
                 </button>
                 <button
                   style={{ marginRight: "5px", display: "none" }}
-                  onClick={(e) => editSubject(e, subject)}
+                  onClick={(e) => editSubject(e, subject, index)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -490,7 +506,7 @@ export default function SubjectsConfig() {
         })}
       </>
     )
-  }, [subjects]);
+  }, [subjects, editing]);
 
   useEffect(() => {
     // fetchSubjectPage(1);

@@ -507,7 +507,7 @@ export default function ResourcesConfig() {
                         </select>
                       </td>
                       <td className="action-column">
-                        <ExtraFields table="resources" id={r.id} />
+                        {/* <ExtraFields table="resources" id={r.id} /> */}
                         <button
                           id="btn-delete-resources"
                           style={{ marginRight: "5px" }}
@@ -526,7 +526,7 @@ export default function ResourcesConfig() {
                         </button>
                         <button
                           id="show-edit-option"
-                          style={{ marginRight: "5px" }}
+                          style={{ marginRight: "5px", display: 'none',}}
                           onClick={(e) => showEditOptionResource(e)}
                         >
                           <svg
