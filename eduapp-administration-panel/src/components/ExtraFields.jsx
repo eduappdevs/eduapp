@@ -80,7 +80,7 @@ export default function ExtraFields({ table, id }) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
     } else {
-      document.getElementById("scroll").scrollIntoView(true);
+      // document.getElementById("scroll").scrollIntoView(true);
       document.getElementById("standard-modal").style.width = "101%";
       document.getElementById("standard-modal").style.height = "101%";
       document.getElementById("controlPanelContentContainer").style.overflow =

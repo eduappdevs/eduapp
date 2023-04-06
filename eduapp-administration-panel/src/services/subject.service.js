@@ -44,15 +44,29 @@ export const deleteSubject = async (id) => {
   return await axios.delete(`${SUBJECTS}/${id}`, { headers: requestHeader });
 };
 
+export const deleteSubjectEnrollment = async (body) => {
+  const url = body.user_id
+    ? `${SUBJECTS}/${body.id}/users/${body.user_id}`
+    : `${SUBJECTS}/${body.id}`;
+  return await axios.delete(url, {
+    headers: requestHeader,
+  });
+};
+
 export const editSubject = async (body) => {
   return await axios.put(`${SUBJECTS}/${body.id}`, body, {
     headers: requestHeader,
   });
 };
 
-export const pagedSubjects = async (page, order = null) => {
+export const pagedSubjects = async (page, order = null, searchParams = []) => {
+  const value = searchParams["query"];
+  const attribute = searchParams["selectedField"];
+  const extras = searchParams["extras"];
   return await axios.get(
-    `${SUBJECTS}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    `${SUBJECTS}?page=${page}${
+      value && attribute ? "&" + attribute + "=" + value : ""
+    }&order=${btoa(JSON.stringify(order))}${extras ? "&extras=" + extras : ""}`,
     {
       headers: requestHeader,
     }

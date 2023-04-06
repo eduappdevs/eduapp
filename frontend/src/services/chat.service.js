@@ -36,6 +36,11 @@ export const editChat = async (data) => {
     headers: requestHeader,
   });
 };
+export const setChatRead = async (data) => {
+  return await axios.put(`${CHAT}/${data.id}/read`, data, {
+    headers: requestHeader,
+  });
+};
 
 //chat Participant
 export const fetchChatParticipants = async () => {

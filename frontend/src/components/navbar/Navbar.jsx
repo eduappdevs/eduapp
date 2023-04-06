@@ -1,13 +1,16 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import * as AUTH_SERVICE from "../../services/auth.service";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";
-import Menu from "../../views/menu/Menu";
 import { IMG_FLBK_USER } from "../../config";
-import ProfileSettings from "../../views/menu/profileOptions/ProfileSettings";
+import { Dropdown } from "antd";
+import Menu from "../../views/menu/Menu";
 import MenuSettings from "../../views/menu/menu-settings/MenuSettings";
-import "./Navbar.css";
+import ProfileSettings from "../../views/menu/profileOptions/ProfileSettings";
 import useLanguage from "../../hooks/useLanguage";
+import useRole from "../../hooks/useRole";
+import "./Navbar.css";
 
 /**
  * The desktop navbar of the app.
@@ -27,15 +30,38 @@ export default function Navbar({ mobile, badgeCount }) {
 
   const [desktopMenu, setDesktopMenu] = useState(null);
 
-  let userInfo = FetchUserInfo(getOfflineUser().user.id);
+  const userInfo = FetchUserInfo(getOfflineUser().user.id);
+  const isAdmin = useRole(userInfo, "eduapp-admin");
   const [userImage, setUserImage] = useState(null);
+
+  const items = [
+    {
+      label: <a className="dropdown-menu-option" href="#" onClick={() => {
+        navigate("/menu/profile");
+      }}
+      >{language.menu_profile.toUpperCase()}</a>,
+      key: 0
+    },
+    {
+      label: <a className="dropdown-menu-option" href="#" onClick={() => {
+        mobile
+          ? (window.location.href = "/menu/settings")
+          : setDesktopMenu("settings")
+      }}>{language.menu_settings.toUpperCase()}</a>,
+      key: 1
+    },
+    {
+      label: <a className="dropdown-menu-option" href="#" onClick={AUTH_SERVICE.logout}>{language.logout.toUpperCase()}</a>,
+      key: 2
+    },
+  ];
 
   const MenuManager = () => {
     switch (desktopMenu) {
       case "profile":
         return <ProfileSettings desktopBackTo={() => setDesktopMenu("menu")} />;
       case "settings":
-        return <MenuSettings desktopBackTo={() => setDesktopMenu("menu")} />;
+        return <MenuSettings desktopBackTo={() => setDesktopMenu("home")} />;
       case "menu":
         return (
           <Menu
@@ -50,6 +76,9 @@ export default function Navbar({ mobile, badgeCount }) {
   };
 
   const changeLocation = () => {
+    if(!userInfo?.user_role){
+      return null;
+    }
     if (loc.pathname.substring(1) === "login")
       document.getElementsByTagName("header")[0].style.display = "none";
     else document.getElementsByTagName("header")[0].style.display = "block";
@@ -101,7 +130,9 @@ export default function Navbar({ mobile, badgeCount }) {
 
   useEffect(() => changeLocation());
 
-  useEffect(() => setUserImage(getOfflineUser().profile_image), [userInfo]);
+  // useEffect(() => setUserImage(getOfflineUser().profile_image.thumb.url), [userInfo]);
+  useEffect(() => setUserImage(getOfflineUser().profile_image.url), [userInfo]);
+  if(!userInfo?.user_role){return null};
 
   return (
     <>
@@ -120,41 +151,49 @@ export default function Navbar({ mobile, badgeCount }) {
               <li className={inHome ? "activeLocation" : console.log()}>
                 <Link to="/home">{language.home}</Link>
               </li>
-              <li className={inCalendar ? "activeLocation" : console.log()}>
-                <Link
-                  to="/calendar"
-                  onClick={() => {
-                    if (
-                      !(
-                        window.location.href.substring(
-                          getPosition(window.location.href, "/", 3)
-                        ) === "/calendar"
+              {userInfo.user_role.perms_app_views[0] && (
+                <li className={inCalendar ? "activeLocation" : console.log()}>
+                  <Link
+                    to="/calendar"
+                    onClick={() => {
+                      if (
+                        !(
+                          window.location.href.substring(
+                            getPosition(window.location.href, "/", 3)
+                          ) === "/calendar"
+                        )
                       )
-                    )
-                      document.getElementById("sectionCalendar").style.display =
-                        "none";
-                    navigate("/calendar");
-                  }}
-                >
-                  {language.calendar}
-                </Link>
-              </li>
-              <li className={inManagement ? "activeLocation" : console.log()}>
-                <Link to="/management">{language.management}</Link>
-              </li>
-              <li className={inResources ? "activeLocation" : console.log()}>
-                <Link to="/resources">{language.resources}</Link>
-              </li>
-              <li className={inChat ? "activeLocation" : console.log()}>
-                {badgeCount > 0 ? (
-                  <div className="badgeNotifyContainer">
-                    <span className="badgeNotify badgeNotifyMobile">
-                      {badgeCount}
-                    </span>
-                  </div>
-                ) : null}
-                <Link to="/chat">{language.chats}</Link>
-              </li>
+                        document.getElementById("sectionCalendar").style.display =
+                          "none";
+                      navigate("/calendar");
+                    }}
+                  >
+                    {language.calendar}
+                  </Link>
+                </li>
+              )}
+              {isAdmin && navigator.onLine && (
+                <li className={inManagement ? "activeLocation" : console.log()}>
+                  <Link to="/management">{language.management}</Link>
+                </li>
+              )}
+              {userInfo.user_role.perms_app_views[1] && (
+                <li className={inResources ? "activeLocation" : console.log()}>
+                  <Link to="/resources">{language.resources}</Link>
+                </li>
+              )}
+              {userInfo.user_role.perms_app_views[2] && (
+                <li className={inChat ? "activeLocation" : console.log()}>
+                  {badgeCount > 0 ? (
+                    <div className="badgeNotifyContainer">
+                      <span className="badgeNotify badgeNotifyMobile">
+                        {badgeCount}
+                      </span>
+                    </div>
+                  ) : null}
+                  <Link to="/chat">{language.chats}</Link>
+                </li>
+              )}
             </ul>
           </div>
           <div
@@ -179,26 +218,18 @@ export default function Navbar({ mobile, badgeCount }) {
             </div>
           </div>
 
-          <div
-            className="profile-button"
-            onClick={() => {
-              localStorage.previousMenuPage = window.location.href.substring(
-                getPosition(window.location.href, "/", 3)
-              );
-              if (mobile) return navigate("/menu");
-
-              setDesktopMenu("menu");
-            }}
-          >
-            <div className="profile-button-box">
-              <div className="profile-pic">
-                <img
-                  src={userImage !== null ? userImage : IMG_FLBK_USER}
-                  alt="Profile"
-                />
+          <Dropdown className="navbar-ant-dropdown" menu={{ items }} trigger={['click']}>
+            <div className="profile-button">
+              <div className="profile-button-box">
+                <div className="profile-pic">
+                  <img
+                    src={userImage !== null ? userImage : IMG_FLBK_USER}
+                    alt="Profile"
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          </Dropdown>
         </nav>
       </header>
       {!mobile && <MenuManager />}

@@ -6,9 +6,6 @@ class ResourcesController < ApplicationController
   # GET /resources
   def index
     if params[:subject_id]
-      if !subject_in_user_course(params[:subject_id])
-        return deny_perms_access!
-      end
       @resources = Resource.order(created_at: :desc).where(subject_id: params[:subject_id])
     else
       if !check_perms_all!(get_user_roles.perms_resources)

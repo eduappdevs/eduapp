@@ -88,13 +88,35 @@ export default function App() {
     setShowNotification(false);
   };
 
+  const notification = () => {
+
+    if(!window.Notification){
+      console.log('Este navegador no soporta notificaciones')
+      return
+    }
+
+    if(Notification.permission !== 'granted') {
+      Notification.requestPermission()
+    }
+    // navigator.permissions
+    // .query({ name: "notifications" })
+    // .then((permissionStatus) => {
+    //   console.log(`notification permission state is ${permissionStatus.state}`);
+    //   permissionStatus.onchange = () => {
+    //     console.log(
+    //       `notification permission state has changed to ${permissionStatus.state}`
+    //     );
+    //   };
+    // });
+  }
+
   useEffect(() => {
     if (localStorage.eduapp_language === undefined) {
       localStorage.setItem("eduapp_language", "en_uk");
     }
 
     instanceBadge();
-
+    notification()
     setNeedsExtras(
       !new RegExp(
         "/(login|menu(/.*)?|resource/[0-9]+|chat/([a-z]|[A-Z]|[0-9])(.*)|password/.*)$"
@@ -144,9 +166,9 @@ export default function App() {
     }
 
     return () => {
-      document.removeEventListener("visibilitychange", () => {});
-      document.removeEventListener("canLoadResource", () => {});
-      document.removeEventListener("canLoadChat", () => {});
+      document.removeEventListener("visibilitychange", () => { });
+      document.removeEventListener("canLoadResource", () => { });
+      document.removeEventListener("canLoadChat", () => { });
     };
   }, []);
 
@@ -183,17 +205,17 @@ export default function App() {
               />
               <Route path="/chat/:chatId" element={<MainChat />} />
               <Route path="/chat/info/:chatId" element={<MainChatInfo />} />
-              <Route path="/chat/create/group" element={<GroupChatCreate />} />
+              <Route path="/chat/create/group/:subject_id" element={<GroupChatCreate />} />
               <Route
                 path="/chat/create/direct"
                 element={<DirectChatCreate />}
               />
 
               {/* Menu */}
+              <Route path="/menu/profile" element={<ProfileSettings />} />
               {mobile && (
                 <>
                   <Route path="/menu" element={<Menu />} />
-                  <Route path="/menu/profile" element={<ProfileSettings />} />
                   <Route path="/menu/settings" element={<MenuSettings />} />
                 </>
               )}

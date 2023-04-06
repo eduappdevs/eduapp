@@ -10,15 +10,26 @@ Rails.application.routes.draw do
   resources :chat_messages, :path => "#{@api_path}/chat_messages"
   resources :chat_participants, :path => "#{@api_path}/chat_participants"
   resources :chat_base_infos, :path => "#{@api_path}/chat_base_infos"
-  resources :chat_bases, :path => "#{@api_path}/chat_bases"
+  resources :chat_bases, :path => "#{@api_path}/chat_bases" do
+    put :read, on: :member
+  end
   resources :subjects, :path => "#{@api_path}/subjects"
   resources :calendar_annotations, :path => "#{@api_path}/calendar_annotations"
   resources :tuitions, :path => "#{@api_path}/tuitions"
   resources :courses, :path => "#{@api_path}/courses"
   resources :institutions, :path => "#{@api_path}/institutions"
   resources :resources, :path => "#{@api_path}/resources"
-  resources :eduapp_user_sessions, :path => "#{@api_path}/eduapp_user_sessions"
+  resources :eduapp_user_sessions, :path => "#{@api_path}/eduapp_user_sessions" do
+    collection do
+      post :upload_single_sessions
+      post :upload_batch_sessions
+      post :batch_load, to: "eduapp_user_sessions#session_batch_load"
+      delete "batch_delete/:batch_id", to: "eduapp_user_sessions#destroy_batch"
+      put "batch_update/:batch_id", to: "eduapp_user_sessions#update_batch"
+    end
+  end
   resources :user_infos, :path => "#{@api_path}/user_infos"
+  resources :subjects_users, :path => "#{@api_path}/subjects_users"
 
   # All filter paths.
   get "#{@api_path}/filter/user_infos", to: "user_infos#filter"
@@ -32,14 +43,14 @@ Rails.application.routes.draw do
   get "#{@api_path}/filter/roles", to: "user_roles#filter"
   get "#{@api_path}/filter/chats", to: "chat_bases#filter"
   get "#{@api_path}/filter/chat_participants", to: "chat_participants#filter"
+  get "#{@api_path}/filter/subject_users", to: "subjects_users#filter"
 
   # Remove participant from a chat.
   delete "#{@api_path}/chat_participants/remove/:user_id/:chat_base_id", to: "chat_participants#remove_participant"
 
-  # Batch loading routes for sessions.
-  post "#{@api_path}/eduapp_user_sessions/batch_load", to: "eduapp_user_sessions#session_batch_load"
-  delete "#{@api_path}/eduapp_user_sessions/batch_delete/:batch_id", to: "eduapp_user_sessions#destroy_batch"
-  put "#{@api_path}/eduapp_user_sessions/batch_update/:batch_id", to: "eduapp_user_sessions#update_batch"
+  # Remove user from subject
+  delete "#{@api_path}/subjects/:subject_id/users/:user_id", to: "subjects#destroy_user"
+
 
   # Checks if a user has system notifications.
   get "#{@api_path}/system/chat/notifications", to: "chat_bases#has_system_notifs"
@@ -108,4 +119,8 @@ Rails.application.routes.draw do
   get "#{@api_path}/ping", to: "static#ping"
   get "#{@api_path}/ping/admin", to: "static#admin"
   get "#{@api_path}/ping/created", to: "static#created"
+
+  # Push notification
+  get "#{@api_path}/notification/key", to: "push_notifications#key"
+  post "#{@api_path}/notification/subscribe", to: "push_notifications#subscribe"
 end

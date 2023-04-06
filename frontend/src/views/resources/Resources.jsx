@@ -1,12 +1,13 @@
 import React from "react";
+import * as RESOURCE_SERVICE from "../../services/resource.service";
 import { useEffect, useState } from "react";
-import ResourcesModal from "../../components/modals/ResourcesModal";
-import Loader from "../../components/loader/Loader";
-import SubjectDropdown from "../../components/subjectSelector/SubjectDropdown";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { GetSubjects } from "../../hooks/GetSubjects";
 import { getOfflineUser } from "../../utils/OfflineManager";
-import * as RESOURCE_SERVICE from "../../services/resource.service";
+import { Select } from "antd";
+import ResourcesModal from "../../components/modals/ResourcesModal";
+import Loader from "../../components/loader/Loader";
+import SubjectDropdown from "../../components/subjectSelector/SubjectDropdown";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useRole from "../../hooks/useRole";
@@ -98,31 +99,27 @@ export default function Resources() {
 
   return subjects && userInfo ? (
     <>
-      <SubjectDropdown
-        language={language}
-        dropdown={showResources}
-        onSubjectClick={(e) => {
-          handleChangeSelector(e.split("_")[1]);
-          setCurrentSubject(e.split("_")[2]);
-          setShowResources(false);
-        }}
-        closeAction={() => {
-          setShowResources(false);
-        }}
-      />
       <div className="resources-main-container">
         <section
           className={ItsMobileDevice ? "mobileSection" : "desktopSection"}
         >
-          <div className="reveal-resources">
-            <button
-              onClick={() => {
-                setShowResources(true);
-              }}
-            >
-              {language.resources_all_resources}
-            </button>
-          </div>
+          <h3 className="resources-page-label">{language.resources_select_subject}</h3>
+          <Select
+            showSearch
+            className="subject-ant-select"
+            placeholder={language.resources_select_subject}
+            optionFilterProp="children"
+            onChange={(e) => {
+              console.log(e);
+              handleChangeSelector(e.split("_")[1]);
+              setCurrentSubject(e.split("_")[2]);
+              setShowResources(false);
+            }}
+            options={subjects.map((subject) => ({
+              value: `subject_${subject.id}_${subject.name}`,
+              label: subject.name,
+            }))}
+          />
           <h2 className="subject-title">{currentSubject}</h2>
           <div className="resources-toolbar">
             <div className="resourcesSearchBar">

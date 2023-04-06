@@ -41,6 +41,12 @@ export const editEvent = async (body) => {
   });
 };
 
+export const fetchUserSessions = async (userId) => {
+  return await axios.get(`${SESSIONS}?user_id=${userId}`, {
+    headers: requestHeader,
+  });
+};
+
 export const fetchSessions = async () => {
   return await axios.get(SESSIONS, { headers: requestHeader });
 };

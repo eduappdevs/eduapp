@@ -12,8 +12,10 @@ import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 import ExtraFields from "./ExtraFields";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import "../styles/institutionConfig.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function InstitutionConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [institutions, setInstitutions] = useState(null);
@@ -470,7 +472,7 @@ export default function InstitutionConfig() {
                         alignItems: "center",
                       }}
                     >
-                      <ExtraFields table="institutions" id={x.id} />
+                      {/* <ExtraFields table="institutions" id={x.id} /> */}
                       <button onClick={(e) => showEditOptionInstitution(e)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

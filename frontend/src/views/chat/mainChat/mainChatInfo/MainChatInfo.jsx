@@ -7,6 +7,8 @@ import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../../../config";
 import { MainChatInfoCtx } from "../../../../hooks/MainChatInfoContext";
 import useLanguage from "../../../../hooks/useLanguage";
 import * as CHAT_SERVICE from "../../../../services/chat.service";
+import * as USER_SERVICE from "../../../../services/user.service";
+
 import {
   getOfflineUser,
   interceptExpiredToken,
@@ -28,7 +30,14 @@ export default function MainChatInfo() {
   const [removeParticipant, setRemoveParticipant] = useState(null);
 
   const [isEditingName, setIsEditingName] = useState(false);
+
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const [participants, setParticipants] = useState([]);
+  const [newParticipants, setNewParticipants] = useState([]);
+  const [suggestedUsers, setSuggestedUsers] = useState([]);
+  const [userQuery, setUserQuery] = useState("");
+
 
   const isGroup = () => {
     return chat.chat.isGroup;
@@ -62,12 +71,41 @@ export default function MainChatInfo() {
     setRemoveParticipant(null);
   };
 
-  const filterWithQuery = (query) => {
-    let fp = [];
-    for (let p of chat.participants)
-      if (p.user_name.includes(query)) fp.push(p);
+  const matchUsers = (nameInput) => {
+    if (nameInput.length > 0) {
+      let currentParticipants = [];
+      for (let p of participants) currentParticipants.push(p.user.id);
 
-    setFilteredParticipants(fp);
+      asynchronizeRequest(async () => {
+        let match = await USER_SERVICE.findByName(nameInput);
+
+        let filteredUsers = [];
+        for (let u of match.data) {
+          if (
+            currentParticipants.includes(u.user.id) ||
+            u.user.id === getOfflineUser().user.id
+          )
+            continue;
+          filteredUsers.push(u);
+        }
+
+        setSuggestedUsers(filteredUsers);
+      }).then((err) => {
+        if (err) console.log(err);
+      });
+    } else {
+      setSuggestedUsers([]);
+    }
+  };
+
+  const filterWithQuery = (query) => {
+
+    // let fp = [];
+    // for (let p of chat.participants){
+    //   if (p.user_name === query) fp.push(p);
+    // }
+    setUserQuery(query)
+    // setFilteredParticipants(fp);
   };
 
   const leaveChat = async () => {
@@ -169,6 +207,11 @@ export default function MainChatInfo() {
   useEffect(() => handleEmptyContext(), []);
 
   useEffect(() => {
+    const searchTimeout = setTimeout(() => matchUsers(userQuery), 500);
+    return () => clearTimeout(searchTimeout);
+  }, [userQuery]);
+
+  useEffect(() => {
     if (chat !== null)
       setIsAdmin(
         chat.participants.find((u) => u.user.id === getOfflineUser().user.id)
@@ -183,6 +226,30 @@ export default function MainChatInfo() {
       return () => clearTimeout(searchTimeout);
     }
   }, [chat]);
+
+  useEffect(() => {
+    if(newParticipants.length > 0){
+      newParticipants.forEach(participant =>
+      {
+        CHAT_SERVICE
+          .createParticipant({
+          chat_base_id: chat.chat.id,
+          user_id: participant,
+          isChatAdmin: false,
+         })
+         .then(response => {
+            const newChat = {...chat}
+            let newParticipant = response.data
+            newParticipant.user_name = newParticipant.user.user_info.user_name
+            newChat.participants.push(newParticipant)
+            setChat(newChat)
+            setNewParticipants([])
+          })
+      })
+    }
+
+  }, [newParticipants])
+
 
   return (
     <>
@@ -262,6 +329,37 @@ export default function MainChatInfo() {
                   onChange={(e) => filterWithQuery(e.target.value)}
                   placeholder={language.chat_search_names}
                 />
+                {
+                  suggestedUsers.length > 0 && (
+                    <ul className="suggested-users">
+                      {suggestedUsers.map((u) => {
+                        return (
+                          <li
+                            key={u.id}
+                            onClick={() => {
+                              if (isGroup()) {
+                                let c = { ...chat };
+                                const existUser = c.participants.find(participant => u.user.id === participant.user.id)
+                                if (!existUser){
+                                  setNewParticipants([...newParticipants, u.user.id])
+                                }
+                              }
+                              debugger
+                              setParticipants([...participants, u]);
+                              if (suggestedUsers.indexOf(u) > -1)
+                                suggestedUsers.splice(
+                                  suggestedUsers.indexOf(u),
+                                  1
+                                );
+                            }}
+                          >
+                            {u.user_name}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )
+                }
               </div>
               <div className="participant-table">
                 <table>
@@ -326,13 +424,6 @@ export default function MainChatInfo() {
               </div>
             </div>
           ) : null}
-          <button
-            type="button"
-            className="chat-create"
-            onClick={() => showLeaveChatDialog()}
-          >
-            Leave
-          </button>
         </div>
       ) : null}
     </>

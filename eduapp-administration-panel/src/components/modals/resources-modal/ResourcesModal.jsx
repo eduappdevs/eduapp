@@ -192,6 +192,7 @@ export default function ResourcesModal({
     setPopupText(language.creationAlertQuestion);
     setIsConfirmDelete(true);
     setPopup(true);
+    createResource();
   };
 
   const confirmEdit = () => {

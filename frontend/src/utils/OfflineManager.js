@@ -15,15 +15,6 @@ const blobToBase64 = (blob) => {
  * @param {Object} userInfo
  */
 export const saveUserOffline = async (userInfo) => {
-  if (userInfo.profile_image !== null) {
-    let imgBlob = await axios.get(userInfo.profile_image, {
-      responseType: "blob",
-    });
-    let img64 = await blobToBase64(imgBlob.data);
-
-    userInfo.profile_image = img64;
-  }
-
   localStorage.setItem("offline_user", JSON.stringify(userInfo));
 };
 
@@ -34,7 +25,18 @@ export const saveUserOffline = async (userInfo) => {
  */
 export const updateUserImageOffline = async (newImgUrl) => {
   let user = getOfflineUser();
-  user.profile_image = newImgUrl;
+
+  const server_url = `${process.env.REACT_APP_BACKEND}${newImgUrl}`;
+  if (user.profile_image) {
+    user.profile_image.url = server_url;
+    if (user.profile_image.thumb) {
+      user.profile_image.thumb.url = server_url;
+    } else {
+      user.profile_image.thumb = { url: server_url }
+    };
+  } else {
+    user.profile_image = { url: server_url, thumb: { url: server_url } };
+  }
 
   await saveUserOffline(user);
 };
@@ -48,12 +50,19 @@ export const getOfflineUser = () => {
   let user = JSON.parse(localStorage.getItem("offline_user"));
 
   if (user === null) {
-    user = {
+    return {
       user: null,
       profile_image: null,
       id: null,
       user_name: null,
     };
+  }
+
+  if (user.profile_image &&
+    user.profile_image.url &&
+    !user.profile_image.url.startsWith(process.env.REACT_APP_BACKEND)) {
+    user.profile_image.url = `${process.env.REACT_APP_BACKEND}${user.profile_image.url}`;
+    user.profile_image.thumb = { url: `${process.env.REACT_APP_BACKEND}${user.profile_image.url}`};
   }
 
   return user;

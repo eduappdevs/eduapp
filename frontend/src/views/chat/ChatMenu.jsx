@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import * as CHAT_SERVICE from "../../services/chat.service";
+import { useParams } from "react-router-dom";
+import { FetchUserInfo } from "../../hooks/FetchUserInfo";
+import { getOfflineUser } from "../../utils/OfflineManager";
+import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
+import userCan, {CHAT, CREATE}  from "../../hooks/userCan";
 import ChatsAC from "../../utils/websockets/actioncable/ChatsAC";
 import Loader from "../../components/loader/Loader";
 import StandardModal from "../../components/modals/standard-modal/StandardModal";
-import { FetchUserInfo } from "../../hooks/FetchUserInfo";
-import * as CHAT_SERVICE from "../../services/chat.service";
-import { getOfflineUser } from "../../utils/OfflineManager";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
-import useRole from "../../hooks/useRole";
 import useLanguage from "../../hooks/useLanguage";
-import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
 import "./ChatMenu.css";
 
 let acManager = new ChatsAC();
@@ -20,7 +21,7 @@ export default function ChatMenu() {
 
   const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
-  let canCreate = useRole(userInfo, ["eduapp-admin", "eduapp-teacher"]);
+  let canCreate = userCan(userInfo, CHAT,CREATE);
 
   const getChats = async () => {
     let chats = (
@@ -64,7 +65,7 @@ export default function ChatMenu() {
           window.location.href = "/chat/create/direct";
         }}
         onNoAction={() => {
-          window.location.href = "/chat/create/group";
+          window.location.href = "/chat/create/group/no-subject";
         }}
         onCancelAction={() => {
           setShowPopup(false);
@@ -94,7 +95,7 @@ export default function ChatMenu() {
             <>
               <h2>{language.chats}</h2>
               <ul>
-                {chats.map((chat) => {
+                {chats.sort((a,b) => a.chat_info?.last_message?.send_date < b.chat_info?.last_message?.send_date).map((chat) => {
                   let connectionId =
                     (chat.chat_info.isGroup ? "g" : "p") + chat.chat_info.id;
                   return (
@@ -111,8 +112,8 @@ export default function ChatMenu() {
                           chat.chat_info.image !== undefined
                             ? chat.chat_info.image
                             : chat.chat_info.isGroup
-                            ? IMG_FLBK_GROUP
-                            : IMG_FLBK_USER
+                              ? IMG_FLBK_GROUP
+                              : IMG_FLBK_USER
                         }
                         alt="Chat User Icon"
                       />
@@ -120,10 +121,10 @@ export default function ChatMenu() {
                         <h2 className="chat-name">
                           {chat.chat_info.chat_name}
                         </h2>
-                        {/* <p className="chat-writing">Equisde is writing...</p> */}
+                        {/* <p className="chat-writing">{chat.chat_info?.last_message.message}</p> */}
                       </div>
                       <p className="chat-pending-messages">
-                        <span>{0}</span>
+                        <span>{ (!chat.chat_info?.self_counterpart?.last_seen && chat.chat_info?.last_message?.id) || chat.chat_info?.last_message?.send_date > chat.chat_info?.self_counterpart?.last_seen ? 'NEW' : '0'}</span>
                       </p>
                     </li>
                   );

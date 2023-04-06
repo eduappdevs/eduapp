@@ -15,14 +15,6 @@ const blobToBase64 = (blob) => {
  * @param {Object} userInfo
  */
 export const saveUserOffline = async (userInfo) => {
-  if (userInfo.profile_image !== null) {
-    let imgBlob = await axios.get(userInfo.profile_image, {
-      responseType: "blob",
-    });
-    let img64 = await blobToBase64(imgBlob.data);
-
-    userInfo.profile_image = img64;
-  }
 
   if (userInfo.googleid !== undefined) delete userInfo.googleid;
   localStorage.setItem("offline_user", JSON.stringify(userInfo));

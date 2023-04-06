@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState, useRef } from "react";
 import * as API from "../API";
 import * as TUITIONSSERVICE from "../services/enrollConfig.service";
 import * as USERSSERVICE from "../services/user.service";
@@ -11,8 +11,11 @@ import { LanguageCtx } from "../hooks/LanguageContext";
 import PageSelect from "./pagination/PageSelect";
 import useFilter from "../hooks/useFilter";
 import { getEnrollmentFields } from "../constants/search_fields";
+import Typeahead from "./Typeahead";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function EnrollConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [tuitions, setTuitions] = useState(null);
@@ -20,23 +23,17 @@ export default function EnrollConfig() {
   const [courses, setCourses] = useState(null);
 
   const [maxPages, setMaxPages] = useState(1);
-  const [actualPage, setActualPage] = useState();
+  const [actualPage, setActualPage] = useState(1);
 
-  const [courseEdit, setCourseEdit] = useState([]);
-  const [emailEdit, setEmailEdit] = useState([]);
+  const tuitionBeforeEditing = useRef(null);
 
-  const [newEmail] = useState();
-  const [newCourse] = useState();
-  const [changeEmail, setChangeEmail] = useState(false);
-  const [changeCourse, setChangeCourse] = useState(false);
-
-  const [, setSearchParams] = useContext(SearchBarCtx);
-  const filteredTuitions = useFilter(
-    tuitions,
-    null,
-    TUITIONSSERVICE.filterTuitions,
-    getEnrollmentFields(language)
-  );
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
+  // const filteredTuitions = useFilter(
+  //   tuitions,
+  //   null,
+  //   TUITIONSSERVICE.filterTuitions,
+  //   getEnrollmentFields(language)
+  // );
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -76,6 +73,7 @@ export default function EnrollConfig() {
   };
 
   const finalizedDelete = (type, icon, confirmDel, text) => {
+    switchEditState(false);
     setPopupType(type);
     setPopupIcon(icon);
     setPopup(true);
@@ -93,19 +91,19 @@ export default function EnrollConfig() {
 
   const fetchTuitions = (pages) => {
     API.asynchronizeRequest(function () {
-      TUITIONSSERVICE.pagedTuitions(pages)
+      TUITIONSSERVICE.pagedTuitions(pages, searchParams)
         .then((ts) => {
           setActualPage(ts.data.page);
-          setTuitions(ts.data.current_page);
           setMaxPages(ts.data.total_pages);
+          setTuitions(ts.data.current_page);
         })
         .catch(async (err) => {
-          interceptExpiredToken(err);
+          await interceptExpiredToken(err);
         });
     }).then(async (e) => {
       if (e) {
-        connectionAlert();
         await interceptExpiredToken(e);
+        connectionAlert();
       }
     });
   };
@@ -136,8 +134,14 @@ export default function EnrollConfig() {
 
   const fetchAll = () => {
     fetchCourses();
-    fetchTuitions(1);
+    // fetchTuitions(1);
     fetchUsers();
+  };
+
+  const alertCreate = async () => {
+    setPopupText(language.creationAlert);
+    setPopupType("error");
+    setPopup(true);
   };
 
   const createTuition = (e) => {
@@ -159,6 +163,7 @@ export default function EnrollConfig() {
           .then((e) => {
             if (e) {
               fetchAll();
+              fetchTuitions(actualPage);
               setPopup(true);
               setPopupType("info");
               setPopupText(language.creationCompleted);
@@ -183,10 +188,10 @@ export default function EnrollConfig() {
     }
   };
 
-  const alertCreate = async () => {
-    setPopupText(language.creationAlert);
-    setPopupType("error");
-    setPopup(true);
+  const confirmDeleteEvent = async (id) => {
+    finalizedDelete("warning", true, true, language.deleteAlert);
+    setIdDelete(id);
+    switchEditState(false);
   };
 
   const deleteTuition = (id) => {
@@ -206,56 +211,38 @@ export default function EnrollConfig() {
         });
     }).then(async (e) => {
       if (e) {
-        connectionAlert();
         await interceptExpiredToken(e);
+        connectionAlert();
       }
     });
   };
 
-  const confirmDeleteEvent = async (id) => {
-    switchEditState(false);
-    finalizedDelete("warning", true, true, language.deleteAlert);
-    setIdDelete(id);
-  };
-
-  const showEditOptionSession = (e) => {
-    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = false;
-    listCourse(
-      e.target.parentNode.parentNode.childNodes[1].childNodes[0].value
-    );
-    let num = 0;
-    while (num < 4) {
-      e.target.parentNode.childNodes[num].style.display === ""
-        ? e.target.parentNode.childNodes[num].style.display === "none"
-          ? (e.target.parentNode.childNodes[num].style.display = "block")
-          : (e.target.parentNode.childNodes[num].style.display = "none")
-        : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
-      num += 1;
-    }
-  };
-
   const editEnroll = (e, s) => {
     switchEditState(false);
-    let course = e.target.parentNode.parentNode.childNodes[1].childNodes[0];
 
-    let inputCourse = document.getElementById("inputCourse_" + s.id).value;
+    let inputUser = document.getElementById("inputUserID_" + s.id).value;
+    let inputCourse = document.getElementById("inputCourseID_" + s.id).value;
 
-    let editCourse;
+    let editUser,
+      editCourse;
 
-    if (inputCourse !== "" && inputCourse !== s.session_start_date) {
-      editCourse = inputCourse;
+    if (inputUser !== "" && inputUser !== s.user.id) {
+      editUser = inputUser;
     } else {
-      editCourse = s.session_start_date;
+      editUser = s.user.id;
     }
 
-    console.log(s, editCourse);
+    if (inputCourse !== "" && inputCourse !== s.course.id) {
+      editCourse = inputCourse;
+    } else {
+      editCourse = s.course.id;
+    }
+
     API.asynchronizeRequest(function () {
       TUITIONSSERVICE.editTuition({
         id: s.id,
         course_id: editCourse,
-        user_id: s.user.id,
+        user_id: editUser,
       })
         .then((error) => {
           if (error) {
@@ -266,7 +253,11 @@ export default function EnrollConfig() {
                 : (e.target.parentNode.childNodes[num].style.display = "block");
               num += 1;
             }
-            course.disabled = true;
+            let disable = 0;
+            while (disable < 2) {
+              e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = true;
+              disable += 1;
+            }
             finalizedEdit("info", true, language.editAlertCompleted, false);
           }
         })
@@ -284,8 +275,16 @@ export default function EnrollConfig() {
     });
   };
 
-  const closeEditSession = (e, s) => {
-    e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = true;
+  const closeEditTuition = (e, index) => {
+    let disable = 0;
+    while (disable < 2) {
+      e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = true;
+      disable += 1;
+    }
+
+    let auxTuitions = [...tuitions];
+    auxTuitions[index] = { ...tuitionBeforeEditing.current };
+    setTuitions(auxTuitions);
 
     let num = 0;
     while (num < 4) {
@@ -296,20 +295,199 @@ export default function EnrollConfig() {
     }
   };
 
-  const listCourse = (course) => {
-    let list = [];
-    courses.map((c) => {
-      if (c.id !== course) {
-        list.push(c);
-      }
-      return true;
-    });
-    setCourseEdit(list);
+  const showEditOptionTuition = (e, index) => {
+    let disable = 0;
+    while (disable < 2) {
+      e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = false;
+      disable += 1;
+    }
+    tuitionBeforeEditing.current = { ...tuitions[index] };
+
+
+    let num = 0;
+    while (num < 4) {
+      e.target.parentNode.childNodes[num].style.display === ""
+        ? e.target.parentNode.childNodes[num].style.display === "none"
+          ? (e.target.parentNode.childNodes[num].style.display = "block")
+          : (e.target.parentNode.childNodes[num].style.display = "none")
+        : e.target.parentNode.childNodes[num].style.display === "block"
+          ? (e.target.parentNode.childNodes[num].style.display = "none")
+          : (e.target.parentNode.childNodes[num].style.display = "block");
+      num += 1;
+    }
   };
+
+  const handleChangeUser = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    users.map(u => {
+      if (u.user.id == newValue) {
+        const newTuitions = [...tuitions];
+        newTuitions[index][inputName] = u;
+        setTuitions(newTuitions);
+        return
+      }
+    })
+  }
+
+  const handleChangeCourse = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    courses.map(c => {
+      if (c.id == newValue) {
+        const newTuitions = [...tuitions];
+        newTuitions[index][inputName] = c;
+        setTuitions(newTuitions);
+        return
+      }
+    })
+  }
+
+  const memoizedTuitions = () => {
+    return (
+      <>
+        {tuitions && tuitions.map((t, index) => {
+          // if (filteredTuitions !== null)
+          //   if (
+          //     filteredTuitions.find((ft) => t.id === ft.id) ===
+          //     undefined
+          //   )
+          //     return <Fragment key={t.id} />;
+          return (
+            <tr key={t.id}>
+              <td>
+                <select id={`inputUserID_${t.id}`} disabled
+                  name="user"
+                  onChange={(event) => handleChangeUser(index, event)}>
+                  {users
+                    && users.map((thisUser) => {
+                      if (t.user.id == thisUser.user.id) {
+                        return (
+                          <option key={thisUser.user.id} value={thisUser.user.id} selected>
+                            {thisUser.user.email}
+                          </option>
+                        )
+                      }
+                      return (<option key={thisUser.user.id} value={thisUser.user.id}>
+                        {thisUser.user.email}
+                      </option>
+                      )
+                    })
+                  }
+                </select>
+              </td>
+              <td>
+                <select id={`inputCourseID_${t.id}`} disabled
+                  name="course"
+                  onChange={(event) => handleChangeCourse(index, event)}>
+                  {courses
+                    && courses.map((thisCourse) => {
+                      if (t.course.id == thisCourse.id) {
+                        return (
+                          <option key={thisCourse.id} value={thisCourse.id} selected>
+                            {thisCourse.name}
+                          </option>
+                        )
+                      }
+                      return (<option key={thisCourse.id} value={thisCourse.id}>
+                        {thisCourse.name}
+                      </option>
+                      )
+                    })}
+                </select>
+              </td>
+              <td style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              >
+                <button
+                  style={{ marginRight: "5px" }}
+                  onClick={() => confirmDeleteEvent(t.id)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-trash3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                  </svg>
+                </button>
+                <button
+                  style={{ marginRight: "5px" }}
+                  onClick={(e) => showEditOptionTuition(e, index)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-pencil-square"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  style={{ marginRight: "5px", display: "none" }}
+                  onClick={(e) => editEnroll(e, t)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-check2"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                  </svg>
+                </button>
+                <button
+                  style={{ display: "none" }}
+                  onClick={(e) => closeEditTuition(e, index)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-x-lg"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          );
+        })}
+      </>
+    )
+  }
 
   useEffect(() => {
     fetchAll();
   }, []);
+
+  useEffect(() => {
+    fetchTuitions(actualPage, searchParams);
+  }, [actualPage, searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -323,24 +501,40 @@ export default function EnrollConfig() {
 
   return (
     <>
-      <div className="schedulesesionslist-main-container" id="scroll">
+      <div className="add-form">
         <table>
           <thead>
             <tr>
-              <th>{language.add}</th>
+              <th></th>
               <th>{language.user}</th>
               <th>{language.course}</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr key={"newTuition"}>
-              <td
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+            <tr>
+              <th>{language.add}:</th>
+              <td>
+                <Typeahead items={users?.map(u => ({
+                  id: u.user.id, name: u.user.email
+                }))}
+                  fieldId="user_select" />
+              </td>
+              <td>
+                <select defaultValue={"-"} id="course_select">
+                  <option value="-">{language.chooseCourse}</option>
+                  {courses
+                    ? courses.map((c) => {
+                      return (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      );
+                    })
+                    : null}
+                </select>
+              </td>
+              <td className="action-column">
                 <button onClick={createTuition}>
                   <svg
                     xmlns="http://www.w3.org/2000/ svg"
@@ -373,190 +567,32 @@ export default function EnrollConfig() {
                   </div>
                 </button>
               </td>
-              <td>
-                <select defaultValue={"-"} id="user_select">
-                  <option value="-">{language.chooseUser}</option>
-                  {users
-                    ? users.map((u) => {
-                        return (
-                          <option key={u.id} value={u.user.id}>
-                            {u.user.email}
-                          </option>
-                        );
-                      })
-                    : null}
-                </select>
-              </td>
-              <td>
-                <select defaultValue={"-"} id="course_select">
-                  <option value="-">{language.chooseCourse}</option>
-                  {courses
-                    ? courses.map((c) => {
-                        return (
-                          <option key={c.id} value={c.id}>
-                            {c.name}
-                          </option>
-                        );
-                      })
-                    : null}
-                </select>
-              </td>
             </tr>
           </tbody>
         </table>
+      </div>
+      <div className="notify-users">
+        <PageSelect
+          onPageChange={(page) => setActualPage(page)}
+          maxPages={maxPages}
+        />
+      </div>
+      <div className="list-main-container" id="scroll">
         {tuitions && tuitions.length !== 0 ? (
-          <>
-            <div className="notify-users">
-              <PageSelect
-                onPageChange={async (p) => fetchTuitions(p)}
-                maxPages={maxPages}
-              />
-            </div>
-            <div className="subjects-table-info">
-              <table style={{ marginTop: "15px" }}>
-                <thead>
-                  <tr>
-                    <th>{language.user}</th>
-                    <th>{language.course}</th>
-                    <th>{language.actions}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tuitions.map((t) => {
-                    if (filteredTuitions !== null)
-                      if (
-                        filteredTuitions.find((ft) => t.id === ft.id) ===
-                        undefined
-                      )
-                        return <Fragment key={t.id} />;
-                    return (
-                      <tr key={t.id}>
-                        <td>
-                          <select id={`inputEmail_${t.id}`} disabled>
-                            <option value={t.user.id} defaultValue={t.user.id}>
-                              {t.user.email}
-                            </option>
-                            {emailEdit.map((e) => {
-                              return (
-                                <option key={e.id} value={e.id}>
-                                  {e.user.email}
-                                </option>
-                              );
-                            })}
-                            {}
-                          </select>
-                        </td>
-                        <td>
-                          <select id={`inputCourse_${t.id}`} disabled>
-                            <option
-                              defaultValue={t.course_id}
-                              value={t.course_id}
-                            >
-                              {t.course.name}
-                            </option>
-                            {courseEdit.map((c) => {
-                              return (
-                                <option key={c.id} value={c.id}>
-                                  {c.name}
-                                </option>
-                              );
-                            })}
-                          </select>
-                        </td>
-                        <td
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={() => {
-                              confirmDeleteEvent(t.id);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-trash3"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px" }}
-                            onClick={(e) => {
-                              showEditOptionSession(e, t);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-pencil-square"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                              <path
-                                fillRule="evenodd"
-                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ marginRight: "5px", display: "none" }}
-                            onClick={(e) => {
-                              editEnroll(e, t);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-check2"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                            </svg>
-                          </button>
-                          <button
-                            style={{ display: "none" }}
-                            onClick={(e) => {
-                              closeEditSession(e, t);
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-x-lg"
-                              viewBox="0 0 16 16"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                              />
-                              <path
-                                fillRule="evenodd"
-                                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                              />
-                            </svg>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </>
+          <div className="table-info">
+            <table style={{ marginTop: "10px" }}>
+              <thead>
+                <tr>
+                  <th>{language.user}</th>
+                  <th>{language.course}</th>
+                  <th>{language.actions}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {memoizedTuitions()}
+              </tbody>
+            </table>
+          </div>
         ) : null}
       </div>
       <StandardModal

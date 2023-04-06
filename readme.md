@@ -2,12 +2,12 @@
 </div>
 
 - [About the project](#about-the-project)
-- [Backend](#backend-information)
-- [Frontend](#frontend-information)
+- [Backend](#backend-structure)
+- [Frontend](#frontend-structure)
 - [API Documention](#api-documention)
 - [Use Cases](#use-cases)
 - [Tech stack and comparison](#tech-stack-and-comparison)
-- [How to mount an EduApp server](https://github.com/eduappdevs/eduapp/tree/develop/server-config)
+- [How to mount an EduApp server](https://github.com/eduapp-project/eduapp/tree/main/server-config)
 - [Personal opinion and comparison](#personal-opinion-and-comparison)
 
 <h1>About the project</h1>
@@ -98,12 +98,14 @@
 <h2>ORM</h2>
 <p></p>
 <h3>How to install and run</h3>
-<p>First of all, you must download and install a Ruby environment from 2.6.8 onwards. After you can proceed in cloning the repository.</p>
+<p>First of all, you must download and install a Ruby environment from 2.6.9 onwards. After you can proceed in cloning the repository.</p>
 <p>To clone, use:</p>
 
 ```bash
 git clone https://github.com/eduappdevs/eduapp
 cd eduapp/backend/eduapp_db
+rvm install 3.1.2
+rvm use 3.1.2
 gem install bundle
 bundle install
 ```

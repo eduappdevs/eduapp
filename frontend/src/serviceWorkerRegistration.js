@@ -1,3 +1,10 @@
+import * as NOTIFICATION_SERVICE from "./services/notification.service";
+
+function getPublicKey(){
+  return NOTIFICATION_SERVICE.fetchPublicKey()
+  .then(res => new Uint8Array(res.data.public_key))
+}
+
 const isLocalhost = Boolean(
   window.location.hostname === "localhost" ||
     window.location.hostname === "[::1]" ||
@@ -67,6 +74,16 @@ function registerValidSW(swUrl, config) {
           }
         };
       };
+      if(registration.active && Notification.permission === 'granted'){
+        getPublicKey()
+          .then( key => {
+            registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: key
+            })
+            .catch( console.error );
+          });
+      }
     })
     .catch((error) => {
       console.error("Error during service worker registration:", error);

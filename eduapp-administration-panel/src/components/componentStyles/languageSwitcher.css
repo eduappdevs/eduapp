@@ -1,3 +1,16 @@
+
+
+.languageSwitcher>select {
+	/* display: flex; */
+	background-color: var(--blue);
+	color: white;
+	font-family: Consolas;
+	font-size: 1.3rem;
+	border-radius: 5px;
+	padding: 15px;
+	border: none;
+}
+
 .languageSwitcher {
 	display: flex;
 	flex-direction: row;
@@ -41,6 +54,8 @@
 }
 
 .logout-icon {
+	/* display: flex; */
+	align-items: center;
 	margin-left: 10px;
 	cursor: pointer;
 	transition: color 0.2s ease-in-out;
