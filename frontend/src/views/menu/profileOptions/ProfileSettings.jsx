@@ -88,20 +88,20 @@ export default function ProfileSettings({ desktopBackTo }) {
     }, 2000);
   };
 
-  const uploadImg = (imgRef, newImg, userFormData) => {
-    uploadBytes(imgRef, newImg).then((snap) => {
-      getDownloadURL(snap.ref).then((url) => {
-        userFormData.append("profile_image", url);
-        asynchronizeRequest(function () {
-          USER_SERVICE.editUserInfo(user.id, userFormData).then(() => {
-            updateUserImageOffline(url).then(() => {
-              window.location.reload();
-            });
-          });
-        });
-      });
-    });
-  };
+  // const uploadImg = (imgRef, newImg, userFormData) => {
+  //   uploadBytes(imgRef, newImg).then((snap) => {
+  //     getDownloadURL(snap.ref).then((url) => {
+  //       userFormData.append("profile_image", url);
+  //       asynchronizeRequest(function () {
+  //         USER_SERVICE.editUserInfo(user.id, userFormData).then(() => {
+  //           updateUserImageOffline(url).then(() => {
+  //             window.location.reload();
+  //           });
+  //         });
+  //       });
+  //     });
+  //   });
+  // };
 
   const switchSaveState = (state) => {
     if (state) {
@@ -141,7 +141,7 @@ export default function ProfileSettings({ desktopBackTo }) {
         USER_SERVICE.editUserInfo(user.id, newUserInfo).then(({ data }) => {
           updateUserImageOffline(data.profile_image.url).then(() => {
             setChangesUnsaved(true);
-            //window.location.reload();
+            window.location.reload();
             //window.location.href = "/";
           });
         });
