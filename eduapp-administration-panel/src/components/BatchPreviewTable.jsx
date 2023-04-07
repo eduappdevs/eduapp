@@ -53,13 +53,13 @@ export default function BatchPreviewTable(props) {
       parseInt(session[14]) === 1
     ) {
       let checkDays = [
+        session[7],
         session[8],
         session[9],
         session[10],
         session[11],
         session[12],
         session[13],
-        session[14],
       ];
       for (let i in checkDays) {
         if (parseInt(checkDays[i]) === 1) {
@@ -79,12 +79,11 @@ export default function BatchPreviewTable(props) {
       let end_date = session[2];
       let streaming = session[3];
       let resources = session[4];
-      let chat = session[5];
-      let subject_id = session[6];
+      let subject_id = session[5];
       let total_weeks = weeks;
       let check_week_days = checkDays;
       let diff_days = parseInt(days);
-      let week_repeat = parseInt(session[7]);
+      let week_repeat = parseInt(session[6]);
       SUBJECTSERVICE.fetchSubject()
         .then((res) => {
           res.data.shift();
@@ -100,7 +99,7 @@ export default function BatchPreviewTable(props) {
         end_date !== "" &&
         resources !== "" &&
         streaming !== "" &&
-        chat !== "" &&
+        // chat !== "" &&
         subject_id !== "" &&
         total_weeks !== 0 &&
         diff_days !== 0 &&
@@ -112,7 +111,7 @@ export default function BatchPreviewTable(props) {
           session_end_date: end_date,
           streaming_platform: streaming,
           resources_platform: resources,
-          session_chat_id: chat,
+          // session_chat_id: chat,
           subject_id: subject_id,
           total_weeks: total_weeks,
           check_week_days: check_week_days,
