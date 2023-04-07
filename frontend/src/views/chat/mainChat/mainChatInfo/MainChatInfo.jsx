@@ -204,6 +204,10 @@ export default function MainChatInfo() {
     if (chat.chat.chat_name !== "") await CHAT_SERVICE.editChat(chat.chat);
   };
 
+  const getUserProfileImageURL = (user) => {
+    return `${process.env.REACT_APP_BACKEND}${user.profile_image.url}`;
+  }
+
   useEffect(() => handleEmptyContext(), []);
 
   useEffect(() => {
@@ -228,17 +232,16 @@ export default function MainChatInfo() {
   }, [chat]);
 
   useEffect(() => {
-    if(newParticipants.length > 0){
-      newParticipants.forEach(participant =>
-      {
+    if (newParticipants.length > 0) {
+      newParticipants.forEach(participant => {
         CHAT_SERVICE
           .createParticipant({
-          chat_base_id: chat.chat.id,
-          user_id: participant,
-          isChatAdmin: false,
-         })
-         .then(response => {
-            const newChat = {...chat}
+            chat_base_id: chat.chat.id,
+            user_id: participant,
+            isChatAdmin: false,
+          })
+          .then(response => {
+            const newChat = { ...chat }
             let newParticipant = response.data
             newParticipant.user_name = newParticipant.user.user_info.user_name
             newChat.participants.push(newParticipant)
@@ -256,8 +259,8 @@ export default function MainChatInfo() {
       <AppHeader
         tabName={language.chat_information}
         closeHandler={() =>
-          (window.location.href =
-            "/chat/" + window.location.pathname.split("/")[3])
+        (window.location.href =
+          "/chat/" + window.location.pathname.split("/")[3])
         }
       />
       {chat !== null ? (
@@ -340,7 +343,7 @@ export default function MainChatInfo() {
                               if (isGroup()) {
                                 let c = { ...chat };
                                 const existUser = c.participants.find(participant => u.user.id === participant.user.id)
-                                if (!existUser){
+                                if (!existUser) {
                                   setNewParticipants([...newParticipants, u.user.id])
                                 }
                               }
@@ -373,8 +376,8 @@ export default function MainChatInfo() {
                             <td className="chat-is-admin">
                               <img
                                 src={
-                                  p.profile_image !== null
-                                    ? p.profile_image
+                                  p.profile_image?.url
+                                    ? getUserProfileImageURL(p)
                                     : IMG_FLBK_USER
                                 }
                                 alt={"participant profile"}
