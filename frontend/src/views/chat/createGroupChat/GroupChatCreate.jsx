@@ -156,6 +156,10 @@ export default function GroupChatCreate() {
     }
   };
 
+  const getUserProfileImageURL = (user) => {
+    return `${process.env.REACT_APP_BACKEND}${user.profile_image.url}`;
+  }
+
   useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
 
   useEffect(() => {
@@ -281,8 +285,8 @@ export default function GroupChatCreate() {
                         <td>
                           <img
                             src={
-                              p.profile_image !== null
-                                ? p.profile_image
+                              p.profile_image?.url
+                                ? getUserProfileImageURL(p)
                                 : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                             }
                             alt={"participant profile"}
@@ -320,7 +324,9 @@ export default function GroupChatCreate() {
                         <td>
                           <img
                             src={
-                              "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                              user.profile_image?.url
+                                ? getUserProfileImageURL(user)
+                                : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                             }
                             alt={"participant profile"}
                           />
