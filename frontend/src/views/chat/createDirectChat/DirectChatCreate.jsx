@@ -9,8 +9,10 @@ import * as CHAT_SERVICE from "../../../services/chat.service";
 import * as USER_SERVICE from "../../../services/user.service";
 import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
-import userCan, {CHAT, CREATE}  from "../../../hooks/userCan";
+import userCan, { CHAT, CREATE } from "../../../hooks/userCan";
 import useLanguage from "../../../hooks/useLanguage";
+import getPrefixedImageURL from "../../../utils/UrlImagePrefixer";
+
 import "./DirectChatCreate.css";
 
 export default function DirectChatCreate() {
@@ -26,8 +28,8 @@ export default function DirectChatCreate() {
   const [popupMessage, setPopupMessage] = useState("");
 
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
-  
-  let canCreate = userCan(userInfo, CHAT,CREATE);
+
+  let canCreate = userCan(userInfo, CHAT, CREATE);
 
   const matchUsers = (nameInput) => {
     if (nameInput.length > 0) {
@@ -59,9 +61,8 @@ export default function DirectChatCreate() {
         try {
           let connectionId = await CHAT_SERVICE.createCompleteChat({
             base: {
-              chat_name: `private_chat_${getOfflineUser().user.id}_${
-                participant.user.id
-              }`,
+              chat_name: `private_chat_${getOfflineUser().user.id}_${participant.user.id
+                }`,
               isGroup: false,
             },
             participants: {
@@ -160,9 +161,8 @@ export default function DirectChatCreate() {
                   <img
                     className="chat-icon"
                     src={
-                      participant.profile_image !== undefined &&
-                      participant.profile_image !== null
-                        ? participant.profile_image
+                      participant.profile_image?.url
+                        ? getPrefixedImageURL(participant.profile_image.url)
                         : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                     }
                     alt="Chat User Icon"

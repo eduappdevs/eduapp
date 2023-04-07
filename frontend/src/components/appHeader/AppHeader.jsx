@@ -143,9 +143,10 @@ export default function AppHeader({
             <div className="ChatHeaderName" onClick={() => imageNameClick()}>
               <img
                 src={
-                  chatImage !== undefined
+                  chatImage
                     ? chatImage
-                    : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+                    : ""
+                    // : "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
                 }
                 alt="Chat Icon"
               />
