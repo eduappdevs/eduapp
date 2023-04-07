@@ -145,7 +145,7 @@ export default function BatchPreviewTable(props) {
       "session_end_date",
       "streaming_platform",
       "resources_platform",
-      "session_chat_id",
+      // "session_chat_id",
       "subject_id",
     ];
 
@@ -155,8 +155,8 @@ export default function BatchPreviewTable(props) {
     let end_date = session[2];
     let streaming = session[3];
     let resources = session[4];
-    let chat = session[5];
-    let subject_id = session[6];
+    // let chat = session[5];
+    let subject_id = session[5];
 
     if (
       name !== "" &&
@@ -164,7 +164,7 @@ export default function BatchPreviewTable(props) {
       end_date !== "" &&
       resources !== "" &&
       streaming !== "" &&
-      chat !== "" &&
+      // chat !== "" &&
       subject_id !== ""
     ) {
       json.push(
@@ -173,7 +173,7 @@ export default function BatchPreviewTable(props) {
         end_date,
         streaming,
         resources,
-        chat,
+        // chat,
         subject_id
       );
     } else {
