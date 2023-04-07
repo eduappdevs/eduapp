@@ -8,6 +8,7 @@ import { MainChatInfoCtx } from "../../../../hooks/MainChatInfoContext";
 import useLanguage from "../../../../hooks/useLanguage";
 import * as CHAT_SERVICE from "../../../../services/chat.service";
 import * as USER_SERVICE from "../../../../services/user.service";
+import getPrefixedImageURL from "../../../../utils/UrlImagePrefixer";
 
 import {
   getOfflineUser,
@@ -204,10 +205,6 @@ export default function MainChatInfo() {
     if (chat.chat.chat_name !== "") await CHAT_SERVICE.editChat(chat.chat);
   };
 
-  const getUserProfileImageURL = (user) => {
-    return `${process.env.REACT_APP_BACKEND}${user.profile_image.url}`;
-  }
-
   useEffect(() => handleEmptyContext(), []);
 
   useEffect(() => {
@@ -377,7 +374,7 @@ export default function MainChatInfo() {
                               <img
                                 src={
                                   p.profile_image?.url
-                                    ? getUserProfileImageURL(p)
+                                    ? getPrefixedImageURL(p.profile_image.url)
                                     : IMG_FLBK_USER
                                 }
                                 alt={"participant profile"}

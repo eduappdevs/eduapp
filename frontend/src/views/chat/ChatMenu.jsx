@@ -11,6 +11,8 @@ import StandardModal from "../../components/modals/standard-modal/StandardModal"
 import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useLanguage from "../../hooks/useLanguage";
+import getPrefixedImageURL from "../../utils/UrlImagePrefixer";
+
 import "./ChatMenu.css";
 
 let acManager = new ChatsAC();
@@ -109,8 +111,8 @@ export default function ChatMenu() {
                       <img
                         className="chat-icon"
                         src={
-                          chat.chat_info.image !== undefined
-                            ? chat.chat_info.image
+                          chat.chat_info.image && chat.chat_info.image.url
+                            ? getPrefixedImageURL(chat.chat_info.image.url)
                             : chat.chat_info.isGroup
                               ? IMG_FLBK_GROUP
                               : IMG_FLBK_USER

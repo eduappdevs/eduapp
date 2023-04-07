@@ -18,6 +18,8 @@ import useLanguage from "../../../hooks/useLanguage";
 import { MainChatInfoCtx } from "../../../hooks/MainChatInfoContext";
 import { useNavigate } from "react-router-dom";
 import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../../config";
+import getPrefixedImageURL from "../../../utils/UrlImagePrefixer";
+
 import "./MainChat.css";
 
 const acInstance = new ChatsAC();
@@ -236,13 +238,11 @@ export default function MainChat() {
           }
           leaveChat={() => showLeaveChatDialog()}
           chatImage={
-            chat.chatInfo
-              ? chat.chatInfo.image
-                ? chat.chatInfo.image
-                : chat.chatInfo.isGroup
+            chat.chatInfo?.image?.url
+              ? getPrefixedImageURL(chat.chatInfo.image.url)
+                : chat.chatInfo?.isGroup
                 ? IMG_FLBK_GROUP
                 : IMG_FLBK_USER
-              : ""
           }
         />
 
