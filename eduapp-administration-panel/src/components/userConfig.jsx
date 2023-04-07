@@ -8,7 +8,6 @@ import ExtraFields from "./ExtraFields";
 import * as COURSESERVICE from "../services/course.service";
 import * as CHATSERVICE from "../services/chat.service";
 import * as ROLESERVICE from "../services/role.service";
-import asynchronizeRequest from "../API";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 import EncryptionUtils from "../utils/EncryptionUtils";
 import PageSelect from "./pagination/PageSelect";
@@ -49,12 +48,6 @@ export default function UserConfig() {
 
   const shortUUID = useCallback((uuid) => uuid.substring(0, 8), []);
 
-  const selectAll = useCallback(() => {
-    setAllSelected(!allSelected);
-    for (let c of document.getElementsByName("user-check"))
-      c.checked = allSelected;
-  }, []);
-
   const switchEditState = useCallback((state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
@@ -66,13 +59,6 @@ export default function UserConfig() {
       document.getElementById("controlPanelContentContainer").scrollLeft = 0;
       document.getElementById("controlPanelContentContainer").style.overflow = "hidden";
     }
-  }, []);
-
-  const connectionAlert = useCallback(() => {
-    switchEditState(false);
-    setPopup(true);
-    setPopupText(language.connectionAlert);
-    setPopupIcon("error");
   }, []);
 
   const finalizedEdit = useCallback((type, icon, text, confirmDel) => {
@@ -102,8 +88,15 @@ export default function UserConfig() {
     fetchUserPage(actualPage);
   }, []);
 
-  const fetchUserPage = useCallback((page, order = null) => {
-    asynchronizeRequest(function () {
+  const connectionAlert = useCallback(async () => {
+    switchEditState(false);
+    setPopup(true);
+    setPopupText(language.connectionAlert);
+    setPopupIcon("error");
+  }, []);
+
+  const fetchUserPage = useCallback(async (page, order = null, searchParams) => {
+    API.asynchronizeRequest(() => {
       // order = {
       //   field: 'name',
       //   order: 'asc'
@@ -122,14 +115,14 @@ export default function UserConfig() {
         });
     }).then(async (e) => {
       if (e) {
-        connectionAlert();
         await interceptExpiredToken(e);
+        connectionAlert();
       }
     });
   }, []);
 
   const fetchRoles = useCallback(() => {
-    asynchronizeRequest(function () {
+    API.asynchronizeRequest(function () {
       ROLESERVICE.fetchRoles()
         .then((roles) => {
           setUserPermRoles(roles);
@@ -141,15 +134,100 @@ export default function UserConfig() {
     });
   }, []);
 
+  const alertCreate = useCallback(async () => {
+    switchEditState(false);
+    finalizedCreate("error", true, language.creationFailed, false);
+  }, []);
+
+  const createUser = useCallback((e) => {
+    switchEditState(false);
+
+    let email = document.getElementById("u_email").value;
+    let pass = document.getElementById("u_pass").value;
+    let role = document.getElementById("u_role").value;
+
+    if (email && pass) {
+      API.asynchronizeRequest(async function () {
+        setLoadingParams({ loading: true });
+        USERSERVICE.createUser({
+          requester_id: getOfflineUser().user.id,
+          email: email,
+          password: pass,
+          user_role: role,
+        })
+          .then(async (res) => {
+            if (res) {
+              document.getElementById("u_email").value = null;
+              document.getElementById("u_pass").value = null;
+              finalizedCreate("info", true, language.creationCompleted, false);
+              await userEnroll(res.data.user.id);
+            }
+            setLoadingParams({ loading: false });
+          })
+          .catch(async (error) => {
+            alertCreate();
+            await interceptExpiredToken(error);
+            setLoadingParams({ loading: false });
+          });
+      }).then(async (e) => {
+        if (e) {
+          await interceptExpiredToken(e);
+          connectionAlert();
+        }
+      });
+    } else {
+      alertCreate();
+    }
+  }, []);
+
   const confirmDeleteUser = useCallback(async (id) => {
     switchEditState(false);
     finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
   }, []);
 
-  const alertCreate = useCallback(async () => {
-    switchEditState(false);
-    finalizedCreate("error", true, language.creationFailed, false);
+  const deleteUser = useCallback(async (id) => {
+    let systemUser = (await USERSERVICE.fetchSystemUser()).data;
+    if (id !== systemUser.user.id) {
+      if (id !== getOfflineUser().user.id) {
+        API.asynchronizeRequest(function () {
+          setLoadingParams({ loading: true });
+          USERSERVICE.deleteUser(id)
+            .then((err) => {
+              if (err) {
+                finalizedDelete(
+                  "info",
+                  true,
+                  false,
+                  language.deleteAlertCompleted
+                );
+              }
+              setLoadingParams({ loading: false });
+            })
+            .catch(async (err) => {
+              if (err) {
+                finalizedDelete(
+                  "error",
+                  true,
+                  false,
+                  language.deleteAlertFailed
+                );
+                await interceptExpiredToken(err);
+              }
+              setLoadingParams({ loading: false });
+            });
+        }).then(async (e) => {
+          if (e) {
+            await interceptExpiredToken(e);
+            connectionAlert();
+          }
+        });
+      } else {
+        alert("Cannot delete yourself.");
+      }
+    } else {
+      alert("Cannot delete system user.");
+    }
   }, []);
 
   const toggleEditRow = (e, disable = false) => {
@@ -223,56 +301,15 @@ export default function UserConfig() {
     toggleEditRow(e, true);
 
     let auxUsers = [...users];
-    auxUsers[index] = {...userBeforeEditing.current};
+    auxUsers[index] = { ...userBeforeEditing.current };
     setUsers(auxUsers);
   };
 
   const showEditOptionUser = (e, index) => {
     toggleEditRow(e, false);
 
-    userBeforeEditing.current = {...users[index]};
+    userBeforeEditing.current = { ...users[index] };
   };
-
-  const createUser = useCallback((e) => {
-    switchEditState(false);
-
-    let email = document.getElementById("u_email").value;
-    let pass = document.getElementById("u_pass").value;
-    let role = document.getElementById("u_role").value;
-
-    if (email && pass) {
-      asynchronizeRequest(async function () {
-        setLoadingParams({ loading: true });
-        USERSERVICE.createUser({
-          requester_id: getOfflineUser().user.id,
-          email: email,
-          password: pass,
-          user_role: role,
-        })
-          .then(async (res) => {
-            if (res) {
-              document.getElementById("u_email").value = null;
-              document.getElementById("u_pass").value = null;
-              finalizedCreate("info", true, language.creationCompleted, false);
-              await userEnroll(res.data.user.id);
-            }
-            setLoadingParams({ loading: false });
-          })
-          .catch(async (error) => {
-            alertCreate();
-            await interceptExpiredToken(error);
-            setLoadingParams({ loading: false });
-          });
-      }).then(async (e) => {
-        if (e) {
-          connectionAlert();
-          await interceptExpiredToken(e);
-        }
-      });
-    } else {
-      alertCreate();
-    }
-  }, []);
 
   const userEnroll = useCallback(async (uId) => {
     const payload = new FormData();
@@ -299,50 +336,6 @@ export default function UserConfig() {
     }).catch(() => {
       setLoadingParams({ loading: false });
     });
-  }, []);
-
-  const deleteUser = useCallback(async (id) => {
-    let systemUser = (await USERSERVICE.fetchSystemUser()).data;
-    if (id !== systemUser.user.id) {
-      if (id !== getOfflineUser().user.id) {
-        asynchronizeRequest(function () {
-          setLoadingParams({ loading: true });
-          USERSERVICE.deleteUser(id)
-            .then((err) => {
-              if (err) {
-                finalizedDelete(
-                  "info",
-                  true,
-                  false,
-                  language.deleteAlertCompleted
-                );
-              }
-              setLoadingParams({ loading: false });
-            })
-            .catch(async (err) => {
-              if (err) {
-                finalizedDelete(
-                  "error",
-                  true,
-                  false,
-                  language.deleteAlertFailed
-                );
-                await interceptExpiredToken(err);
-              }
-              setLoadingParams({ loading: false });
-            });
-        }).then(async (e) => {
-          if (e) {
-            connectionAlert();
-            await interceptExpiredToken(e);
-          }
-        });
-      } else {
-        alert("Cannot delete yourself.");
-      }
-    } else {
-      alert("Cannot delete system user.");
-    }
   }, []);
 
   const notifyUsers = useCallback(async () => {
@@ -380,6 +373,12 @@ export default function UserConfig() {
         console.log("Sent notification.");
       }
     }
+  }, []);
+
+  const selectAll = useCallback(() => {
+    setAllSelected(!allSelected);
+    for (let c of document.getElementsByName("user-check"))
+      c.checked = allSelected;
   }, []);
 
   const handleChange = (index, value) => {
@@ -546,10 +545,19 @@ export default function UserConfig() {
   }, [users]);
 
   useEffect(() => {
-    fetchUserPage(1);
+    // fetchUserPage(1);
     fetchRoles();
     setInitialFetch(true);
   }, []);
+
+  useEffect(() => {
+    // if (hasDoneInitialFetch) {
+    fetchUserPage(actualPage, {
+      field: searchParams.selectedField,
+      order: searchParams.order
+    }, searchParams);
+    // }
+  }, [searchParams, actualPage]);
 
   useEffect(() => {
     setSearchParams({
@@ -560,15 +568,6 @@ export default function UserConfig() {
       order: "asc",
     });
   }, [language]);
-
-  useEffect(() => {
-    if (hasDoneInitialFetch) {
-      fetchUserPage(actualPage || 1, {
-        field: searchParams.selectedField,
-        order: searchParams.order,
-      });
-    }
-  }, [searchParams, actualPage]);
 
   return (
     <>
