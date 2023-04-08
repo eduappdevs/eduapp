@@ -34,7 +34,7 @@ export default function ImageModal(props) {
           </button>
         </div>
         <div className="image_modal_content">
-          <img src={props.imageRoute} alt={"imagealt"} />
+          <img src={props.imageRoute} alt="" />
         </div>
       </div>
     )

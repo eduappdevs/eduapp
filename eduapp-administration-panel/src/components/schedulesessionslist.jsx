@@ -32,7 +32,7 @@ export default function Schedulesessionslist(props) {
   const [sessionInfo, setSessionInfo] = useState();
   const [selectType, setSelectType] = useState(false);
   const [selectTypeModal, setSelectTypeModal] = useState(false);
-  const [selectInfo, setSelectInfo] = useState([]);
+  const [selectInfo, setSelectInfo] = useState({});
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -384,14 +384,15 @@ export default function Schedulesessionslist(props) {
       editSubject = s.subject.id;
     }
 
-    if (
-      inputSubject.split("_")[1] !== "" &&
-      inputSubject.split("_")[1] !== s.subject.subject_code
-    ) {
-      editCode = inputSubject.split("_")[1];
-    } else {
-      editCode = s.subject.subject_code;
-    }
+    // por qué es esto necesario?
+    // if (
+    //   inputSubject.split("_")[1] !== "" &&
+    //   inputSubject.split("_")[1] !== s.subject.subject_code
+    // ) {
+    //   editCode = inputSubject.split("_")[1];
+    // } else {
+    //   editCode = s.subject.subject_code;
+    // }
 
     API.asynchronizeRequest(function () {
       setSelectInfo({
@@ -403,7 +404,7 @@ export default function Schedulesessionslist(props) {
         resources_platform: editResources,
         session_chat_id: editChat,
         subject_id: editSubject,
-        subject_code: editCode,
+        // subject_code: editCode,
         batch_id: s.batch_id,
       });
       if (s.batch_id === null) {
@@ -476,6 +477,11 @@ export default function Schedulesessionslist(props) {
             finalizedEdit("info", true, language.editAlertCompleted, false);
           }
           setLoadingParams({ loading: false });
+          setSelectType(false);
+          fetchSessions(actualPage, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams);
         })
         .catch(async (e) => {
           if (e) {
@@ -490,7 +496,7 @@ export default function Schedulesessionslist(props) {
         connectionAlert();
       }
     });
-  }, []);
+  }, [selectInfo, actualPage, searchParams]);
 
   const editOneSession = useCallback(() => {
     API.asynchronizeRequest(function () {
@@ -511,6 +517,11 @@ export default function Schedulesessionslist(props) {
             finalizedEdit("info", true, language.editAlertCompleted, false);
           }
           setLoadingParams({ loading: false });
+          setSelectType(false);
+          fetchSessions(actualPage, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams);
         })
         .catch(async (e) => {
           if (e) {
@@ -525,7 +536,7 @@ export default function Schedulesessionslist(props) {
         connectionAlert();
       }
     });
-  }, []);
+  }, [selectInfo, actualPage, searchParams]);
 
   const closeEditSession = (e, index) => {
     let disable = 1;
