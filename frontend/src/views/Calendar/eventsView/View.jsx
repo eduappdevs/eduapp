@@ -9,7 +9,7 @@ import EditView from "./EditView";
 import useRole from "../../../hooks/useRole";
 import useLanguage from "../../../hooks/useLanguage";
 import "./views.css";
-import {ChatIcon, CamaraIcon, MortarboardIcon, ClockIcon, CircleFillIcon} from "../../../components/ui/Icons";
+import { ChatIcon, CamaraIcon, MortarboardIcon, ClockIcon, CircleFillIcon } from "../../../components/ui/Icons";
 
 export default function View(props) {
   const language = useLanguage();
@@ -27,7 +27,7 @@ export default function View(props) {
   const [editEvent, setEditEvent] = useState({});
 
   const fetchSubject = async () => {
-    if(props.data.subject_id){
+    if (props.data.subject_id) {
       let subject = await SUBJECTSERVICE.fetchSubject(props.data.subject_id);
       setSubject(subject.data);
     }
@@ -167,6 +167,17 @@ export default function View(props) {
     }
   }, [props.data]);
 
+  // const thisChatHasATeacher = () => {
+  //   subject.users.forEach(u => {
+  //     if (u.userinfo) {
+  //       u.userinfo.teaching_list.forEach(s => {
+  //         if (subject.id == s) return true;
+  //       })
+  //     }
+  //   });
+  //   return false;
+  // }
+
   const chatLink = () => {
     let chatHasTeacher;
     const isLinkCreated = subject?.chat_link && subject.chat_link !== "-";
@@ -175,22 +186,29 @@ export default function View(props) {
     if(isTeacher){
       chatHasTeacher = subject.users.find(user => user.id === userinfo)
     }
+    // const chatHasTeacher = thisChatHasATeacher();
+
     setTimeout(() => {
       document.body.style.overflow = "auto";
     }, 500);
 
-    if(isLinkCreated && chatHasTeacher){
+    // if (isLinkCreated && chatHasTeacher) {
+    //   navigate(`/chat/g${subject?.chat_link}`)
+    // }
+
+    if (notLinkCreated && (isAdmin || isTeacher)) {
+      navigate(`/chat/create/group/${subject?.id}`);
+    }
+
+    if (!chatHasTeacher && isTeacher) {
+      navigate(`/chat/create/group/${subject?.id}`);
+    }
+
+    if (isLinkCreated) {
       navigate(`/chat/g${subject?.chat_link}`)
     }
-
-    if(notLinkCreated && (isAdmin || isTeacher)){
-      navigate(`/chat/create/group/${subject?.id}`);
-    }
-
-    if(!chatHasTeacher && isTeacher){
-      navigate(`/chat/create/group/${subject?.id}`);
-    }
   }
+
   return (
     <div
       id="view-box"
@@ -202,8 +220,8 @@ export default function View(props) {
           <div
             className={
               isAdmin ||
-              (isTeacher &&
-                userinfo.teaching_list.includes(props.data.subject_id))
+                (isTeacher &&
+                  userinfo.teaching_list.includes(props.data.subject_id))
                 ? "calendar-view-header-edit-button"
                 : "hidden"
             }
@@ -239,12 +257,12 @@ export default function View(props) {
         </div>
         <div className="calendar-view-contents">
           <div className="calendar-view-contents-header">
-            <CircleFillIcon fill={props.data.backgroundColor}/>
+            <CircleFillIcon fill={props.data.backgroundColor} />
             <p>{props.data.title}</p>
           </div>
           <div className="calendar-view-contents-info">
             <div className="calendar-view-hour">
-              <ClockIcon/>
+              <ClockIcon />
               <p>{getTime()}</p>
             </div>
             <div className="calendar-view-description">
@@ -296,12 +314,12 @@ export default function View(props) {
                 {(subject?.chat_link && subject.chat_link !== "-") ? (
                   <p>
                     <ChatIcon
-                      onClick={() => chatLink()}/>
+                      onClick={() => chatLink()} />
                   </p>
                 ) : (!subject?.chat_link || subject?.chat_link === "-") && (isAdmin || isTeacher) ? (
                   <p>
                     <ChatIcon
-                      onClick={() => chatLink()}/>
+                      onClick={() => chatLink()} />
                   </p>
                 ) : null}
               </div>
