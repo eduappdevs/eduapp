@@ -122,17 +122,12 @@ export default function EnrollSubjectConfig() {
     switchEditState(false);
 
     const user_value = document.getElementById("user_select").value;
-    const user = users.find(user => user.user.id === user_value)
-    const subject_value = document.getElementById("subject_select").value
-    const subject = subjects.find(subject => subject.id === subject_value)
-    let chatBase = subject.chat_link;
-    let isChatAdmin;
-    if (user.user_role.name !== ("eduapp_admin" || "eduapp_teacher")) {
-      isChatAdmin = false;
-    }
+    const user = users.find(user => user.user.id === user_value);
+    const subject_value = document.getElementById("subject_select").value;
+    const subject = subjects.find(subject => subject.id === subject_value);
 
     let valid = true;
-    if (user === "-" && subject === "-") valid = false;
+    if (!user || !subject) valid = false;
 
     if (valid) {
       API.asynchronizeRequest(function () {
@@ -149,6 +144,23 @@ export default function EnrollSubjectConfig() {
               setPopup(true);
               setPopupType("info");
               setPopupText(language.creationCompleted);
+
+              let chatBase = subject.chat_link;
+              let isChatAdmin;
+              if (user.user_role.name !== ("eduapp_admin" || "eduapp_teacher")) {
+                isChatAdmin = false;
+              }
+
+              if (chatBase) {
+                CHATSERVICE.createParticipant({ chat_base_id: chatBase, user_id: user.user.id, isChatAdmin }).catch((e) => {
+                  if (e) {
+                    interceptExpiredToken(e);
+                    setPopup(true);
+                    setPopupType("info");
+                    setPopupText(language.creationAlert);
+                  }
+                });
+              }
             }
           })
           .catch((e) => {
@@ -159,17 +171,6 @@ export default function EnrollSubjectConfig() {
               setPopupText(language.creationAlert);
             }
           });
-
-        if (chatBase) {
-          CHATSERVICE.createParticipant({ chat_base_id: chatBase, user_id: user.user.id, isChatAdmin }).catch((e) => {
-            if (e) {
-              interceptExpiredToken(e);
-              setPopup(true);
-              setPopupType("info");
-              setPopupText(language.creationAlert);
-            }
-          });
-        }
       }).then(async (e) => {
         if (e) {
           await interceptExpiredToken(e);
