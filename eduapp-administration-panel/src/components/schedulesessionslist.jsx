@@ -181,8 +181,7 @@ export default function Schedulesessionslist(props) {
         end_date !== "" &&
         resources !== "" &&
         streaming !== "" &&
-        subject_id !== `${language.chooseSubject}` &&
-        subject_id !== "",
+        subject_id !== `${language.chooseSubject}` && subject_id !== "" &&
         subject_code !== `${language.chooseSubject}` && subject_code !== "")
     ) {
       json.push(

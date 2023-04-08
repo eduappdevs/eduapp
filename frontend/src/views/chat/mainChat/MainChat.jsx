@@ -21,12 +21,15 @@ import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../../config";
 import getPrefixedImageURL from "../../../utils/UrlImagePrefixer";
 
 import "./MainChat.css";
+import { ChatBottomCtx } from "../../../hooks/ChatBottomContext";
 
 const acInstance = new ChatsAC();
 const notifs = new NotifsAC();
 let privKey = null;
 let pubKey = null;
 export default function MainChat() {
+  const [chatBottomParams, setChatBottomParams] = useContext(ChatBottomCtx);
+
   const language = useLanguage();
   // eslint-disable-next-line no-unused-vars
   const [_, setChatCtx] = useContext(MainChatInfoCtx);
@@ -214,6 +217,14 @@ export default function MainChat() {
     setPopupText(language.wip);
   }, [language]);
 
+  useEffect(() => {
+    setChatBottomParams({ showing: true });
+
+    return () => {
+      setChatBottomParams({ showing: false });
+    };
+  }, []);
+
   return (
     <>
       <div className="main-chat-container">
@@ -240,7 +251,7 @@ export default function MainChat() {
           chatImage={
             chat.chatInfo?.image?.url
               ? getPrefixedImageURL(chat.chatInfo.image.url)
-                : chat.chatInfo?.isGroup
+              : chat.chatInfo?.isGroup
                 ? IMG_FLBK_GROUP
                 : IMG_FLBK_USER
           }
@@ -266,41 +277,41 @@ export default function MainChat() {
         <div className="main-chat-messages-container">
           {messages.length !== 0
             ? messages.map((msg) => {
-                return (
-                  <ChatBubble
-                    key={msg.user.id + "-" + msg.id}
-                    message={
-                      EncryptionUtils.decrypt(msg.message, privKey).message
-                    }
-                    foreign={
-                      // eslint-disable-next-line eqeqeq
-                      msg.user.id !== getOfflineUser().user.id ? true : false
-                    }
-                    isGroup={msg.chat_base.isGroup}
-                    author={findUserName(msg.user.id)}
-                    isMsgRecent={false}
-                  />
-                );
-              })
+              return (
+                <ChatBubble
+                  key={msg.user.id + "-" + msg.id}
+                  message={
+                    EncryptionUtils.decrypt(msg.message, privKey).message
+                  }
+                  foreign={
+                    // eslint-disable-next-line eqeqeq
+                    msg.user.id !== getOfflineUser().user.id ? true : false
+                  }
+                  isGroup={msg.chat_base.isGroup}
+                  author={findUserName(msg.user.id)}
+                  isMsgRecent={false}
+                />
+              );
+            })
             : null}
           {newMessages.length !== 0
             ? newMessages.map((msg) => {
-                return (
-                  <ChatBubble
-                    key={msg.user.id + "-" + msg.id}
-                    message={
-                      EncryptionUtils.decrypt(msg.message, privKey).message
-                    }
-                    foreign={
-                      // eslint-disable-next-line eqeqeq
-                      msg.user.id !== getOfflineUser().user.id ? true : false
-                    }
-                    isGroup={msg.chat_base.isGroup}
-                    author={findUserName(msg.user.id)}
-                    isMsgRecent={true}
-                  />
-                );
-              })
+              return (
+                <ChatBubble
+                  key={msg.user.id + "-" + msg.id}
+                  message={
+                    EncryptionUtils.decrypt(msg.message, privKey).message
+                  }
+                  foreign={
+                    // eslint-disable-next-line eqeqeq
+                    msg.user.id !== getOfflineUser().user.id ? true : false
+                  }
+                  isGroup={msg.chat_base.isGroup}
+                  author={findUserName(msg.user.id)}
+                  isMsgRecent={true}
+                />
+              );
+            })
             : null}
         </div>
 
@@ -324,7 +335,7 @@ export default function MainChat() {
             <textarea
               id="message-area"
               disabled={readOnly}
-              placeholder={ readOnly ? "This chat was created by the system." : undefined }
+              placeholder={readOnly ? "This chat was created by the system." : undefined}
             />
           </div>
           <div className="main-chat-send-button">
