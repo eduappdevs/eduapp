@@ -217,25 +217,26 @@ export default function Calendar() {
 
   const StyledDiv = styled("div")(({ theme }) => ({}));
   const Appointment = ({ data, children, style, ...restProps }) => {
-    return(
-    <StyledDiv
-      id={`event_${data.id}`}
-      onClick={(e) => {
-        showEventView(e, data);
-      }}
-    >
-      <Appointments.Appointment
-        {...restProps}
-        style={{
-          ...style,
-          backgroundColor: data.backgroundColor,
-          borderRadius: "8px",
+    return (
+      <StyledDiv
+        id={`event_${data.id}`}
+        onClick={(e) => {
+          showEventView(e, data);
         }}
       >
-        {children}
-      </Appointments.Appointment>
-    </StyledDiv>
-  )};
+        <Appointments.Appointment
+          {...restProps}
+          style={{
+            ...style,
+            backgroundColor: data.backgroundColor,
+            borderRadius: "8px",
+          }}
+        >
+          {children}
+        </Appointments.Appointment>
+      </StyledDiv>
+    )
+  };
 
   const IndicatorDiv = styled("div", {
     shouldForwardProp: (prop) => prop !== "top",
