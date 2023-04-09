@@ -202,7 +202,7 @@ export default function CreateView(props) {
             <div className="calendar-view-create-subject">
               <h3>{language.subject}</h3>
               <select name="subject" id="subject_name" onChange={isNotGlobal}>
-                <option defaultValue={"--"}>
+                <option value="">
                   {language.calendar_choose_subject}
                 </option>
                 {props.data.map((subject) => {
