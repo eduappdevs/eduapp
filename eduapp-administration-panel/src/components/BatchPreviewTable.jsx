@@ -37,10 +37,10 @@ export default function BatchPreviewTable(props) {
         default:
           break;
       }
-      return setTimeout(() => {
-        window.location.reload();
-      }, 2000);
     });
+    return setTimeout(() => {
+      window.location.reload();
+    }, 2000);
   };
 
   const postSessionModal = (session) => {
@@ -164,7 +164,6 @@ export default function BatchPreviewTable(props) {
       end_date !== "" &&
       resources !== "" &&
       streaming !== "" &&
-      // chat !== "" &&
       subject_id !== ""
     ) {
       json.push(
@@ -251,34 +250,32 @@ export default function BatchPreviewTable(props) {
       "annotation_start_date",
       "annotation_end_date",
       "isGlobal",
-      "user_id",
-      "subject_id",
+      "isPop",
+      "external_id",
     ];
 
     let payload = [];
-    let start_date = event[2];
-    let end_date = event[3];
     let name = event[0];
     let description = event[1];
+    let start_date = event[2];
+    let end_date = event[3];
     let isGlobal = event[4];
-    let user_id = 1;
-    let subject_id = event[5];
-    if (
-      (name !== "" &&
+    let isPop = event[5];
+    let subject_id = event[6];
+    if (name !== "" &&
         description !== "" &&
         start_date !== "" &&
         end_date !== "" &&
         isGlobal !== "" &&
-        subject_id !== "",
-      user_id !== "")
+        isPop !== "" &&
+        ( isGlobal === "1" || (isGlobal == "0" && subject_id !== ""))
     ) {
       payload.push(
-        start_date,
-        end_date,
         name,
         description,
+        start_date,
+        end_date,
         isGlobal,
-        user_id,
         subject_id
       );
     } else {
@@ -289,15 +286,13 @@ export default function BatchPreviewTable(props) {
     for (let i = 0; i <= context.length - 1; i++) {
       eventJson[context[i]] = payload[i];
     }
-    axios
-      .post(SCHEDULESERVICE.EVENTS, eventJson)
-      .then(() => {
-        window.location.reload();
-      })
-      .catch(async (err) => {
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.createEvent(eventJson).catch(async (err) => {
         await interceptExpiredToken(err);
-        console.error(err);
+        props.close()
+        props.messageError("info", true, true, err.response.data.errors)
       });
+    });
   };
 
   useEffect(() => {
@@ -316,18 +311,18 @@ export default function BatchPreviewTable(props) {
             <h4 className="batch_modal_title">Loading the information.</h4>
           </div>
           <div className="batch_modal_body">
-            {data.map((x) => {
-              return (
-                <ul>
-                  <li>
+            <ul>
+              {data.map((x, idx) => {
+                return (
+                  <li key={idx}>
                     {" "}
-                    {x.map((i) => {
-                      return <span>{" " + i + " "}</span>;
+                    {x.map((i,subidx) => {
+                      return <span key={`${idx}${subidx})`}>{" " + i + " "}</span>;
                     })}{" "}
                   </li>
-                </ul>
-              );
-            })}{" "}
+                );
+              })}{" "}
+            </ul>
           </div>
 
           <div className="batch_modal_footer">

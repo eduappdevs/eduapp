@@ -44,12 +44,12 @@ export default function Scheduleeventslist() {
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
 
-  const filteredEvents = useFilter(
-    events,
-    null,
-    SCHEDULESERVICE.filterEvents,
-    getEventFields(language)
-  );
+  // const filteredEvents = useFilter(
+  //   events,
+  //   null,
+  //   SCHEDULESERVICE.filterEvents,
+  //   getEventFields(language)
+  // );
 
   const shortUUID = useCallback((uuid) => uuid.substring(0, 8), []);
 
@@ -137,10 +137,10 @@ export default function Scheduleeventslist() {
     });
   }, []);
 
-  const fetchEvents = useCallback(async (page, order = null) => {
+  const fetchEvents = useCallback(async (page, order = null, searchParams) => {
     API.asynchronizeRequest(function () {
       setLoadingParams({ loading: true });
-      SCHEDULESERVICE.pagedEvents(page, order).then((event) => {
+      SCHEDULESERVICE.pagedEvents(page, order, searchParams).then((event) => {
         setMaxPages(event.data.total_pages);
         setActualPage(event.data.page);
         setEvents(event.data.current_page);
@@ -456,12 +456,12 @@ export default function Scheduleeventslist() {
 
   useEffect(() => {
     if (hasDoneInitialFetch) {
-      fetchEvents(1, {
+      fetchEvents(actualPage, {
         field: searchParams.selectedField,
         order: searchParams.order,
-      });
+      }, searchParams);
     }
-  }, [searchParams]);
+  }, [searchParams, actualPage]);
 
   const handleChange = (index, value) => {
     const inputName = value.target.name
@@ -488,8 +488,6 @@ export default function Scheduleeventslist() {
     return (
       <>
         {events && events.map((e, index) => {
-          if (filteredEvents !== null)
-            if (filteredEvents.find((fe) => e.id === fe.id) === undefined) return <Fragment key={e.id} />;
           return (
             <tr key={e.id}>
               <td>{shortUUID(e.id)}</td>
@@ -781,7 +779,7 @@ export default function Scheduleeventslist() {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={async (p) => fetchEvents(p)}
+          onPageChange={(p) => setActualPage(p)}
           maxPages={maxPages}
         />
       </div>

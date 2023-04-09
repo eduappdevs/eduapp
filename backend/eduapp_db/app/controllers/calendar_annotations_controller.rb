@@ -38,6 +38,18 @@ class CalendarAnnotationsController < ApplicationController
         @sessions += EduappUserSession.where(subject_id: subject)
       end
       @calendar_annotations = { :globalEvents => @calendar_isGlobal, :calendarEvents => @calendarEvents, :sessions => @sessions, :colorEvents => @colorEvents }
+    elsif params[:annotation_title]
+      @calendar_annotations = CalendarAnnotation.where('annotation_title ilike ?', "%#{params[:annotation_title]}%")
+    elsif params[:id]
+      # TODO: HANDLE PERMISSIONS FOR NAME QUERIES
+      @calendar_annotations = CalendarAnnotation.where('id::text ilike ?', "%#{params[:id]}%")
+    elsif params[:annotation_description]
+      @calendar_annotations = CalendarAnnotation.where('annotation_description ilike ?', "%#{params[:annotation_description]}%")
+    elsif params[:event_author]
+      @calendar_annotations = CalendarAnnotation.joins(:user).where('users.email ilike ?', "%#{params[:event_author]}%")
+    elsif params[:subject_name]
+      # TODO: HANDLE PERMISSIONS FOR CHAINED SUBJECT QUERIES
+      @calendar_annotations = CalendarAnnotation.joins(:subject).where('subjects.name ilike ?', "%#{params[:subject_name]}%")
     else
       if !check_perms_all!(get_user_roles.perms_events)
         return
@@ -46,8 +58,15 @@ class CalendarAnnotationsController < ApplicationController
     end
 
     if !wants_event_for_calendar
-      if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
-        @calendar_annotations = @calendar_annotations.order(parse_filter_order(params[:order]))
+      order = !params[:order].nil? && JSON.parse(Base64.decode64(params[:order]))
+      if order && order["field"] != ""
+        if order["field"] == 'subject_name'
+          @calendar_annotations = @calendar_annotations.joins(:subject)
+        end
+        if order["field"] == 'event_author'
+          @calendar_annotations = @calendar_annotations.joins(:user)
+        end
+        @calendar_annotations = @calendar_annotations.order(parse_filter_order(order, {'subject_name' => 'subjects.name', 'event_author' => 'users.email'}))
       else
         @calendar_annotations = @calendar_annotations.order(annotation_title: :asc)
       end
@@ -176,6 +195,8 @@ class CalendarAnnotationsController < ApplicationController
       return
     end
     @calendar_annotation = CalendarAnnotation.new(calendar_annotation_params)
+    @calendar_annotation.user_id = @calendar_annotation.user_id || @current_user
+    @calendar_annotation.subject = @calendar_annotation.subject || Subject.where(external_id: calendar_annotation_params[:external_id]).first
 
     if @calendar_annotation.save
       render json: @calendar_annotation, status: :created, location: @calendar_annotation
@@ -214,6 +235,6 @@ class CalendarAnnotationsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def calendar_annotation_params
-    params.require(:calendar_annotation).permit(:annotation_start_date, :annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :isPop, :user_id, :subject_id)
+    params.require(:calendar_annotation).permit(:annotation_start_date, :annotation_end_date, :annotation_title, :annotation_description, :isGlobal, :isPop, :user_id, :subject_id, :external_id)
   end
 end

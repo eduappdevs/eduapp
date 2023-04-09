@@ -248,7 +248,7 @@ class EduappUserSessionsController < ApplicationController
     if !check_perms_write!(get_user_roles.perms_sessions)
       return
     end
-    subjects = Subject.where(external_id: permitted_params[:subject_id])
+    subjects = Subject.where(external_id: permitted_params[:subject_id]).all || Subject.find(permitted_params[:subject_id])
 
     if subjects.size.zero?
       render json: {errors: "No external id"}, status: :bad_request

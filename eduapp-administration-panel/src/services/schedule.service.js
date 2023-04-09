@@ -9,9 +9,12 @@ export const fetchEvents = async () => {
   return await axios.get(EVENTS, { headers: requestHeader });
 };
 
-export const pagedEvents = async (page, order) => {
+export const pagedEvents = async (page, order, searchParams) => {
+  const value = searchParams['query']
+  const attribute = searchParams['selectedField']
+  const extras = searchParams['extras']
   return await axios.get(
-    `${EVENTS}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    `${EVENTS}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}&order=${btoa(JSON.stringify(order))}${extras ? '&extras=' + extras : ''}`,
     {
       headers: requestHeader,
     }
