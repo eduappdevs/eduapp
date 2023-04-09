@@ -25,13 +25,13 @@ class CoursesController < ApplicationController
       @courses = Course.all
     end
 
-    if !is_name
+    # if !is_name #Commented this condition to allow ordering in admin
       if !params[:order].nil? && Base64.decode64(params[:order]) != "null"
         @courses = @courses.order(parse_filter_order(params[:order]))
       else
         @courses = @courses.order(name: :asc)
       end
-    end
+    # end
 
     if params[:page]
       @courses = query_paginate(@courses, params[:page])
