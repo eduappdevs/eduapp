@@ -29,29 +29,15 @@ class SubjectsController < ApplicationController
       attending_subjects = user.subjects.map { |s| s.id } || []
 
       @subjects = Subject.where(id: teaching_subjects + attending_subjects)
-    elsif params[:all_sessions]
-      #TODO: cambiar esta lógica pasarla a eventos, calendario(analizar)
-      # Tiene que devolver todos los evenos que hay hoy, sin tener que preguntar por la hora
-      @sessions = []
-      @today = Time.now.strftime("%F")
-      @todayHourNow = Time.now.strftime("%H")
+    elsif params[:all_sessions] # This is used by frontend index for showing next session
       user = User.find(current_user)
       if user.user_info.user_role.name == 'eduapp-teacher'
         @user_subjects = user.user_info.teaching_list
       else
         @user_subjects = user.subjects.pluck(:id)
       end
-      @todaySessions = []
-      for subject in @user_subjects
-        @todaySessions += EduappUserSession.where(subject_id: subject).pluck(:session_start_date)
-      end
 
-      for hour in @todaySessions
-        if (hour.split("T")[1].split(":")[0] == @todayHourNow or hour.split("T")[1].split(":")[0] >= @todayHourNow and hour.split("T")[0] == @today)
-          @sessions += EduappUserSession.where(subject_id: @user_subjects, session_start_date: hour)
-        end
-      end
-    @subjects = @sessions
+      @subjects = EduappUserSession.where("subject_id in (?) AND session_end_date > ? AND session_end_date < ?", @user_subjects, Time.now, Date.tomorrow).order(session_end_date: :asc)
     elsif params[:subject_id]
       @subjects = Subject.where(id: params[:subject_id])
     elsif params[:name]
@@ -73,20 +59,21 @@ class SubjectsController < ApplicationController
       if !check_perms_all!(get_user_roles.perms_subjects)
         return
       end
-      @subjects = Subject.all
+      @subjects = Subject
     end
 
     #if wants_info_for_calendar #Commented this condition to allow ordering in admin
+    if !params[:all_sessions]
       order = !params[:order].nil? && JSON.parse(Base64.decode64(params[:order]))
       if order && order["field"] != ""
         if order["field"] == 'course_name'
           @subjects = @subjects.joins(:course)
         end
         @subjects = @subjects.order(parse_filter_order(order,{'course_name' => 'courses.name'}))
-      else
+      elsif !@subjects.is_a?(Array)
         @subjects = @subjects.order(name: :asc)
       end
-    #end
+    end
 
     if params[:page]
       @subjects = query_paginate(@subjects, params[:page])
