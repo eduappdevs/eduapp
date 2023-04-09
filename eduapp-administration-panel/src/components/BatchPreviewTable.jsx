@@ -18,7 +18,8 @@ export default function BatchPreviewTable(props) {
   const [data, setData] = useState(null);
   const [subject, setSubject] = useState();
 
-  const confirmAndUpload = () => {
+  const confirmAndUpload = (e) => {
+    e.target.disabled=true
     data.map((x) => {
       switch (props.type) {
         case "users":

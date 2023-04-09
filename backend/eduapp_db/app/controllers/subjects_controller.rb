@@ -7,7 +7,7 @@ class SubjectsController < ApplicationController
   def index
     wants_info_for_calendar = false || params[:wants_info_for_calendar]
 
-    if params[:user_id]
+    if params[:user_id] # this is used by calendar frontend when adding event
       wants_info_for_calendar = true
       if !check_perms_query_self!(get_user_roles.perms_subjects, params[:user_id])
         return
@@ -24,8 +24,11 @@ class SubjectsController < ApplicationController
       #   end
       # end
       # @subjects = @Sessions
+      user = User.find(params[:user_id])
+      teaching_subjects = user.user_info.teaching_list || []
+      attending_subjects = user.subjects.map { |s| s.id } || []
 
-      @subjects = User.find(params[:user_id]).subjects
+      @subjects = Subject.where(id: teaching_subjects + attending_subjects)
     elsif params[:all_sessions]
       #TODO: cambiar esta lógica pasarla a eventos, calendario(analizar)
       # Tiene que devolver todos los evenos que hay hoy, sin tener que preguntar por la hora
