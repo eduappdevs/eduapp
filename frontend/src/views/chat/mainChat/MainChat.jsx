@@ -36,7 +36,8 @@ export default function MainChat() {
   const navigate = useNavigate();
 
   // eslint-disable-next-line no-unused-vars
-  const [chat, _s] = useState({});
+  // const [chat, _s] = useState({});
+  const [chat, setChat] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessages, setNewMessages] = useState([]);
   const [readOnly, setReadOnly] = useState(false);
@@ -124,10 +125,17 @@ export default function MainChat() {
     });
   };
 
+  // const findUserName = (uId) => {
+  //   return chat.chatParticipants.length === undefined
+  //     ? chat.chatParticipants.user_name
+  //     : chat.chatParticipants.find((u) => u.user.id === uId).user_name;
+  // };
+
   const findUserName = (uId) => {
-    return chat.chatParticipants.length === undefined
-      ? chat.chatParticipants.user_name
-      : chat.chatParticipants.find((u) => u.user.id === uId).user_name;
+    if(chat.chatParticipants.length === undefined) return ""; //To be fixed: logged out user. It should be maybe fetched in the server.
+    let messageSender = chat.chatParticipants.find((u) => u.user.id === uId);
+    if (messageSender === undefined) return ""; //To be fixed: logged out user. It should be maybe fetched in the server.
+    return messageSender.user_name;
   };
 
   const manageExtrasMenu = () => {
@@ -175,8 +183,9 @@ export default function MainChat() {
           cInfo.chat_name = participants.user_name;
         }
 
-        chat.chatInfo = cInfo;
-        chat.chatParticipants = participants;
+        // chat.chatInfo = cInfo;
+        // chat.chatParticipants = participants;
+        setChat({...chat, chatInfo: cInfo, chatParticipants: participants});
       });
       // Retrieve chat messages
       CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
@@ -289,6 +298,7 @@ export default function MainChat() {
                   }
                   isGroup={msg.chat_base.isGroup}
                   author={findUserName(msg.user.id)}
+                  // author={msg.user.userinfo.user_name}
                   isMsgRecent={false}
                 />
               );
@@ -308,6 +318,7 @@ export default function MainChat() {
                   }
                   isGroup={msg.chat_base.isGroup}
                   author={findUserName(msg.user.id)}
+                  // author={msg.user.userinfo.user_name}
                   isMsgRecent={true}
                 />
               );
