@@ -2,6 +2,7 @@ version: '3.1'
 
 volumes:
   eduapp_db_data:
+  eduapp_images:
 
 networks:
   common:
@@ -25,6 +26,8 @@ services:
     image: eduapp_api:latest 
     env_file:
       - ./backend/eduapp_db/.env
+    volumes:
+      - eduapp_images:/backend/public
     restart: unless-stopped
     depends_on:
       - db
