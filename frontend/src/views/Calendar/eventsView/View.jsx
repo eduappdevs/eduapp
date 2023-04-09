@@ -8,6 +8,7 @@ import { getOfflineUser } from "../../../utils/OfflineManager";
 import EditView from "./EditView";
 import useRole from "../../../hooks/useRole";
 import useLanguage from "../../../hooks/useLanguage";
+import userCan, { SESSION, UPDATE } from "../../../hooks/userCan";
 import "./views.css";
 import { ChatIcon, CamaraIcon, MortarboardIcon, ClockIcon, CircleFillIcon } from "../../../components/ui/Icons";
 
@@ -23,6 +24,7 @@ export default function View(props) {
   let isTeacher = useRole(userinfo, "eduapp-teacher");
   let isAdmin = useRole(userinfo, "eduapp-admin");
   let isStudent = useRole(userinfo, "eduapp-student");
+  let canUpdate = userinfo && userCan(userinfo, SESSION, UPDATE);
 
   const [editEvent, setEditEvent] = useState({});
 
@@ -221,7 +223,7 @@ export default function View(props) {
             className={
               isAdmin ||
                 (isTeacher &&
-                  userinfo.teaching_list.includes(props.data.subject_id))
+                  userinfo.teaching_list.includes(props.data.subject_id) && canUpdate)
                 ? "calendar-view-header-edit-button"
                 : "hidden"
             }

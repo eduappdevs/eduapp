@@ -23,7 +23,7 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import * as SUBJECT_SERVICE from "../../services/subject.service";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
-import useRole from "../../hooks/useRole";
+import userCan, { EVENT, CREATE } from "../../hooks/userCan";
 import "./calendar.css";
 
 export default function Calendar() {
@@ -36,7 +36,7 @@ export default function Calendar() {
   const user = getOfflineUser().user
 
   let userinfo = FetchUserInfo(user.id);
-  let canCreate = useRole(userinfo, ["eduapp-teacher", "eduapp-admin"]);
+  let canCreate = userinfo && userCan(userinfo, EVENT, CREATE);
 
   const getCalendar = async () => {
     let events = [];

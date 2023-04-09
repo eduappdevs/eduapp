@@ -11,6 +11,7 @@ import SubjectDropdown from "../../components/subjectSelector/SubjectDropdown";
 import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useRole from "../../hooks/useRole";
+import userCan, { RESOURCE, CREATE } from "../../hooks/userCan";
 import useLanguage from "../../hooks/useLanguage";
 import "./Resources.css";
 
@@ -27,6 +28,7 @@ export default function Resources() {
   let subjects = GetSubjects(getOfflineUser().user.id);
   let isTeacher = useRole(userInfo, "eduapp-teacher");
   let isAdmin = useRole(userInfo, "eduapp-admin");
+  let canCreate = userInfo && userCan(userInfo, RESOURCE, CREATE);
 
   const checkMediaQueries = () => {
     setInterval(() => {
@@ -142,7 +144,7 @@ export default function Resources() {
             {subjectSelected &&
             (isAdmin ||
               (isTeacher &&
-                userInfo.teaching_list.includes(subjectSelected))) ? (
+                userInfo.teaching_list.includes(subjectSelected) && canCreate)) ? (
               <div
                 className="resources__addNewResource"
                 onClick={createResource}

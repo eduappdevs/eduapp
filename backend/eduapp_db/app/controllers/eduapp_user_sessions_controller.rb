@@ -175,7 +175,7 @@ class EduappUserSessionsController < ApplicationController
                                    streaming_platform: params[:streaming_platform],
                                    resources_platform: params[:resources_platform],
                                    session_chat_id: params[:session_chat_id],
-                                   subject_id: params[:subject_id], batch_id: nil)
+                                   subject_id: params[:subject_id] || @eduapp_user_session.subject_id , batch_id: nil)
       render json: @eduapp_user_session
     else
       render json: @eduapp_user_session.errors, status: :unprocessable_entity
