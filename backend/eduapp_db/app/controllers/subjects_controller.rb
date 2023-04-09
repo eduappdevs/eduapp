@@ -76,7 +76,7 @@ class SubjectsController < ApplicationController
       @subjects = Subject.all
     end
 
-    if wants_info_for_calendar
+    #if wants_info_for_calendar #Commented this condition to allow ordering in admin
       order = !params[:order].nil? && JSON.parse(Base64.decode64(params[:order]))
       if order && order["field"] != ""
         if order["field"] == 'course_name'
@@ -86,7 +86,7 @@ class SubjectsController < ApplicationController
       else
         @subjects = @subjects.order(name: :asc)
       end
-    end
+    #end
 
     if params[:page]
       @subjects = query_paginate(@subjects, params[:page])
