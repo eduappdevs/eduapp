@@ -284,6 +284,8 @@ export default function Schedulesessionslist(props) {
             finalizedDelete("info", true, false, language.deleteAlertCompleted);
           }
           setLoadingParams({ loading: false });
+          setSelectTypeModal(false);
+          setSelectType(false);
         })
         .catch(async (e) => {
           if (e) {
@@ -291,6 +293,8 @@ export default function Schedulesessionslist(props) {
             await interceptExpiredToken(e);
           }
           setLoadingParams({ loading: false });
+          setSelectTypeModal(false);
+          setSelectType(false);
         });
     }).then(async (e) => {
       if (e) {
@@ -298,7 +302,7 @@ export default function Schedulesessionslist(props) {
         connectionAlert();
       }
     });
-  }, []);
+  }, [selectInfo]);
 
   const editSession = useCallback((e, s) => {
     switchEditState(false);
@@ -588,19 +592,23 @@ export default function Schedulesessionslist(props) {
             finalizedDelete("info", true, false, language.deleteAlertCompleted);
           }
           setLoadingParams({ loading: false });
+          setSelectTypeModal(false);
+          setSelectType(false);
         })
         .catch((e) => {
           if (e) {
             finalizedDelete("error", true, false, language.deleteAlertFailed);
           }
           setLoadingParams({ loading: false });
+          setSelectTypeModal(false);
+          setSelectType(false);
         });
     }).then((e) => {
       if (e) {
         connectionAlert();
       }
     });
-  }, []);
+  }, [idBatch]);
 
   const showModal = useCallback(async () => {
     switchEditState(false);
