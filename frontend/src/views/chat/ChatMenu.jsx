@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as CHAT_SERVICE from "../../services/chat.service";
 import { useParams } from "react-router-dom";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
 import { getOfflineUser } from "../../utils/OfflineManager";
 import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../config";
-import userCan, {CHAT, CREATE}  from "../../hooks/userCan";
+import userCan, { CHAT, CREATE } from "../../hooks/userCan";
 import ChatsAC from "../../utils/websockets/actioncable/ChatsAC";
 import Loader from "../../components/loader/Loader";
 import StandardModal from "../../components/modals/standard-modal/StandardModal";
@@ -17,13 +17,17 @@ import "./ChatMenu.css";
 
 let acManager = new ChatsAC();
 export default function ChatMenu() {
+  const [filteredChats, setFilteredChats] = useState([]);
+  const searchInput = useRef(null);
+
+
   const [chats, setChats] = useState([]);
 
   const [showPopup, setShowPopup] = useState(false);
 
   const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
-  let canCreate = userCan(userInfo, CHAT,CREATE);
+  let canCreate = userCan(userInfo, CHAT, CREATE);
 
   const getChats = async () => {
     let chats = (
@@ -41,12 +45,31 @@ export default function ChatMenu() {
     setChats(chats);
   };
 
+  const handleChange = (e) => {
+    calculateFilteredChats(e.target.value);
+  }
+
+  const calculateFilteredChats = (pattern) => {
+    if (pattern === "") {
+      setFilteredChats(chats);
+      return;
+    }
+    const results = chats.filter(c => {
+      return c.chat_info.chat_name.toLowerCase().includes(pattern.toLowerCase())
+    })
+    setFilteredChats(results);
+  }
+
   useViewsPermissions(userInfo, "chat");
   useEffect(() => {
     acManager.closeConnection();
     RequireAuth();
     getChats();
   }, []);
+
+  useEffect(() => {
+    calculateFilteredChats(searchInput.current.value);
+  }, [chats]);
 
   return (
     <>
@@ -76,7 +99,7 @@ export default function ChatMenu() {
       <div className="chat-menu-container">
         <div className="chat-search-container">
           <form action="">
-            <input type="text" />
+            <input type="text" name="search" onChange={handleChange} ref={searchInput} />
             <div className="chat-search-icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -93,11 +116,11 @@ export default function ChatMenu() {
         </div>
 
         <div className="chats-container">
-          {chats.length !== 0 ? (
+          {filteredChats.length !== 0 ? (
             <>
               <h2>{language.chats}</h2>
               <ul>
-                {chats.sort((a,b) => a.chat_info?.last_message?.send_date < b.chat_info?.last_message?.send_date).map((chat) => {
+                {filteredChats.sort((a, b) => a.chat_info?.last_message?.send_date < b.chat_info?.last_message?.send_date).map((chat) => {
                   let connectionId =
                     (chat.chat_info.isGroup ? "g" : "p") + chat.chat_info.id;
                   return (
@@ -126,7 +149,7 @@ export default function ChatMenu() {
                         {/* <p className="chat-writing">{chat.chat_info?.last_message.message}</p> */}
                       </div>
                       <p className="chat-pending-messages">
-                        <span>{ (!chat.chat_info?.self_counterpart?.last_seen && chat.chat_info?.last_message?.id) || chat.chat_info?.last_message?.send_date > chat.chat_info?.self_counterpart?.last_seen ? 'NEW' : '0'}</span>
+                        <span>{(!chat.chat_info?.self_counterpart?.last_seen && chat.chat_info?.last_message?.id) || chat.chat_info?.last_message?.send_date > chat.chat_info?.self_counterpart?.last_seen ? 'NEW' : '0'}</span>
                       </p>
                     </li>
                   );
