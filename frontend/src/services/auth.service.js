@@ -6,7 +6,7 @@ import * as NOTIFICATION_SERVICE from "./notification.service";
 
 export const USERS = `${API_URL}/users`;
 export const saveInLocalStorage = (userDetails) => {
-  if (userDetails.data.message.id == null) {
+  if (userDetails.data.message?.id == null) {
     throw new Error("error");
   }
 
