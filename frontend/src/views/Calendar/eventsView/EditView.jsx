@@ -254,7 +254,7 @@ export default function EditView(props) {
                 placeholder={props.data.title}
                 name="editTitle"
                 type="text"
-                value={editTitle}
+                defaultValue={editTitle}
                 onChange={(e) => {
                   setEditTitle(e.target.value);
                 }}
@@ -267,7 +267,7 @@ export default function EditView(props) {
                   id="editStartDate"
                   name="editStartDate"
                   type="datetime-local"
-                  value={editStartDate}
+                  defaultValue={editStartDate}
                   onChange={(e) => {
                     setEditStart(e.target.value);
                   }}
@@ -276,7 +276,7 @@ export default function EditView(props) {
                   id="editEndDate"
                   name="end"
                   type="datetime-local"
-                  value={editEndDate}
+                  defaultValue={editEndDate}
                   onChange={(e) => {
                     setEditEnd(e.target.value);
                   }}
@@ -291,7 +291,7 @@ export default function EditView(props) {
                 name="editDescription"
                 type="text"
                 maxLength="150"
-                value={editDescription}
+                defaultValue={editDescription}
                 onChange={(e) => {
                   setEditDescription(e.target.value);
                 }}

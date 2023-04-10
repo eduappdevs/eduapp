@@ -9,7 +9,7 @@ import "./eventPop.css";
  * @param {Object} data Data to display.
  */
 export default function EventPop({ show, close, data }) {
-  return data.length !== 0 ? (
+  return data && data.length !== 0 ? (
     <>
       <div
         className="notification-container"

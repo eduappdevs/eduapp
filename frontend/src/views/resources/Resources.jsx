@@ -112,7 +112,6 @@ export default function Resources() {
             placeholder={language.resources_select_subject}
             optionFilterProp="children"
             onChange={(e) => {
-              console.log(e);
               handleChangeSelector(e.split("_")[1]);
               setCurrentSubject(e.split("_")[2]);
               setShowResources(false);
@@ -142,9 +141,9 @@ export default function Resources() {
               </form>
             </div>
             {subjectSelected &&
-            (isAdmin ||
-              (isTeacher &&
-                userInfo.teaching_list.includes(subjectSelected) && canCreate)) ? (
+              (isAdmin ||
+                (isTeacher &&
+                  userInfo.teaching_list.includes(subjectSelected) && canCreate)) ? (
               <div
                 className="resources__addNewResource"
                 onClick={createResource}
@@ -173,69 +172,67 @@ export default function Resources() {
                     resourcesFilter === ""
                   ) {
                     return (
-                      <>
-                        <li
-                          key={"res" + data.name + subjectSelected}
+                      <li
+                        key={"res" + data.name + subjectSelected}
+                        id={"res" + data.name + subjectSelected}
+                        className="resources resourceitem"
+                        onClick={() => {
+                          window.location.href = "/resource/" + data.id;
+                        }}
+                      >
+                        <div
                           id={"res" + data.name + subjectSelected}
-                          className="resources resourceitem"
-                          onClick={() => {
-                            window.location.href = "/resource/" + data.id;
-                          }}
+                          className="resource-name-container"
                         >
-                          <div
+                          <span
                             id={"res" + data.name + subjectSelected}
-                            className="resource-name-container"
+                            className="resource-name"
                           >
-                            <span
-                              id={"res" + data.name + subjectSelected}
-                              className="resource-name"
-                            >
-                              {data.name}
-                            </span>
-                          </div>
-                          <div className="resourceInfo-container">
-                            <div className="resourceInfo__creationDate">
-                              <div className="resourceInfo__creationDate__icon">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-clock-fill"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
-                                </svg>
-                              </div>
-                              <div className="resourceInfo__creationDate__content">
-                                <div className="resourceInfo__cretionDate_date">
-                                  {data.created_at.split("T")[0]}
-                                </div>
-                                <div className="resourceInfo__cretionDate_time">
-                                  {data.created_at.split("T")[1].split(".")[0]}
-                                </div>
-                              </div>
+                            {data.name}
+                          </span>
+                        </div>
+                        <div className="resourceInfo-container">
+                          <div className="resourceInfo__creationDate">
+                            <div className="resourceInfo__creationDate__icon">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-clock-fill"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                              </svg>
                             </div>
-                            <div className="resourceInfo__createdBy">
-                              <div className="resourceInfo__createdBy__icon">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-person-fill"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-                                </svg>
+                            <div className="resourceInfo__creationDate__content">
+                              <div className="resourceInfo__cretionDate_date">
+                                {data.created_at.split("T")[0]}
                               </div>
-                              <div className="resourceInfo__createdBy__content">
-                                {data.user.email}
+                              <div className="resourceInfo__cretionDate_time">
+                                {data.created_at.split("T")[1].split(".")[0]}
                               </div>
                             </div>
                           </div>
-                        </li>
-                      </>
+                          <div className="resourceInfo__createdBy">
+                            <div className="resourceInfo__createdBy__icon">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-person-fill"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                              </svg>
+                            </div>
+                            <div className="resourceInfo__createdBy__content">
+                              {data.user.email}
+                            </div>
+                          </div>
+                        </div>
+                      </li>
                     );
                   }
                   return true;

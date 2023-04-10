@@ -64,7 +64,7 @@ export default function App() {
             });
             await db.getStorageInstance("eduapp-calendar-last-event", "last");
             let key = await db.getStoreKeys();
-            if (key[0] !== e.data[e.data.length - 1].id) {
+            if (key[0] && key[0] !== e.data[e.data.length - 1]?.id) {
               setCalendarInfo(e.data[e.data.length - 1]);
               setShowNotification(true);
             } else {
