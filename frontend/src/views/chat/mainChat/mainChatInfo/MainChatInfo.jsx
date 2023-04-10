@@ -169,7 +169,7 @@ export default function MainChatInfo() {
   const handleEmptyContext = async () => {
     const requestedId = window.location.pathname.split("/")[3].substring(1);
 
-    if (cInfoCtx === null || requestedId !== cInfoCtx.chatInfo.id) {
+    if (cInfoCtx == null || cInfoCtx.chatInfo == null || requestedId !== cInfoCtx.chatInfo.id) {
       asynchronizeRequest(async () => {
         setChat(
           fixPrivateChats((await CHAT_SERVICE.fetchChatInfo(requestedId)).data)
@@ -226,7 +226,7 @@ export default function MainChatInfo() {
       );
       return () => clearTimeout(searchTimeout);
     }
-  }, [chat]);
+  }, [chat, isEditingName]);
 
   useEffect(() => {
     if (newParticipants.length > 0) {
@@ -248,7 +248,7 @@ export default function MainChatInfo() {
       })
     }
 
-  }, [newParticipants])
+  }, [newParticipants, chat])
 
 
   return (
@@ -344,7 +344,6 @@ export default function MainChatInfo() {
                                   setNewParticipants([...newParticipants, u.user.id])
                                 }
                               }
-                              debugger
                               setParticipants([...participants, u]);
                               if (suggestedUsers.indexOf(u) > -1)
                                 suggestedUsers.splice(
