@@ -30,6 +30,8 @@ export default function LoginAuth() {
       userData.append("user[password]", password);
 
       await AUTH_SERVICE.login(userData);
+      // This shouldn't be necessary. But the one in saveInLocalStorage() in auth.service.js is not working
+      window.location.reload();
     } catch (error) {
       setLoginError(true);
       console.log("here", error);
