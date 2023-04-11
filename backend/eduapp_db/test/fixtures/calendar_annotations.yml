@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  annotation_date: MyString
+  annotation_name: MyString
+  annotation_description: MyString
+  isGlobal: false
+  user_id: 1
+
+two:
+  annotation_date: MyString
+  annotation_name: MyString
+  annotation_description: MyString
+  isGlobal: false
+  user_id: 1

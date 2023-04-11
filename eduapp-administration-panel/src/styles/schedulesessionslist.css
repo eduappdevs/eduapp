@@ -1,0 +1,32 @@
+table {
+	font-family: arial, sans-serif;
+	border-collapse: collapse;
+}
+
+td,
+th {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+}
+
+tr:nth-child(even) {
+	background-color: #dddddd;
+}
+
+.add-session {
+	display: flex;
+	flex-direction: row;
+}
+
+.actionsAndSubmit {
+	display: flex;
+	flex-direction: row;
+}
+
+.subjectButton>select {
+	border: .5px solid black;
+	border-radius: 3px;
+	text-align: left;
+}
+

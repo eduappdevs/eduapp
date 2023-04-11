@@ -1,0 +1,18 @@
+{
+    "name": "ResourcesReport",
+    "engine": "handlebars",
+    "recipe": "chrome-pdf",
+    "data": null,
+    "shortid": "DeQzGQQxBD",
+    "chrome": {
+        "printBackground": true
+    },
+    "creationDate": {
+        "$$date": 1642980202230
+    },
+    "modificationDate": {
+        "$$date": 1645908236974
+    },
+    "_id": "hV6Hi0Jsvra7M9y3",
+    "$entitySet": "templates"
+}

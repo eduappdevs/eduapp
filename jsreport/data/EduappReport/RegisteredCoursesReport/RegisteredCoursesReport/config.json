@@ -1,0 +1,17 @@
+{
+    "name": "RegisteredCoursesReport",
+    "engine": "handlebars",
+    "recipe": "chrome-pdf",
+    "shortid": "w7uslyGPM",
+    "chrome": {
+        "printBackground": true
+    },
+    "creationDate": {
+        "$$date": 1645911060761
+    },
+    "modificationDate": {
+        "$$date": 1646086883470
+    },
+    "_id": "JXAF8dQXpeFG9Ux8",
+    "$entitySet": "templates"
+}

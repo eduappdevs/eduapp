@@ -1,0 +1,19 @@
+FROM node:alpine as builder
+
+WORKDIR /frontend
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+# RUN rm .env
+# RUN mv docker.env .env
+
+RUN npm run build
+
+# Change to frontend port
+EXPOSE 8443
+
+CMD [ "node", "server/server.js" ]

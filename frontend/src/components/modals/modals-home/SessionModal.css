@@ -1,0 +1,123 @@
+ .ModalSessionAdd__main {
+ 	position: fixed;
+ 	z-index: 99999999999;
+ 	top: 0;
+ 	left: 0;
+ 	height: 100vh;
+ 	width: 100vw;
+ }
+
+ .ModalSessionEdit__main {
+ 	position: fixed;
+ 	z-index: 99999999999;
+ 	top: 0;
+ 	left: 0;
+ 	height: 100vh;
+ 	width: 100vw;
+ }
+
+ .ModalSession__hidden {
+ 	display: none !important;
+ 	opacity: 0;
+ }
+
+ .home__addForm>.informationForm>.addFormContent>div {
+ 	margin-bottom: 10%;
+ 	margin-top: 5%;
+ }
+
+ .home__addForm>.informationForm {
+ 	background-color: var(--backgroundColor);
+ 	padding: 15px;
+ 	border-radius: 20px;
+ 	padding: 5%;
+ }
+
+ .home__Add>.home__buttonadd {
+ 	display: flex;
+ 	align-items: center;
+ 	justify-content: center;
+ 	margin-bottom: 5%;
+ }
+
+ .home__addForm>.informationForm>.buttonClose {
+ 	margin-left: 90%;
+ 	z-index: 1000;
+ }
+
+ .addFormContent>div>input {
+ 	margin-top: 10%;
+ 	border: none;
+ 	height: 2.5em;
+ 	width: 100%;
+ 	border-radius: 10px;
+ 	box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
+ 	text-indent: 10px;
+ }
+
+ .addFormContent>div>input:focus {
+ 	outline: none;
+ }
+
+ .timeInputs {
+ 	margin-top: 8px;
+ 	border: none;
+ 	height: 2.5em;
+ 	width: 100%;
+ 	display: flex;
+ 	overflow: hidden;
+ 	flex-direction: row;
+ 	border-radius: 10px;
+ 	box-shadow: 0 0px 10px rgba(0, 0, 0, 0.231);
+ 	text-indent: 10px;
+ }
+
+ .timeInputs>input {
+ 	flex: 1;
+ 	width: 50%;
+ 	border: none;
+ 	padding: 3px;
+ }
+
+ .timeInputs>input:first-child {
+ 	border-right: 1px solid var(--blue);
+ }
+
+ .timeInputs>input:focus {
+ 	outline: none;
+ }
+
+ .home__buttonSubmit {
+ 	z-index: 1000;
+ 	padding: 10px;
+ 	margin-top: 20px;
+ 	border: none;
+ 	border-radius: 25px;
+ 	background-color: var(--orange);
+ 	color: #ffff;
+ 	width: 20vw;
+ 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.472);
+ 	font-family: "Consolas";
+ 	font-weight: 900;
+ 	font-size: 100%;
+ 	transition: all 0.2s;
+ 	cursor: pointer;
+ }
+
+ .schedule {
+ 	display: flex;
+ 	flex-direction: column;
+ }
+
+ .timeLabels {
+ 	width: 100%;
+ 	display: flex;
+ 	flex-direction: row;
+ 	margin-top: 10px;
+ }
+
+ .timeLabels>label {
+ 	flex: 1;
+ 	width: 50%;
+ 	text-align: center;
+ }

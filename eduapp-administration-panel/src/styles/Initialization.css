@@ -1,0 +1,86 @@
+.init-container {
+  background-color: var(--orange);
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+  align-items: center;
+  font-family: Consolas;
+  height: 100vh;
+  color: white;
+}
+
+.init-logo {
+  width: 20%;
+  margin-top: 50px;
+}
+
+.decoration-svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1;
+}
+
+.init-form {
+  width: 40%;
+  min-width: 400px;
+  z-index: 99;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-size: 120%;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0px 20px rgba(19, 19, 19, 0.247);
+}
+
+.init-form > h2 {
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.init-form-input {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.init-form-input > label {
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.init-form-input > input {
+  margin-left: 50px;
+  font-family: Consolas;
+  padding: 10px;
+  padding-right: 50px;
+  color: white;
+}
+
+.init-form-input > input::placeholder {
+  color: white;
+}
+
+.init-container > h2 {
+  text-align: center;
+  font-size: 3rem;
+  margin: 0 25vw;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.init-container > p {
+  text-align: center;
+  font-size: 1.3rem;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.init-form-button {
+  margin-top: 20px;
+  background-color: var(--blue);
+}

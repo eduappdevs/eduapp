@@ -1,0 +1,45 @@
+.googleButton {
+	margin-top: 20px;
+	border-radius: 20px;
+	overflow: hidden;
+	transform: scale(0.9);
+	text-align: center;
+}
+
+.googleButton>button>span {
+	padding: 0 10px 0 0px !important;
+	font-family: Consolas;
+}
+
+.googleButton>button>div {
+	margin-right: 0 !important;
+}
+
+.googleUnlink {
+	background-color: white;
+	color: var(--blue);
+	padding: 8px;
+	cursor: pointer;
+	font-weight: 900;
+}
+
+.unlinkGoogle {
+	border-radius: 20px;
+	background-color: white;
+	color: var(--blue);
+	margin-top: 10px;
+	padding: 10px 60px;
+
+}
+
+.unlinkGoogle>span {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.googleid-span {
+	font-size: 11px;
+	padding: 10px;
+	opacity: 0.5;
+}

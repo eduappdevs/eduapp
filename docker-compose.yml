@@ -1,0 +1,63 @@
+version: '3.1'
+
+volumes:
+  eduapp_db_data:
+  eduapp_images:
+  eduapp_storage:
+
+networks:
+  common:
+    driver: bridge
+
+services:
+  db:
+    image: postgres:14
+    env_file:
+      - ./backend/eduapp_db/postgres.docker.env
+    volumes:
+      - eduapp_db_data:/var/lib/postgresql/data/pgdata
+    # ports:          # Comment this 2 lines in production
+    #   - "5432:5432" # It's usefull only to access to the database with pgAdmin
+    restart: unless-stopped
+    networks:
+      - common
+  api:
+    build:
+      context: ./backend/eduapp_db
+    image: eduapp_api:latest 
+    env_file:
+      - ./backend/eduapp_db/.env
+    volumes:
+      - eduapp_images:/backend/public
+      - eduapp_storage:/backend/storage
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "3010:3010" # Change the first number for different port
+    links:
+      - "db:db"
+    networks:
+      - common
+  app:
+    build:
+      context: ./frontend
+    image: eduapp_app:latest
+    env_file:
+      - ./frontend/.env
+    restart: unless-stopped
+    ports:
+      - "8443:8443" # Change the first number for different port
+  admin:
+    build:
+      context: ./eduapp-administration-panel
+    image: eduapp_admin:latest
+    restart: unless-stopped
+    env_file:
+      - ./eduapp-administration-panel/.env
+    ports:
+      - "4010:4010" # Change the first number for different port
+    networks:
+      - common
+
+  

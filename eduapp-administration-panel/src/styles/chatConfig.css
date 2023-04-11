@@ -1,0 +1,81 @@
+.add-chat {
+    display: flex;
+    flex-direction: row;
+}
+
+.actionsAndSubmit {
+    display: flex;
+    flex-direction: row;
+}
+
+.chatButton>select {
+    border: .5px solid black;
+    border-radius: 3px;
+    text-align: left;
+}
+
+.contents-continer-button-alert-delete {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.contents-continer-button-alert-delete>p {
+    border: 1px solid rgb(111, 95, 95);
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+
+#delete_contents {
+    padding: 2%;
+    margin-right: 2em;
+}
+
+#close_alert {
+    padding: 2% 3% 2% 3%;
+}
+
+
+.chat-table-info {
+    height: auto;
+}
+
+/* .chat-table-info>table>thead {
+    display: block;
+    flex-direction: row;
+} */
+
+.chat-table-info>table>thead>tr {
+    /* display: flex;
+    flex-direction: row; */
+    border: 1px solid #dddddd76;
+    text-align: left;
+}
+
+/* .chat-table-info>table>thead>tr>th {
+    flex: 1;
+} */
+
+.chat-table-info>table>tbody {
+    /* display: flex;
+    flex-direction: column; */
+    justify-content: left;
+    /* height: 350px; */
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* .chat-table-info>table>tbody>tr {
+    display: flex;
+    flex-direction: row;
+} */
+
+.chat-table-info>table>tbody>tr>td {
+    flex: 1;
+}
+
+.chat-table-info>table>tbody>tr:nth-child(even) {
+    background-color: #dddddd;
+}

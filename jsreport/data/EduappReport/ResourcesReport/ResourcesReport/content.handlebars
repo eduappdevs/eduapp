@@ -1,0 +1,74 @@
+<html>
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <style>
+        {{asset "/EduappReport/ResourcesReport/styles.css"}}
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+</head>
+
+<body>
+    <div class="WrapperHeader">
+        <div class="ContentHeader">
+            <img src="{{asset "/EduappReport/ResourcesReport/EduappLogo.png" "dataURI"}}" width="40" height="40" />
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Eduapp Resources Report</h1>
+
+        <ul class="responsive-table">
+            <li class="table-header">
+                <div class="col col-1">Name</div>
+                <div class="col col-2">Description</div>
+                <div class="col col-3">firstfile</div>
+                <div class="col col-4">secondfile</div>
+                <div class="col col-1">thirdfile</div>
+                <div class="col col-2">createdBy</div>
+            </li>
+            {{#each data.resources}}
+                <li class="table-row">
+                    <div class="col col-1">{{name}}</div>
+                    <div class="col col-2">{{description}}</div>
+                    <div class="col col-3">{{#if firstfile}} Yes {{else}} No {{/if}}</div>
+                    <div class="col col-4">{{#if secondfile}} Yes {{else}} No {{/if}}</div>
+                    <div class="col col-1">{{#if thirdfile}} Yes {{else}} No {{/if}}</div>
+                    <div class="col col-2">{{createdBy}}</div>
+                </li>
+            {{/each}}
+        </ul>
+
+        <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+        <script>
+            var yValues = [{{data.chart_values}}];
+            var xLabels = "{{data.chart_labels}}".split(",");
+            var barColors = ["purple","pink","red","blue","brown","orange","green"];
+
+            new Chart("myChart", {
+                type: "pie",
+                data: {
+                    labels: xLabels,
+                    datasets: [{
+                        backgroundColor: barColors,
+                        data: yValues
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: "Cantidad de recursos hechos por profesor",
+                        fontSize: 35,
+                        color: "black"
+                    },
+                    animation: {
+                        duration: 0
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>
