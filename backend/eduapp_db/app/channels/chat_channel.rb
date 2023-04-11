@@ -47,7 +47,8 @@ class ChatChannel < ApplicationCable::Channel
             body: data["message"],
             user: user.user_name,
             icon: user.profile_image,
-            privKey: current_chat.private_key
+            url: "#{ENV.fetch("REACT_APP_FRONTEND_ENDPOINT")}/chat/#{current_chat.isGroup ? "g" : "p"}#{current_chat.id}",
+            privKey: current_chat.private_key,
           }
           subcriptions.each do |subcription|
             begin
