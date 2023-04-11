@@ -80,7 +80,7 @@ export default function Scheduleeventslist() {
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(text);
-  }, []);
+  }, [actualPage]);
 
   const finalizedCreate = useCallback((type, icon, txt, confirmDel) => {
     fetchEvents(actualPage);
@@ -89,7 +89,7 @@ export default function Scheduleeventslist() {
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(txt);
-  }, []);
+  }, [actualPage]);
 
   const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
     setPopupType(type);
@@ -98,7 +98,7 @@ export default function Scheduleeventslist() {
     setPopupText(text);
     setIsConfirmDelete(confirmDel);
     fetchEvents(actualPage);
-  }, []);
+  }, [actualPage]);
 
   const fetchSubjects = useCallback(() => {
     API.asynchronizeRequest(function () {
@@ -230,7 +230,7 @@ export default function Scheduleeventslist() {
         connectionAlert();
       }
     });
-  }, []);
+  }, [isGlobal, isPop]);
 
   const isGlobalEvent = useCallback(() => {
     setIsGlobal(document.getElementById("e_isGlobal").checked);
@@ -384,7 +384,7 @@ export default function Scheduleeventslist() {
         await interceptExpiredToken(e);
       }
     });
-  }, []);
+  }, [subjects]);
 
   const closeEditEvent = (e, index) => {
     let disable = 1;

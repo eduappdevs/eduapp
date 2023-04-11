@@ -74,7 +74,7 @@ export default function Schedulesessionslist(props) {
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(text);
-  }, []);
+  }, [actualPage]);
 
   const finalizedCreate = useCallback((type, icon, txt, confirmDel) => {
     fetchSessions(actualPage);
@@ -83,7 +83,7 @@ export default function Schedulesessionslist(props) {
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(txt);
-  }, []);
+  }, [actualPage]);
 
   const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
     switchEditState(false);
@@ -93,14 +93,14 @@ export default function Schedulesessionslist(props) {
     setPopupText(text);
     setIsConfirmDelete(confirmDel);
     fetchSessions(actualPage);
-  }, []);
+  }, [actualPage]);
 
   const connectionAlert = useCallback(async () => {
     switchEditState(false);
     setPopup(true);
     setPopupText(language.connectionAlert);
     setPopupIcon("error");
-  }, []);
+  }, [language]);
 
   const fetchSessions = useCallback(async (page, order = null, searchParams) => {
     API.asynchronizeRequest(() => {
