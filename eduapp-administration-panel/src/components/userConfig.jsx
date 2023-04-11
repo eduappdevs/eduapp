@@ -373,7 +373,7 @@ export default function UserConfig() {
         console.log("Sent notification.");
       }
     }
-  }, []);
+  }, [notifyMsg]);
 
   const selectAll = useCallback(() => {
     setAllSelected(!allSelected);
