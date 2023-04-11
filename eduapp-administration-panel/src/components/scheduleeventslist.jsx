@@ -230,7 +230,7 @@ export default function Scheduleeventslist() {
         connectionAlert();
       }
     });
-  }, []);
+  }, [isGlobal, isPop]);
 
   const isGlobalEvent = useCallback(() => {
     setIsGlobal(document.getElementById("e_isGlobal").checked);
@@ -272,7 +272,7 @@ export default function Scheduleeventslist() {
     });
   }, []);
 
-  const editEvent = useCallback((e, s) => {
+  const editEvent = useCallback(async (e, s) => {
     switchEditState(false);
     let inputName = document.getElementById("inputName_" + s.id).value;
     let inputStartDate = document.getElementById(
@@ -323,18 +323,15 @@ export default function Scheduleeventslist() {
         "inputSubjectID_" + s.id
       ).value;
 
+      editIsGlobal = document.getElementById("inputIsGlobal_" + s.id).checked;
+      editIsPop = document.getElementById("inputIsPop_" + s.id).checked;
+
       if (inputSubject.split("_")[0] !== s.subject_id) {
-        editSubject = inputSubject.split("_")[0];
+        editSubject = !editIsGlobal
+        ? inputSubject.split("_")[0]
+        : (await SUBJECTSERVICE.getGeneralSubject()).data[0].id;
       } else {
         editSubject = s.subject_id;
-      }
-      let inputPop = document.getElementById("inputIsPop_" + s.id).checked;
-      if (inputSubject.split("_")[1] !== "GEN") {
-        editIsGlobal = false;
-        editIsPop = false;
-      } else {
-        editIsGlobal = true;
-        editIsPop = inputPop;
       }
     }
 
@@ -412,7 +409,7 @@ export default function Scheduleeventslist() {
   const showEditOptionEvent = (e, index) => {
     let disable = 1;
     while (disable < 9) {
-      if (disable !== 3 && disable !== 6) {
+      if (disable !== 3) {
         e.target.parentNode.parentNode.childNodes[disable].childNodes[0].disabled = false;
       }
       disable += 1;
@@ -470,16 +467,22 @@ export default function Scheduleeventslist() {
     newEvents[index][inputName] = newValue;
     setEvents(newEvents);
   }
+  const handleCheckChange = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.checked
+    const newEvents = [...events];
+    newEvents[index][inputName] = newValue;
+    setEvents(newEvents);
+  }
 
   const handleChangeSubject = (index, value) => {
     const inputName = value.target.name
     const newValue = value.target.value
-    subjects.map(s => {
-      if (s.id == newValue) {
+    subjects.forEach(s => {
+      if (s.id === newValue) {
         const newEvents = [...events];
         newEvents[index][inputName] = s;
         setEvents(newEvents);
-        return
       }
     })
   }
@@ -535,11 +538,15 @@ export default function Scheduleeventslist() {
                 />
               </td>
               <td style={{ textAlign: "center" }}>
-                {e.isGlobal ? (
-                  <input type="checkbox" disabled checked />
-                ) : (
-                  <input type="checkbox" disabled />
-                )}
+
+                <input
+                  id={`inputIsGlobal_${e.id}`}
+                  name="isGlobal"
+                  type="checkbox"
+                  disabled
+                  checked={e.isGlobal}
+                  onChange={(ev) => handleCheckChange(index, ev)}
+                  />
               </td>
               <td>
                 <select id={`inputSubjectID_${e.id}`} disabled
@@ -563,12 +570,11 @@ export default function Scheduleeventslist() {
               <td style={{ textAlign: "center" }}>
                 <input
                   id={`inputIsPop_${e.id}`}
+                  name="isPop"
                   type="checkbox"
                   disabled
-                  checked={changeIsPop === false ? e.isPop : newIsPop}
-                  onChange={(ev) => {
-                    handleChangeIsPop(e.id, ev.target.checked);
-                  }}
+                  checked={e.isPop}
+                  onChange={(ev) => handleCheckChange(index, ev)}
                 />
               </td>
               <td
