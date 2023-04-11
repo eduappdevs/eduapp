@@ -21,9 +21,15 @@ class ChatParticipantsController < ApplicationController
         chatBase = ChatBase.find(chatp.chat_base_id)
         lastMessage = chatBase.chat_messages.last || ChatMessage.new(send_date: chatBase.created_at)
         chatSelfCounterpart = chatBase.chat_participants.where({user_id: params[:chats_for]}).first
+        if chatSelfCounterpart.last_seen.present?
+          numMessages = chatBase.chat_messages.where("created_at > ? AND user_id != ?", chatSelfCounterpart.last_seen, current_user).count
+        else
+          numMessages = chatBase.chat_messages.count
+        end
         chat = chatBase.serializable_hash(:except => [:private_key, :public_key, :created_at, :updated_at]).merge({
           last_message: lastMessage.serializable_hash,
-          self_counterpart: chatSelfCounterpart.serializable_hash
+          self_counterpart: chatSelfCounterpart.serializable_hash,
+          num_messages: numMessages
         })
         if chat["chat_name"].include?("private_chat_")
           chat_counterpart = ChatParticipant.where(chat_base_id: chat["id"]).where.not(user_id: params[:chats_for]).first
