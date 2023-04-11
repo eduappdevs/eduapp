@@ -67,7 +67,6 @@ self.addEventListener("message", (event) => {
 
 
 self.addEventListener('push', e => {
-
   const data = JSON.parse( e.data.text() );
   const title = data.title;
   // const body = EncryptionUtils.decrypt(data.body, atob(data.privKey))
@@ -75,7 +74,7 @@ self.addEventListener('push', e => {
   const options = {
       openUrl: '/',
       data: {
-          url: '/',
+          url: data.url,
           id: data.user
       }
   };
