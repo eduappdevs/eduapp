@@ -16,7 +16,7 @@ import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import useLanguage from "../../../hooks/useLanguage";
 import { MainChatInfoCtx } from "../../../hooks/MainChatInfoContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../../config";
 import getPrefixedImageURL from "../../../utils/UrlImagePrefixer";
 
@@ -32,7 +32,7 @@ let db = new IDBManager();
 
 export default function MainChat() {
   const [chatBottomParams, setChatBottomParams] = useContext(ChatBottomCtx);
-  const { chatId } = useParams()
+  const { chatId } = useParams();
 
   const language = useLanguage();
   // eslint-disable-next-line no-unused-vars
@@ -193,8 +193,8 @@ export default function MainChat() {
 
   useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
   useEffect(() => {
-    acInstance.chatCode = window.location.pathname.split("/")[2];
-    let chatId = acInstance.chatCode.substring(1);
+    acInstance.chatCode = chatId;
+    let filtered_chatId = chatId.substring(1)
 
     // Generate websocket connection to chat room
     acInstance.generateChannelConnection(acInstance.chatCode).then(async () => {
