@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState, useMemo, useCallback, useRef } from "react";
 import * as API from "../API";
 import { interceptExpiredToken } from "../utils/OfflineManager";
 import * as INSTITUTIONSERVICES from "../services/institution.service";
@@ -13,8 +13,10 @@ import { getCourseFields } from "../constants/search_fields";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import ExtraFields from "./ExtraFields";
 import "../styles/courseConfig.css";
+import { LoaderCtx } from "../hooks/LoaderContext";
 
 export default function CourseConfig() {
+  const [loadingParams, setLoadingParams] = useContext(LoaderCtx);
   const [language] = useContext(LanguageCtx);
 
   const [courses, setCourses] = useState(null);
@@ -24,15 +26,14 @@ export default function CourseConfig() {
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
 
-  const [changeName, setChangeName] = useState(false);
-  const [newName] = useState();
-
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const [popupIcon, setPopupIcon] = useState("");
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
+
+  const courseBeforeEditing = useRef(null);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   // const filteredCourses = useFilter(
@@ -65,8 +66,10 @@ export default function CourseConfig() {
     setPopupIcon("error");
   };
 
-  const showEditOptionCourse = async (e) => {
+  const showEditOptionCourse = (e, index) => {
     e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = false;
+    courseBeforeEditing.current = { ...courses[index] };
+
     let num = 0;
     while (num < 4) {
       e.target.parentNode.childNodes[num].style.display === ""
@@ -74,15 +77,20 @@ export default function CourseConfig() {
           ? (e.target.parentNode.childNodes[num].style.display = "block")
           : (e.target.parentNode.childNodes[num].style.display = "none")
         : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
+          ? (e.target.parentNode.childNodes[num].style.display = "none")
+          : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
   };
 
-  const closeEditCourse = async (e) => {
+  const closeEditCourse = (e, index) => {
     e.preventDefault();
     e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = true;
+
+    let auxCourses = [...courses];
+    auxCourses[index] = { ...courseBeforeEditing.current };
+    setCourses(auxCourses);
+
     let num = 0;
     while (num < 4) {
       e.target.parentNode.childNodes[num].style.display === "block"
@@ -108,67 +116,61 @@ export default function CourseConfig() {
     setPopupText(text);
   };
 
-  const finalizedDelete = (type, icon, text, confirmDel) => {
+  const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
+    switchEditState(false);
     setPopupType(type);
     setPopupIcon(icon);
     setPopup(true);
     setPopupText(text);
     setIsConfirmDelete(confirmDel);
     fetchCoursePage(actualPage);
-    switchEditState(false);
-  };
+  }, []);
 
-  const editCourse = async (e, c) => {
-    e.preventDefault();
-    switchEditState(false);
-    let value = document.getElementById("inputName_" + c.id).value;
-    if (value.value !== "") {
-      API.asynchronizeRequest(function () {
-        COURSESERVICE.editCourse({
-          id: c.id,
-          name: value,
-          institutions_id: c.institution_id,
+  const editCourse = useCallback(async (e, course) => {
+    API.asynchronizeRequest(function () {
+      COURSESERVICE.editCourse({
+        id: course.id,
+        name: course.name,
+        institution_id: course.institution_id,
+      })
+        .then((error) => {
+          if (error) {
+            let num = 0;
+            while (num < 4) {
+              e.target.parentNode.childNodes[num].style.display === "block"
+                ? (e.target.parentNode.childNodes[num].style.display = "none")
+                : (e.target.parentNode.childNodes[num].style.display = "block");
+              num += 1;
+            }
+            e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = true;
+            finalizedEdit(
+              "info",
+              true,
+              true,
+              language.editAlertCompleted,
+              false
+            );
+          }
         })
-          .then((x) => {
-            if (x) {
-              let num = 0;
-              while (num < 4) {
-                e.target.parentNode.childNodes[num].style.display === "block"
-                  ? (e.target.parentNode.childNodes[num].style.display = "none")
-                  : (e.target.parentNode.childNodes[num].style.display =
-                      "block");
-                num += 1;
-              }
-              e.target.parentNode.parentNode.childNodes[1].childNodes[0].disabled = true;
-              finalizedEdit(
-                "info",
-                true,
-                true,
-                language.editAlertCompleted,
-                false
-              );
-            }
-          })
-          .catch(async (error) => {
-            if (error) {
-              await interceptExpiredToken(error);
-              finalizedEdit(
-                "error",
-                true,
-                true,
-                language.editAlertFailed,
-                false
-              );
-            }
-          });
-      }).then(async (x) => {
-        if (x) {
-          await interceptExpiredToken(e);
-          connectionAlert();
-        }
-      });
-    }
-  };
+        .catch(async (error) => {
+          if (error) {
+            await interceptExpiredToken(error);
+            finalizedEdit(
+              "error",
+              true,
+              true,
+              language.editAlertFailed,
+              false
+            );
+          }
+        });
+    }).then(async (error) => {
+      if (error) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
+    });
+  }, []);
 
   const fetchInstitutions = () => {
     API.asynchronizeRequest(function () {
@@ -233,9 +235,9 @@ export default function CourseConfig() {
                 course_id: x.data.id,
               })
                 .then((e) => {
-                  if (e) 
+                  if (e)
                     finalizedCreate(language.creationCompleted, "info");
-                  
+
                 })
                 .catch(async (e) => {
                   if (e) {
@@ -264,10 +266,10 @@ export default function CourseConfig() {
     }
   };
 
-  const confirmDeleteEvent = async (id) => {
-    finalizedDelete("warning", true, language.deleteAlert, true);
+  const confirmDeleteEvent = useCallback(async (id) => {
+    finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
-  };
+  }, []);
 
   const deleteCourse = (id) => {
     switchEditState(true);
@@ -279,8 +281,8 @@ export default function CourseConfig() {
               finalizedDelete(
                 "info",
                 true,
-                language.deleteAlertCompleted,
-                false
+                false,
+                language.deleteAlertCompleted
               );
             }
           })
@@ -290,8 +292,8 @@ export default function CourseConfig() {
               finalizedDelete(
                 "error",
                 true,
-                language.deleteAlertFailed,
-                false
+                false,
+                language.deleteAlertFailed
               );
             }
           });
@@ -302,8 +304,8 @@ export default function CourseConfig() {
               finalizedDelete(
                 "info",
                 true,
-                language.deleteAlertCompleted,
-                false
+                false,
+                language.deleteAlertCompleted
               );
               fetchCoursePage(actualPage);
             }
@@ -314,8 +316,8 @@ export default function CourseConfig() {
               finalizedDelete(
                 "error",
                 true,
-                language.deleteAlertFailed,
-                false
+                false,
+                language.deleteAlertFailed
               );
             }
           });
@@ -328,13 +330,136 @@ export default function CourseConfig() {
     });
   };
 
-  const handleChange = (id) => {
-    setChangeName(true);
-    return document.getElementById("inputName_" + id).value;
-  };
+  const handleChange = (index, value) => {
+    const inputName = value.target.name
+    const newValue = value.target.value
+    const newCourses = [...courses];
+    newCourses[index][inputName] = newValue;
+    setCourses(newCourses);
+  }
+
+  const memoizedCourses = useMemo(() => {
+    return (
+      <>
+        {courses && courses.map((course, index) => {
+          // if (filteredCourses !== null)
+          //   if (
+          //     filteredCourses.find((fc) => course.id === fc.id) ===
+          //     undefined
+          //   )
+          //     return <Fragment key={course.id} />;
+          return (
+            <tr key={course.id}>
+              <td>
+                <input disabled type="text" value={course.id} />
+              </td>
+              <td>
+                <input
+                  id={`inputName_${course.id}`}
+                  name="name"
+                  disabled
+                  type="text"
+                  value={course.name}
+                  onChange={(event) => handleChange(index, event)}
+                />
+              </td>
+              <td>
+                <input
+                  disabled
+                  type="text"
+                  value={course.institution.name}
+                />
+              </td>
+              <td style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              >
+                {/* <ExtraFields table="courses" id={course.id} /> */}
+                <button
+                  style={{ marginRight: "5px" }}
+                  onClick={() => confirmDeleteEvent(course.id)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-trash3"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                  </svg>
+                </button>
+                <button
+                  style={{ marginRight: "5px" }}
+                  onClick={(e) => showEditOptionCourse(e, index)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-pencil-square"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  style={{
+                    marginRight: "5px", display: "none"
+                  }}
+                  onClick={(e) => editCourse(e, course)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-check2"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                  </svg>
+                </button>
+                <button
+                  style={{ display: "none" }}
+                  onClick={(e) => closeEditCourse(e, index)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-x-lg"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          );
+        })}
+      </>
+    )
+  }, [courses])
 
   useEffect(() => {
-    fetchCoursePage(actualPage || 1,{
+    fetchCoursePage(actualPage || 1, {
       field: searchParams.selectedField,
       order: searchParams.order,
     }, searchParams);
@@ -438,111 +563,7 @@ export default function CourseConfig() {
                 </tr>
               </thead>
               <tbody>
-                {courses.map((c) => {
-                  // if (filteredCourses !== null)
-                  //   if (
-                  //     filteredCourses.find((fc) => c.id === fc.id) ===
-                  //     undefined
-                  //   )
-                  //     return <Fragment key={c.id} />;
-                  return (
-                    <tr key={c.id}>
-                      <td>
-                        <input disabled type="text" value={c.id} />
-                      </td>
-                      <td>
-                        <input
-                          id={"inputName_" + c.id}
-                          disabled
-                          type="text"
-                          value={changeName === false ? c.name : newName}
-                          onChange={() => handleChange(c.id)}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          disabled
-                          type="text"
-                          value={c.institution.name}
-                        />
-                      </td>
-                      <td className="action-column">
-                        {/* <ExtraFields table="courses" id={c.id} /> */}
-                        <button
-                          onClick={() => confirmDeleteEvent(c.id)}
-                          style={{ marginRight: "5px" }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>&nbsp;<button
-                          style={{ marginRight: "5px" }}
-                          onClick={(e) => showEditOptionCourse(e, c.id)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                            />
-                          </svg>
-                        </button>&nbsp;<button
-                          style={{
-                            marginRight: "5px",
-                            display: "none",
-                          }}
-                          onClick={(e) => editCourse(e, c)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-check2"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                          </svg>
-                        </button>&nbsp;<button
-                          style={{ display: "none" }}
-                          onClick={(e) => closeEditCourse(e, c.id)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-x-lg"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                            />
-                            <path
-                              fillRule="evenodd"
-                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                            />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {memoizedCourses}
               </tbody>
             </table>
           </div>

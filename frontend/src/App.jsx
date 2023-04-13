@@ -36,6 +36,7 @@ import NotifsAC from "./utils/websockets/actioncable/NotifsAC";
 import EventPop from "./components/eventPop/EventPop";
 import useMobile from "./hooks/useMobile";
 import IDBManager from "./utils/IDBManager";
+import { ChatBottomContextProvider, ChatBottomCtx } from "./hooks/ChatBottomContext";
 
 const notifs = new NotifsAC();
 export default function App() {
@@ -54,7 +55,6 @@ export default function App() {
     if (getOfflineUser().user !== null) {
       let db = new IDBManager();
       await db.getStorageInstance("eduapp-calendar-event", "events");
-      let test = await db.isEmpty()
       SCHEDULE_SERVICE.fetchEventsById(getOfflineUser().user.id).then(
         async (e) => {
           if (e) {
@@ -64,7 +64,7 @@ export default function App() {
             });
             await db.getStorageInstance("eduapp-calendar-last-event", "last");
             let key = await db.getStoreKeys();
-            if (key[0] !== e.data[e.data.length - 1].id) {
+            if (e.data.length && key[0] !== e.data[e.data.length - 1]?.id) {
               setCalendarInfo(e.data[e.data.length - 1]);
               setShowNotification(true);
             } else {
@@ -91,12 +91,12 @@ export default function App() {
 
   const notification = () => {
 
-    if(!window.Notification){
+    if (!window.Notification) {
       console.log('Este navegador no soporta notificaciones')
       return
     }
 
-    if(Notification.permission !== 'granted') {
+    if (Notification.permission !== 'granted') {
       Notification.requestPermission()
     }
     // navigator.permissions
@@ -175,85 +175,89 @@ export default function App() {
 
   return userinfo ? (
     <>
-      <BrowserRouter>
-        <WebTitle />
-        <>
-          <div style={{ display: needsLoader ? "flex" : "none" }}>
-            <Loader />
-          </div>
-        </>
-        {needsExtras && (
+      <ChatBottomContextProvider>
+        <BrowserRouter>
+          <WebTitle />
           <>
-            <Navbar badgeCount={badgeCount} mobile={mobile} />
+            <div style={{ display: needsLoader ? "flex" : "none" }}>
+              <Loader />
+            </div>
           </>
-        )}
-        {RequireAuth() ? (
-          <MainChatInfoCtxProvider>
+          {needsExtras && (
+            <>
+              <Navbar badgeCount={badgeCount} mobile={mobile} />
+            </>
+          )}
+          {RequireAuth() ? (
+            <MainChatInfoCtxProvider>
+              <Routes>
+                {/* Main Pages */}
+                <Route exact path="/home" element={<Home />} />
+                <Route exact path="/resources" element={<Resources />} />
+                <Route exact path="/calendar" element={<Calendar />} />
+                <Route exact path="/chat" element={<ChatMenu />} />
+                {isAdmin && (
+                  <Route exact path="/management" element={<ManagementPanel />} />
+                )}
+
+                {/* Pages Subroutes */}
+                <Route
+                  path="/resource/:resourceId"
+                  element={<OpenedResource />}
+                />
+                <Route path="/chat/:chatId" element={<MainChat />} />
+                <Route path="/chat/info/:chatId" element={<MainChatInfo />} />
+                <Route path="/chat/create/group/:subject_id" element={<GroupChatCreate />} />
+                <Route
+                  path="/chat/create/direct"
+                  element={<DirectChatCreate />}
+                />
+
+                {/* Menu */}
+                <Route path="/menu/profile" element={<ProfileSettings />} />
+                {mobile && (
+                  <>
+                    <Route path="/menu" element={<Menu />} />
+                    <Route path="/menu/settings" element={<MenuSettings />} />
+                  </>
+                )}
+
+                {/*Notifications*/}
+                <Route path="/notifications" element={<Notifications />} />
+
+                {/* Unknown URL Reroute */}
+                <Route path="*" element={<Navigate to="/home" />} />
+              </Routes>
+            </MainChatInfoCtxProvider>
+          ) : (
             <Routes>
-              {/* Main Pages */}
-              <Route exact path="/home" element={<Home />} />
-              <Route exact path="/resources" element={<Resources />} />
-              <Route exact path="/calendar" element={<Calendar />} />
-              <Route exact path="/chat" element={<ChatMenu />} />
-              {isAdmin && (
-                <Route exact path="/management" element={<ManagementPanel />} />
-              )}
-
-              {/* Pages Subroutes */}
+              <Route exact path="/login" element={<Login />} />
               <Route
-                path="/resource/:resourceId"
-                element={<OpenedResource />}
+                exact
+                path="/password/reset/"
+                element={<PasswordRecovery />}
               />
-              <Route path="/chat/:chatId" element={<MainChat />} />
-              <Route path="/chat/info/:chatId" element={<MainChatInfo />} />
-              <Route path="/chat/create/group/:subject_id" element={<GroupChatCreate />} />
-              <Route
-                path="/chat/create/direct"
-                element={<DirectChatCreate />}
-              />
-
-              {/* Menu */}
-              <Route path="/menu/profile" element={<ProfileSettings />} />
-              {mobile && (
-                <>
-                  <Route path="/menu" element={<Menu />} />
-                  <Route path="/menu/settings" element={<MenuSettings />} />
-                </>
-              )}
-
-              {/*Notifications*/}
-              <Route path="/notifications" element={<Notifications />} />
-
-              {/* Unknown URL Reroute */}
-              <Route path="*" element={<Navigate to="/home" />} />
+              <Route path="*" element={<Navigate to="/login" />} />
             </Routes>
-          </MainChatInfoCtxProvider>
-        ) : (
-          <Routes>
-            <Route exact path="/login" element={<Login />} />
-            <Route
-              exact
-              path="/password/reset/"
-              element={<PasswordRecovery />}
-            />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        )}
-        {needsExtras && mobile && (
+          )}
+          {needsExtras && mobile &&
+            // chatBottomParams && !chatBottomParams.showing &&
+            (
+              <>
+                <BottomButtons badgeCount={badgeCount} mobile={mobile} />
+              </>
+            )}
           <>
-            <BottomButtons badgeCount={badgeCount} mobile={mobile} />
+            <EventPop
+              show={showNotification}
+              close={() => {
+                closeEventPop();
+              }}
+              data={calendarInfo}
+            />
           </>
-        )}
-        <>
-          <EventPop
-            show={showNotification}
-            close={() => {
-              closeEventPop();
-            }}
-            data={calendarInfo}
-          />
-        </>
-      </BrowserRouter>
+        </BrowserRouter>
+      </ChatBottomContextProvider>
     </>
   ) : (
     <>

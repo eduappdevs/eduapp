@@ -34,7 +34,7 @@ export default class NotifsAC extends ACManager {
       case "new_msg":
         data.msg = EncryptionUtils.decrypt(data.msg, atob(data.key));
 
-        if (document.hasFocus()) {
+        if (document.visibilityState === 'visible') {
           NOTIFSMODAL.instanceModal(data);
         }
         if (this.idbm.keyExists(data.author_name)) {

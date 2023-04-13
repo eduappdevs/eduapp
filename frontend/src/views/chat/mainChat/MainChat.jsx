@@ -16,11 +16,13 @@ import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import useLanguage from "../../../hooks/useLanguage";
 import { MainChatInfoCtx } from "../../../hooks/MainChatInfoContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../../config";
+import getPrefixedImageURL from "../../../utils/UrlImagePrefixer";
+
 import "./MainChat.css";
 import IDBManager from "../../../utils/IDBManager";
-import { async } from "@firebase/util";
+import { ChatBottomCtx } from "../../../hooks/ChatBottomContext";
 
 const acInstance = new ChatsAC();
 const notifs = new NotifsAC();
@@ -29,7 +31,7 @@ let pubKey = null;
 let db = new IDBManager();
 
 export default function MainChat() {
-
+  const [chatBottomParams, setChatBottomParams] = useContext(ChatBottomCtx);
   const { chatId } = useParams()
 
   const language = useLanguage();
@@ -38,7 +40,8 @@ export default function MainChat() {
   const navigate = useNavigate();
 
   // eslint-disable-next-line no-unused-vars
-  const [chat, _s] = useState({});
+  // const [chat, _s] = useState({});
+  const [chat, setChat] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessages, setNewMessages] = useState([]);
   const [readOnly, setReadOnly] = useState(false);
@@ -97,14 +100,16 @@ export default function MainChat() {
       //       userId,
       //     },
       //   });
-      //   inputMsg = "";
+      //   inputMsgEl.value = "";
       // },10000);
     }
   };
 
   const manageIncomingMsg = async (newMsg) => {
     if (newMsg.chat_base.id === acInstance.chatCode.substring(1)) {
-      if (newMsg.user.id !== getOfflineUser().user.id) await db.set(newMsg.id, newMsg)
+      if (newMsg.user.id !== getOfflineUser().user.id){
+        await db.set(newMsg.id, newMsg)
+      }
       setNewMessages((prevMsgs) => [...prevMsgs, newMsg]);
       let messageBox = document.getElementsByClassName(
         "main-chat-messages-container"
@@ -140,10 +145,17 @@ export default function MainChat() {
     });
   };
 
+  // const findUserName = (uId) => {
+  //   return chat.chatParticipants.length === undefined
+  //     ? chat.chatParticipants.user_name
+  //     : chat.chatParticipants.find((u) => u.user.id === uId).user_name;
+  // };
+
   const findUserName = (uId) => {
-    return chat.chatParticipants.length === undefined
-      ? chat.chatParticipants.user_name
-      : chat.chatParticipants.find((u) => u.user.id === uId).user_name;
+    if(chat.chatParticipants.length === undefined) return ""; //To be fixed: logged out user. It should be maybe fetched in the server.
+    let messageSender = chat.chatParticipants.find((u) => u.user.id === uId);
+    if (messageSender === undefined) return ""; //To be fixed: logged out user. It should be maybe fetched in the server.
+    return messageSender.user_name;
   };
 
   const manageExtrasMenu = () => {
@@ -181,14 +193,14 @@ export default function MainChat() {
 
   useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
   useEffect(() => {
-    acInstance.chatCode = chatId;
-    let filtered_chatId = chatId.substring(1)
+    acInstance.chatCode = window.location.pathname.split("/")[2];
+    let chatId = acInstance.chatCode.substring(1);
 
     // Generate websocket connection to chat room
     acInstance.generateChannelConnection(acInstance.chatCode).then(async () => {
       // Retrieve chat info
       await asynchronizeRequest(async function () {
-        let rawChat = (await CHAT_SERVICE.fetchChatInfo(filtered_chatId)).data;
+        let rawChat = (await CHAT_SERVICE.fetchChatInfo(chatId)).data;
         let cInfo = rawChat.chat;
         let participants = rawChat.participants;
 
@@ -207,17 +219,17 @@ export default function MainChat() {
           cInfo.chat_name = participants.user_name;
         }
 
-        chat.chatInfo = cInfo;
-        chat.chatParticipants = participants;
+        // chat.chatInfo = cInfo;
+        // chat.chatParticipants = participants;
+        setChat({...chat, chatInfo: cInfo, chatParticipants: participants});
       });
       // Retrieve chat messages
       await db.getStorageInstance("eduapp-messages-db", "messages");
 
       db.isEmpty().then((res) => {
         if (res) {
-          CHAT_SERVICE.fetchChatMessages(filtered_chatId).then((msgs) => {
+          CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
             setMessages(msgs.data);
-            // msgs.data.map((msg) => addLocalMessage(msg))
             manageChatView();
           });
         } else {
@@ -258,6 +270,14 @@ export default function MainChat() {
     setPopupText(language.wip);
   }, [language]);
 
+  useEffect(() => {
+    setChatBottomParams({ showing: true });
+
+    return () => {
+      setChatBottomParams({ showing: false });
+    };
+  }, []);
+
   const addLocalMessage = async (msg) => {
     await db.getStorageInstance("eduapp-messages-db", "messages");
     db.set(msg.id, msg)
@@ -287,13 +307,11 @@ export default function MainChat() {
           }
           leaveChat={() => showLeaveChatDialog()}
           chatImage={
-            chat.chatInfo
-              ? chat.chatInfo.image
-                ? chat.chatInfo.image
-                : chat.chatInfo.isGroup
-                  ? IMG_FLBK_GROUP
-                  : IMG_FLBK_USER
-              : ""
+            chat.chatInfo?.image?.url
+              ? getPrefixedImageURL(chat.chatInfo.image.url)
+              : chat.chatInfo?.isGroup
+                ? IMG_FLBK_GROUP
+                : IMG_FLBK_USER
           }
         />
 
@@ -315,9 +333,9 @@ export default function MainChat() {
         />
 
         <div className="main-chat-messages-container">
-          {messages.length !== 0 ?
-            messages.map((msg) => {
-              addLocalMessage(msg)
+          {messages.length !== 0
+            ? messages.map((msg) => {
+              addLocalMessage(msg);
               return (
                 <ChatBubble
                   key={msg.user.id + "-" + msg.id}
@@ -330,6 +348,7 @@ export default function MainChat() {
                   }
                   isGroup={msg.chat_base.isGroup}
                   author={findUserName(msg.user.id)}
+                  // author={msg.user.userinfo.user_name}
                   isMsgRecent={false}
                 />
               );
@@ -349,6 +368,7 @@ export default function MainChat() {
                   }
                   isGroup={msg.chat_base.isGroup}
                   author={findUserName(msg.user.id)}
+                  // author={msg.user.userinfo.user_name}
                   isMsgRecent={true}
                 />
               );

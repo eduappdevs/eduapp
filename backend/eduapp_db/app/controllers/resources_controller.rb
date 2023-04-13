@@ -95,7 +95,7 @@ class ResourcesController < ApplicationController
 
   # GET /resources/1
   def show
-    if !resource_in_user_course && get_user_roles.name != get_admin_role.name
+    if !resource_in_user_subject && get_user_roles.name != get_admin_role.name
       return deny_perms_access!
     end
     render json: @resource
@@ -204,6 +204,11 @@ class ResourcesController < ApplicationController
       return true
     end
     return false
+  end
+
+  # Checks if ```Resource``` is present in the user's ```Subject```.
+  def resource_in_user_subject
+    return @resource.user_id == @current_user || @resource.subject.subjects_user.where(user_id: @current_user).exists? || User.find(@current_user).user_info.teaching_list.include?(@resource.subject_id)
   end
 
   # Use callbacks to share common setup or constraints between actions.

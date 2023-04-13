@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as CHAT_SERVICE from "../../services/chat.service";
 import { useParams } from "react-router-dom";
 import { FetchUserInfo } from "../../hooks/FetchUserInfo";
@@ -11,12 +11,17 @@ import StandardModal from "../../components/modals/standard-modal/StandardModal"
 import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useLanguage from "../../hooks/useLanguage";
+import getPrefixedImageURL from "../../utils/UrlImagePrefixer";
+
 import "./ChatMenu.css";
 import IDBManager from "../../utils/IDBManager";
 
 let acManager = new ChatsAC();
-
 export default function ChatMenu() {
+  const [filteredChats, setFilteredChats] = useState([]);
+  const searchInput = useRef(null);
+
+
   const [chats, setChats] = useState([]);
 
   const [showPopup, setShowPopup] = useState(false);
@@ -46,6 +51,21 @@ export default function ChatMenu() {
     setChats(chats);
   };
 
+  const handleChange = (e) => {
+    calculateFilteredChats(e.target.value);
+  }
+
+  const calculateFilteredChats = (pattern) => {
+    if (pattern === "") {
+      setFilteredChats(chats);
+      return;
+    }
+    const results = chats.filter(c => {
+      return c.chat_info.chat_name.toLowerCase().includes(pattern.toLowerCase())
+    })
+    setFilteredChats(results);
+  }
+
   useViewsPermissions(userInfo, "chat");
   useEffect(() => {
     acManager.closeConnection();
@@ -53,6 +73,10 @@ export default function ChatMenu() {
     getChats();
     activeMessagesDB();
   }, []);
+
+  useEffect(() => {
+    calculateFilteredChats(searchInput.current.value);
+  }, [chats]);
 
   return (
     <>
@@ -82,7 +106,7 @@ export default function ChatMenu() {
       <div className="chat-menu-container">
         <div className="chat-search-container">
           <form action="">
-            <input type="text" />
+            <input type="text" name="search" onChange={handleChange} ref={searchInput} />
             <div className="chat-search-icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -99,11 +123,11 @@ export default function ChatMenu() {
         </div>
 
         <div className="chats-container">
-          {chats.length !== 0 ? (
+          {filteredChats.length !== 0 ? (
             <>
               <h2>{language.chats}</h2>
               <ul>
-                {chats.sort((a, b) => a.chat_info?.last_message?.send_date < b.chat_info?.last_message?.send_date).map((chat) => {
+                {filteredChats.sort((a, b) => a.chat_info?.last_message?.send_date < b.chat_info?.last_message?.send_date).map((chat) => {
                   let connectionId =
                     (chat.chat_info.isGroup ? "g" : "p") + chat.chat_info.id;
                   return (
@@ -117,8 +141,8 @@ export default function ChatMenu() {
                       <img
                         className="chat-icon"
                         src={
-                          chat.chat_info.image !== undefined
-                            ? chat.chat_info.image
+                          chat.chat_info.image && chat.chat_info.image.url
+                            ? getPrefixedImageURL(chat.chat_info.image.url)
                             : chat.chat_info.isGroup
                               ? IMG_FLBK_GROUP
                               : IMG_FLBK_USER
@@ -132,7 +156,7 @@ export default function ChatMenu() {
                         {/* <p className="chat-writing">{chat.chat_info?.last_message.message}</p> */}
                       </div>
                       <p className="chat-pending-messages">
-                        <span>{(!chat.chat_info?.self_counterpart?.last_seen && chat.chat_info?.last_message?.id) || chat.chat_info?.last_message?.send_date > chat.chat_info?.self_counterpart?.last_seen ? 'NEW' : '0'}</span>
+                        <span>{chat.chat_info?.num_messages}</span>
                       </p>
                     </li>
                   );

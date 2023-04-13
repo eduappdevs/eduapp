@@ -2,6 +2,8 @@ version: '3.1'
 
 volumes:
   eduapp_db_data:
+  eduapp_images:
+  eduapp_storage:
 
 networks:
   common:
@@ -14,8 +16,8 @@ services:
       - ./backend/eduapp_db/postgres.docker.env
     volumes:
       - eduapp_db_data:/var/lib/postgresql/data/pgdata
-    ports:          # Comment this 2 lines in production
-      - "5432:5432" # It's usefull only to access to the database with pgAdmin
+    # ports:          # Comment this 2 lines in production
+    #   - "5432:5432" # It's usefull only to access to the database with pgAdmin
     restart: unless-stopped
     networks:
       - common
@@ -25,6 +27,9 @@ services:
     image: eduapp_api:latest 
     env_file:
       - ./backend/eduapp_db/.env
+    volumes:
+      - eduapp_images:/backend/public
+      - eduapp_storage:/backend/storage
     restart: unless-stopped
     depends_on:
       - db
@@ -54,5 +59,4 @@ services:
       - "4010:4010" # Change the first number for different port
     networks:
       - common
-
   

@@ -51,6 +51,7 @@ export const availableLanguages = [
   ["pt_pt", "Português"],
   ["da_dk", "Dansk"],
   ["ro_ro", "Română"],
+  ["nl_nl", "Nederlands"],
 ];
 
 export const flagsLanguages = [
@@ -59,4 +60,5 @@ export const flagsLanguages = [
   ["pt_pt", "fi-pt"],
   ["da_dk", "fi-dk"],
   ["ro_ro", "fi-ro"],
+  ["nl_nl", "fi-nl"],
 ];

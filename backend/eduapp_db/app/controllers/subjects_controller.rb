@@ -7,48 +7,25 @@ class SubjectsController < ApplicationController
   def index
     wants_info_for_calendar = false || params[:wants_info_for_calendar]
 
-    if params[:user_id]
+    if params[:user_id] # this is used by calendar frontend when adding event
       wants_info_for_calendar = true
       if !check_perms_query_self!(get_user_roles.perms_subjects, params[:user_id])
         return
       end
-      # TODO: Possible refactorization:
-      # tuitions = Tuition.where(user_id: params[:user_id]).pluck(:course_id)
-      # @Subjects = Subject.where(course_id: tuitions)
-      # @todaySessions = EduappUserSession.where(subject_id: @Subjects).pluck(:session_start_date)
-      # @Sessions = []
+      user = User.find(params[:user_id])
+      teaching_subjects = user.user_info.teaching_list || []
+      attending_subjects = user.subjects.map { |s| s.id } || []
 
-      # for hour in @todaySessions
-      #   if (hour.split("T")[1].split(":")[0] == @TodayHourNow or hour.split("T")[1].split(":")[0] >= @TodayHourNow and hour.split("T")[0] == @Today)
-      #     @Sessions += EduappUserSession.where(subject_id: @Subjects, session_start_date: hour)
-      #   end
-      # end
-      # @subjects = @Sessions
-
-      @subjects = User.find(params[:user_id]).subjects
-    elsif params[:all_sessions]
-      #TODO: cambiar esta lógica pasarla a eventos, calendario(analizar)
-      # Tiene que devolver todos los evenos que hay hoy, sin tener que preguntar por la hora
-      @sessions = []
-      @today = Time.now.strftime("%F")
-      @todayHourNow = Time.now.strftime("%H")
+      @subjects = Subject.where(id: teaching_subjects + attending_subjects)
+    elsif params[:all_sessions] # This is used by frontend index for showing next session
       user = User.find(current_user)
       if user.user_info.user_role.name == 'eduapp-teacher'
         @user_subjects = user.user_info.teaching_list
       else
         @user_subjects = user.subjects.pluck(:id)
       end
-      @todaySessions = []
-      for subject in @user_subjects
-        @todaySessions += EduappUserSession.where(subject_id: subject).pluck(:session_start_date)
-      end
 
-      for hour in @todaySessions
-        if (hour.split("T")[1].split(":")[0] == @todayHourNow or hour.split("T")[1].split(":")[0] >= @todayHourNow and hour.split("T")[0] == @today)
-          @sessions += EduappUserSession.where(subject_id: @user_subjects, session_start_date: hour)
-        end
-      end
-    @subjects = @sessions
+      @subjects = EduappUserSession.where("subject_id in (?) AND session_end_date > ? AND session_end_date < ?", @user_subjects, Time.now, Date.tomorrow).order(session_end_date: :asc)
     elsif params[:subject_id]
       @subjects = Subject.where(id: params[:subject_id])
     elsif params[:name]
@@ -70,17 +47,18 @@ class SubjectsController < ApplicationController
       if !check_perms_all!(get_user_roles.perms_subjects)
         return
       end
-      @subjects = Subject.all
+      @subjects = Subject
     end
 
-    if wants_info_for_calendar
+    #if wants_info_for_calendar #Commented this condition to allow ordering in admin
+    if !params[:all_sessions]
       order = !params[:order].nil? && JSON.parse(Base64.decode64(params[:order]))
       if order && order["field"] != ""
         if order["field"] == 'course_name'
           @subjects = @subjects.joins(:course)
         end
         @subjects = @subjects.order(parse_filter_order(order,{'course_name' => 'courses.name'}))
-      else
+      elsif !@subjects.is_a?(Array)
         @subjects = @subjects.order(name: :asc)
       end
     end
@@ -181,7 +159,8 @@ class SubjectsController < ApplicationController
       @subject.users << User.find(params[:user_id])
       @subject.save
     else
-      @subject = Subject.new(subject_code: params[:subject_code], name: params[:name],
+      @subject = Subject.new(subject_code: params[:subject_code], 
+                            external_id: params[:external_id], name: params[:name],
                             description: params[:description], color: params[:color],
                             course_id: params[:course_id], chat_link: params[:chat_link])
       if @subject.save
@@ -238,6 +217,16 @@ class SubjectsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def subject_params
-    params.require(:subject).permit(:subject_code, :name, :description, :color, :chat_link)
+    params.require(:subject)
+          .permit(
+            :id,
+            :subject_code,
+            :external_id,
+            :name,
+            :description,
+            :color,
+            :chat_link,
+            :course_id
+          )
   end
 end

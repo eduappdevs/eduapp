@@ -5,6 +5,7 @@ import en_uk from "../lang/en_uk.json";
 import pt_pt from "../lang/pt_pt.json";
 import da_dk from "../lang/da_dk.json";
 import ro_ro from "../lang/ro_ro.json";
+import nl_nl from "../lang/nl_nl.json";
 
 /**
  * Hook used to dynamically change the app's language.
@@ -27,6 +28,9 @@ export default function useLanguage() {
         break;
       case "ro_ro":
         setLang(ro_ro);
+        break;
+      case "nl_nl":
+        setLang(nl_nl);
         break;
       default:
         setLang(en_uk);
@@ -51,4 +55,5 @@ export const availableLanguages = [
   ["pt_pt", "Português"],
   ["da_dk", "Dansk"],
   ["ro_ro", "Română"],
+  ["nl_nl", "Nederlands"],
 ];

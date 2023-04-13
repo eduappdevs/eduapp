@@ -23,7 +23,7 @@ import { getOfflineUser } from "../../utils/OfflineManager";
 import * as SCHEDULE_SERVICE from "../../services/schedule.service";
 import * as SUBJECT_SERVICE from "../../services/subject.service";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
-import useRole from "../../hooks/useRole";
+import userCan, { EVENT, CREATE } from "../../hooks/userCan";
 import "./calendar.css";
 
 export default function Calendar() {
@@ -36,7 +36,7 @@ export default function Calendar() {
   const user = getOfflineUser().user
 
   let userinfo = FetchUserInfo(user.id);
-  let canCreate = useRole(userinfo, ["eduapp-teacher", "eduapp-admin"]);
+  let canCreate = userinfo && userCan(userinfo, EVENT, CREATE);
 
   const getCalendar = async () => {
     let events = [];
@@ -73,7 +73,6 @@ export default function Calendar() {
         });
       }
     }
-
     for (let calendarEvent in data.calendarEvents) {
       if (data.calendarEvents !== null) {
         let calendarEvents = data.calendarEvents[calendarEvent];
@@ -105,7 +104,6 @@ export default function Calendar() {
         });
       }
     }
-
     for (let session in data.sessions) {
       if (data.sessions !== null) {
         let e = data.sessions[session];
@@ -119,7 +117,6 @@ export default function Calendar() {
         let subject = e.subject_id;
         let author = e.user_id;
         let backgroundColor;
-
         for (let i in data.colorEvents) {
           if (data.colorEvents[i][0] === subject) {
             backgroundColor = data.colorEvents[i][1];
@@ -219,25 +216,27 @@ export default function Calendar() {
   };
 
   const StyledDiv = styled("div")(({ theme }) => ({}));
-  const Appointment = ({ data, children, style, ...restProps }) => (
-    <StyledDiv
-      id={`event_${data.id}`}
-      onClick={(e) => {
-        showEventView(e, data);
-      }}
-    >
-      <Appointments.Appointment
-        {...restProps}
-        style={{
-          ...style,
-          backgroundColor: data.backgroundColor,
-          borderRadius: "8px",
+  const Appointment = ({ data, children, style, ...restProps }) => {
+    return (
+      <StyledDiv
+        id={`event_${data.id}`}
+        onClick={(e) => {
+          showEventView(e, data);
         }}
       >
-        {children}
-      </Appointments.Appointment>
-    </StyledDiv>
-  );
+        <Appointments.Appointment
+          {...restProps}
+          style={{
+            ...style,
+            backgroundColor: data.backgroundColor,
+            borderRadius: "8px",
+          }}
+        >
+          {children}
+        </Appointments.Appointment>
+      </StyledDiv>
+    )
+  };
 
   const IndicatorDiv = styled("div", {
     shouldForwardProp: (prop) => prop !== "top",

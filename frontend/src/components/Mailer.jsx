@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../API";
 
@@ -7,8 +7,8 @@ import { API_URL } from "../API";
  * Used for sending emails to a user. Dependant on backend.
  */
 export const Mailer = (props) => {
+  const [email, setEmail] = useState('');
   async function sendemail() {
-    let email;
     let validmail = /^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/;
     if (email === "" || email.match(!validmail)) {
       console.log("Please Enter Valid Email");
@@ -38,6 +38,8 @@ export const Mailer = (props) => {
             className="form-control"
             id="email"
             name="email"
+            defaultValue={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder={props.language.email}
           />
         </div>

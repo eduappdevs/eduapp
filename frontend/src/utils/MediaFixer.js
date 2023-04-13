@@ -6,7 +6,7 @@
  */
 export default function MediaFix(media) {
   return media.replace(
-    `http://localhost:8433`,
+    `http://localhost:${process.env.REACT_APP_PORT}`,
     process.env.REACT_APP_BACKEND_ENDPOINT
   );
 }

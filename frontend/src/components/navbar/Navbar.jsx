@@ -130,7 +130,8 @@ export default function Navbar({ mobile, badgeCount }) {
 
   useEffect(() => changeLocation());
 
-  useEffect(() => setUserImage(getOfflineUser().profile_image.thumb.url), [userInfo]);
+  // useEffect(() => setUserImage(getOfflineUser().profile_image.thumb.url), [userInfo]);
+  useEffect(() => setUserImage(getOfflineUser().profile_image.url), [userInfo]);
   if(!userInfo?.user_role){return null};
 
   return (
@@ -147,11 +148,11 @@ export default function Navbar({ mobile, badgeCount }) {
           </Link>
           <div className={mobile ? "hidden" : "nav-locations"}>
             <ul>
-              <li className={inHome ? "activeLocation" : console.log()}>
+              <li className={inHome ? "activeLocation" : ''}>
                 <Link to="/home">{language.home}</Link>
               </li>
               {userInfo.user_role.perms_app_views[0] && (
-                <li className={inCalendar ? "activeLocation" : console.log()}>
+                <li className={inCalendar ? "activeLocation" : ''}>
                   <Link
                     to="/calendar"
                     onClick={() => {
@@ -161,9 +162,10 @@ export default function Navbar({ mobile, badgeCount }) {
                             getPosition(window.location.href, "/", 3)
                           ) === "/calendar"
                         )
-                      )
-                        document.getElementById("sectionCalendar").style.display =
-                          "none";
+                      ){
+                        const sectionCalendar = document.getElementById("sectionCalendar");
+                        sectionCalendar && (sectionCalendar.style.display = "none");
+                      }
                       navigate("/calendar");
                     }}
                   >
@@ -172,17 +174,17 @@ export default function Navbar({ mobile, badgeCount }) {
                 </li>
               )}
               {isAdmin && navigator.onLine && (
-                <li className={inManagement ? "activeLocation" : console.log()}>
+                <li className={inManagement ? "activeLocation" : ''}>
                   <Link to="/management">{language.management}</Link>
                 </li>
               )}
               {userInfo.user_role.perms_app_views[1] && (
-                <li className={inResources ? "activeLocation" : console.log()}>
+                <li className={inResources ? "activeLocation" : ''}>
                   <Link to="/resources">{language.resources}</Link>
                 </li>
               )}
               {userInfo.user_role.perms_app_views[2] && (
-                <li className={inChat ? "activeLocation" : console.log()}>
+                <li className={inChat ? "activeLocation" : ''}>
                   {badgeCount > 0 ? (
                     <div className="badgeNotifyContainer">
                       <span className="badgeNotify badgeNotifyMobile">

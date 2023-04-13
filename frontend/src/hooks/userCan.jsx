@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 
 
 export const CHAT = 'perms_chat';
+export const SESSION = 'perms_sessions';
+export const EVENT = 'perms_events';
+export const RESOURCE = 'perms_resources';
 
 export const READ_ALL = 0;
 export const QUERY = 1;

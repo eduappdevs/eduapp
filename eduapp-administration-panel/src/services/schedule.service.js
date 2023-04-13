@@ -9,9 +9,12 @@ export const fetchEvents = async () => {
   return await axios.get(EVENTS, { headers: requestHeader });
 };
 
-export const pagedEvents = async (page, order) => {
+export const pagedEvents = async (page, order, searchParams) => {
+  const value = searchParams['query']
+  const attribute = searchParams['selectedField']
+  const extras = searchParams['extras']
   return await axios.get(
-    `${EVENTS}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    `${EVENTS}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}&order=${btoa(JSON.stringify(order))}${extras ? '&extras=' + extras : ''}`,
     {
       headers: requestHeader,
     }
@@ -89,8 +92,18 @@ export const createSession = async (body) => {
   return await axios.post(SESSIONS, body, { headers: requestHeader });
 };
 
+export const uploadSigleSession = async (body) => {
+  return await axios.post(`${SESSIONS}/upload_single_sessions`, body, { headers: requestHeader });
+};
+
 export const createSessionBatch = async (body) => {
   return await axios.post(`${SESSIONS}/batch_load`, body, {
+    headers: requestHeader,
+  });
+};
+
+export const uploadBatchSessions = async (body) => {
+  return await axios.post(`${SESSIONS}/upload_batch_sessions`, body, {
     headers: requestHeader,
   });
 };

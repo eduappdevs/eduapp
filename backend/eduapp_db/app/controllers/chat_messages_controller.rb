@@ -42,6 +42,51 @@ class ChatMessagesController < ApplicationController
     @chat_message = ChatMessage.new(chat_message_params)
 
     if @chat_message.save
+      chat_base = ChatBase.find(@chat_message.chat_base_id)
+      participans = ChatParticipant.where(chat_base_id: chat_base.id)
+      user = UserInfo.find_by(user_id: @chat_message.user_id)
+
+      chat_url = "#{ENV.fetch("REACT_APP_FRONTEND_ENDPOINT")}/chat/#{chat_base.isGroup ? "g" : "p"}#{@chat_message.chat_base_id}"
+      participans.each do |participant|
+        UserNotifsChannel.broadcast_to(
+          participant.user_id,
+          command: "new_msg",
+          author_name: user.user_name,
+          author_pic: user.profile_image,
+          msg: @chat_message.message,
+          key: chat_base.private_key,
+          chat_url: chat_url,
+        )
+        subcriptions = PushNotification.where(user_id: participant.user_id)
+        message = {
+          title: "Nuevo mensaje",
+          body: "",
+          user: user.user_name,
+          icon: user.profile_image,
+          url: chat_url,
+        }
+
+        subcriptions.each do |subcription|
+          begin
+            Webpush.payload_send(
+              endpoint: subcription.endpoint,
+              message: JSON.generate(message),
+              p256dh: subcription.p256dh,
+              auth: subcription.auth,
+              vapid: {
+                subject: "mailto:email@example.com",
+                public_key: ENV.fetch('VAPID_PUBLIC_KEY'),
+                private_key: ENV.fetch('VAPID_PRIVATE_KEY')
+              }
+            )
+          rescue Webpush::ExpiredSubscription => e
+            subcription.destroy
+          rescue Exception => e
+            e
+          end
+        end
+      end
+
       render json: @chat_message, status: :created, location: @chat_message
     else
       render json: @chat_message.errors, status: :unprocessable_entity

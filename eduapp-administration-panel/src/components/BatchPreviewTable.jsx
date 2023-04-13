@@ -18,7 +18,8 @@ export default function BatchPreviewTable(props) {
   const [data, setData] = useState(null);
   const [subject, setSubject] = useState();
 
-  const confirmAndUpload = () => {
+  const confirmAndUpload = (e) => {
+    e.target.disabled=true
     data.map((x) => {
       switch (props.type) {
         case "users":
@@ -36,10 +37,10 @@ export default function BatchPreviewTable(props) {
         default:
           break;
       }
-      return setTimeout(() => {
-        window.location.reload();
-      }, 2000);
     });
+    return setTimeout(() => {
+      window.location.reload();
+    }, 2000);
   };
 
   const postSessionModal = (session) => {
@@ -53,13 +54,13 @@ export default function BatchPreviewTable(props) {
       parseInt(session[14]) === 1
     ) {
       let checkDays = [
+        session[7],
         session[8],
         session[9],
         session[10],
         session[11],
         session[12],
         session[13],
-        session[14],
       ];
       for (let i in checkDays) {
         if (parseInt(checkDays[i]) === 1) {
@@ -79,13 +80,11 @@ export default function BatchPreviewTable(props) {
       let end_date = session[2];
       let streaming = session[3];
       let resources = session[4];
-      let chat = session[5];
-      let subject_id = session[6];
+      let subject_id = session[5];
       let total_weeks = weeks;
       let check_week_days = checkDays;
       let diff_days = parseInt(days);
-      let week_repeat = parseInt(session[7]);
-
+      let week_repeat = parseInt(session[6]);
       SUBJECTSERVICE.fetchSubject()
         .then((res) => {
           res.data.shift();
@@ -101,7 +100,7 @@ export default function BatchPreviewTable(props) {
         end_date !== "" &&
         resources !== "" &&
         streaming !== "" &&
-        chat !== "" &&
+        // chat !== "" &&
         subject_id !== "" &&
         total_weeks !== 0 &&
         diff_days !== 0 &&
@@ -113,7 +112,7 @@ export default function BatchPreviewTable(props) {
           session_end_date: end_date,
           streaming_platform: streaming,
           resources_platform: resources,
-          session_chat_id: chat,
+          // session_chat_id: chat,
           subject_id: subject_id,
           total_weeks: total_weeks,
           check_week_days: check_week_days,
@@ -122,14 +121,15 @@ export default function BatchPreviewTable(props) {
         };
         console.log(sessionJson);
         API.asynchronizeRequest(function () {
-          SCHEDULESERVICE.createSessionBatch(sessionJson)
+          SCHEDULESERVICE.uploadBatchSessions(sessionJson)
             .then((e) => {
               if (e) {
                 props.close();
               }
             })
             .catch((e) => {
-              console.log(e);
+              props.close()
+              props.messageError("info", true, true, e.response.data.errors)
             });
         });
       } else {
@@ -145,7 +145,7 @@ export default function BatchPreviewTable(props) {
       "session_end_date",
       "streaming_platform",
       "resources_platform",
-      "session_chat_id",
+      // "session_chat_id",
       "subject_id",
     ];
 
@@ -155,8 +155,8 @@ export default function BatchPreviewTable(props) {
     let end_date = session[2];
     let streaming = session[3];
     let resources = session[4];
-    let chat = session[5];
-    let subject_id = session[6];
+    // let chat = session[5];
+    let subject_id = session[5];
 
     if (
       name !== "" &&
@@ -164,7 +164,6 @@ export default function BatchPreviewTable(props) {
       end_date !== "" &&
       resources !== "" &&
       streaming !== "" &&
-      chat !== "" &&
       subject_id !== ""
     ) {
       json.push(
@@ -173,7 +172,7 @@ export default function BatchPreviewTable(props) {
         end_date,
         streaming,
         resources,
-        chat,
+        // chat,
         subject_id
       );
     } else {
@@ -185,9 +184,10 @@ export default function BatchPreviewTable(props) {
       SessionJson[context[i]] = json[i];
     }
     API.asynchronizeRequest(function () {
-      SCHEDULESERVICE.createSession(SessionJson).catch(async (err) => {
+      SCHEDULESERVICE.uploadSigleSession(SessionJson).catch(async (err) => {
         await interceptExpiredToken(err);
-        console.error(err);
+        props.close()
+        props.messageError("info", true, true, err.response.data.errors)
       });
     });
   };
@@ -250,34 +250,32 @@ export default function BatchPreviewTable(props) {
       "annotation_start_date",
       "annotation_end_date",
       "isGlobal",
-      "user_id",
-      "subject_id",
+      "isPop",
+      "external_id",
     ];
 
     let payload = [];
-    let start_date = event[2];
-    let end_date = event[3];
     let name = event[0];
     let description = event[1];
+    let start_date = event[2];
+    let end_date = event[3];
     let isGlobal = event[4];
-    let user_id = 1;
-    let subject_id = event[5];
-    if (
-      (name !== "" &&
+    let isPop = event[5];
+    let subject_id = event[6];
+    if (name !== "" &&
         description !== "" &&
         start_date !== "" &&
         end_date !== "" &&
         isGlobal !== "" &&
-        subject_id !== "",
-      user_id !== "")
+        isPop !== "" &&
+        ( isGlobal === "1" || (isGlobal == "0" && subject_id !== ""))
     ) {
       payload.push(
-        start_date,
-        end_date,
         name,
         description,
+        start_date,
+        end_date,
         isGlobal,
-        user_id,
         subject_id
       );
     } else {
@@ -288,15 +286,13 @@ export default function BatchPreviewTable(props) {
     for (let i = 0; i <= context.length - 1; i++) {
       eventJson[context[i]] = payload[i];
     }
-    axios
-      .post(SCHEDULESERVICE.EVENTS, eventJson)
-      .then(() => {
-        window.location.reload();
-      })
-      .catch(async (err) => {
+    API.asynchronizeRequest(function () {
+      SCHEDULESERVICE.createEvent(eventJson).catch(async (err) => {
         await interceptExpiredToken(err);
-        console.error(err);
+        props.close()
+        props.messageError("info", true, true, err.response.data.errors)
       });
+    });
   };
 
   useEffect(() => {
@@ -315,18 +311,18 @@ export default function BatchPreviewTable(props) {
             <h4 className="batch_modal_title">Loading the information.</h4>
           </div>
           <div className="batch_modal_body">
-            {data.map((x) => {
-              return (
-                <ul>
-                  <li>
+            <ul>
+              {data.map((x, idx) => {
+                return (
+                  <li key={idx}>
                     {" "}
-                    {x.map((i) => {
-                      return <span>{" " + i + " "}</span>;
+                    {x.map((i,subidx) => {
+                      return <span key={`${idx}${subidx})`}>{" " + i + " "}</span>;
                     })}{" "}
                   </li>
-                </ul>
-              );
-            })}{" "}
+                );
+              })}{" "}
+            </ul>
           </div>
 
           <div className="batch_modal_footer">

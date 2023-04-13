@@ -152,11 +152,9 @@ export default function OpenedResource() {
           {files && files.length > 0 ? (
             files.map((file) => {
               return (
-                <>
-                  <li className={file != null ? "file-media" : ""}>
-                    {manageMediaType(file)}
-                  </li>
-                </>
+                <li key={file} className={file != null ? "file-media" : ""}>
+                  {manageMediaType(file)}
+                </li>
               );
             })
           ) : (
