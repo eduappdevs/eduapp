@@ -19,7 +19,7 @@ class ChatParticipantsController < ApplicationController
       final_chats = []
       user_chats.each do |chatp|
         chatBase = ChatBase.find(chatp.chat_base_id)
-        lastMessage = chatBase.chat_messages.last || ChatMessage.new(send_date: chatBase.created_at)
+        lastMessage = chatBase.chat_messages.order(send_date: :asc).last || ChatMessage.new(send_date: chatBase.created_at)
         chatSelfCounterpart = chatBase.chat_participants.where({user_id: params[:chats_for]}).first
         if chatSelfCounterpart.last_seen.present?
           numMessages = chatBase.chat_messages.where("created_at > ? AND user_id != ?", chatSelfCounterpart.last_seen, current_user).count
