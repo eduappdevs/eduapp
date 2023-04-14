@@ -14,7 +14,7 @@ export default function Typeahead(props) {
     }
 
     return (
-      <div className="typeahead-container" onBlur={() => setTimeout(() => setFocus(false),100)}>
+      <div className="typeahead-container" onBlur={() => setTimeout(() => setFocus(false),400)}>
         <input type="hidden" id={props.fieldId} value={selectedValue} />
         <input
             type="text"
