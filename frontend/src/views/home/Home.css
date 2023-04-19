@@ -29,16 +29,17 @@
 .user>.user-container>.information-user>.profile-picture {
 	display: flex;
 	justify-content: center;
-	height: 100%;
 	margin-top: 50px;
-	width: 100%;
+	height: 135px;
+	width: 135px;
 }
 
 .user>.user-container>.information-user>.profile-picture>img {
-	height: 135px;
-	width: 135px;
+	width: 100%;
+	height: 100%;
 	border-radius: 50%;
 	border: 2px solid var(--orange);
+	object-fit: cover;
 }
 
 .user>.user-container>.information-user>.user-name {

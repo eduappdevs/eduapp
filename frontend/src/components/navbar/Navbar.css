@@ -113,6 +113,8 @@ header>nav>.profile-button>.profile-button-box>.profile-pic>img {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
+	object-fit: cover;
+	border: 1px solid var(--orange);
 }
 
 header>nav>.notifications-button {
