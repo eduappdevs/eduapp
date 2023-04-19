@@ -16,19 +16,23 @@ import useViewsPermissions from "../../../hooks/useViewsPermissions";
 import { FetchUserInfo } from "../../../hooks/FetchUserInfo";
 import useLanguage from "../../../hooks/useLanguage";
 import { MainChatInfoCtx } from "../../../hooks/MainChatInfoContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IMG_FLBK_GROUP, IMG_FLBK_USER } from "../../../config";
 import getPrefixedImageURL from "../../../utils/UrlImagePrefixer";
 
 import "./MainChat.css";
+import IDBManager from "../../../utils/IDBManager";
 import { ChatBottomCtx } from "../../../hooks/ChatBottomContext";
 
 const acInstance = new ChatsAC();
 const notifs = new NotifsAC();
 let privKey = null;
 let pubKey = null;
+let db = new IDBManager();
+
 export default function MainChat() {
   const [chatBottomParams, setChatBottomParams] = useContext(ChatBottomCtx);
+  const { chatId } = useParams();
 
   const language = useLanguage();
   // eslint-disable-next-line no-unused-vars
@@ -46,34 +50,47 @@ export default function MainChat() {
   const [popupText, setPopupText] = useState("");
   const [isPopupQuestion, setIsPopupQuestion] = useState(false);
 
-  const sendMessage = () => {
-    let inputMsg = document.getElementById("message-area");
+  const sendMessage = async () => {
+    let inputMsgEl = document.getElementById("message-area");
+    let inputMsg = inputMsgEl.value.trim();
     if (
-      inputMsg.value !== "" &&
-      inputMsg.value !== " " &&
-      inputMsg.value.length > 0
+      inputMsg !== "" &&
+      inputMsg !== " " &&
+      inputMsg.length > 0
     ) {
       let userId = getOfflineUser().user.id;
-      let msgEncrypted = EncryptionUtils.encrypt(inputMsg.value, pubKey);
-      acInstance.sendChannelCmd(
-        "message",
-        EncryptionUtils.encrypt(inputMsg.value, pubKey),
-        getOfflineUser().user.id,
-        new Date().toISOString()
-      );
-      notifs.sendChannelCmd(`${userId}:${msgEncrypted}`, {
-        type: "notification",
-        to: {
-          userId,
-        },
-      });
-      inputMsg.value = "";
+      let msgEncrypted = EncryptionUtils.encrypt(inputMsg, pubKey);
+      let msgToSave = {
+        id: "newMessage" + new Date().toJSON(),
+        chat_base: { id: chatId.substring(1) },
+        message: msgEncrypted,
+        user: getOfflineUser().user,
+        send_date: new Date().toJSON()
+      }
+      if (acInstance.sendChannelCmd()) {
+        await db.set(msgToSave.id, msgToSave)
+        acInstance.sendChannelCmd(
+          "message",
+          EncryptionUtils.encrypt(inputMsg, pubKey),
+          getOfflineUser().user.id,
+          new Date().toISOString()
+        );
+        notifs.sendChannelCmd(`${userId}:${msgEncrypted}`, {
+          type: "notification",
+          to: {
+            userId,
+          },
+        });
+      } else {
+        console.log("Error sending message")
+      }
+      inputMsgEl.value = "";
 
       // To test notifications focus...
       // setTimeout(() => {
       //   acInstance.sendChannelCmd(
       //     "message",
-      //     EncryptionUtils.encrypt(inputMsg.value, pubKey),
+      //     EncryptionUtils.encrypt(inputMsg, pubKey),
       //     getOfflineUser().user.id,
       //     new Date().toISOString()
       //   );
@@ -83,13 +100,16 @@ export default function MainChat() {
       //       userId,
       //     },
       //   });
-      //   inputMsg.value = "";
+      //   inputMsgEl.value = "";
       // },10000);
     }
   };
 
-  const manageIncomingMsg = (newMsg) => {
+  const manageIncomingMsg = async (newMsg) => {
     if (newMsg.chat_base.id === acInstance.chatCode.substring(1)) {
+      if (newMsg.user.id !== getOfflineUser().user.id){
+        await db.set(newMsg.id, newMsg)
+      }
       setNewMessages((prevMsgs) => [...prevMsgs, newMsg]);
       let messageBox = document.getElementsByClassName(
         "main-chat-messages-container"
@@ -155,10 +175,26 @@ export default function MainChat() {
     }
   };
 
+  const manageChatView = () => {
+    setTimeout(() => {
+      let messageBox = document.getElementsByClassName(
+        "main-chat-messages-container"
+      )[0];
+      if (messageBox.childNodes.length !== 0) {
+        messageBox.childNodes[
+          messageBox.childNodes.length - 1
+        ].scrollIntoView(true);
+      }
+
+      setChatCtx(chat);
+      window.dispatchEvent(new Event("canLoadChat"));
+    }, 100);
+  }
+
   useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
   useEffect(() => {
-    acInstance.chatCode = window.location.pathname.split("/")[2];
-    let chatId = acInstance.chatCode.substring(1);
+    acInstance.chatCode = chatId;
+    let filtered_chatId = chatId.substring(1)
 
     // Generate websocket connection to chat room
     acInstance.generateChannelConnection(acInstance.chatCode).then(async () => {
@@ -188,22 +224,30 @@ export default function MainChat() {
         setChat({...chat, chatInfo: cInfo, chatParticipants: participants});
       });
       // Retrieve chat messages
-      CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
-        setMessages(msgs.data);
-        setTimeout(() => {
-          let messageBox = document.getElementsByClassName(
-            "main-chat-messages-container"
-          )[0];
-          if (messageBox.childNodes.length !== 0) {
-            messageBox.childNodes[
-              messageBox.childNodes.length - 1
-            ].scrollIntoView(true);
-          }
+      await db.getStorageInstance("eduapp-messages-db", "messages");
 
-          setChatCtx(chat);
-          window.dispatchEvent(new Event("canLoadChat"));
-        }, 100);
-      });
+      db.isEmpty().then((res) => {
+        if (res) {
+          CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
+            setMessages(msgs.data);
+            manageChatView();
+          });
+        } else {
+          console.log(new Date().toJSON())
+          db.getAllValues().then((values) => {
+            let msgsToList = [];
+            values.map((value) => {
+              if (value.chat_base.id === filtered_chatId) {
+                msgsToList = [value, ...msgsToList];
+              }
+              return
+            })
+            msgsToList.sort((a, b) => new Date(a.send_date) - new Date(b.send_date))
+            setMessages(msgsToList)
+            manageChatView();
+          })
+        }
+      })
     });
   }, []);
 
@@ -214,12 +258,12 @@ export default function MainChat() {
     });
 
     let inputArea = document.getElementById("message-area");
-    inputArea.addEventListener("keydown", (event) => {
+    inputArea.onkeydown = (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
         if (inputArea.value.length !== 0) sendMessage();
       }
-    });
+    };
   }, [newMessages, acInstance]);
 
   useEffect(() => {
@@ -233,6 +277,11 @@ export default function MainChat() {
       setChatBottomParams({ showing: false });
     };
   }, []);
+
+  const addLocalMessage = async (msg) => {
+    await db.getStorageInstance("eduapp-messages-db", "messages");
+    db.set(msg.id, msg)
+  }
 
   return (
     <>
@@ -286,6 +335,7 @@ export default function MainChat() {
         <div className="main-chat-messages-container">
           {messages.length !== 0
             ? messages.map((msg) => {
+              addLocalMessage(msg);
               return (
                 <ChatBubble
                   key={msg.user.id + "-" + msg.id}

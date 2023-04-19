@@ -14,6 +14,7 @@ import useLanguage from "../../hooks/useLanguage";
 import getPrefixedImageURL from "../../utils/UrlImagePrefixer";
 
 import "./ChatMenu.css";
+import IDBManager from "../../utils/IDBManager";
 
 let acManager = new ChatsAC();
 export default function ChatMenu() {
@@ -28,6 +29,11 @@ export default function ChatMenu() {
   const language = useLanguage();
   let userInfo = FetchUserInfo(getOfflineUser().user.id);
   let canCreate = userCan(userInfo, CHAT, CREATE);
+
+  const activeMessagesDB = async () => {
+    let db = new IDBManager();
+    await db.getStorageInstance("eduapp-messages-db", "messages");
+  }
 
   const getChats = async () => {
     let chats = (
@@ -65,6 +71,7 @@ export default function ChatMenu() {
     acManager.closeConnection();
     RequireAuth();
     getChats();
+    activeMessagesDB();
   }, []);
 
   useEffect(() => {
