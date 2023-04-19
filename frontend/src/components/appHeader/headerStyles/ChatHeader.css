@@ -55,6 +55,8 @@
 	border-radius: 50%;
 	margin-top: 15px;
 	margin-right: 20px;
+	object-fit: cover;
+	border: 1px solid var(--orange);
 }
 
 .ChatHeaderName>p {
