@@ -200,7 +200,7 @@ export default function MainChat() {
     acInstance.generateChannelConnection(acInstance.chatCode).then(async () => {
       // Retrieve chat info
       await asynchronizeRequest(async function () {
-        let rawChat = (await CHAT_SERVICE.fetchChatInfo(chatId)).data;
+        let rawChat = (await CHAT_SERVICE.fetchChatInfo(filtered_chatId)).data;
         let cInfo = rawChat.chat;
         let participants = rawChat.participants;
 
@@ -228,7 +228,7 @@ export default function MainChat() {
 
       db.isEmpty().then((res) => {
         if (res) {
-          CHAT_SERVICE.fetchChatMessages(chatId).then((msgs) => {
+          CHAT_SERVICE.fetchChatMessages(filtered_chatId).then((msgs) => {
             setMessages(msgs.data);
             manageChatView();
           });

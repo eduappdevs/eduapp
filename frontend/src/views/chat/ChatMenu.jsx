@@ -12,6 +12,7 @@ import RequireAuth from "../../components/auth/RequireAuth";
 import useViewsPermissions from "../../hooks/useViewsPermissions";
 import useLanguage from "../../hooks/useLanguage";
 import getPrefixedImageURL from "../../utils/UrlImagePrefixer";
+import EncryptionUtils from "../../utils/EncryptionUtils";
 
 import "./ChatMenu.css";
 import IDBManager from "../../utils/IDBManager";
@@ -153,7 +154,13 @@ export default function ChatMenu() {
                         <h2 className="chat-name">
                           {chat.chat_info.chat_name}
                         </h2>
-                        {/* <p className="chat-writing">{chat.chat_info?.last_message.message}</p> */}
+                        {chat.chat_info && chat.chat_info.last_message && chat.chat_info.last_message.message ?
+                          <p className="chat-writing">
+                            {EncryptionUtils.decrypt(chat.chat_info.last_message.message, 
+                              atob(chat.chat_info.private_key)).message}
+                          </p>
+                          : <></>
+                        }
                       </div>
                       <p className="chat-pending-messages">
                         <span>{chat.chat_info?.num_messages}</span>
