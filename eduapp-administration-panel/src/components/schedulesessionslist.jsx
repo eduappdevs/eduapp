@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useState, Fragment, useCallback, useMemo, useRef } from "react";
+import { useContext, useEffect, useState, useCallback, useMemo, useRef } from "react";
 import * as API from "../API";
 import * as SCHEDULESERVICE from "../services/schedule.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
@@ -10,7 +10,6 @@ import { interceptExpiredToken } from "../utils/OfflineManager";
 import PageSelect from "./pagination/PageSelect";
 import SelectedModal from "./modals/selected-modal/SelectedModal";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
-import useFilter from "../hooks/useFilter";
 import { getSessionFields } from "../constants/search_fields";
 import { LanguageCtx } from "../hooks/LanguageContext";
 import ExtraFields from "./ExtraFields";
@@ -22,7 +21,6 @@ export default function Schedulesessionslist(props) {
   const [language] = useContext(LanguageCtx);
 
   const [sessions, setSessions] = useState(null);
-  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
   const [subjects, setSubjects] = useState([]);
 
   const [maxPages, setMaxPages] = useState(1);
@@ -45,12 +43,6 @@ export default function Schedulesessionslist(props) {
   const sessionBeforeEditing = useRef(null);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  // const filteredSessions = useFilter(
-  //   sessions,
-  //   null,
-  //   SCHEDULESERVICE.filterSessions,
-  //   getSessionFields(language)
-  // );
 
   const shortUUID = useCallback((uuid) => uuid.substring(0, 8), []);
 
@@ -179,8 +171,8 @@ export default function Schedulesessionslist(props) {
       (name !== "" &&
         start_date !== "" &&
         end_date !== "" &&
-        resources !== "" &&
-        streaming !== "" &&
+        // resources !== "" &&     // resources & streaming shouldn't be validated
+        // streaming !== "" &&
         subject_id !== `${language.chooseSubject}` && subject_id !== "" &&
         subject_code !== `${language.chooseSubject}` && subject_code !== "")
     ) {
@@ -226,7 +218,7 @@ export default function Schedulesessionslist(props) {
         connectionAlert();
       }
     });
-  }, []);
+  }, [language]);
 
   const confirmDeleteEvent = useCallback(async (s) => {
     finalizedDelete("warning", true, true, language.deleteAlert);
@@ -272,7 +264,7 @@ export default function Schedulesessionslist(props) {
         id: id,
       });
     }
-  }, []);
+  }, [language]);
 
   const deleteOneSession = useCallback(async () => {
     switchEditState(false);
@@ -459,7 +451,7 @@ export default function Schedulesessionslist(props) {
         connectionAlert();
       }
     });
-  }, []);
+  }, [language]);
 
   const editGlobalSession = useCallback(() => {
     API.asynchronizeRequest(function () {
@@ -539,7 +531,7 @@ export default function Schedulesessionslist(props) {
         connectionAlert();
       }
     });
-  }, [selectInfo, actualPage, searchParams]);
+  }, [selectInfo, actualPage, searchParams, language]);
 
   const closeEditSession = (e, index) => {
     let disable = 1;
@@ -608,7 +600,7 @@ export default function Schedulesessionslist(props) {
         connectionAlert();
       }
     });
-  }, [idBatch]);
+  }, [idBatch, language]);
 
   const showModal = useCallback(async () => {
     switchEditState(false);
@@ -636,7 +628,7 @@ export default function Schedulesessionslist(props) {
       }
       alertCreate();
     }
-  }, []);
+  }, [language]);
 
   const handleChange = (index, value) => {
     const inputName = value.target.name
@@ -846,7 +838,6 @@ export default function Schedulesessionslist(props) {
   useEffect(() => {
     // fetchSessions(1);
     fetchSubjects();
-    setInitialFetch(true);
   }, []);
 
   useEffect(() => {
@@ -865,15 +856,6 @@ export default function Schedulesessionslist(props) {
       order: "asc",
     });
   }, [language]);
-
-  // useEffect(() => {
-  //   if (hasDoneInitialFetch) {
-  //     fetchSessions(1, {
-  //       field: searchParams.selectedField,
-  //       order: searchParams.order,
-  //     });
-  //   }
-  // }, [searchParams.order]);
 
   return (
     <>
