@@ -74,8 +74,11 @@ export const filterParticipants = async ({
   );
 };
 
-export const pagedChatParticipants = async (page) => {
-  return await axios.get(`${CHAT_PARTICIPANT}?page=${page}`, {
+export const pagedChatParticipants = async (page, order = null, searchParams = []) => {
+  const value = searchParams['query']
+  const attribute = searchParams['selectedField']
+  
+  return await axios.get(`${CHAT_PARTICIPANT}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}`, {
     headers: requestHeader,
   });
 };

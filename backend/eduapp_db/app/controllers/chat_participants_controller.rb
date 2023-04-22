@@ -58,6 +58,16 @@ class ChatParticipantsController < ApplicationController
         return
       end
       @participants = ChatParticipant.where(chat_base_id: params[:chat_id])
+    elsif params[:email]
+      if !check_perms_query!(get_user_roles.perms_chat_participants)
+        return
+      end
+      @participants = ChatParticipant.joins(:user).where('users.email ilike ?', "%#{params[:email]}%")
+    elsif params[:chat_name]
+      if !check_perms_query!(get_user_roles.perms_chat_participants)
+        return
+      end
+      @participants = ChatParticipant.joins(:chat_base).where('chat_bases.chat_name ilike ?', "%#{params[:chat_name]}%")
     else
       if !check_perms_all!(get_user_roles.perms_chat_participants)
         return
