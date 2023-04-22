@@ -9,12 +9,25 @@ class ChatMessagesController < ApplicationController
       if !check_user_in_chat(params[:chat_base_id])
         return deny_perms_access!
       end
-      @chat_messages = ChatMessage.order(send_date: :asc).where(chat_base_id: params[:chat_base_id])
+      if params[:send_date]
+        @chat_messages = ChatMessage.order(send_date: :asc)
+          .where("chat_base_id = :chat_base_id and send_date > :send_date", {
+            chat_base_id: params[:chat_base_id], send_date: params[:send_date]
+          })
+      else
+        @chat_messages = ChatMessage.order(send_date: :asc)
+          .where(chat_base_id: params[:chat_base_id])
+      end
     else
       if !check_perms_all!(get_user_roles.perms_message)
         return
       end
-      @chat_messages = ChatMessage.all
+      if params[:send_date]
+        @chat_messages = ChatMessage.order(send_date: :asc)
+          .where("send_date > ?", params[:send_date])
+      else
+        @chat_messages = ChatMessage.order(send_date: :asc).all
+      end
     end
 
     if params[:page]

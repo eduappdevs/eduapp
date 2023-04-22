@@ -88,8 +88,9 @@ export const fetchPersonalChats = async (userId) => {
 };
 
 //Message
-export const fetchChatMessages = async (cId) => {
-  return await axios.get(`${CHAT_MESSAGES}?chat_base_id=${cId}`, {
+export const fetchChatMessages = async (cId, startingDate = null) => {
+  const auxStartingDate = startingDate? `&send_date=${startingDate}` : "";
+  return await axios.get(`${CHAT_MESSAGES}?chat_base_id=${cId}${auxStartingDate}`, {
     headers: requestHeader,
   });
 };

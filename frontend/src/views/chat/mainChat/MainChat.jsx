@@ -107,7 +107,7 @@ export default function MainChat() {
 
   const manageIncomingMsg = async (newMsg) => {
     if (newMsg.chat_base.id === acInstance.chatCode.substring(1)) {
-      if (newMsg.user.id !== getOfflineUser().user.id){
+      if (newMsg.user.id !== getOfflineUser().user.id) {
         await db.set(newMsg.id, newMsg)
       }
       setNewMessages((prevMsgs) => [...prevMsgs, newMsg]);
@@ -152,7 +152,7 @@ export default function MainChat() {
   // };
 
   const findUserName = (uId) => {
-    if(chat.chatParticipants.length === undefined) return ""; //To be fixed: logged out user. It should be maybe fetched in the server.
+    if (chat.chatParticipants.length === undefined) return ""; //To be fixed: logged out user. It should be maybe fetched in the server.
     let messageSender = chat.chatParticipants.find((u) => u.user.id === uId);
     if (messageSender === undefined) return ""; //To be fixed: logged out user. It should be maybe fetched in the server.
     return messageSender.user_name;
@@ -221,7 +221,7 @@ export default function MainChat() {
 
         // chat.chatInfo = cInfo;
         // chat.chatParticipants = participants;
-        setChat({...chat, chatInfo: cInfo, chatParticipants: participants});
+        setChat({ ...chat, chatInfo: cInfo, chatParticipants: participants });
       });
       // Retrieve chat messages
       await db.getStorageInstance("eduapp-messages-db", "messages");
@@ -233,18 +233,24 @@ export default function MainChat() {
             manageChatView();
           });
         } else {
-          console.log(new Date().toJSON())
+          // console.log(new Date().toJSON())
           db.getAllValues().then((values) => {
             let msgsToList = [];
             values.map((value) => {
               if (value.chat_base.id === filtered_chatId) {
                 msgsToList = [value, ...msgsToList];
               }
-              return
+              // return
             })
             msgsToList.sort((a, b) => new Date(a.send_date) - new Date(b.send_date))
-            setMessages(msgsToList)
-            manageChatView();
+
+            // Messages from last message previously downloaded to IndexedDB.
+            CHAT_SERVICE.fetchChatMessages(filtered_chatId,
+              msgsToList.slice(-1).send_date).then((msgs) => {
+                msgsToList = [...msgsToList, msgs];
+                setMessages(msgs.data);
+                manageChatView();
+              });
           })
         }
       })
