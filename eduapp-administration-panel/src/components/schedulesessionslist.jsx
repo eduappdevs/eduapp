@@ -179,8 +179,8 @@ export default function Schedulesessionslist(props) {
       (name !== "" &&
         start_date !== "" &&
         end_date !== "" &&
-        resources !== "" &&
-        streaming !== "" &&
+        // resources !== "" &&
+        // streaming !== "" &&
         subject_id !== `${language.chooseSubject}` && subject_id !== "" &&
         subject_code !== `${language.chooseSubject}` && subject_code !== "")
     ) {

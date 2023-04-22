@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "dexie": "^3.2.3",
-    "dexie-react-hooks": "^1.1.1"
-  }
-}
