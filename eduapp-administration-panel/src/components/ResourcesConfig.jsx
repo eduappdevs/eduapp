@@ -294,8 +294,8 @@ export default function ResourcesConfig() {
           ? (e.target.parentNode.childNodes[num].style.display = "block")
           : (e.target.parentNode.childNodes[num].style.display = "none")
         : e.target.parentNode.childNodes[num].style.display === "block"
-        ? (e.target.parentNode.childNodes[num].style.display = "none")
-        : (e.target.parentNode.childNodes[num].style.display = "block");
+          ? (e.target.parentNode.childNodes[num].style.display = "none")
+          : (e.target.parentNode.childNodes[num].style.display = "block");
       num += 1;
     }
   };
@@ -362,7 +362,7 @@ export default function ResourcesConfig() {
 
   return (
     <>
-      <div className="resources-main-container" id="scroll">
+      <div className="add-form">
         <table>
           <thead>
             <tr>
@@ -424,15 +424,17 @@ export default function ResourcesConfig() {
             </tr>
           </tbody>
         </table>
-        <div className="notify-users">
-          <PageSelect
-            onPageChange={async (p) => fetchResourcesPage(p)}
-            maxPages={maxPages}
-          />
-        </div>
-        <div className="resources-table-info">
-          {resources && resources.length !== 0 ? (
-            <table style={{ marginTop: "15px" }} id="resources-config">
+      </div>
+      <div className="notify-users">
+        <PageSelect
+          onPageChange={async (p) => fetchResourcesPage(p)}
+          maxPages={maxPages}
+        />
+      </div>
+      <div className="resources-main-container" id="scroll">
+        {resources && resources.length !== 0 ? (
+          <div className="resources-table-info">
+            <table style={{ marginTop: "10px" }} id="resources-config">
               <thead>
                 <tr>
                   <th>{language.code}</th>
@@ -526,7 +528,7 @@ export default function ResourcesConfig() {
                         </button>
                         <button
                           id="show-edit-option"
-                          style={{ marginRight: "5px", display: 'none',}}
+                          style={{ marginRight: "5px", display: 'none', }}
                           onClick={(e) => showEditOptionResource(e)}
                         >
                           <svg
@@ -589,9 +591,10 @@ export default function ResourcesConfig() {
                 })}
               </tbody>
             </table>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
+
       <ResourcesModal
         create={showCreateModal}
         show={showModal}

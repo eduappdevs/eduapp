@@ -336,7 +336,7 @@ export default function ChatParticipantConfig() {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={async (p) => setActualPage(p)}
+          onPageChange={(p) => fetchParticipantsPage(p, null, searchParams)}
           maxPages={maxPages}
         />
       </div>
