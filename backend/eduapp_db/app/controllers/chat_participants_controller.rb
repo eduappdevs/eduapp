@@ -26,7 +26,7 @@ class ChatParticipantsController < ApplicationController
         else
           numMessages = chatBase.chat_messages.count
         end
-        chat = chatBase.serializable_hash(:except => [:private_key, :public_key, :created_at, :updated_at]).merge({
+        chat = chatBase.serializable_hash(:except => [:public_key, :created_at, :updated_at]).merge({
           last_message: lastMessage.serializable_hash,
           self_counterpart: chatSelfCounterpart.serializable_hash,
           num_messages: numMessages

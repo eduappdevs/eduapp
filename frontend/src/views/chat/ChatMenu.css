@@ -116,7 +116,12 @@
 }
 
 .chat-idle-state>p {
-	display: none;
+	/* display: none; */
+	padding-top: 0;
+	margin-top:0;
+	text-overflow: ellipsis; 
+  white-space: nowrap; 
+  overflow: hidden;
 }
 
 .chat-search-container {

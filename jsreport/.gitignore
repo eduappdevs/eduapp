@@ -30,3 +30,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#jsreports
+jsreport/data/storage/profiles/**/*.log

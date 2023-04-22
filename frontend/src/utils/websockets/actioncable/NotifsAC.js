@@ -38,7 +38,8 @@ export default class NotifsAC extends ACManager {
           NOTIFSMODAL.instanceModal(data);
         }
         if (this.idbm.keyExists(data.author_name)) {
-          console.log(await this.idbm.get(data.author_name));
+          // THIS MUST BE FINISHED
+          // console.log(await this.idbm.get(data.author_name));
 
           // .then((res)=>{
           //     let value = parseInt(res)++
