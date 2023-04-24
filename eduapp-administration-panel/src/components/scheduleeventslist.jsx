@@ -785,7 +785,11 @@ export default function Scheduleeventslist() {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={(p) => setActualPage(p)}
+          onPageChange={(p) => fetchEvents(p, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams)}
+          actualPage={actualPage}
           maxPages={maxPages}
         />
       </div>

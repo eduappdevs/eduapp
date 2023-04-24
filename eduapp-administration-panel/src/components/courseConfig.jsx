@@ -193,9 +193,9 @@ export default function CourseConfig() {
     API.asynchronizeRequest(function () {
       COURSESERVICE.pagedCourses(page, order, searchParams)
         .then((i) => {
+          setActualPage(i.data.page);
           setCourses(i.data.current_page);
           setMaxPages(i.data.total_pages);
-          setActualPage(i.data.page);
           fetchInstitutions();
         })
         .catch(async (e) => {
@@ -459,12 +459,12 @@ export default function CourseConfig() {
   }, [courses])
 
   useEffect(() => {
-    fetchCoursePage(actualPage || 1, {
+    fetchCoursePage(1, {
       field: searchParams.selectedField,
       order: searchParams.order,
     }, searchParams);
     !hasDoneInitialFetch && setInitialFetch(true);
-  }, [searchParams, actualPage]);
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -546,7 +546,11 @@ export default function CourseConfig() {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={(p) => setActualPage(p)}
+          onPageChange={(p) => fetchCoursePage(p, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams)}
+          actualPage={actualPage}
           maxPages={maxPages}
         />
       </div>

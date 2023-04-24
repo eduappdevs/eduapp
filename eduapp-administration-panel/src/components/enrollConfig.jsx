@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useContext, useEffect, useState, useRef } from "react";
+import { Fragment, useContext, useEffect, useState, useRef, useCallback } from "react";
 import * as API from "../API";
 import * as TUITIONSSERVICE from "../services/enrollConfig.service";
 import * as USERSSERVICE from "../services/user.service";
@@ -28,12 +28,6 @@ export default function EnrollConfig() {
   const tuitionBeforeEditing = useRef(null);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  // const filteredTuitions = useFilter(
-  //   tuitions,
-  //   null,
-  //   TUITIONSSERVICE.filterTuitions,
-  //   getEnrollmentFields(language)
-  // );
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -42,7 +36,7 @@ export default function EnrollConfig() {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  const switchEditState = (state) => {
+  const switchEditState = useCallback((state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
@@ -53,26 +47,27 @@ export default function EnrollConfig() {
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
-  };
-  const finalizedEdit = (type, icon, text, confirmDel) => {
+  }, []);
+
+  const finalizedEdit = useCallback((type, icon, text, confirmDel) => {
     fetchTuitions(actualPage);
     setIsConfirmDelete(confirmDel);
     setPopup(true);
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(text);
-  };
+  }, [actualPage]);
 
-  const finalizedCreate = (type, icon, txt, confirmDel) => {
+  const finalizedCreate = useCallback((type, icon, txt, confirmDel) => {
     fetchTuitions(actualPage);
     setIsConfirmDelete(confirmDel);
     setPopup(true);
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(txt);
-  };
+  }, [actualPage]);
 
-  const finalizedDelete = (type, icon, confirmDel, text) => {
+  const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
     switchEditState(false);
     setPopupType(type);
     setPopupIcon(icon);
@@ -80,18 +75,18 @@ export default function EnrollConfig() {
     setPopupText(text);
     setIsConfirmDelete(confirmDel);
     fetchTuitions(actualPage);
-  };
+  }, [actualPage]);
 
-  const connectionAlert = async () => {
+  const connectionAlert = useCallback(async () => {
     switchEditState(false);
     setPopup(true);
     setPopupText(language.connectionAlert);
     setPopupIcon("error");
-  };
+  }, [language]);
 
-  const fetchTuitions = (pages) => {
-    API.asynchronizeRequest(function () {
-      TUITIONSSERVICE.pagedTuitions(pages, searchParams)
+  const fetchTuitions = useCallback((pages, order = null, searchParams) => {
+    API.asynchronizeRequest(() => {
+      TUITIONSSERVICE.pagedTuitions(pages, order, searchParams)
         .then((ts) => {
           setActualPage(ts.data.page);
           setMaxPages(ts.data.total_pages);
@@ -106,46 +101,44 @@ export default function EnrollConfig() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const fetchUsers = () => {
+  const fetchUsers = useCallback(() => {
     API.asynchronizeRequest(function () {
-      USERSSERVICE.fetchUserInfos().then((us) => {
-        setUsers(us.data);
-      });
+      USERSSERVICE.fetchUserInfos()
+      .then((us) => setUsers(us.data));
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
         connectionAlert();
       }
     });
-  };
+  }, []);
 
-  const fetchCourses = () => {
+  const fetchCourses = useCallback(() => {
     API.asynchronizeRequest(function () {
-      COURSESERVICE.fetchCourses().then((cs) => setCourses(cs.data));
+      COURSESERVICE.fetchCourses()
+      .then((cs) => setCourses(cs.data));
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
         connectionAlert();
       }
     });
-  };
+  }, []);
 
   const fetchAll = () => {
     fetchCourses();
-    // fetchTuitions(1);
     fetchUsers();
   };
 
-  const alertCreate = async () => {
+  const alertCreate = useCallback(async () => {
     setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
-  };
+  }, [language]);
 
-  const createTuition = (e) => {
-    e.preventDefault();
+  const createTuition = useCallback(async (e) => {
     switchEditState(false);
 
     let user = document.getElementById("user_select").value;
@@ -186,15 +179,15 @@ export default function EnrollConfig() {
     } else {
       alertCreate();
     }
-  };
+  }, [language]);
 
-  const confirmDeleteEvent = async (id) => {
+  const confirmDeleteEvent = useCallback(async (id) => {
     finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
     switchEditState(false);
-  };
+  }, [language]);
 
-  const deleteTuition = (id) => {
+  const deleteTuition = useCallback((id) => {
     switchEditState(false);
     API.asynchronizeRequest(function () {
       TUITIONSSERVICE.deleteTuition(id)
@@ -215,9 +208,9 @@ export default function EnrollConfig() {
         connectionAlert();
       }
     });
-  };
+  }, [language]);
 
-  const editEnroll = (e, s) => {
+  const editEnroll = useCallback((e, s) => {
     switchEditState(false);
 
     let inputUser = document.getElementById("inputUserID_" + s.id).value;
@@ -273,7 +266,7 @@ export default function EnrollConfig() {
         await interceptExpiredToken(e);
       }
     });
-  };
+  }, [language]);
 
   const closeEditTuition = (e, index) => {
     let disable = 0;
@@ -347,12 +340,6 @@ export default function EnrollConfig() {
     return (
       <>
         {tuitions && tuitions.map((t, index) => {
-          // if (filteredTuitions !== null)
-          //   if (
-          //     filteredTuitions.find((ft) => t.id === ft.id) ===
-          //     undefined
-          //   )
-          //     return <Fragment key={t.id} />;
           return (
             <tr key={t.id}>
               <td>
@@ -486,8 +473,11 @@ export default function EnrollConfig() {
   }, []);
 
   useEffect(() => {
-    fetchTuitions(actualPage, searchParams);
-  }, [actualPage, searchParams]);
+    fetchTuitions(1, {
+      field: searchParams.selectedField,
+      order: searchParams.order,
+    }, searchParams);
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -573,7 +563,11 @@ export default function EnrollConfig() {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={(page) => setActualPage(page)}
+          onPageChange={(p) => fetchTuitions(p, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams)}
+          actualPage={actualPage}
           maxPages={maxPages}
         />
       </div>

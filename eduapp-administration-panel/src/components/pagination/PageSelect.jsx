@@ -6,43 +6,42 @@ import "../componentStyles/PageSelect.css";
  * Component used to display pagination in tables.
  *
  * @param {Function} onPageChange Function to executes when the page changes. Mostly used to refetch a page on change.
- * @param {Number} maxPages Max number of pages available to page.
+ * @param {Number} actualPage The actual page.
+ * * @param {Number} maxPages Max number of pages available to page.
  */
-export default function PageSelect({ onPageChange, maxPages }) {
+export default function PageSelect({ onPageChange, actualPage, maxPages }) {
   const minPages = 1;
-  const [page, setPage] = useState(1);
   const [canGoUp, setCanGoUp] = useState(true);
   const [canGoDown, setCanGoDown] = useState(false);
 
   const pageUp = () => {
-    if (page < maxPages) {
-      setPage(page + 1);
+    if (actualPage < maxPages) {
+      onPageChange(actualPage + 1);
     }
   };
 
   const pageDown = () => {
-    if (page > 1) {
-      setPage(page - 1);
+    if (actualPage > 1) {
+      onPageChange(actualPage - 1);
     }
   };
 
-  useEffect(() => {
-    if (page > minPages) {
-      setCanGoDown(true);
-    } else setCanGoDown(false);
-
-    if (page < maxPages) {
-      setCanGoUp(true);
-    } else setCanGoUp(false);
-
-    if (page === maxPages) {
+  const canGoUpOrDown = () => {
+    if (actualPage === maxPages) {
       setCanGoUp(false);
     } else setCanGoUp(true);
-    onPageChange(page);
-  }, [page]);
+
+    if (actualPage === minPages) {
+      setCanGoDown(false);
+    } else setCanGoDown(true);
+  };
 
   useEffect(() => {
-    if (page < maxPages) {
+    canGoUpOrDown();
+  }, [actualPage]);
+
+  useEffect(() => {
+    if (actualPage < maxPages) {
       setCanGoUp(true);
     } else setCanGoUp(false);
   }, [maxPages]);
@@ -56,7 +55,7 @@ export default function PageSelect({ onPageChange, maxPages }) {
       >
         &lt;
       </button>
-      <span>{page}</span>
+      <span>{actualPage}</span>
       <button
         className="page-down-button"
         onClick={pageUp}

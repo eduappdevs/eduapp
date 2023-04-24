@@ -167,7 +167,7 @@ export default function ChatParticipantConfig() {
     finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
     switchEditState(false);
-  }, []);
+  }, [language]);
 
   const deleteParticipant = useCallback((id) => {
     API.asynchronizeRequest(function () {
@@ -241,8 +241,8 @@ export default function ChatParticipantConfig() {
   }, []);
 
   useEffect(() => {
-    fetchParticipantsPage(actualPage, null, searchParams);
-  }, [searchParams, actualPage]);
+    fetchParticipantsPage(1, null, searchParams);
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -336,7 +336,8 @@ export default function ChatParticipantConfig() {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={async (p) => setActualPage(p)}
+          onPageChange={(p) => fetchParticipantsPage(p, null, searchParams)}
+          actualPage={actualPage}
           maxPages={maxPages}
         />
       </div>

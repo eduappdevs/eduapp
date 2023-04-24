@@ -45,11 +45,11 @@ export default function UserRolesConfig() {
   const [popupText, setPopupText] = useState("");
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
 
-  const fetchRoles = async (page, order = null) => {
+  const fetchRoles = async (page, order = null, searchParams) => {
     try {
-      const roles = await ROLE_SERVICE.pagedUserRoles(page, order);
-      setMaxPages(roles.total_pages);
+      const roles = await ROLE_SERVICE.pagedUserRoles(page, order, searchParams);
       setActualPage(roles.current_page);
+      setMaxPages(roles.total_pages);
       setRoles(roles.current_page);
     } catch (err) {
       await interceptExpiredToken(err);
@@ -432,9 +432,9 @@ export default function UserRolesConfig() {
       fetchRoles(1, {
         field: searchParams.selectedField,
         order: searchParams.order,
-      });
+      }, searchParams);
     }
-  }, [searchParams.order]);
+  }, [searchParams]);
 
   return (
     <>
@@ -522,10 +522,14 @@ export default function UserRolesConfig() {
         {roles && roles.length > 0 ? (
           <>
             <div className="notify-users">
-              <PageSelect
-                onPageChange={async (p) => fetchRoles(p)}
+              {/* <PageSelect
+                onPageChange={(p) => fetchRoles(p, {
+                  field: searchParams.selectedField,
+                  order: searchParams.order,
+                }, searchParams)}
+                actualPage={actualPage}
                 maxPages={maxPages}
-              />
+              /> */}
             </div>
             <table style={{ marginTop: "20px" }}>
               <thead>

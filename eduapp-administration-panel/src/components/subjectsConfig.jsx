@@ -61,7 +61,7 @@ export default function SubjectsConfig() {
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(text);
-  }, []);
+  }, [actualPage]);
 
   const finalizedCreate = useCallback((type, icon, txt, confirmDel) => {
     fetchSubjectPage(actualPage);
@@ -70,7 +70,7 @@ export default function SubjectsConfig() {
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(txt);
-  }, []);
+  }, [actualPage]);
 
   const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
     switchEditState(false);
@@ -80,14 +80,14 @@ export default function SubjectsConfig() {
     setPopupText(text);
     setIsConfirmDelete(confirmDel);
     fetchSubjectPage(actualPage);
-  }, []);
+  }, [actualPage]);
 
   const connectionAlert = useCallback(async () => {
     switchEditState(false);
     setPopup(true);
     setPopupText(language.connectionAlert);
     setPopupIcon("error");
-  }, []);
+  }, [language]);
 
   const fetchSubjectPage = useCallback(async (page, order = null, searchParams) => {
     API.asynchronizeRequest(function () {
@@ -143,7 +143,7 @@ export default function SubjectsConfig() {
     setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
-  }, []);
+  }, [language]);
 
   const createSubject = useCallback(() => {
     switchEditState(false);
@@ -196,13 +196,13 @@ export default function SubjectsConfig() {
     } else {
       alertCreate();
     }
-  }, []);
+  }, [language]);
 
   const confirmDeleteEvent = useCallback(async (id) => {
     finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
     switchEditState(false);
-  }, []);
+  }, [language]);
 
   const deleteSubject = useCallback((id) => {
     switchEditState(false);
@@ -226,7 +226,7 @@ export default function SubjectsConfig() {
         connectionAlert();
       }
     });
-  }, []);
+  }, [language]);
 
   const showEditOptionSubject = (e, index) => {
     let disable = 1;
@@ -299,7 +299,7 @@ export default function SubjectsConfig() {
       }
     });
     setEditing(editing.filter(idx => idx !== index));
-  }, []);
+  }, [language, editing]);
 
   const closeEditSubject = (e, index) => {
     let disable = 1;
@@ -506,10 +506,9 @@ export default function SubjectsConfig() {
         })}
       </>
     )
-  }, [subjects, editing]);
+  }, [subjects, editing, courses]);
 
   useEffect(() => {
-    // fetchSubjectPage(1);
     fetchCourses();
     fetchChats();
     setInitialFetch(true);
@@ -517,12 +516,12 @@ export default function SubjectsConfig() {
 
   useEffect(() => {
     if (searchParams.selectedField) {
-      fetchSubjectPage(actualPage || 1, {
+      fetchSubjectPage(1, {
           field: searchParams.selectedField,
           order: searchParams.order,
         }, searchParams);
     }
-  }, [searchParams, actualPage]);
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -658,7 +657,11 @@ export default function SubjectsConfig() {
           <>
             <div className="notify-users">
               <PageSelect
-                onPageChange={(p) => setActualPage(p)}
+                onPageChange={(p) => fetchSubjectPage(p, {
+                  field: searchParams.selectedField,
+                  order: searchParams.order,
+                }, searchParams)}
+                actualPage={actualPage}
                 maxPages={maxPages}
               />
             </div>

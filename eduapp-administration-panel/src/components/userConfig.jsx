@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useCallback, useEffect, useState, useMemo, useRef } from "react";
 import * as USERSERVICE from "../services/user.service";
-import * as ENROLLSERVICE from "../services/enrollConfig.service";
+// import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
+// import * as ENROLLSERVICE from "../services/enrollConfig.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import ExtraFields from "./ExtraFields";
-import * as COURSESERVICE from "../services/course.service";
+// import * as COURSESERVICE from "../services/course.service";
 import * as CHATSERVICE from "../services/chat.service";
 import * as ROLESERVICE from "../services/role.service";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
@@ -24,7 +26,7 @@ export default function UserConfig() {
   const [language] = useContext(LanguageCtx);
 
   const [users, setUsers] = useState(null);
-  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
+  // const [hasDoneInitialFetch, setInitialFetch] = useState(false);
 
   const [showPopup, setPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
@@ -68,7 +70,7 @@ export default function UserConfig() {
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(text);
-  }, []);
+  }, [actualPage]);
 
   const finalizedCreate = useCallback((type, icon, txt, confirmDel) => {
     fetchUserPage(actualPage);
@@ -77,30 +79,27 @@ export default function UserConfig() {
     setPopupIcon(icon);
     setPopupType(type);
     setPopupText(txt);
-  }, []);
+  }, [actualPage]);
 
   const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
+    switchEditState(false);
     setPopupType(type);
     setPopupIcon(icon);
     setPopup(true);
     setPopupText(text);
     setIsConfirmDelete(confirmDel);
     fetchUserPage(actualPage);
-  }, []);
+  }, [actualPage]);
 
   const connectionAlert = useCallback(async () => {
     switchEditState(false);
     setPopup(true);
     setPopupText(language.connectionAlert);
     setPopupIcon("error");
-  }, []);
+  }, [language]);
 
   const fetchUserPage = useCallback(async (page, order = null, searchParams) => {
     API.asynchronizeRequest(() => {
-      // order = {
-      //   field: 'name',
-      //   order: 'asc'
-      // }
       setLoadingParams({ loading: true });
       USERSERVICE.pagedUserInfos(page, order, searchParams)
         .then((us) => {
@@ -127,17 +126,22 @@ export default function UserConfig() {
         .then((roles) => {
           setUserPermRoles(roles);
         })
-        .catch(async (err) => {
-          await interceptExpiredToken(err);
-          console.error(err);
+        .catch((err) => {
+          // await interceptExpiredToken(err);
+          // console.error(err);
         });
-    });
+    }).then(async (e) => {
+      if (e) {
+        await interceptExpiredToken(e);
+        connectionAlert();
+      }
+    })
   }, []);
 
   const alertCreate = useCallback(async () => {
     switchEditState(false);
     finalizedCreate("error", true, language.creationFailed, false);
-  }, []);
+  }, [language]);
 
   const createUser = useCallback((e) => {
     switchEditState(false);
@@ -159,8 +163,8 @@ export default function UserConfig() {
             if (res) {
               document.getElementById("u_email").value = null;
               document.getElementById("u_pass").value = null;
-              finalizedCreate("info", true, language.creationCompleted, false);
               await userEnroll(res.data.user.id);
+              finalizedCreate("info", true, language.creationCompleted, false);
             }
             setLoadingParams({ loading: false });
           })
@@ -178,13 +182,13 @@ export default function UserConfig() {
     } else {
       alertCreate();
     }
-  }, []);
+  }, [language]);
 
   const confirmDeleteUser = useCallback(async (id) => {
     switchEditState(false);
     finalizedDelete("warning", true, true, language.deleteAlert);
     setIdDelete(id);
-  }, []);
+  }, [language]);
 
   const deleteUser = useCallback(async (id) => {
     let systemUser = (await USERSERVICE.fetchSystemUser()).data;
@@ -228,7 +232,7 @@ export default function UserConfig() {
     } else {
       alert("Cannot delete system user.");
     }
-  }, []);
+  }, [language]);
 
   const toggleEditRow = (e, disable = false) => {
     let editableFields = 2;
@@ -313,28 +317,33 @@ export default function UserConfig() {
 
   const userEnroll = useCallback(async (uId) => {
     const payload = new FormData();
-    payload.append(
-      "course_id",
-      (await COURSESERVICE.fetchGeneralCourse()).data.id
-    );
+    // Problem if there is more than a subject with the pattern name "%General%". It should be fixed
+    const subjectsWithGeneralName = (await SUBJECTSERVICE.getGeneralSubject());
+    const subject_id = subjectsWithGeneralName.data[0].id;
+    payload.append("subject_id", subject_id);
     payload.append("user_id", uId);
+    payload.append("enrollment", true);
 
     API.asynchronizeRequest(function () {
-      setLoadingParams({ loading: true });
-      ENROLLSERVICE.createTuition(payload);
+      SUBJECTSERVICE.createSubject(payload)
+        .then((e) => {
+          if (e) {
+            // Maybe in the future could be made something here.
+          }
+        })
+        .catch((e) => {
+          if (e) {
+            interceptExpiredToken(e);
+            setPopup(true);
+            setPopupType("info");
+            setPopupText(language.creationAlert);
+          }
+        });
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The new user could not be published, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        // switchSaveState(false);
+        connectionAlert();
       }
-      setLoadingParams({ loading: false });
-    }).catch(() => {
-      setLoadingParams({ loading: false });
     });
   }, []);
 
@@ -383,7 +392,7 @@ export default function UserConfig() {
     setAllSelected(!allSelected);
     for (let c of document.getElementsByName("user-check"))
       c.checked = allSelected;
-  }, []);
+  }, [allSelected]);
 
   const handleChange = (index, value) => {
     const inputName = value.target.name
@@ -393,7 +402,7 @@ export default function UserConfig() {
     setUsers(newUsers);
   }
 
-  const memoizedUsers = useMemo(() => {
+  const memoizedUsers = () => {
     return (
       <>
         {users && users.map((u, index) => {
@@ -546,22 +555,18 @@ export default function UserConfig() {
         }
       </>
     )
-  }, [users]);
+  };
 
   useEffect(() => {
-    // fetchUserPage(1);
     fetchRoles();
-    setInitialFetch(true);
   }, []);
 
   useEffect(() => {
-    // if (hasDoneInitialFetch) {
-    fetchUserPage(actualPage, {
+    fetchUserPage(1, {
       field: searchParams.selectedField,
       order: searchParams.order
     }, searchParams);
-    // }
-  }, [searchParams, actualPage]);
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -677,7 +682,11 @@ export default function UserConfig() {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={(p) => setActualPage(p)}
+          onPageChange={(p) => fetchUserPage(p, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams)}
+          actualPage={actualPage}
           maxPages={maxPages}
         />
         <button onClick={() => setNotifyModal(true)}>
@@ -704,7 +713,7 @@ export default function UserConfig() {
                 </tr>
               </thead>
               <tbody>
-                {memoizedUsers}
+                {memoizedUsers()}
               </tbody >
             </table >
           </div >
