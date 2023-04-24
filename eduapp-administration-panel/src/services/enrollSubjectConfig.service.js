@@ -7,12 +7,12 @@ export const fetchSubjectsUsers = async () => {
   return await axios.get(SUBJECTS_USERS, { headers: requestHeader });
 };
 
-export const pagedSubjectsUsers = async (page, searchParams = {}) => {
+export const pagedSubjectsUsers = async (page, order = null, searchParams = {}) => {
   const value = searchParams['query']
   const attribute = searchParams['selectedField']
   const extras = searchParams['extras']
-  const order = searchParams['order'] || "asc"
-  return await axios.get(`${SUBJECTS_USERS}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}${order ? ('&order=' + order) : '' }`, {
+  const auxOrder = searchParams['order'] || "asc"
+  return await axios.get(`${SUBJECTS_USERS}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}${auxOrder ? ('&order=' + auxOrder) : '' }`, {
     headers: requestHeader,
     data: extras,
   });

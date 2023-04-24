@@ -4,7 +4,8 @@ export const ROLES = `${API_URL}/user_roles`;
 
 const requestHeader = { eduauth: TOKEN };
 
-export const pagedUserRoles = async (page, order = null) => {
+export const pagedUserRoles = async (page, order = null, searchParams) => {
+  // searchParams should be used here
   return (
     await axios.get(
       `${ROLES}?page=${page}&order=${btoa(JSON.stringify(order))}`,

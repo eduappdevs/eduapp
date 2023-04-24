@@ -33,7 +33,7 @@ export default function TeacherConfig() {
   const [idDelete, setUserIdDelete] = useState();
   const [subjectDelete, setSubjectIdDelete] = useState();
 
-  const [, setSearchParams] = useContext(SearchBarCtx);
+  const [searchParams, setSearchParams] = useContext(SearchBarCtx);
   const filteredTeachers = useFilter(
     teachers,
     null,
@@ -53,6 +53,7 @@ export default function TeacherConfig() {
         "hidden";
     }
   };
+
   const fetchUsers = async () => {
     return await asynchronizeRequest(async function () {
       let rawUsers = await USER_SERVICE.fetchUserInfos();
@@ -136,7 +137,7 @@ export default function TeacherConfig() {
     setTeachers(allTeachers);
   };
 
-  const fetchTeacherPages = async (pages) => {
+  const fetchTeacherPages = async (pages, order = null, searchParams) => {
     let teacherFilter = [];
     if (maxPages === pages) {
       teacherPages && teacherPages[pages - 1].forEach((t) => {
@@ -148,6 +149,7 @@ export default function TeacherConfig() {
       });
     }
     setTeachers(teacherFilter);
+    setActualPage(pages);
   };
 
   const alertCreate = async () => {
@@ -368,8 +370,13 @@ export default function TeacherConfig() {
         </table>
       </div>
       <div className="notify-users">
+        {/* fetchTeacherPages doesn't do well the pagination. It should be fixed */}
         <PageSelect
-          onPageChange={async (p) => fetchTeacherPages(p)}
+          onPageChange={async (p) => fetchTeacherPages(p, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams)}
+          actualPage={actualPage}
           maxPages={maxPages}
         />
       </div>

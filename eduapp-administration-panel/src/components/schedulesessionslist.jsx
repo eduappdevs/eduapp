@@ -119,7 +119,8 @@ export default function Schedulesessionslist(props) {
   const fetchSubjects = useCallback(() => {
     API.asynchronizeRequest(function () {
       setLoadingParams({ loading: true });
-      SUBJECTSERVICE.fetchSubjects().then((cs) => {
+      SUBJECTSERVICE.fetchSubjects()
+      .then((cs) => {
         setSubjects(cs.data);
         setLoadingParams({ loading: false });
       }).catch(() => {
@@ -137,7 +138,7 @@ export default function Schedulesessionslist(props) {
     setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
-  }, []);
+  }, [language]);
 
   const addNewSession = useCallback(async (e) => {
     switchEditState(false);
@@ -225,7 +226,7 @@ export default function Schedulesessionslist(props) {
     setIdDelete(s.id);
     setIdBatch(s.batch_id);
     switchEditState(false);
-  }, []);
+  }, [language]);
 
   const deleteSession = useCallback((id, batch_id) => {
     switchEditState(false);
@@ -294,7 +295,7 @@ export default function Schedulesessionslist(props) {
         connectionAlert();
       }
     });
-  }, [selectInfo]);
+  }, [selectInfo, language]);
 
   const editSession = useCallback((e, s) => {
     switchEditState(false);
@@ -491,7 +492,7 @@ export default function Schedulesessionslist(props) {
         connectionAlert();
       }
     });
-  }, [selectInfo, actualPage, searchParams]);
+  }, [selectInfo, actualPage, searchParams, language]);
 
   const editOneSession = useCallback(() => {
     API.asynchronizeRequest(function () {
@@ -642,7 +643,7 @@ export default function Schedulesessionslist(props) {
     const inputName = value.target.name
     const newValue = value.target.value
     subjects.map(s => {
-      if(s.id == newValue){
+      if (s.id == newValue) {
         const newSessions = [...sessions];
         newSessions[index][inputName] = s;
         setSessions(newSessions);
@@ -836,16 +837,15 @@ export default function Schedulesessionslist(props) {
   };
 
   useEffect(() => {
-    // fetchSessions(1);
     fetchSubjects();
   }, []);
 
   useEffect(() => {
-    fetchSessions(actualPage, {
+    fetchSessions(1, {
       field: searchParams.selectedField,
       order: searchParams.order,
     }, searchParams);
-  }, [searchParams, actualPage]);
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -976,7 +976,11 @@ export default function Schedulesessionslist(props) {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={(p) => setActualPage(p)}
+          onPageChange={(p) => fetchSessions(p, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams)}
+          actualPage={actualPage}
           maxPages={maxPages}
         />
       </div>

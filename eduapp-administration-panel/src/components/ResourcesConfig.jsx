@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import asynchronizeRequest from "../API";
-import * as USER_SERVICE from "../services/user.service";
 import * as SUBJECTSERVICE from "../services/subject.service";
 import ResourcesModal from "./modals/resources-modal/ResourcesModal";
 import * as RESOURCESERVICES from "../services/resource.service";
@@ -9,7 +8,6 @@ import StandardModal from "./modals/standard-modal/StandardModal";
 import PageSelect from "./pagination/PageSelect";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
 import { SearchBarCtx } from "../hooks/SearchBarContext";
-import useFilter from "../hooks/useFilter";
 import { getResourceFields } from "../constants/search_fields";
 import ExtraFields from "./ExtraFields";
 import { LanguageCtx } from "../hooks/LanguageContext";
@@ -23,18 +21,11 @@ export default function ResourcesConfig() {
   const [, setUsers] = useState([]);
   const [subject, setSubject] = useState([]);
   const [resources, setResources] = useState([]);
-  const [hasDoneInitialFetch, setInitialFetch] = useState(false);
 
   const [maxPages, setMaxPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
 
   const [searchParams, setSearchParams] = useContext(SearchBarCtx);
-  const filteredResources = useFilter(
-    resources,
-    null,
-    RESOURCESERVICES.filterResources,
-    getResourceFields(language)
-  );
 
   const [resourceName, setResourceName] = useState();
   const [resourceSubject, setResourceSubject] = useState();
@@ -81,19 +72,6 @@ export default function ResourcesConfig() {
     setPopup(true);
     setPopupText(language.connectionAlert);
     setPopupIcon("error");
-  };
-
-  const fetchUsers = () => {
-    asynchronizeRequest(function () {
-      USER_SERVICE.fetchUserInfos().then((res) => {
-        setUsers(res.data);
-      });
-    }).then(async (e) => {
-      if (e) {
-        await interceptExpiredToken(e);
-        connectionAlert();
-      }
-    });
   };
 
   const fetchSubjects = async () => {
@@ -300,19 +278,17 @@ export default function ResourcesConfig() {
     }
   };
 
-  const fetchResourcesPage = async (page, order = null) => {
-    asynchronizeRequest(function () {
-      RESOURCESERVICES.pagedResources(page, order)
+  const fetchResourcesPage = useCallback(async (page, order = null, searchParams) => {
+    asynchronizeRequest(() => {
+      RESOURCESERVICES.pagedResources(page, order, searchParams)
         .then((us) => {
+          setActualPage(us.data.page);
           setMaxPages(us.data.total_pages);
           setResources(us.data.current_page);
-          setActualPage(us.data.page);
-          fetchSubjects();
-          fetchUsers();
         })
         .catch(async (err) => {
           await interceptExpiredToken(err);
-          console.error(err);
+          // console.error(err);
         });
     }).then(async (e) => {
       if (e) {
@@ -320,7 +296,7 @@ export default function ResourcesConfig() {
         connectionAlert();
       }
     });
-  };
+  }, []);
 
   const listSubject = (sub) => {
     setSubjectEdit(subject.filter((s) => s.id !== sub));
@@ -336,10 +312,161 @@ export default function ResourcesConfig() {
     return document.getElementById(`inputDescription_${id}`).value;
   };
 
+  const memoizedResources = () => {
+    return (
+      <>
+        {resources && resources.map((r) =>
+          <tr key={r.id}>
+            <td>
+              <input
+                type="text"
+                id={`inputID_${r.id}`}
+                disabled
+                value={shortUUID(r.id)}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                id={`inputName_${r.id}`}
+                disabled
+                value={changeName === false ? r.name : newName}
+                onChange={() => {
+                  handleChangeName(r.id);
+                }}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                id={`inputDescription_${r.id}`}
+                disabled
+                value={
+                  changeDescription === false
+                    ? r.description
+                    : newDescription
+                }
+                onChange={() => {
+                  handleChangeDescription(r.id);
+                }}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                id={`inputAuthor_${r.id}`}
+                disabled
+                value={r.user.email}
+              />
+            </td>
+            <td>
+              <select id={`inputSubjectID_${r.id}`} disabled>
+                <option value={r.subject.id}>{r.subject.name}</option>
+                {subjectEdit.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </td>
+            <td className="action-column">
+              {/* <ExtraFields table="resources" id={r.id} /> */}
+              <button
+                id="btn-delete-resources"
+                style={{ marginRight: "5px" }}
+                onClick={() => confirmDeleteResource(r.id)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-trash3"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
+                </svg>
+              </button>
+              <button
+                id="show-edit-option"
+                style={{ marginRight: "5px", display: 'none', }}
+                onClick={(e) => showEditOptionResource(e)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-pencil-square"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+                  />
+                </svg>
+              </button>
+              <button
+                id="btn-edit"
+                style={{ marginRight: "5px", display: "none" }}
+                onClick={() => showModalsEdit(r)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-check2"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                </svg>
+              </button>
+              <button
+                id="btn-cancel-resources"
+                style={{ display: "none" }}
+                onClick={(e) => closeEditResource(e, r)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-x-lg"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                  />
+                </svg>
+              </button>
+            </td>
+          </tr>
+        )}
+      </>
+    );
+  }
+
   useEffect(() => {
-    fetchResourcesPage(1);
-    setInitialFetch(true);
+    // fetchResourcesPage(1);
+    // setInitialFetch(true);
+    fetchSubjects();
   }, []);
+
+  useEffect(() => {
+    // if (hasDoneInitialFetch) {
+    fetchResourcesPage(1, {
+      field: searchParams.selectedField,
+      order: searchParams.order,
+    }, searchParams);
+    // }
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -350,15 +477,6 @@ export default function ResourcesConfig() {
       order: "asc",
     });
   }, [language]);
-
-  useEffect(() => {
-    if (hasDoneInitialFetch) {
-      fetchResourcesPage(1, {
-        field: searchParams.selectedField,
-        order: searchParams.order,
-      });
-    }
-  }, [searchParams.order]);
 
   return (
     <>
@@ -427,7 +545,11 @@ export default function ResourcesConfig() {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={async (p) => fetchResourcesPage(p)}
+          onPageChange={(p) => fetchResourcesPage(p, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams)}
+          actualPage={actualPage}
           maxPages={maxPages}
         />
       </div>
@@ -447,148 +569,7 @@ export default function ResourcesConfig() {
               </thead>
 
               <tbody>
-                {resources.map((r) => {
-                  if (filteredResources !== null)
-                    if (
-                      filteredResources.find((fr) => r.id === fr.id) ===
-                      undefined
-                    )
-                      return <Fragment key={r.id} />;
-                  return (
-                    <tr key={r.id}>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputID_${r.id}`}
-                          disabled
-                          value={shortUUID(r.id)}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputName_${r.id}`}
-                          disabled
-                          value={changeName === false ? r.name : newName}
-                          onChange={() => {
-                            handleChangeName(r.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputDescription_${r.id}`}
-                          disabled
-                          value={
-                            changeDescription === false
-                              ? r.description
-                              : newDescription
-                          }
-                          onChange={() => {
-                            handleChangeDescription(r.id);
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          id={`inputAuthor_${r.id}`}
-                          disabled
-                          value={r.user.email}
-                        />
-                      </td>
-                      <td>
-                        <select id={`inputSubjectID_${r.id}`} disabled>
-                          <option value={r.subject.id}>{r.subject.name}</option>
-                          {subjectEdit.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="action-column">
-                        {/* <ExtraFields table="resources" id={r.id} /> */}
-                        <button
-                          id="btn-delete-resources"
-                          style={{ marginRight: "5px" }}
-                          onClick={() => confirmDeleteResource(r.id)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash3"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </button>
-                        <button
-                          id="show-edit-option"
-                          style={{ marginRight: "5px", display: 'none', }}
-                          onClick={(e) => showEditOptionResource(e)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-pencil-square"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path
-                              fillRule="evenodd"
-                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          id="btn-edit"
-                          style={{ marginRight: "5px", display: "none" }}
-                          onClick={() => showModalsEdit(r)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-check2"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                          </svg>
-                        </button>
-                        <button
-                          id="btn-cancel-resources"
-                          style={{ display: "none" }}
-                          onClick={(e) => closeEditResource(e, r)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-x-lg"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-                            />
-                            <path
-                              fillRule="evenodd"
-                              d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-                            />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {memoizedResources()}
               </tbody>
             </table>
           </div>

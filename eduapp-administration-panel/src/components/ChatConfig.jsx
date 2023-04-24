@@ -54,13 +54,13 @@ export default function ChatConfig() {
     }
   };
 
-  const fetchChatPage = async (page, order = null) => {
+  const fetchChatPage = async (page, order = null, searchParams) => {
     API.asynchronizeRequest(function () {
-      CHATSERVICE.pagedChat(page, order)
+      CHATSERVICE.pagedChat(page, order, searchParams)
         .then((res) => {
+          setActualPage(res.data.page);
           setChat(res.data.current_page);
           setMaxPages(res.data.total_pages);
-          setActualPage(res.data.page);
         })
         .catch(async (err) => await interceptExpiredToken(err));
     }).then(async (e) => {
@@ -259,7 +259,7 @@ export default function ChatConfig() {
   };
 
   useEffect(() => {
-    fetchChatPage(1);
+    // fetchChatPage(1);
     fetchSubjects();
     setInitialFetch(true);
   }, []);
@@ -275,13 +275,13 @@ export default function ChatConfig() {
   }, [language]);
 
   useEffect(() => {
-    if (hasDoneInitialFetch) {
+    // if (hasDoneInitialFetch) {
       fetchChatPage(1, {
         field: searchParams.selectedField,
         order: searchParams.order,
-      });
-    }
-  }, [searchParams.order]);
+      }, searchParams);
+    // }
+  }, [searchParams]);
 
   return (
     <>
@@ -349,7 +349,11 @@ export default function ChatConfig() {
           <>
             <div className="notify-users">
               <PageSelect
-                onPageChange={async (p) => fetchChatPage(p)}
+                onPageChange={(p) => fetchChatPage(p, {
+                  field: searchParams.selectedField,
+                  order: searchParams.order,
+                }, searchParams)}
+                actualPage={actualPage}
                 maxPages={maxPages}
               />
             </div>

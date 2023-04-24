@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useContext, useEffect, useState, useRef } from "react";
+import { Fragment, useContext, useEffect, useState, useRef, useCallback } from "react";
 import * as API from "../API";
 import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
 import * as USERSSERVICE from "../services/user.service";
@@ -34,7 +34,7 @@ export default function EnrollSubjectConfig() {
   const [popupType, setPopupType] = useState("");
   const [idDelete, setIdDelete] = useState();
 
-  const switchEditState = (state) => {
+  const switchEditState = useCallback((state) => {
     if (state) {
       document.getElementById("controlPanelContentContainer").style.overflowX =
         "auto";
@@ -45,46 +45,47 @@ export default function EnrollSubjectConfig() {
       document.getElementById("controlPanelContentContainer").style.overflow =
         "hidden";
     }
-  };
+  }, []);
 
-  const finalizedDelete = (type, icon, confirmDel, text) => {
+  const finalizedDelete = useCallback((type, icon, confirmDel, text) => {
     setPopupType(type);
     setPopupIcon(icon);
     setPopup(true);
     setPopupText(text);
     setIsConfirmDelete(confirmDel);
     fetchSubjectsUsers(actualPage);
-  };
+  }, [actualPage]);
 
-  const connectionAlert = async () => {
+  const connectionAlert = useCallback(async () => {
     switchEditState(false);
     setPopup(true);
     setPopupText(language.connectionAlert);
     setPopupIcon("error");
-  };
+  }, [language]);
 
-  const fetchSubjectsUsers = (pages) => {
-    API.asynchronizeRequest(function () {
-      SUBJECTSUSERSSERVICE.pagedSubjectsUsers(pages, searchParams)
+  const fetchSubjectsUsers = useCallback(async (pages, order = null, searchParams) => {
+    API.asynchronizeRequest(() => {
+      SUBJECTSUSERSSERVICE.pagedSubjectsUsers(pages, order, searchParams)
         .then((ts) => {
-          setSubjectsUsers(ts.data.current_page);
           setActualPage(ts.data.page);
           setMaxPages(ts.data.total_pages);
+          setSubjectsUsers(ts.data.current_page);
         })
         .catch(async (err) => {
           interceptExpiredToken(err);
         });
     }).then(async (e) => {
       if (e) {
-        connectionAlert();
         await interceptExpiredToken(e);
+        connectionAlert();
       }
     });
-  };
+  }, []);
 
   const fetchUsers = () => {
     API.asynchronizeRequest(function () {
-      USERSSERVICE.fetchUserInfos().then((us) => {
+      USERSSERVICE.fetchUserInfos()
+      .then((us) => {
         setUsers(us.data);
       });
     }).then(async (e) => {
@@ -111,14 +112,13 @@ export default function EnrollSubjectConfig() {
     fetchUsers();
   };
 
-  const alertCreate = async () => {
+  const alertCreate = useCallback(async () => {
     setPopupText(language.creationAlert);
     setPopupType("error");
     setPopup(true);
-  };
+  }, [language]);
 
-  const createSubjectUser = async (e) => {
-    e.preventDefault();
+  const createSubjectUser = useCallback(async (e) => {
     switchEditState(false);
 
     const user_value = document.getElementById("user_select").value;
@@ -180,7 +180,7 @@ export default function EnrollSubjectConfig() {
     } else {
       alertCreate();
     }
-  };
+  }, [users, subjects, language]);
 
   const confirmDeleteEvent = async (subjectId, userId) => {
     switchEditState(false);
@@ -188,7 +188,7 @@ export default function EnrollSubjectConfig() {
     setIdDelete([subjectId, userId]);
   };
 
-  const deleteSubjectUser = (id) => {
+  const deleteSubjectUser = useCallback((id) => {
     switchEditState(false);
     API.asynchronizeRequest(function () {
       SUBJECTSERVICE.deleteSubjectEnrollment({
@@ -222,7 +222,7 @@ export default function EnrollSubjectConfig() {
         await interceptExpiredToken(e);
       }
     });
-  };
+  }, [language]);
 
   const memoizedSubjectsUsers = () => {
     return (
@@ -276,8 +276,11 @@ export default function EnrollSubjectConfig() {
   }, []);
 
   useEffect(() => {
-    fetchSubjectsUsers(actualPage, searchParams);
-  }, [actualPage, searchParams]);
+    fetchSubjectsUsers(1, {
+      field: searchParams.selectedField,
+      order: searchParams.order,
+    }, searchParams);
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({
@@ -366,7 +369,11 @@ export default function EnrollSubjectConfig() {
       </div>
       <div className="notify-users">
         <PageSelect
-          onPageChange={(page) => setActualPage(page)}
+          onPageChange={(p) => fetchSubjectsUsers(p, {
+            field: searchParams.selectedField,
+            order: searchParams.order,
+          }, searchParams)}
+          actualPage={actualPage}
           maxPages={maxPages}
         />
       </div>

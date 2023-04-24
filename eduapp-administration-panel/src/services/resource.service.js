@@ -39,9 +39,12 @@ export const fetchResourcesJson = async () => {
   return await (await fetch(RESOURCE)).json();
 };
 
-export const pagedResources = async (page, order = null) => {
+export const pagedResources = async (page, order = null, searchParams = []) => {
+  const value = searchParams['query']
+  const attribute = searchParams['selectedField']
+
   return await axios.get(
-    `${RESOURCE}?page=${page}&order=${btoa(JSON.stringify(order))}`,
+    `${RESOURCE}?page=${page}${value && attribute ? ('&' + attribute + '=' + value) : ''}&order=${btoa(JSON.stringify(order))}`,
     {
       headers: requestHeader,
     }

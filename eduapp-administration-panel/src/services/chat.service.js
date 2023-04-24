@@ -19,7 +19,8 @@ export const filterChats = async ({ name = null, page = 1, extras = null }) => {
   });
 };
 
-export const pagedChat = async (page, order = null) => {
+export const pagedChat = async (page, order = null, searchParams) => {
+  // searchParams should be used here
   return await axios.get(
     `${CHAT}?page=${page}&order=${btoa(JSON.stringify(order))}`,
     {
