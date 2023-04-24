@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useCallback, useEffect, useState, useMemo, useRef } from "react";
 import * as USERSERVICE from "../services/user.service";
-import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
-import * as ENROLLSERVICE from "../services/enrollConfig.service";
+// import * as SUBJECTSUSERSSERVICE from "../services/enrollSubjectConfig.service";
+// import * as ENROLLSERVICE from "../services/enrollConfig.service";
+import * as SUBJECTSERVICE from "../services/subject.service";
 import * as API from "../API";
 import StandardModal from "./modals/standard-modal/StandardModal";
 import ExtraFields from "./ExtraFields";
-import * as COURSESERVICE from "../services/course.service";
+// import * as COURSESERVICE from "../services/course.service";
 import * as CHATSERVICE from "../services/chat.service";
 import * as ROLESERVICE from "../services/role.service";
 import { getOfflineUser, interceptExpiredToken } from "../utils/OfflineManager";
@@ -316,30 +317,34 @@ export default function UserConfig() {
 
   const userEnroll = useCallback(async (uId) => {
     const payload = new FormData();
-    payload.append(
-      "course_id",
-      (await COURSESERVICE.fetchGeneralCourse()).data.id
-    );
+    // Problem if there is more than a subject with the pattern name "%General%". It should be fixed
+    const subjectsWithGeneralName = (await SUBJECTSERVICE.getGeneralSubject());
+    const subject_id = subjectsWithGeneralName.data[0].id;
+    payload.append("subject_id", subject_id);
     payload.append("user_id", uId);
+    payload.append("enrollment", true);
 
     API.asynchronizeRequest(function () {
-      // setLoadingParams({ loading: true });
-      ENROLLSERVICE.createTuition(payload);
+      SUBJECTSERVICE.createSubject(payload)
+        .then((e) => {
+          if (e) {
+            // Maybe in the future could be made something here.
+          }
+        })
+        .catch((e) => {
+          if (e) {
+            interceptExpiredToken(e);
+            setPopup(true);
+            setPopupType("info");
+            setPopupText(language.creationAlert);
+          }
+        });
     }).then(async (e) => {
       if (e) {
         await interceptExpiredToken(e);
-        setPopup(true);
-        setPopupText(
-          "The new user could not be published, check if you have an internet connection."
-        );
-        setPopupIcon("error");
-        // switchSaveState(false);
+        connectionAlert();
       }
-      // setLoadingParams({ loading: false });
-    })
-    // .catch(() => {
-    //   setLoadingParams({ loading: false });
-    // });
+    });
   }, []);
 
   const notifyUsers = useCallback(async () => {
