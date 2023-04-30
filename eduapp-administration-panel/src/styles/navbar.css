@@ -1,0 +1,121 @@
+.navbar-container {
+	top: 0;
+	left: 0px;
+	/* height: 100vh; */
+	min-width: 200px;
+	max-width: 16%;
+	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
+	/* position: absolute; */
+	overflow-x: hidden;
+	z-index: 2;
+	padding: 0px 10px 0px 10px;
+	width: 16%;
+	background-color: rgb(237, 237, 237);
+}
+
+.navbar-header {
+	display: flex;
+	flex-direction: column;
+}
+
+a {
+	color: rgb(58, 58, 58);
+	text-decoration: none;
+}
+
+.button-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	width: 100%;
+	flex-direction: column;
+	background-color: rgb(255, 255, 255);
+	border-radius: 10px;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	margin-top: 20px;
+	box-shadow: 0px 0px 10px rgb(117 117 117 / 33%)
+}
+
+.button-container>span {
+	background-color: rgb(51, 122, 255);
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-family: sans-serif;
+	font-weight: bold;
+	border-radius: 10px 10px 0 0;
+
+}
+
+.suboptions>li {
+	transition: all 0.3s ease-in-out;
+}
+
+.button-suboptions {
+	transition: all 0.3s ease-in-out;
+
+}
+
+.button-suboptions:hover {
+	transform: scale(1.1);
+}
+
+.button-container>ul {
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	list-style: none;
+	width: 100%;
+}
+
+.button-container>ul>li {
+	text-decoration: underline;
+	font-weight: 600;
+	font-family: sans-serif;
+	font-size: 12px;
+	text-align: center;
+	margin-right: 3.5em;
+	margin-top: 10px;
+	box-shadow: 0px 0px 10px rgba(117, 117, 117, 0.329);
+	border: 1px solid rgba(117, 117, 117, 0.199);
+	text-decoration: none;
+	border-radius: 10px;
+}
+
+.logo {
+	margin-top: 10px;
+	padding: 3px;
+	cursor: default;
+	background-color: transparent;
+	pointer-events: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	color: rgb(58, 58, 58);
+	z-index: 9999;
+	transform: scale(0.7);
+	cursor: pointer;
+}
+
+.logo>img {
+	width: 40%;
+	height: 100%;
+	cursor: pointer;
+}
+
+.logo:hover {
+	background-color: transparent;
+}
+
+.active {
+	background-color: orange !important;
+	color: white;
+	transform: scale(0.9);
+}

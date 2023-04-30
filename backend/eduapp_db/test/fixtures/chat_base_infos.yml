@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  chat_base: one
+  chat_img: MyString
+
+two:
+  chat_base: two
+  chat_img: MyString

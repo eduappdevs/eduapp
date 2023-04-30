@@ -1,0 +1,17 @@
+{
+    "name": "ChatMessagesReport",
+    "engine": "handlebars",
+    "recipe": "chrome-pdf",
+    "shortid": "V1i3HPyTh",
+    "chrome": {
+        "printBackground": true
+    },
+    "creationDate": {
+        "$$date": 1645897430405
+    },
+    "modificationDate": {
+        "$$date": 1645911124458
+    },
+    "_id": "W9Kr6N0v1okSAduo",
+    "$entitySet": "templates"
+}
