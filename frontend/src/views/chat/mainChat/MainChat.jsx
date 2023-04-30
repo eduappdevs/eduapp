@@ -5,6 +5,7 @@ import AppHeader from "../../../components/appHeader/AppHeader";
 import ChatsAC from "../../../utils/websockets/actioncable/ChatsAC";
 import NotifsAC from "../../../utils/websockets/actioncable/NotifsAC";
 import { asynchronizeRequest } from "../../../API";
+import * as USER_SERVICE from "../../../services/user.service";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import {
   getOfflineUser,
@@ -75,7 +76,10 @@ export default function MainChat() {
           id: "newMessage" + new Date().toJSON(),
           decryptedMessage: inputMsg,
           user: {
-            id: userId
+            id: userId,
+            user_info: {
+              user_name: thisUser.user_name
+            }
           },
           chat_base: {
             id: chatId.substring(1),
@@ -215,7 +219,11 @@ export default function MainChat() {
         id: m.id,
         decryptedMessage: EncryptionUtils.decrypt(m.message, privKey).message,
         user: {
-          id: m.user.id
+          id: m.user.id,
+          user_info: {
+            user_name: m.user.user_info && m.user.user_info.user_name ?
+              m.user.user_info.user_name : ""
+          }
         },
         chat_base: {
           id: m.chat_base.id,
@@ -286,7 +294,7 @@ export default function MainChat() {
               });
               return;
             }
-            
+
             msgsToList.sort((a, b) => new Date(a.send_date) - new Date(b.send_date))
 
             // Messages sent after last time saved to IndexedDB.
@@ -305,8 +313,12 @@ export default function MainChat() {
   }, []);
 
   useEffect(() => {
-    document.addEventListener("new_msg", (e) => {
+    document.addEventListener("new_msg", async (e) => {
       e.stopImmediatePropagation();
+      // if(!e.detail.user.user_info){
+      //   const userInfo = (await USER_SERVICE.findById(e.detail.user.id)).data;
+      //   e.detail.user = {...e.detail.user, user_info: userInfo[0].user.user_info }
+      // }
       manageIncomingMsg(e.detail);
     });
 
@@ -395,8 +407,10 @@ export default function MainChat() {
                     thisUser.user && msg.user && msg.user.id && (msg.user.id !== thisUser.user.id) ? true : false
                   }
                   isGroup={msg.chat_base.isGroup}
-                  author={findUserName(msg.user.id)}
-                  // author={msg.user.userinfo.user_name}
+                  // author={findUserName(msg.user.id)}
+                  author={msg.user.user_info && msg.user.user_info.user_name ?
+                    msg.user.user_info.user_name : findUserName(msg.user.id)
+                  }
                   isMsgRecent={false}
                 />
               );
@@ -415,8 +429,10 @@ export default function MainChat() {
                     msg.user.id !== thisUser.user.id ? true : false
                   }
                   isGroup={msg.chat_base.isGroup}
-                  author={findUserName(msg.user.id)}
-                  // author={msg.user.userinfo.user_name}
+                  // author={findUserName(msg.user.id)}
+                  author={msg.user.user_info && msg.user.user_info.user_name ?
+                    msg.user.user_info.user_name : findUserName(msg.user.id)
+                  }
                   isMsgRecent={true}
                 />
               );
