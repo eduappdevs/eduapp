@@ -5,6 +5,7 @@ import AppHeader from "../../../components/appHeader/AppHeader";
 import ChatsAC from "../../../utils/websockets/actioncable/ChatsAC";
 import NotifsAC from "../../../utils/websockets/actioncable/NotifsAC";
 import { asynchronizeRequest } from "../../../API";
+import * as USER_SERVICE from "../../../services/user.service";
 import * as CHAT_SERVICE from "../../../services/chat.service";
 import {
   getOfflineUser,
@@ -40,7 +41,6 @@ export default function MainChat() {
   const navigate = useNavigate();
 
   // eslint-disable-next-line no-unused-vars
-  // const [chat, _s] = useState({});
   const [chat, setChat] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessages, setNewMessages] = useState([]);
@@ -50,48 +50,66 @@ export default function MainChat() {
   const [popupText, setPopupText] = useState("");
   const [isPopupQuestion, setIsPopupQuestion] = useState(false);
 
+  const thisUser = getOfflineUser();
+
   const sendMessage = async () => {
-    let inputMsgEl = document.getElementById("message-area");
-    let inputMsg = inputMsgEl.value.trim();
+    const inputMsgEl = document.getElementById("message-area");
+    const inputMsg = inputMsgEl.value.trim();
     if (
       inputMsg !== "" &&
       inputMsg !== " " &&
       inputMsg.length > 0
     ) {
-      let userId = getOfflineUser().user.id;
-      let msgEncrypted = EncryptionUtils.encrypt(inputMsg, pubKey);
-      let msgToSave = {
-        id: "newMessage" + new Date().toJSON(),
-        chat_base: { id: chatId.substring(1) },
-        message: msgEncrypted,
-        user: getOfflineUser().user,
-        send_date: new Date().toJSON()
-      }
+      const userId = thisUser.user.id;
+      const msgEncrypted = EncryptionUtils.encrypt(inputMsg, pubKey);
+      const msgDate = new Date()
+
       if (acInstance.sendChannelCmd()) {
-        await db.set(msgToSave.id, msgToSave)
         acInstance.sendChannelCmd(
           "message",
-          EncryptionUtils.encrypt(inputMsg, pubKey),
-          getOfflineUser().user.id,
-          new Date().toISOString()
+          msgEncrypted,
+          userId,
+          msgDate.toISOString()
         );
+
+        const msgToSave = {
+          id: "newMessage" + new Date().toJSON(),
+          decryptedMessage: inputMsg,
+          user: {
+            id: userId,
+            user_info: {
+              user_name: thisUser.user_name
+            }
+          },
+          chat_base: {
+            id: chatId.substring(1),
+            isGroup: false
+          },
+          send_date: msgDate.toJSON()
+        }
+
+        await db.set(msgToSave.id, msgToSave);
+
         notifs.sendChannelCmd(`${userId}:${msgEncrypted}`, {
           type: "notification",
           to: {
             userId,
           },
         });
+
+        document.getElementById("message-area").value = "";
       } else {
         console.log("Error sending message")
       }
-      inputMsgEl.value = "";
+
 
       // To test notifications focus...
+      // inputMsgEl.value = "";
       // setTimeout(() => {
       //   acInstance.sendChannelCmd(
       //     "message",
       //     EncryptionUtils.encrypt(inputMsg, pubKey),
-      //     getOfflineUser().user.id,
+      //     thisUser.user.id,
       //     new Date().toISOString()
       //   );
       //   notifs.sendChannelCmd(`${userId}:${msgEncrypted}`, {
@@ -107,18 +125,20 @@ export default function MainChat() {
 
   const manageIncomingMsg = async (newMsg) => {
     if (newMsg.chat_base.id === acInstance.chatCode.substring(1)) {
-      if (newMsg.user.id !== getOfflineUser().user.id) {
-        await db.set(newMsg.id, newMsg)
-      }
-      setNewMessages((prevMsgs) => [...prevMsgs, newMsg]);
-      let messageBox = document.getElementsByClassName(
-        "main-chat-messages-container"
-      )[0];
-      if (messageBox.childNodes.length !== 0) {
-        messageBox.childNodes[
-          messageBox.childNodes.length - 1
-        ].scrollIntoView();
-      }
+      decryptMessages([newMsg]).then((messagesReadyToShow) => {
+        if (newMsg.user.id !== thisUser.user.id) {
+          setMessagesToIDB(messagesReadyToShow);
+        }
+        setNewMessages((prevMsgs) => [...prevMsgs, messagesReadyToShow[0]]);
+        let messageBox = document.getElementsByClassName(
+          "main-chat-messages-container"
+        )[0];
+        if (messageBox.childNodes.length !== 0) {
+          messageBox.childNodes[
+            messageBox.childNodes.length - 1
+          ].scrollIntoView();
+        }
+      });
     }
   };
 
@@ -133,7 +153,7 @@ export default function MainChat() {
     asynchronizeRequest(async () => {
       try {
         await CHAT_SERVICE.removeParticipant(
-          getOfflineUser().user.id,
+          thisUser.user.id,
           chat.chatInfo.id
         );
         window.location.href = "/chat";
@@ -144,12 +164,6 @@ export default function MainChat() {
       if (err) console.log("connection error");
     });
   };
-
-  // const findUserName = (uId) => {
-  //   return chat.chatParticipants.length === undefined
-  //     ? chat.chatParticipants.user_name
-  //     : chat.chatParticipants.find((u) => u.user.id === uId).user_name;
-  // };
 
   const findUserName = (uId) => {
     if (chat.chatParticipants.length === undefined) return ""; //To be fixed: logged out user. It should be maybe fetched in the server.
@@ -191,7 +205,38 @@ export default function MainChat() {
     }, 100);
   }
 
-  useViewsPermissions(FetchUserInfo(getOfflineUser().user.id), "chat");
+  const setMessagesToIDB = async (messagesToIDB) => {
+    await db.getStorageInstance("eduapp-messages-db", "messages");
+    messagesToIDB.map(async m => {
+      await db.set(m.id, m)
+    });
+  }
+
+  const decryptMessages = async (messagesToDecrypt) => {
+    let auxMessages = []
+    messagesToDecrypt.map(m => {
+      auxMessages.push({
+        id: m.id,
+        decryptedMessage: EncryptionUtils.decrypt(m.message, privKey).message,
+        user: {
+          id: m.user.id,
+          user_info: {
+            user_name: m.user.user_info && m.user.user_info.user_name ?
+              m.user.user_info.user_name : ""
+          }
+        },
+        chat_base: {
+          id: m.chat_base.id,
+          isGroup: m.chat_base.isGroup
+        },
+        send_date: m.send_date
+      });
+    });
+    return auxMessages;
+  }
+
+  useViewsPermissions(FetchUserInfo(thisUser.user.id), "chat");
+
   useEffect(() => {
     acInstance.chatCode = chatId;
     let filtered_chatId = chatId.substring(1)
@@ -210,7 +255,7 @@ export default function MainChat() {
 
         if (cInfo.chat_name.includes("private_chat_")) {
           participants = participants.find(
-            (u) => u.user.id !== getOfflineUser().user.id
+            (u) => u.user.id !== thisUser.user.id
           );
           cInfo.image =
             participants.profile_image !== null
@@ -218,9 +263,6 @@ export default function MainChat() {
               : undefined;
           cInfo.chat_name = participants.user_name;
         }
-
-        // chat.chatInfo = cInfo;
-        // chat.chatParticipants = participants;
         setChat({ ...chat, chatInfo: cInfo, chatParticipants: participants });
       });
       // Retrieve chat messages
@@ -228,38 +270,55 @@ export default function MainChat() {
 
       db.isEmpty().then((res) => {
         if (res) {
-          CHAT_SERVICE.fetchChatMessages(filtered_chatId).then((msgs) => {
-            setMessages(msgs.data);
+          CHAT_SERVICE.fetchChatMessages(filtered_chatId).then(async (msgs) => {
+            const messagesReadyToShow = await decryptMessages(msgs.data);
+            setMessages(messagesReadyToShow);
+            await setMessagesToIDB(messagesReadyToShow);
             manageChatView();
           });
         } else {
-          // console.log(new Date().toJSON())
           db.getAllValues().then((values) => {
             let msgsToList = [];
             values.map((value) => {
               if (value.chat_base.id === filtered_chatId) {
                 msgsToList = [value, ...msgsToList];
               }
-              // return
             })
-            msgsToList.sort((a, b) => new Date(a.send_date) - new Date(b.send_date))
 
-            // Messages from last message previously downloaded to IndexedDB.
-            CHAT_SERVICE.fetchChatMessages(filtered_chatId,
-              msgsToList.slice(-1).send_date).then((msgs) => {
-                msgsToList = [...msgsToList, msgs];
-                setMessages(msgs.data);
+            if (msgsToList.length === 0) {
+              CHAT_SERVICE.fetchChatMessages(filtered_chatId).then(async (msgs) => {
+                const messagesReadyToShow = await decryptMessages(msgs.data);
+                setMessages(messagesReadyToShow);
+                await setMessagesToIDB(messagesReadyToShow);
                 manageChatView();
               });
-          })
+              return;
+            }
+
+            msgsToList.sort((a, b) => new Date(a.send_date) - new Date(b.send_date))
+
+            // Messages sent after last time saved to IndexedDB.
+            CHAT_SERVICE.fetchChatMessages(filtered_chatId,
+              msgsToList.slice(-1)[0].send_date).then(async (msgs) => {
+                const messagesReadyToShow = await decryptMessages(msgs.data);
+                msgsToList = msgsToList.concat(messagesReadyToShow);
+                setMessages(msgsToList);
+                await setMessagesToIDB(messagesReadyToShow);
+                manageChatView();
+              });
+          });
         }
       })
     });
   }, []);
 
   useEffect(() => {
-    document.addEventListener("new_msg", (e) => {
+    document.addEventListener("new_msg", async (e) => {
       e.stopImmediatePropagation();
+      // if(!e.detail.user.user_info){
+      //   const userInfo = (await USER_SERVICE.findById(e.detail.user.id)).data;
+      //   e.detail.user = {...e.detail.user, user_info: userInfo[0].user.user_info }
+      // }
       manageIncomingMsg(e.detail);
     });
 
@@ -283,11 +342,6 @@ export default function MainChat() {
       setChatBottomParams({ showing: false });
     };
   }, []);
-
-  const addLocalMessage = async (msg) => {
-    await db.getStorageInstance("eduapp-messages-db", "messages");
-    db.set(msg.id, msg)
-  }
 
   return (
     <>
@@ -341,20 +395,22 @@ export default function MainChat() {
         <div className="main-chat-messages-container">
           {messages.length !== 0
             ? messages.map((msg) => {
-              addLocalMessage(msg);
+              // addLocalMessage(msg);
               return (
                 <ChatBubble
                   key={msg.user.id + "-" + msg.id}
-                  message={
-                    EncryptionUtils.decrypt(msg.message, privKey).message
+                  message={msg.decryptedMessage
+                    // EncryptionUtils.decrypt(msg.message, privKey).message
                   }
                   foreign={
                     // eslint-disable-next-line eqeqeq
-                    msg.user.id !== getOfflineUser().user.id ? true : false
+                    thisUser.user && msg.user && msg.user.id && (msg.user.id !== thisUser.user.id) ? true : false
                   }
                   isGroup={msg.chat_base.isGroup}
-                  author={findUserName(msg.user.id)}
-                  // author={msg.user.userinfo.user_name}
+                  // author={findUserName(msg.user.id)}
+                  author={msg.user.user_info && msg.user.user_info.user_name ?
+                    msg.user.user_info.user_name : findUserName(msg.user.id)
+                  }
                   isMsgRecent={false}
                 />
               );
@@ -365,16 +421,18 @@ export default function MainChat() {
               return (
                 <ChatBubble
                   key={msg.user.id + "-" + msg.id}
-                  message={
-                    EncryptionUtils.decrypt(msg.message, privKey).message
+                  message={msg.decryptedMessage
+                    // EncryptionUtils.decrypt(msg.message, privKey).message
                   }
                   foreign={
                     // eslint-disable-next-line eqeqeq
-                    msg.user.id !== getOfflineUser().user.id ? true : false
+                    msg.user.id !== thisUser.user.id ? true : false
                   }
                   isGroup={msg.chat_base.isGroup}
-                  author={findUserName(msg.user.id)}
-                  // author={msg.user.userinfo.user_name}
+                  // author={findUserName(msg.user.id)}
+                  author={msg.user.user_info && msg.user.user_info.user_name ?
+                    msg.user.user_info.user_name : findUserName(msg.user.id)
+                  }
                   isMsgRecent={true}
                 />
               );
