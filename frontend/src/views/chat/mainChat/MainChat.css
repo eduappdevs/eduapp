@@ -16,8 +16,8 @@ svg {
 
 .main-chat-messages-container {
 	margin-top: 13.2vh;
-	height: 77.1vh;
-	max-height: 78vh;
+	/* height: 77.1vh; */
+	/* max-height: 78vh; */
 	overflow-y: scroll;
 	/* Firefox */
 	scrollbar-width: none;
@@ -34,14 +34,14 @@ svg {
 }
 
 .main-chat-messages-container>div:last-child {
-	padding-bottom: 0.8em;
+	padding-bottom: 12vh;
 }
 
-@media all and (display-mode: browser) and (max-width: 1000px) {
+/* @media all and (display-mode: browser) and (max-width: 1000px) {
 	.main-chat-messages-container>div:last-child {
-		padding-bottom: 2em;
+		padding-bottom: 10vh;
 	}
-}
+} */
 
 .main-chat-input-container {
 	width: 100%;
