@@ -1,5 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'eduappdevelopment@gmail.com'
+  default from: ENV.fetch("GMAIL_USERNAME")
   layout 'mailer'
 
   def configure_permitted_parameters

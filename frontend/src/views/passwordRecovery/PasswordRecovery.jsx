@@ -3,6 +3,7 @@ import axios from "axios";
 import StandardModal from "../../components/modals/standard-modal/StandardModal";
 import useLanguage from "../../hooks/useLanguage";
 import "./PasswordRecovery.css";
+import { API_URL } from "../../API";
 
 export default function PasswordRecovery() {
   const language = useLanguage();
@@ -29,16 +30,19 @@ export default function PasswordRecovery() {
         break;
     }
   };
+
   const reset_password = (e) => {
     e.preventDefault();
-    console.log({
-      email: email,
-      token: token,
-      password: password,
-      confirmPassword: confirmPassword,
-    });
-    if (password === confirmPassword) {
-      let http_request_url = `http://localhost:3000/password/reset?email=${email}&token=${token}&password=${password}&password_confirmation=${confirmPassword}`;
+    // console.log({
+    //   email: email,
+    //   token: token,
+    //   password: password,
+    //   confirmPassword: confirmPassword,
+    // });
+    if (password && password !== "" &&
+      confirmPassword && confirmPassword !== "" &&
+      password === confirmPassword) {
+      let http_request_url = `${API_URL}/password/reset?email=${email}&token=${token}&password=${password}&password_confirmation=${confirmPassword}`;
       axios
         .post(http_request_url)
         .then((res) => {
@@ -62,6 +66,7 @@ export default function PasswordRecovery() {
       setModalIcon("error");
     }
   };
+
   return (
     <>
       <StandardModal
@@ -112,9 +117,7 @@ export default function PasswordRecovery() {
 
             <button
               type="button"
-              onClick={
-                (password != "") & (confirmPassword != "") && reset_password
-              }
+              onClick={reset_password}
               className="pr-button"
             >
               {language.reset}
