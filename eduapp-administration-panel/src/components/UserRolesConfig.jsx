@@ -340,6 +340,7 @@ export default function UserRolesConfig() {
           perms_teachers: getPermsChecked("add_perm_teachers"),
           perms_tuitions: getPermsChecked("add_perm_tuitions"),
           perms_users: getPermsChecked("add_perm_users"),
+          perms_session_chats: getPermsChecked("add_perm_session_chats"),
         });
         fetchRoles(actualPage);
         setShowPerms(false);
