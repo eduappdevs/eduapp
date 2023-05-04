@@ -142,7 +142,7 @@
 }
 
 .calendar-view-edit {
-	overflow-y: scroll;
+	/* overflow-y: scroll; */
 	background-color: var(--backgroundColor);
 	border-radius: 10px;
 	box-shadow: 0 0px 5px var(--textColor);
@@ -596,4 +596,16 @@
 	padding: 1em;
 	border-radius: 5px;
 	cursor: pointer;
+}
+
+.calendar-view-users {
+	padding: .5em 0em .5em .5em;
+	border: 1px black ridge;
+	width: 90%;
+	max-height: 4em;
+	overflow: scroll;
+}
+
+.calendar-view-users>p {
+	margin:0 !important;
 }

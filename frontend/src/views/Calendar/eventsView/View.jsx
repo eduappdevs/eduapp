@@ -185,7 +185,7 @@ export default function View(props) {
     const isLinkCreated = subject?.chat_link && subject.chat_link !== "-";
     const notLinkCreated = !subject?.chat_link || subject?.chat_link === "-";
 
-    if(isTeacher){
+    if (isTeacher) {
       chatHasTeacher = subject.users.find(user => user.id === userinfo)
     }
     // const chatHasTeacher = thisChatHasATeacher();
@@ -278,13 +278,13 @@ export default function View(props) {
               </div>
             ) : null}
             {(isAdmin || isTeacher) ? (
-              <ul>
+              <div className="calendar-view-users">
                 {subject?.users.map(user => (
-                  <li key={user.id} className="subject-users">
+                  <p key={user.id} className="subject-users">
                     {user.email}
-                  </li>
+                  </p>
                 ))}
-              </ul>
+              </div>
             ) : null}
 
             <div className="calendar-view-session-information">
