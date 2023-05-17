@@ -25,7 +25,8 @@ class SubjectsController < ApplicationController
         @user_subjects = user.subjects.pluck(:id)
       end
 
-      @subjects = EduappUserSession.where("subject_id in (?) AND session_end_date > ? AND session_end_date < ?", @user_subjects, Time.now, Date.tomorrow).order(session_end_date: :asc)
+      @subjects = EduappUserSession.where("subject_id in (?) AND session_end_date > ? AND session_end_date < ?", @user_subjects, params[:current_date], params[:tomorrow]).order(session_end_date: :asc)
+      # @subjects = EduappUserSession.where("subject_id in (?) AND session_end_date > ? AND session_end_date < ?", @user_subjects, Time.now, Date.tomorrow).order(session_end_date: :asc)
     elsif params[:subject_id]
       @subjects = Subject.where(id: params[:subject_id])
     elsif params[:name]

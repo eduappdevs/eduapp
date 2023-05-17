@@ -78,10 +78,10 @@ export default function Home() {
   };
 
   const getSessions = async () => {
-    let sessions = await SUBJECT_SERVICE.fetchUserSessions();
+    let sessionsRead = await SUBJECT_SERVICE.fetchUserSessions();
 
     let sessionsPreSorted = [];
-    sessions.data.map((e) => {
+    sessionsRead.data.map((e) => {
       let id = e.id;
       let name = e.session_name;
       let startDate = e.session_start_date;
@@ -107,26 +107,31 @@ export default function Home() {
       return true;
     });
 
-    let sessionsSorted = sessionsPreSorted.sort(function (a, b, c, d) {
-      let aHour = a.startDate.split("T")[1];
-      let aMinute = a.startDate.split("T")[1].split(":")[1];
-      let bHour = b.startDate.split("T")[1];
-      let bMinute = b.startDate.split("T")[1].split(":")[1];
-      a = parseInt(aHour);
-      b = parseInt(bHour);
-      c = parseInt(aMinute);
-      d = parseInt(bMinute);
-      if (a < b) {
-        if (c < d) {
-          return -1;
-        }
-      }
-      if (a > b) {
-        if (c > d) {
-          return 1;
-        }
-      }
-      return 0;
+    let sessionsSorted = sessionsPreSorted.sort(function (a, b) {
+      const aDate = a.startDate.split("T")[1];
+      const bDate = b.endDate.split("T")[1];
+
+      return aDate.localeCompare(bDate);
+
+      // let aHour = a.startDate.split("T")[1];
+      // let aMinute = a.startDate.split("T")[1].split(":")[1];
+      // let bHour = b.startDate.split("T")[1];
+      // let bMinute = b.startDate.split("T")[1].split(":")[1];
+      // a = parseInt(aHour);
+      // b = parseInt(bHour);
+      // c = parseInt(aMinute);
+      // d = parseInt(bMinute);
+      // if (a < b) {
+      //   if (c < d) {
+      //     return -1;
+      //   }
+      // }
+      // if (a > b) {
+      //   if (c > d) {
+      //     return 1;
+      //   }
+      // }
+      // return 0;
     });
     setSessionLength(sessionsSorted.length);
     setSessions(sessionsSorted);
