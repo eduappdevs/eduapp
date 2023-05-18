@@ -17,7 +17,7 @@ class SubjectsController < ApplicationController
       attending_subjects = user.subjects.map { |s| s.id } || []
 
       @subjects = Subject.where(id: teaching_subjects + attending_subjects)
-    elsif params[:all_sessions] # This is used by frontend index for showing next session
+    elsif params[:all_sessions] # This is used by frontend index for showing all sessions in the day which hasn't ended yet. Next session is the first one
       user = User.find(current_user)
       if user.user_info.user_role.name == 'eduapp-teacher'
         @user_subjects = user.user_info.teaching_list
@@ -25,8 +25,9 @@ class SubjectsController < ApplicationController
         @user_subjects = user.subjects.pluck(:id)
       end
 
-      @subjects = EduappUserSession.where("subject_id in (?) AND session_end_date > ? AND session_end_date < ?", @user_subjects, params[:current_date], params[:tomorrow]).order(session_end_date: :asc)
-      # @subjects = EduappUserSession.where("subject_id in (?) AND session_end_date > ? AND session_end_date < ?", @user_subjects, Time.now, Date.tomorrow).order(session_end_date: :asc)
+      current_date = Time.now.strftime('%Y-%m-%dT%H:%M')
+      tomorrow = Date.tomorrow.strftime('%Y-%m-%d')
+      @subjects = EduappUserSession.where("subject_id in (?) AND session_end_date > ? AND session_end_date < ?", @user_subjects, current_date, tomorrow).order(session_end_date: :asc)
     elsif params[:subject_id]
       @subjects = Subject.where(id: params[:subject_id])
     elsif params[:name]
