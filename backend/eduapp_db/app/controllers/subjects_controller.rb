@@ -25,7 +25,7 @@ class SubjectsController < ApplicationController
         @user_subjects = user.subjects.pluck(:id)
       end
 
-      current_date = Time.now.strftime('%Y-%m-%dT%H:%M')
+      current_date = Time.zone.now.strftime('%Y-%m-%dT%H:%M')
       tomorrow = Date.tomorrow.strftime('%Y-%m-%d')
       @subjects = EduappUserSession.where("subject_id in (?) AND session_end_date > ? AND session_end_date < ?", @user_subjects, current_date, tomorrow).order(session_end_date: :asc)
     elsif params[:subject_id]
