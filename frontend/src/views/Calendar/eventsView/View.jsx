@@ -8,7 +8,7 @@ import { getOfflineUser } from "../../../utils/OfflineManager";
 import EditView from "./EditView";
 import useRole from "../../../hooks/useRole";
 import useLanguage from "../../../hooks/useLanguage";
-import userCan, { SESSION, UPDATE } from "../../../hooks/userCan";
+import userCan, { SESSION, UPDATE, EVENT,  } from "../../../hooks/userCan";
 import "./views.css";
 import { ChatIcon, CamaraIcon, MortarboardIcon, ClockIcon, CircleFillIcon } from "../../../components/ui/Icons";
 
@@ -24,7 +24,8 @@ export default function View(props) {
   let isTeacher = useRole(userinfo, "eduapp-teacher");
   let isAdmin = useRole(userinfo, "eduapp-admin");
   let isStudent = useRole(userinfo, "eduapp-student");
-  let canUpdate = userinfo && userCan(userinfo, SESSION, UPDATE);
+  let canUpdateEvent = userinfo && userCan(userinfo, EVENT, UPDATE);
+  let canUpdateSession = userinfo && userCan(userinfo, SESSION, UPDATE);
 
   const [editEvent, setEditEvent] = useState({});
 
@@ -223,7 +224,11 @@ export default function View(props) {
             className={
               isAdmin ||
                 (isTeacher &&
-                  userinfo.teaching_list.includes(props.data.subject_id) && canUpdate)
+                  userinfo.teaching_list.includes(props.data.subject_id) && 
+                  ((canUpdateEvent && props.data.description !== undefined) //props.data.description shows whether is session or event
+                  // || (canUpdateSession && props.data.description == undefined) //maybe this is necessary if session is enabled for teachers
+                  ) 
+                  )
                 ? "calendar-view-header-edit-button"
                 : "hidden"
             }
