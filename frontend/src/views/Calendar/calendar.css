@@ -4,6 +4,13 @@
 	transform: translatex(-100vw);
 }
 
+#view-box{
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .view-box-opened {
 	transition: all 0.5s;
 	transform: scale(1) !important;

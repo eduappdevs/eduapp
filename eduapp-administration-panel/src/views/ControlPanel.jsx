@@ -70,6 +70,10 @@ export default function ControlPanel() {
     <div className="users-main-container">
       <Navbar locationState={[location, setLocation]} />
       <div className="main-section">
+      <a href="#">
+            <i className="fas fa-bars"></i>
+          </a>
+        <img src="https://fontawesome.com/icons/bars?f=classic&s=solid" alt=""/>
         <Toolbar location={location} />
         <div
           className={`controlPanel-content-container ${location}`}

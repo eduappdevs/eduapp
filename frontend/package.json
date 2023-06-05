@@ -60,6 +60,7 @@
 	"scripts": {
 		"devw": "set PORT=8443 && react-scripts start",
 		"dev": "PORT=8443 react-scripts start",
+		"devwsl": "CHOKIDAR_USEPOLLING=true PORT=8443 react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
