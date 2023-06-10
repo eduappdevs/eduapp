@@ -123,7 +123,7 @@ export default function ProfileSettings({ desktopBackTo }) {
 
     const newUserInfo = new FormData();
     if (username) {
-      newUserInfo.append("username", username);
+      newUserInfo.append("user_name", username);
     }
     if (name) {
       newUserInfo.append("name", name);
