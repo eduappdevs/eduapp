@@ -587,6 +587,7 @@ export default function UserConfig() {
         form={
           <>
             <textarea
+              value={notifyMsg}
               placeholder={"Text message."}
               onChange={(e) => {
                 setNotifyMsg(e.target.value);

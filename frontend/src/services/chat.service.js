@@ -1,5 +1,7 @@
 import axios from "axios";
 import { API_URL, TOKEN } from "../API";
+import { removeTimezone } from "../utils/DateUtils";
+
 export const CHAT_MESSAGES = `${API_URL}/chat_messages`;
 export const CHAT = `${API_URL}/chat_bases`;
 export const CHAT_PARTICIPANT = `${API_URL}/chat_participants`;
@@ -89,12 +91,7 @@ export const fetchPersonalChats = async (userId) => {
 
 //Message
 export const fetchChatMessages = async (cId, startingDate = null) => {
-  let startingDateWithoutTimeZone = startingDate ? startingDate.split("+")[0] : ""; //AD HOC. REMOVE +1:00. SHOULD BE BETTER SOLVED
-  // startingDateWithoutTimeZone = startingDate ? startingDateWithoutTimeZone.split("-")[0] : ""; //DOESN'T WORK BECAUSE DATE HAS 2023-06-23. OTHER SOLUTION MUST BE FOUND.
-
-  const auxStartingDate = startingDate ? `&send_date=${startingDateWithoutTimeZone}` : "";
-  // const encodedURL = encodeURI(`${CHAT_MESSAGES}?chat_base_id=${cId}${auxStartingDate}`);
-  // console.log(encodedURL);
+  const auxStartingDate = startingDate ? `&send_date=${removeTimezone(startingDate)}` : "";
   return await axios.get(`${CHAT_MESSAGES}?chat_base_id=${cId}${auxStartingDate}`, { headers: requestHeader });
 };
 
