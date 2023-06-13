@@ -1,0 +1,41 @@
+.participants-table-info {
+    height: auto;
+}
+
+/* .participants-table-info>table>thead {
+    display: block;
+    flex-direction: row;
+} */
+
+.participants-table-info>table>thead>tr {
+    /* display: flex;
+    flex-direction: row; */
+    border: 1px solid #dddddd76;
+    text-align: left;
+}
+
+.participants-table-info>table>thead>tr>th {
+    flex: 1;
+}
+
+.participants-table-info>table>tbody {
+    /* display: flex;
+    flex-direction: column;
+    justify-content: left; 
+    height: 350px; */
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* .participants-table-info>table>tbody>tr {
+    display: flex;
+    flex-direction: row;
+} */
+
+/* .participants-table-info>table>tbody>tr>td {
+    flex: 1;
+} */
+
+.participants-table-info>table>tbody>tr:nth-child(even) {
+    background-color: #dddddd;
+}

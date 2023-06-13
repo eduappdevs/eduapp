@@ -1,0 +1,53 @@
+.button-upload-files {
+    border: none;
+    background-color: orange;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 700;
+    font-family: "Consolas";
+    margin-top: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.resources-table-info {
+    height: auto;
+}
+
+.resources-table-info>table>thead {
+    display: block;
+    flex-direction: row;
+}
+
+.resources-table-info>table>thead>tr {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #dddddd76;
+    text-align: left;
+}
+
+.resources-table-info>table>thead>tr>th {
+    flex: 1;
+}
+
+.resources-table-info>table>tbody {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    /* height: 350px; */
+    overflow-y: auto;
+    flex: 1;
+}
+
+.resources-table-info>table>tbody>tr {
+    display: flex;
+    flex-direction: row;
+}
+
+.resources-table-info>table>tbody>tr>td {
+    flex: 1;
+}
+
+.resources-table-info>table>tbody>tr:nth-child(even) {
+    background-color: #dddddd;
+}

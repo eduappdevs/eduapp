@@ -6,6 +6,7 @@
 
 # Ignore bundler config.
 /.bundle
+/.cert
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -22,6 +23,23 @@
 /storage/*
 !/storage/.keep
 .byebug_history
+node_modules
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+*.env
+!*docker-example.env
+.DS_Store
+
+config-velorcios
+
+.env-real-production
+.env-real-development
+
+dockerfile-real-production
+dockerfile-real-development
+
+dockerfile
+
+#Uploads files
+/public/uploads

@@ -9,12 +9,23 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
+  config.jwt do |jwt|
+    jwt.secret = ENV['RAILS_SECRET_KEY']
+    jwt.dispatch_requests = [
+      ['POST', %r{^/sign_in$}],
+    ]
+		jwt.revocation_requests = [
+			['DELETE', %r{^/sign_out$}],
+		]
+    jwt.expiration_time = 1.hour.to_i
+    
+  end
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = 'e5e1d760275ae23b01632c9c13b6dd86724106a3a6ea5c3660b4ffe94c891970b5b3ab2c8bd1faf3025f36b90770272eea4e900f4be5c5a2427a7eb1fae3a5cc'
+  # config.secret_key = '58790fe94411425f8060bdcdce8201127bd1e62d67d66e565a58b69b93e3ec5cfb89e4cfaba13bcd7ef69f19c4dd754f8ce00cd432c219686fd872eb1c7a4841'
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -24,10 +35,10 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
+  config.mailer_sender = ENV.fetch("GMAIL_USERNAME")
 
   # Configure the class responsible to send e-mails.
-  # config.mailer = 'Devise::Mailer'
+  config.mailer = 'Devise::Mailer'
 
   # Configure the parent class responsible to send e-mails.
   # config.parent_mailer = 'ActionMailer::Base'
@@ -46,7 +57,7 @@ Devise.setup do |config|
   # session. If you need permissions, you should implement that in a before filter.
   # You can also supply a hash where the value is a boolean determining whether
   # or not authentication should be aborted when the value is not present.
-  # config.authentication_keys = [:email]
+  config.authentication_keys = [:login]
 
   # Configure parameters from the request object used for authentication. Each entry
   # given should be a request method and it will automatically be passed to the
@@ -79,7 +90,8 @@ Devise.setup do |config|
   # enable this with :database unless you are using a custom strategy.
   # The supported strategies are:
   # :database      = Support basic authentication with authentication key + password
-  # config.http_authenticatable = false
+  config.http_authenticatable = true
+  
 
   # If 401 status code should be returned for AJAX requests. True by default.
   # config.http_authenticatable_on_xhr = true
@@ -126,7 +138,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 12
 
   # Set up a pepper to generate the hashed password.
-  # config.pepper = '0ba889a8c0d5428886c989867376a31b1232b70a4c505a679999255db7450918dea3c6265bf7adf3c594aa8bcb41093319ec5c229b09857ba24ffafc4a6dfcba'
+  # config.pepper = '6d07ecdf1a1ebee93ee5c0f54ddfa083b2c98d420366de8964201fc6ef3c111209f2383e649ea892a1a54e200abf5918d9d543ed1ecd09d6e8fa54bf2e8fd5c3'
 
   # Send a notification to the original email when the user's email is changed.
   # config.send_email_changed_notification = false
@@ -219,17 +231,16 @@ Devise.setup do |config|
   # ==> Configuration for :recoverable
   #
   # Defines which key will be used when recovering the password for an account
-  # config.reset_password_keys = [:email]
+  config.reset_password_keys = [:email]
 
   # Time interval you can reset your password with a reset password key.
   # Don't put a too small interval or your users won't have the time to
   # change their passwords.
-  config.reset_password_within = 6.hours
+  config.reset_password_within = 15.minutes
 
   # When set to false, does not sign a user in automatically after their password is
   # reset. Defaults to true, so a user is signed in automatically after a reset.
-  # config.sign_in_after_reset_password = true
-
+  config.sign_in_after_reset_password = false
   # ==> Configuration for :encryptable
   # Allow you to use another hashing or encryption algorithm besides bcrypt (default).
   # You can use :sha1, :sha512 or algorithms from others authentication tools as
@@ -271,7 +282,7 @@ Devise.setup do |config|
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
-  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
+  config.omniauth :google_oauth2, '34244826007-ute01mc8d42e8hc89bgsiv73njfj9kbe.apps.googleusercontent.com', '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'
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

@@ -1,0 +1,16 @@
+# BUILD NGINX
+
+FROM nginx:alpine as nginx-server
+
+RUN rm /etc/nginx/conf.d/default.conf
+COPY ./server-config/configs/eduapp-backend.conf /etc/nginx/conf.d
+
+# This is required to run from HTTPS.
+# Certificate file
+COPY ./backend/eduapp_db/.cert/eduapp.crt /usr/shared/eduapp/certs/eduapp.crt
+# Certificate key file
+COPY ./backend/eduapp_db/.cert/eduapp.key /usr/shared/eduapp/certs/eduapp.key
+
+EXPOSE 443
+
+CMD ["nginx", "-g", "daemon off;"]

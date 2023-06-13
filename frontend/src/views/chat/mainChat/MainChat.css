@@ -1,0 +1,113 @@
+.main-chat-container {
+	width: 100vw;
+	bottom: 0;
+	font-family: Consolas;
+	margin: 0;
+	overflow-y: scroll;
+}
+
+svg {
+	cursor: pointer;
+}
+
+#navbar {
+	display: none;
+}
+
+.main-chat-messages-container {
+	margin-top: 13.2vh;
+	/* height: 77.1vh; */
+	/* max-height: 78vh; */
+	overflow-y: scroll;
+	/* Firefox */
+	scrollbar-width: none;
+	scroll-behavior: smooth;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.main-chat-messages-container::-webkit-scrollbar {
+	display: none;
+}
+
+.main-chat-messages-container>div:first-child {
+	padding-top: 0.8em;
+}
+
+.main-chat-messages-container>div:last-child {
+	padding-bottom: 12vh;
+}
+
+/* @media all and (display-mode: browser) and (max-width: 1000px) {
+	.main-chat-messages-container>div:last-child {
+		padding-bottom: 10vh;
+	}
+} */
+
+.main-chat-input-container {
+	width: 100%;
+	min-height: 4em;
+	height: 10vh;
+	position: fixed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	bottom: 0;
+	z-index: 99999;
+	background-color: rgb(79, 79, 79);
+}
+
+.main-chat-input-container>.main-chat-input-text {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+}
+
+.main-chat-input-container>.main-chat-input-text>textarea {
+	width: 70%;
+	min-height: 2em;
+	height: 6vh;
+	font-size: 20px;
+	font-family: Consolas;
+	border-radius: 10px;
+	color: var(--textColor);
+	background: var(--backgroundColor) !important;
+	box-shadow: none;
+	border: none !important;
+	resize: none !important;
+	margin-right: 10px;
+	padding: 5px 5px 5px 5px;
+}
+
+.main-chat-input-container>.main-chat-input-text>textarea:focus {
+	outline: 0px solid transparent;
+}
+
+.main-chat-attachment-button {
+	margin-bottom: 2.05vh;
+}
+
+.main-chat-attachment-button>svg {
+	fill: var(--orange);
+	z-index: 500;
+	/* Chrome */
+	transform: scale(250%) rotate(45deg);
+	/* Firefox, Safari */
+	-webkit-transform: scale(2.5) rotate(45deg);
+	right: 91%;
+	position: absolute;
+	height: 20%;
+}
+
+.main-chat-send-button>svg {
+	fill: white;
+	z-index: 500;
+	/* Chrome */
+	transform: scale(260%) rotate(45deg) translate(-15%, -15%);
+	/* Firefox, Safari */
+	-webkit-transform: scale(2.6) rotate(45deg) translate(-15%, -15%);
+	background-color: var(--blue);
+	border-radius: 60%;
+	left: 90%;
+	position: absolute;
+}

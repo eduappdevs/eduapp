@@ -1,0 +1,37 @@
+.direct-chat-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin-top: 15vh;
+}
+
+.direct-chat-container>div>h2 {
+	color: var(--textColor);
+}
+
+.direct-chat-preview {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.direct-chat-preview>ul {
+	width: 90vw;
+}
+
+.direct-chat-preview>ul>li {
+	transform: none;
+	width: auto;
+	left: 0;
+}
+
+.direct-chat-preview>ul>h2 {
+	margin-top: 50px;
+	color: var(--textColor);
+}
+
+.direct-chat-preview>ul>li:last-child {
+	margin-bottom: 50px;
+}

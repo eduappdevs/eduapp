@@ -1,0 +1,261 @@
+.profilesettings-desktop {
+	position: absolute;
+	right: 0;
+	width: 350px;
+	height: 88.5vh;
+	background-color: var(--backgroundColor);
+	transition: 0.3s all;
+	box-shadow: 0 3px 6px rgba(187, 187, 187, 0.219);
+	z-index: 350;
+}
+
+.settings-display-mobile {
+	width: 100%;
+	height: 100vh !important;
+	top: 0;
+	left: 0;
+	position: fixed;
+}
+
+.profileSettings_container {
+	background-color: var(--backgroundColor);
+	transform: translateX(0px);
+	transition: all 0.3s;
+	z-index: 99999999999999;
+	overflow: auto;
+}
+
+.settings-desktop-wrapper {
+	margin-top: 0px !important;
+}
+
+.profileSettings_wrapper {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	margin-top: 20px;
+	margin-bottom: 10em;
+}
+
+.profileImage_preview {
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	margin-top: 20px;
+	cursor: pointer;
+	object-fit: cover;
+	border: 2px solid var(--orange);
+}
+
+#profileImage_upload {
+	display: none;
+}
+
+.userProfileImg {
+	display: flex;
+	flex-direction: column;
+}
+
+.userProfileImg>.saveImage {
+	margin-top: 20px;
+}
+
+.profile_info_input {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	margin-top: 10px;
+}
+
+.profile_info_input>span {
+	font-size: 12px;
+	color: rgba(217, 211, 211, 0.667);
+	transform: translateX(5px);
+}
+
+.profile_info_input>input {
+	background-color: rgba(255, 255, 255, 0.084);
+	border-radius: 10px;
+	padding: 10px;
+	border: none;
+	color: rgba(213, 205, 205, 0.722);
+	border: 2px solid rgba(255, 255, 255, 0);
+	transition: 0.2s ease;
+	margin-top: 5px;
+
+}
+
+.profile_info_input>input:focus {
+	outline: none;
+	border: 2px solid var(--blue);
+}
+
+.file-size-warning {
+	color: rgba(228, 0, 0, 0.68);
+	text-decoration: underline;
+}
+
+.changepassword_button {
+	margin-top: 20px !important;
+}
+
+.commitChanges {
+	margin-top: 10px;
+	display: flex;
+	padding: 10px 20px;
+	background-color: var(--blue);
+	color: white;
+	border-radius: 10px;
+	cursor: pointer;
+	animation: popIn 0.3s;
+}
+
+.commitChanges>span {
+	font-family: Consolas;
+}
+
+.commit-loader-hide {
+	display: none;
+}
+
+.commitChanges>svg {
+	margin-left: 10px;
+}
+
+.loader-spin {
+	-webkit-transform: scale(1.25);
+	transform: scale(1.25);
+	-webkit-animation: spin 1.5s linear infinite;
+	animation: spin 1.5s linear infinite;
+}
+
+@-webkit-keyframes spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@keyframes spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.coursesList {
+	list-style: none;
+	opacity: 0.7;
+	color: var(--textColor);
+}
+
+.coursesList>li>p {
+	flex: 0.9;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: Consolas;
+}
+
+.coursesList>li>img {
+	flex: 0.1;
+	width: 100px;
+	height: 50px;
+}
+
+.textColor {
+	color: var(--textColor);
+}
+
+.coursesContainer {
+	margin-top: 70px;
+	width: 90%;
+	display: flex;
+	padding: 10% 0;
+	align-items: center;
+	flex-direction: column;
+	background-color: #4b90ff10;
+	border: 1px solid #4b90ffb8;
+	box-shadow: 0 0 6px #4b90ff88;
+
+	border-radius: 20px;
+}
+
+.coursesLogo {
+	position: absolute;
+	transform: translateY(-90%);
+	width: 100px;
+	height: 100px;
+}
+
+.coursesList {
+	margin-top: 30px;
+	height: 100%;
+	overflow-y: auto;
+}
+
+.coursesList>li {
+	margin-top: 30px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--backgroundColor);
+	border-radius: 10px;
+	color: var(--textColor);
+	padding: 0 10px;
+	overflow: hidden;
+}
+
+.youareadmin {
+	position: absolute;
+	top: 15vh;
+	right: 10px;
+	display: flex;
+	flex-direction: row;
+	color: var(--textColor);
+	background-color: rgba(109, 109, 109, 0.193);
+	border-radius: 20px;
+	z-index: -1;
+}
+
+.youareadmin>p {
+	flex: 0.8;
+	font-size: 14px;
+	padding-left: 10px;
+	font-family: Consolas;
+}
+
+.youareadmin>img {
+	flex: 0.2;
+	width: 40px;
+	height: 40px;
+}
+
+.hidden {
+	display: none;
+}
+
+@keyframes popIn {
+	0% {
+		display: none;
+		transform: scale(0);
+	}
+
+	10% {
+		display: flex;
+	}
+
+	100% {
+		transform: scale(1);
+	}
+
+}
