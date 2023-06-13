@@ -13,12 +13,12 @@ const instanceModal = (data) => {
   left.classList.add("notifs_left");
   const profile_pic = document.createElement("img");
 
-  if(data.author_pic && data.author_pic.url) {
+  if (data.author_pic && data.author_pic.url) {
     profile_pic.src = getPrefixedImageURL(data.author_pic.url);
   } else {
     profile_pic.src = IMG_FLBK_USER;
   }
-  
+
 
   profile_pic.classList.add("notifs_profile_pic");
   left.appendChild(profile_pic);
