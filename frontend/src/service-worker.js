@@ -6,7 +6,7 @@ import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
 
-import EncryptionUtils from "../utils/EncryptionUtils";
+import EncryptionUtils from "./utils/EncryptionUtils";
 // SW SETUP
 
 clientsClaim();
@@ -69,12 +69,9 @@ self.addEventListener("message", (event) => {
 self.addEventListener('push', e => {
   const data = JSON.parse(e.data.text());
   const title = data.title;
-  console.log("e locoS: ", e)
-  console.log("data locoS: ", data);
 
   let body = data.body;
-  if (data.privKey) body = EncryptionUtils.decrypt(data.body, atob(data.privKey))
-  console.log(body)
+  if (data.privKey) body = EncryptionUtils.decrypt(data.body, atob(data.privKey)).message;
 
   const options = {
     openUrl: '/',
@@ -82,8 +79,10 @@ self.addEventListener('push', e => {
       url: data.url,
       id: data.user
     },
-    body: body ? body : "Hola caracola",
-    icon: data.icon
+    body: body ? `${data.user}: ${body}` : "EduApp",
+    image: "https://eduapp-project.org:8443/assets/logo-192x192.png",
+    badge: "https://eduapp-project.org:8443/assets/logo-192x192.png",
+    image: "https://eduapp-project.org:8443/assets/logo.png"
   };
 
   e.waitUntil(self.registration.showNotification(title, options));
