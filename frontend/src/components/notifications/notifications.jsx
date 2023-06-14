@@ -21,6 +21,7 @@ export default function pushNotify(text, image, name) {
 
   switch (Notification.permission) {
     case "granted":
+      console.log("Notification - granted")
       new Notification("EduApp", {
         body: `${name}: ${text}`,
         image: image,
@@ -29,6 +30,7 @@ export default function pushNotify(text, image, name) {
       break;
     case "denied":
     case "default":
+      console.log("Notification - default")
       window.Notification.requestPermission().then(function (permission) {
         if (permission === "granted") {
           var notify = new Notification("EduApp", {
