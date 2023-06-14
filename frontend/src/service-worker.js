@@ -67,19 +67,26 @@ self.addEventListener("message", (event) => {
 
 
 self.addEventListener('push', e => {
-  const data = JSON.parse( e.data.text() );
+  const data = JSON.parse(e.data.text());
   const title = data.title;
-  // const body = EncryptionUtils.decrypt(data.body, atob(data.privKey))
-  // console.log(body)
+  console.log("e locoS: ", e)
+  console.log("data locoS: ", data);
+
+  let body = data.body;
+  if (data.privKey) body = EncryptionUtils.decrypt(data.body, atob(data.privKey))
+  console.log(body)
+
   const options = {
-      openUrl: '/',
-      data: {
-          url: data.url,
-          id: data.user
-      }
+    openUrl: '/',
+    data: {
+      url: data.url,
+      id: data.user
+    },
+    body: body ? body : "Hola caracola",
+    icon: data.icon
   };
 
-  e.waitUntil( self.registration.showNotification( title, options) );
+  e.waitUntil(self.registration.showNotification(title, options));
 
 });
 
@@ -89,20 +96,20 @@ self.addEventListener('notificationclick', event => {
   const notificacion = event.notification;
 
   const response = self.clients.matchAll()
-  .then( all_clients => {
+    .then(all_clients => {
 
-      let client = all_clients.find( c => {
-          return c.visibilityState === 'visible';
+      let client = all_clients.find(c => {
+        return c.visibilityState === 'visible';
       });
 
-      if ( client !== undefined ) {
-          client.navigate( notificacion.data.url );
-          client.focus();
+      if (client !== undefined) {
+        client.navigate(notificacion.data.url);
+        client.focus();
       } else {
-          self.clients.openWindow( notificacion.data.url );
+        self.clients.openWindow(notificacion.data.url);
       }
       return notificacion.close();
-  });
+    });
 
-  event.waitUntil( response );
+  event.waitUntil(response);
 });

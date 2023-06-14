@@ -72,7 +72,7 @@ class ChatMessagesController < ApplicationController
         )
         subcriptions = PushNotification.where(user_id: participant.user_id)
         message = {
-          title: chat_base.chat_name,
+          title: "EduApp: #{chat_base.chat_name}",
           body: params[:message],
           user: user.user_name,
           icon: user.profile_image,

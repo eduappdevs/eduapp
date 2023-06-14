@@ -43,7 +43,7 @@ class ChatChannel < ApplicationCable::Channel
           subcriptions = PushNotification.where(user_id: participant.user_id)
           user = UserInfo.find_by(user_id: data["author"])
           message = {
-            title: current_chat.chat_name,
+            title: "EduApp: #{current_chat.chat_name}",
             body: data["message"],
             user: user.user_name,
             icon: user.profile_image,
