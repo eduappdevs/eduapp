@@ -6,7 +6,7 @@ import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
 
-// import EncryptionUtils from "../src/utils/EncryptionUtils";
+import EncryptionUtils from "../utils/EncryptionUtils";
 // SW SETUP
 
 clientsClaim();
