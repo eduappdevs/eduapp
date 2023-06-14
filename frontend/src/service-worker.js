@@ -69,8 +69,8 @@ self.addEventListener("message", (event) => {
 self.addEventListener('push', e => {
   const data = JSON.parse(e.data.text());
   const title = data.title;
-  console.log("e loco: ", e)
-  console.log("data loco: ", data);
+  console.log("e locoS: ", e)
+  console.log("data locoS: ", data);
 
   let body = data.body;
   if (data.privKey) body = EncryptionUtils.decrypt(data.body, atob(data.privKey))
