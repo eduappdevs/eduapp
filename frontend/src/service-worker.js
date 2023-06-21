@@ -80,9 +80,9 @@ self.addEventListener('push', e => {
       id: data.user
     },
     body: body ? `${data.user}: ${body}` : "EduApp",
-    image: "https://eduapp-project.org:8443/assets/logo-192x192.png",
-    badge: "https://eduapp-project.org:8443/assets/logo-192x192.png",
-    image: "https://eduapp-project.org:8443/assets/logo.png"
+    icon: `${process.env.PUBLIC_URL}/assets/maskable-logo-192x192-black-and-white.png`,
+    badge: `${process.env.PUBLIC_URL}/assets/maskable-logo-192x192.png`,
+    // image: `${process.env.PUBLIC_URL}/assets/logo.png`
   };
 
   e.waitUntil(self.registration.showNotification(title, options));
